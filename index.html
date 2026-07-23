@@ -109,11 +109,11 @@ body{font-family:-apple-system,'PingFang SC','Helvetica Neue',sans-serif;backgro
 .modal-close{font-size:24px;color:var(--sec);cursor:pointer;line-height:1}
 .modal-bd{padding:16px 20px;overflow:auto;max-height:70vh}
 .modal-bd table{width:max-content;min-width:100%;border-collapse:separate;border-spacing:0;font-size:12px}
-.modal-bd th{background:var(--blue);color:#fff;padding:10px 8px;text-align:center;font-weight:500;position:sticky;top:0;z-index:1;white-space:nowrap}
+.modal-bd th{background:var(--blue);color:#fff;padding:9px 5px;text-align:center;font-weight:500;position:sticky;top:0;z-index:1;white-space:nowrap}
 .modal-bd th::after{content:'';position:absolute;left:0;right:0;bottom:0;height:1px;background:rgba(255,255,255,.2)}
-.modal-bd td{padding:9px 6px;text-align:center;border-bottom:1px solid #f0f0f0;background:#fff;white-space:nowrap}
+.modal-bd td{padding:8px 4px;text-align:center;border-bottom:1px solid #f0f0f0;background:#fff;white-space:nowrap}
 .modal-bd tr:nth-child(even) td{background:#FAFBFC}
-.modal-bd .col-name{text-align:left!important;padding-left:10px!important;white-space:normal}
+.modal-bd .col-name{text-align:left!important;padding-left:6px!important;white-space:normal}
 .modal-bd .sticky-col{position:sticky;z-index:2}
 .modal-bd th.sticky-col{z-index:3;background:var(--blue)}
 .modal-bd .fc{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -43568,8 +43568,8 @@ function showAlertDetail(type){
     const data=(D.over13||[]).filter(filt);
     cnt=data.length;
     count.innerHTML=`当前范围共 <b>${cnt}</b> 人单日工时超过13小时，请点击「单日 >13h 预警」指标卡查看`;
-    hh='<th style="width:66px">区域</th><th style="width:90px">大店长</th><th style="width:112px">门店</th>'+
-       '<th style="width:74px">工号</th><th style="width:56px">姓名</th><th style="width:78px">职级</th>'+
+    hh='<th style="width:58px">区域</th><th style="width:82px">大店长</th><th style="width:88px">门店</th>'+
+       '<th style="width:60px">工号</th><th style="width:44px">姓名</th><th style="width:72px">职级</th>'+
        '<th style="width:76px">是否扣分<div style="font-size:10px;color:#FFCCCC;font-weight:400;margin-top:2px">BP凭密码填写</div></th>'+
        '<th style="width:160px">违规原因<div style="font-size:10px;color:rgba(255,255,255,.75);font-weight:400;margin-top:2px">大店长填写</div></th>'+
        '<th style="width:160px">区经理建议</th>'+
@@ -43595,8 +43595,8 @@ function showAlertDetail(type){
     const data=(D.warn7||[]).filter(filt).filter(p=>(p['当月最大连续']>=9));
     cnt=data.length;
     count.innerHTML=`当前范围共 <b>${cnt}</b> 人连续出勤超过8天（当月最大连续≥9天），请点击「全月内>8天」指标卡查看`;
-    hh='<th style="width:66px">区域</th><th style="width:90px">大店长</th><th style="width:112px">门店</th>'+
-       '<th style="width:74px">工号</th><th style="width:56px">姓名</th><th style="width:78px">职级</th>'+
+    hh='<th style="width:58px">区域</th><th style="width:82px">大店长</th><th style="width:88px">门店</th>'+
+       '<th style="width:60px">工号</th><th style="width:44px">姓名</th><th style="width:72px">职级</th>'+
        '<th style="width:76px">是否扣分<div style="font-size:10px;color:#FFCCCC;font-weight:400;margin-top:2px">BP凭密码填写</div></th>'+
        '<th style="width:160px">违规原因<div style="font-size:10px;color:rgba(255,255,255,.75);font-weight:400;margin-top:2px">大店长填写</div></th>'+
        '<th style="width:160px">区经理建议</th>'+
@@ -43624,8 +43624,8 @@ function showAlertDetail(type){
     const data=(D.warn7||[]).filter(filt).filter(p=>p['尾段连续未休']>=7).sort((a,b)=>b['尾段连续未休']-a['尾段连续未休']);
     cnt=data.length;
     count.innerHTML=`当前范围共 <b>${cnt}</b> 人尾段连续出勤≥7天，需尽快排休`;
-    hh='<th style="width:66px">区域</th><th style="width:90px">大店长</th><th style="width:112px">门店</th>'+
-       '<th style="width:74px">工号</th><th style="width:56px">姓名</th><th style="width:78px">职级</th>'+
+    hh='<th style="width:58px">区域</th><th style="width:82px">大店长</th><th style="width:88px">门店</th>'+
+       '<th style="width:60px">工号</th><th style="width:44px">姓名</th><th style="width:72px">职级</th>'+
        '<th style="width:50px">出勤/休</th><th style="width:60px">总工时</th><th style="width:48px">日均</th>'+
        '<th style="width:62px" class="c-red">最大连续</th><th style="width:62px" class="c-amber">尾段连续</th>'+
        M.date_strs.map(d=>`<th style="min-width:42px;width:42px">${d}</th>`).join('');
@@ -43648,9 +43648,9 @@ function showAlertDetail(type){
     const data=(D.zeros_full||[]).filter(filt);
     cnt=data.length;
     count.innerHTML=`当前范围共 <b>${cnt}</b> 人0工时，需核实原因`;
-    hh='<th style="width:42px">序号</th><th style="width:66px">区域</th><th style="width:90px">大店长</th>'+
-       '<th style="width:112px">门店</th><th style="width:74px">工号</th><th style="width:56px">姓名</th>'+
-       '<th style="width:78px">职级</th>'+
+    hh='<th style="width:36px">序号</th><th style="width:58px">区域</th><th style="width:82px">大店长</th>'+
+       '<th style="width:88px">门店</th><th style="width:60px">工号</th><th style="width:44px">姓名</th>'+
+       '<th style="width:72px">职级</th>'+
        '<th style="width:85px">开始日期</th><th style="width:85px">结束日期</th><th>请假备注</th>';
     data.forEach(p=>{
       const remark=p['备注']||'-';
@@ -43668,7 +43668,7 @@ function showAlertDetail(type){
   head.innerHTML=hh;
   body.innerHTML=bb||'<tr><td colspan="20" style="padding:30px;text-align:center;color:var(--hint)">暂无数据</td></tr>';
   modal.style.display='flex';
-  const FW=type==='zeros_full'?[26,50,74,96,58,40,62]:[50,74,96,58,40,62];
+  const FW=type==='zeros_full'?[26,48,72,78,50,34,62]:[48,72,78,50,34,62];
   setTimeout(()=>freezeAlertCols(FW),0);
 }
 
@@ -44179,9 +44179,9 @@ function renderDetail(){
     searchResultCount=data.length;
     const label=isFull?'0工时全职':'0工时学生';
     document.getElementById('detailCount').innerHTML=`共${data.length}人`;
-    hh='<th style="width:42px">序号</th><th style="width:66px">区域</th><th style="width:90px">大店长</th>'+
-       '<th style="width:112px">门店</th><th style="width:74px">工号</th><th style="width:56px">姓名</th>'+
-       '<th style="width:78px">职级</th>'+
+    hh='<th style="width:36px">序号</th><th style="width:58px">区域</th><th style="width:82px">大店长</th>'+
+       '<th style="width:88px">门店</th><th style="width:60px">工号</th><th style="width:44px">姓名</th>'+
+       '<th style="width:72px">职级</th>'+
        '<th style="width:85px">开始日期</th><th style="width:85px">结束日期</th><th>请假备注</th>';
     data.forEach(p=>{
       const remark=p['备注']||'-';

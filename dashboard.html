@@ -116,6 +116,7 @@ body{font-family:-apple-system,'PingFang SC','Helvetica Neue',sans-serif;backgro
 .modal-bd .col-name{text-align:left!important;padding-left:10px!important;white-space:normal}
 .modal-bd .sticky-col{position:sticky;z-index:2}
 .modal-bd th.sticky-col{z-index:3;background:var(--blue)}
+.modal-bd .fc{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .modal-count{font-size:12px;color:var(--sec);margin-bottom:10px}
 
 /* 待核实备注可编辑 */
@@ -43567,8 +43568,8 @@ function showAlertDetail(type){
     const data=(D.over13||[]).filter(filt);
     cnt=data.length;
     count.innerHTML=`当前范围共 <b>${cnt}</b> 人单日工时超过13小时，请点击「单日 >13h 预警」指标卡查看`;
-    hh='<th style="width:88px">区域</th><th style="width:92px">大店长</th><th style="width:180px">门店</th>'+
-       '<th style="width:68px">工号</th><th style="width:52px">姓名</th><th style="width:52px">职级</th>'+
+    hh='<th style="width:66px">区域</th><th style="width:90px">大店长</th><th style="width:112px">门店</th>'+
+       '<th style="width:74px">工号</th><th style="width:56px">姓名</th><th style="width:78px">职级</th>'+
        '<th style="width:76px">是否扣分<div style="font-size:10px;color:#FFCCCC;font-weight:400;margin-top:2px">BP凭密码填写</div></th>'+
        '<th style="width:160px">违规原因<div style="font-size:10px;color:rgba(255,255,255,.75);font-weight:400;margin-top:2px">大店长填写</div></th>'+
        '<th style="width:160px">区经理建议</th>'+
@@ -43594,8 +43595,8 @@ function showAlertDetail(type){
     const data=(D.warn7||[]).filter(filt).filter(p=>(p['当月最大连续']>=9));
     cnt=data.length;
     count.innerHTML=`当前范围共 <b>${cnt}</b> 人连续出勤超过8天（当月最大连续≥9天），请点击「全月内>8天」指标卡查看`;
-    hh='<th style="width:88px">区域</th><th style="width:92px">大店长</th><th style="width:180px">门店</th>'+
-       '<th style="width:68px">工号</th><th style="width:52px">姓名</th><th style="width:52px">职级</th>'+
+    hh='<th style="width:66px">区域</th><th style="width:90px">大店长</th><th style="width:112px">门店</th>'+
+       '<th style="width:74px">工号</th><th style="width:56px">姓名</th><th style="width:78px">职级</th>'+
        '<th style="width:76px">是否扣分<div style="font-size:10px;color:#FFCCCC;font-weight:400;margin-top:2px">BP凭密码填写</div></th>'+
        '<th style="width:160px">违规原因<div style="font-size:10px;color:rgba(255,255,255,.75);font-weight:400;margin-top:2px">大店长填写</div></th>'+
        '<th style="width:160px">区经理建议</th>'+
@@ -43623,8 +43624,8 @@ function showAlertDetail(type){
     const data=(D.warn7||[]).filter(filt).filter(p=>p['尾段连续未休']>=7).sort((a,b)=>b['尾段连续未休']-a['尾段连续未休']);
     cnt=data.length;
     count.innerHTML=`当前范围共 <b>${cnt}</b> 人尾段连续出勤≥7天，需尽快排休`;
-    hh='<th style="width:88px">区域</th><th style="width:92px">大店长</th><th style="width:180px">门店</th>'+
-       '<th style="width:68px">工号</th><th style="width:52px">姓名</th><th style="width:52px">职级</th>'+
+    hh='<th style="width:66px">区域</th><th style="width:90px">大店长</th><th style="width:112px">门店</th>'+
+       '<th style="width:74px">工号</th><th style="width:56px">姓名</th><th style="width:78px">职级</th>'+
        '<th style="width:50px">出勤/休</th><th style="width:60px">总工时</th><th style="width:48px">日均</th>'+
        '<th style="width:62px" class="c-red">最大连续</th><th style="width:62px" class="c-amber">尾段连续</th>'+
        M.date_strs.map(d=>`<th style="min-width:42px;width:42px">${d}</th>`).join('');
@@ -43647,9 +43648,9 @@ function showAlertDetail(type){
     const data=(D.zeros_full||[]).filter(filt);
     cnt=data.length;
     count.innerHTML=`当前范围共 <b>${cnt}</b> 人0工时，需核实原因`;
-    hh='<th style="width:38px">序号</th><th style="width:84px">区域</th><th style="width:90px">大店长</th>'+
-       '<th style="width:180px">门店</th><th style="width:70px">工号</th><th style="width:52px">姓名</th>'+
-       '<th style="width:52px">职级</th>'+
+    hh='<th style="width:42px">序号</th><th style="width:66px">区域</th><th style="width:90px">大店长</th>'+
+       '<th style="width:112px">门店</th><th style="width:74px">工号</th><th style="width:56px">姓名</th>'+
+       '<th style="width:78px">职级</th>'+
        '<th style="width:85px">开始日期</th><th style="width:85px">结束日期</th><th>请假备注</th>';
     data.forEach(p=>{
       const remark=p['备注']||'-';
@@ -43667,14 +43668,34 @@ function showAlertDetail(type){
   head.innerHTML=hh;
   body.innerHTML=bb||'<tr><td colspan="20" style="padding:30px;text-align:center;color:var(--hint)">暂无数据</td></tr>';
   modal.style.display='flex';
-  setTimeout(()=>freezeAlertCols(type==='zeros_full'?7:6),0);
+  const FW=type==='zeros_full'?[26,50,74,96,58,40,62]:[50,74,96,58,40,62];
+  setTimeout(()=>freezeAlertCols(FW),0);
 }
 
-function freezeAlertCols(n){
+function freezeAlertCols(widths){
   const table=document.querySelector('#alertModalBody').closest('table');
   if(!table) return;
+  const n=widths.length;
   const ths=table.querySelectorAll('thead th');
   const rows=table.querySelectorAll('tbody tr');
+  // 先把冻结列内容包进限宽 div（省略号+悬停显示全文）
+  ths.forEach((th,i)=>{
+    if(i<n && !th.dataset.frozen){
+      th.innerHTML=`<div class="fc" style="max-width:${widths[i]}px">${th.innerHTML}</div>`;
+      th.dataset.frozen='1';
+    }
+  });
+  rows.forEach(tr=>{
+    const tds=tr.querySelectorAll('td');
+    tds.forEach((td,i)=>{
+      if(i<n && !td.dataset.frozen){
+        const txt=td.textContent.trim().replace(/"/g,'&quot;');
+        td.innerHTML=`<div class="fc" style="max-width:${widths[i]}px" title="${txt}">${td.innerHTML}</div>`;
+        td.dataset.frozen='1';
+      }
+    });
+  });
+  // 包裹后再计算 left 偏移
   let left=0;
   ths.forEach((th,i)=>{
     th.classList.remove('sticky-col');
@@ -44158,9 +44179,9 @@ function renderDetail(){
     searchResultCount=data.length;
     const label=isFull?'0工时全职':'0工时学生';
     document.getElementById('detailCount').innerHTML=`共${data.length}人`;
-    hh='<th style="width:38px">序号</th><th style="width:84px">区域</th><th style="width:90px">大店长</th>'+
-       '<th style="width:180px">门店</th><th style="width:70px">工号</th><th style="width:52px">姓名</th>'+
-       '<th style="width:52px">职级</th>'+
+    hh='<th style="width:42px">序号</th><th style="width:66px">区域</th><th style="width:90px">大店长</th>'+
+       '<th style="width:112px">门店</th><th style="width:74px">工号</th><th style="width:56px">姓名</th>'+
+       '<th style="width:78px">职级</th>'+
        '<th style="width:85px">开始日期</th><th style="width:85px">结束日期</th><th>请假备注</th>';
     data.forEach(p=>{
       const remark=p['备注']||'-';

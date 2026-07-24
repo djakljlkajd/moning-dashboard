@@ -45223,8 +45223,8 @@ let currentViolationGid=null;
    首次使用时请输入一次，后续保存在浏览器 localStorage。 */
 const GITHUB_REPO='djakljlkajd/moning-dashboard';
 const VIOLATION_FILE_PATH='violation_data.json';
-const VIOLATION_READ_URL='./violation_data.json'; // GitHub Pages 同域托管
 const GITHUB_API_URL='https://api.github.com/repos/'+GITHUB_REPO+'/contents/'+VIOLATION_FILE_PATH;
+const VIOLATION_PAGES_FALLBACK='./violation_data.json'; // GitHub Pages 同域托管（备用）
 let violationCache={over13:{},consec8:{}};
 let zeroFullCache={resigned:[],remarks:{}};
 let violationSyncTimer=null;
@@ -45283,15 +45283,38 @@ function restoreFromLocal(){
   }catch(e){return false;}
 }
 
+function base64ToUtf8(str){
+  try{
+    return decodeURIComponent(escape(atob(str)));
+  }catch(e){return atob(str);}
+}
+
+async function fetchViolationFromAPI(){
+  const token=getGithubToken();
+  const headers={'Accept':'application/vnd.github.v3+json'};
+  if(token)headers['Authorization']='token '+token;
+  const res=await fetch(GITHUB_API_URL+'?t='+Date.now(),{headers});
+  if(!res.ok)throw new Error('api '+res.status);
+  const info=await res.json();
+  const json=base64ToUtf8(info.content.replace(/\s/g,''));
+  return JSON.parse(json);
+}
+
+async function fetchViolationFromPages(){
+  const res=await fetch(VIOLATION_PAGES_FALLBACK,{cache:'no-cache'});
+  if(!res.ok)throw new Error('pages '+res.status);
+  return await res.json();
+}
+
 async function loadViolationData(){
   try{
-    const res=await fetch(VIOLATION_READ_URL,{cache:'no-cache'});
-    if(!res.ok){
-      console.warn('violation_data.json read failed',res.status);
-      restoreFromLocal();
-      return;
+    let data=null;
+    try{
+      data=await fetchViolationFromAPI();
+    }catch(apiErr){
+      console.warn('load from GitHub API failed, fallback to Pages',apiErr);
+      data=await fetchViolationFromPages();
     }
-    const data=await res.json();
     violationCache.over13=data.violation_over13||{};
     violationCache.consec8=data.violation_consec8||{};
     // 0工时备注云端数据
@@ -45832,7 +45855,7 @@ try{
   refreshAll();
   // 从后端加载违规核实数据，并每10秒自动同步最新数据
   loadViolationData();
-  setInterval(loadViolationData,10000);
+  setInterval(loadViolationData,30000);
 }catch(e){
   showDebug('Init Error: '+e.message+'\n'+e.stack);
 }

@@ -1,8 +1,1 @@
-{
-  "violation_over13": {},
-  "violation_consec8": {},
-  "zero_full_edits": {
-    "resigned": [],
-    "remarks": {}
-  }
-}
+{"violation_over13": {"CY123": {"deducted": "是", "reason": "测试", "managerAgree": "同意", "managerAdvice": "注意排休"}}, "violation_consec8": {}, "zero_full_edits": {"resigned": [], "remarks": {}}}

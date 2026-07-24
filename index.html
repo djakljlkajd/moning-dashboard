@@ -45062,16 +45062,18 @@ function showAlertDetail(type){
   body.innerHTML=bb||'<tr><td colspan="20" style="padding:30px;text-align:center;color:var(--hint)">暂无数据</td></tr>';
   modal.style.display='flex';
   const FW=type==='zeros_full'?[18,44,66,70,46,62,58]:[44,66,70,46,62,58];
-  setTimeout(()=>freezeAlertCols(FW),0);
+  const freezeCols=type==='zeros_full'?7:(type==='consec7'?6:0); // over13/consec8 手机端取消基础信息冻结
+  setTimeout(()=>freezeAlertCols(FW,freezeCols),0);
 }
 
-function freezeAlertCols(widths){
+function freezeAlertCols(widths,freezeCount){
   const table=document.querySelector('#alertModalBody').closest('table');
   if(!table) return;
   const n=widths.length;
+  const fc=freezeCount===undefined?n:Math.min(freezeCount,n); // 实际冻结列数
   const ths=table.querySelectorAll('thead th');
   const rows=table.querySelectorAll('tbody tr');
-  // 先把冻结列内容包进限宽 div（省略号+悬停显示全文）
+  // 先把基础列内容包进限宽 div（省略号+悬停显示全文），保持列宽紧凑
   ths.forEach((th,i)=>{
     if(i<n && !th.dataset.frozen){
       th.innerHTML=`<div class="fc" style="max-width:${widths[i]}px">${th.innerHTML}</div>`;
@@ -45088,16 +45090,15 @@ function freezeAlertCols(widths){
       }
     });
   });
-  // 包裹后再计算 left 偏移
+  // 包裹后再计算冻结列 left 偏移
   let left=0;
   ths.forEach((th,i)=>{
     th.classList.remove('sticky-col');
-    if(i<n){
+    th.style.left='';
+    if(i<fc){
       th.classList.add('sticky-col');
       th.style.left=left+'px';
       left+=th.offsetWidth;
-    }else{
-      th.style.left='';
     }
   });
   rows.forEach(tr=>{
@@ -45105,12 +45106,11 @@ function freezeAlertCols(widths){
     let left=0;
     tds.forEach((td,i)=>{
       td.classList.remove('sticky-col');
-      if(i<n){
+      td.style.left='';
+      if(i<fc){
         td.classList.add('sticky-col');
         td.style.left=left+'px';
         left+=td.offsetWidth;
-      }else{
-        td.style.left='';
       }
     });
   });

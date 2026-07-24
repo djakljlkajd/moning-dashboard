@@ -264,8 +264,7 @@ body{font-family:-apple-system,'PingFang SC','Helvetica Neue',sans-serif;backgro
   <div class="note-body">
     <b>1、刷新频次：</b>每周一至周五12点前刷新（每周5次）<br>
     <b>2、执行链路：</b>如有违规（单日&gt;13h、连续上班超过8天）情况，请对应大店长2个工作日内完成原因填写，最终与区域经理核实是否扣分<br>
-    <b>在哪填？：</b>点击第一排红色方块——违规原因——点击待填写（看板有任何疑问或异常请随时联系戴嘉伟解决）<br>
-    <b>4、保存配置：</b><a href="javascript:void(0)" onclick="setupGithubToken()" style="color:var(--blue);text-decoration:underline">点击设置 GitHub Token</a>（首次填写原因前需输入一次，后续自动保存）
+    <b>在哪填？：</b>点击第一排红色方块——违规原因——点击待填写（看板有任何疑问或异常请随时联系戴嘉伟解决）
   </div>
 </div>
 
@@ -45218,45 +45217,15 @@ function loadZeroFullEdits(){
 let currentViolationType=null;
 let currentViolationGid=null;
 
-/* 后端同步存储：GitHub 仓库文件作为共享数据库（比 jsonblob 稳定，且保留 git 历史）
-   GitHub Token 不再硬编码在源码中，避免被 GitHub Secret Scanning 拦截；
-   首次使用时请输入一次，后续保存在浏览器 localStorage。 */
-const GITHUB_REPO='djakljlkajd/moning-dashboard';
-const VIOLATION_FILE_PATH='violation_data.json';
-const GITHUB_API_URL='https://api.github.com/repos/'+GITHUB_REPO+'/contents/'+VIOLATION_FILE_PATH;
-const VIOLATION_PAGES_FALLBACK='./violation_data.json'; // GitHub Pages 同域托管（备用）
+/* 后端同步存储：Supabase 免费数据库（稳定、无需 Token、数据不丢失）
+   直接用 REST API 读写，前端无需任何认证输入 */
+const SUPA_URL='https://tclfmnfvlrlxquiojjya.supabase.co';
+const SUPA_KEY='sb_publishable_6sa-Pz6dX0BSlTJX3gNiRA_CbtZkf_b';
+const SUPA_TABLE='violation_data';
 let violationCache={over13:{},consec8:{}};
 let zeroFullCache={resigned:[],remarks:{}};
 let violationSyncTimer=null;
 let violationWriteLock=false;
-
-function getGithubToken(){
-  return (localStorage.getItem('moning_github_token')||'').trim();
-}
-function setGithubToken(token){
-  localStorage.setItem('moning_github_token',token.trim());
-}
-function promptForGithubToken(reason){
-  const msg=(reason||'')+'\n\n需要 GitHub Personal Access Token 才能保存填写内容。\n\n获取方式：登录 GitHub → Settings → Developer settings → Personal access tokens → Tokens (classic) → Generate new token，勾选 repo 权限。';
-  const token=window.prompt(msg,'');
-  if(token&&token.trim()){
-    setGithubToken(token.trim());
-    return token.trim();
-  }
-  return '';
-}
-function setupGithubToken(){
-  const current=getGithubToken();
-  const msg=current?'当前已保存 Token，可重新输入覆盖：':'首次使用需输入 GitHub Token 才能保存填写内容：';
-  const token=window.prompt(msg+'\n\n获取方式：登录 GitHub → Settings → Developer settings → Personal access tokens → Tokens (classic) → Generate new token，勾选 repo 权限。',current);
-  if(token===null)return;
-  setGithubToken(token.trim());
-  window.alert(token.trim()?'GitHub Token 已保存，填写内容时将自动同步到云端。':'已清空 GitHub Token，后续填写内容仅保存在本地浏览器。');
-}
-
-function utf8ToBase64(str){
-  return btoa(unescape(encodeURIComponent(str)));
-}
 
 function backupToLocal(){
   try{
@@ -45283,38 +45252,15 @@ function restoreFromLocal(){
   }catch(e){return false;}
 }
 
-function base64ToUtf8(str){
-  try{
-    return decodeURIComponent(escape(atob(str)));
-  }catch(e){return atob(str);}
-}
-
-async function fetchViolationFromAPI(){
-  const token=getGithubToken();
-  const headers={'Accept':'application/vnd.github.v3+json'};
-  if(token)headers['Authorization']='token '+token;
-  const res=await fetch(GITHUB_API_URL+'?t='+Date.now(),{headers});
-  if(!res.ok)throw new Error('api '+res.status);
-  const info=await res.json();
-  const json=base64ToUtf8(info.content.replace(/\s/g,''));
-  return JSON.parse(json);
-}
-
-async function fetchViolationFromPages(){
-  const res=await fetch(VIOLATION_PAGES_FALLBACK,{cache:'no-cache'});
-  if(!res.ok)throw new Error('pages '+res.status);
-  return await res.json();
-}
-
 async function loadViolationData(){
   try{
-    let data=null;
-    try{
-      data=await fetchViolationFromAPI();
-    }catch(apiErr){
-      console.warn('load from GitHub API failed, fallback to Pages',apiErr);
-      data=await fetchViolationFromPages();
-    }
+    const res=await fetch(SUPA_URL+'/rest/v1/'+SUPA_TABLE+'?id=eq.1&select=data',{
+      headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY}
+    });
+    if(!res.ok)throw new Error('supabase '+res.status);
+    const rows=await res.json();
+    if(!rows||!rows.length)throw new Error('no data row');
+    const data=rows[0].data||{};
     violationCache.over13=data.violation_over13||{};
     violationCache.consec8=data.violation_consec8||{};
     // 0工时备注云端数据
@@ -45330,6 +45276,7 @@ async function loadViolationData(){
     localStorage.removeItem('zeroFullResigned');
     localStorage.removeItem('zeroFullRemarks');
     localStorage.removeItem('zeroFullEdits');
+    localStorage.removeItem('moning_github_token');
     // 应用0工时备注到 D.zeros_full
     applyZeroFullEdits();
     // 刷新当前弹窗显示
@@ -45349,47 +45296,27 @@ async function loadViolationData(){
 
 async function syncViolationData(){
   if(violationWriteLock)return;
-  let token=getGithubToken();
-  if(!token){
-    token=promptForGithubToken('保存失败：尚未配置 GitHub Token');
-    if(!token){console.warn('syncViolationData aborted: no token'); return;}
-  }
   violationWriteLock=true;
   try{
     backupToLocal();
-    // 先获取当前 sha
-    const getRes=await fetch(GITHUB_API_URL,{
-      headers:{'Authorization':'token '+token,'Accept':'application/vnd.github.v3+json'}
-    });
-    let sha=null;
-    if(getRes.ok){
-      const info=await getRes.json();
-      sha=info.sha;
-    }
     const payload={
       violation_over13:violationCache.over13,
       violation_consec8:violationCache.consec8,
       zero_full_edits:zeroFullCache
     };
-    const body={message:'Update violation data from dashboard',content:utf8ToBase64(JSON.stringify(payload))};
-    if(sha)body.sha=sha;
-    const putRes=await fetch(GITHUB_API_URL,{
-      method:'PUT',
-      headers:{'Authorization':'token '+token,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'},
-      body:JSON.stringify(body)
+    const res=await fetch(SUPA_URL+'/rest/v1/'+SUPA_TABLE+'?id=eq.1',{
+      method:'PATCH',
+      headers:{
+        'apikey':SUPA_KEY,
+        'Authorization':'Bearer '+SUPA_KEY,
+        'Content-Type':'application/json',
+        'Prefer':'return=minimal'
+      },
+      body:JSON.stringify({data:payload,updated_at:new Date().toISOString()})
     });
-    if(!putRes.ok){
-      const txt=await putRes.text();
-      console.error('syncViolationData failed',putRes.status,txt);
-      if(putRes.status===401){
-        // Token 失效或权限不足，清空后重新提示
-        setGithubToken('');
-        promptForGithubToken('GitHub Token 无效或权限不足，请重新输入');
-      }else if(putRes.status===409||putRes.status===422){
-        // sha 冲突，延迟重试一次
-        setTimeout(()=>{violationWriteLock=false; syncViolationData();},2000);
-        return;
-      }
+    if(!res.ok){
+      const txt=await res.text();
+      console.error('syncViolationData failed',res.status,txt);
     }
   }catch(e){console.error('syncViolationData failed',e);}
   violationWriteLock=false;

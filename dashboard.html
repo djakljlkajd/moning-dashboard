@@ -45372,7 +45372,7 @@ function confirmViolationReasonEdit(){
   if(!reason){alert('请填写违规原因');return;}
   if(!currentViolationType||!currentViolationGid)return;
   const v=getViolationRecord(currentViolationType,currentViolationGid);
-  saveViolationRecord(currentViolationType,currentViolationGid,v.deducted,reason);
+  saveViolationRecord(currentViolationType,currentViolationGid,v.deducted,reason,v.managerAgree,v.managerAdvice);
   const type=currentViolationType;
   closeViolationReasonEdit();
   const modal=document.getElementById('alertModal');
@@ -45419,7 +45419,7 @@ function confirmViolationDeductEdit(){
   if(!deducted){alert('请选择是否扣分');return;}
   if(!currentViolationType||!currentViolationGid)return;
   const v=getViolationRecord(currentViolationType,currentViolationGid);
-  saveViolationRecord(currentViolationType,currentViolationGid,deducted,v.reason);
+  saveViolationRecord(currentViolationType,currentViolationGid,deducted,v.reason,v.managerAgree,v.managerAdvice);
   const type=currentViolationType;
   closeViolationDeductEdit();
   const modal=document.getElementById('alertModal');

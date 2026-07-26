@@ -534,7 +534,7 @@ window.DASHBOARD_DATA = {
       "resignType": "主动离职",
       "reason1": "其他原因",
       "reason2": "",
-      "reasonDetail": "伙伴敏感诚信管理,沟通后选择自主离职",
+      "reasonDetail": "伙伴违背诚信管理,沟通后选择自主离职",
       "reasonTag": "其他原因",
       "hireMonth": 14,
       "gongLingQuJian": "1-3年",
@@ -756,7 +756,7 @@ window.DASHBOARD_DATA = {
       "name": "谭夏宇",
       "position": "服务员",
       "reason1": "其他原因",
-      "reasonDetail": "伙伴敏感诚信管理,沟通后选择自主离职",
+      "reasonDetail": "伙伴违背诚信管理,沟通后选择自主离职",
       "reasonTag": "其他原因",
       "gongLing": "1-3年",
       "zhiJi": "服务员"

@@ -188,7 +188,14 @@
 
         /* ===== 表格区 ===== */
         .table-wrapper { background: #fff; overflow-x: auto; }
+        .table-wrapper::-webkit-scrollbar { height: 10px; }
+        .table-wrapper::-webkit-scrollbar-track { background: #f0f0f0; border-radius: 5px; }
+        .table-wrapper::-webkit-scrollbar-thumb { background: #90caf9; border-radius: 5px; }
+        .table-wrapper::-webkit-scrollbar-thumb:hover { background: #1565c0; }
         table { width: 100%; border-collapse: collapse; font-size: 13px; table-layout: fixed; }
+        .panel table { min-width: 1200px; }
+        .store-table-wrap table { min-width: 1400px; table-layout: auto; }
+        .store-table-wrap td { white-space: nowrap; }
         thead th {
             background: linear-gradient(180deg, #0d47a1 0%, #1565c0 100%);
             color: #fff; padding: 11px 8px; text-align: center; font-weight: 600; font-size: 12.5px;
@@ -388,10 +395,10 @@
 <div id="panel-qujing" class="panel active table-wrapper">
     <table>
         <colgroup>
-            <col style="width:8%"><col style="width:8%"><col style="width:8%"><col style="width:8%">
-            <col style="width:8%"><col style="width:6%"><col style="width:6%"><col style="width:6%">
-            <col style="width:6%"><col style="width:6%"><col style="width:6%"><col style="width:6%">
-            <col style="width:6%"><col style="width:6%">
+            <col style="width:10%"><col style="width:7%"><col style="width:7%"><col style="width:7%">
+            <col style="width:9%"><col style="width:6.67%"><col style="width:6.67%"><col style="width:6.67%">
+            <col style="width:6.67%"><col style="width:6.67%"><col style="width:6.67%"><col style="width:6.67%">
+            <col style="width:6.67%"><col style="width:6.67%">
         </colgroup>
         <thead><tr id="qujing-head"></tr></thead>
         <tbody id="qujing-tbody"></tbody>
@@ -403,10 +410,10 @@
 <div id="panel-dadianchang" class="panel table-wrapper">
     <table>
         <colgroup>
-            <col style="width:6%"><col style="width:7%"><col style="width:8%"><col style="width:7%">
-            <col style="width:7%"><col style="width:7%"><col style="width:6%"><col style="width:6%">
-            <col style="width:6%"><col style="width:6%"><col style="width:6%"><col style="width:6%">
-            <col style="width:6%"><col style="width:6%">
+            <col style="width:8%"><col style="width:10%"><col style="width:7%"><col style="width:7%">
+            <col style="width:8%"><col style="width:6.67%"><col style="width:6.67%"><col style="width:6.67%">
+            <col style="width:6.67%"><col style="width:6.67%"><col style="width:6.67%"><col style="width:6.67%">
+            <col style="width:6.67%"><col style="width:6.67%">
         </colgroup>
         <thead><tr id="dadianchang-head"></tr></thead>
         <tbody id="dadianchang-tbody"></tbody>
@@ -429,10 +436,10 @@
 <div class="table-wrapper store-table-wrap">
     <table>
         <colgroup>
-            <col style="width:4%"><col style="width:7%"><col style="width:7%"><col style="width:7%">
-            <col style="width:6%"><col style="width:7%"><col style="width:8%"><col style="width:8%">
-            <col style="width:8%"><col style="width:6%"><col style="width:6%"><col style="width:6%">
-            <col style="width:18%">
+            <col style="width:4%"><col style="width:7%"><col style="width:7%"><col style="width:10%">
+            <col style="width:6%"><col style="width:8%"><col style="width:8%"><col style="width:8%">
+            <col style="width:7%"><col style="width:8%"><col style="width:8%"><col style="width:8%">
+            <col style="width:17%">
         </colgroup>
         <thead><tr id="emp-head"></tr></thead>
         <tbody id="emp-tbody"></tbody>
@@ -943,7 +950,7 @@ function renderEmpTable() {
             '<td>' + (e.gongLingQuJian || '') + '</td>' +
             '<td>' + (e.reason1 || '') + '</td>' +
             '<td><span class="reason-badge ' + reasonClass(e.reasonTag || e.reason1) + '">' + (e.reasonTag || e.reason1) + '</span></td>' +
-            '<td class="text-left" style="font-size:11.5px;color:#666;max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="' + (e.reasonDetail || '').replace(/"/g, '&quot;') + '">' + (e.reasonDetail || '--') + '</td>';
+            '<td class="text-left" style="font-size:11.5px;color:#666;min-width:180px;" title="' + (e.reasonDetail || '').replace(/"/g, '&quot;') + '">' + (e.reasonDetail || '--') + '</td>';
         tb.appendChild(tr);
     });
 

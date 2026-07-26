@@ -8,10 +8,10 @@ window.DASHBOARD_DATA = {
   },
   "overview": {
     "city": "古德墨柠运营",
-    "beginCount": 432,
+    "beginCount": 431,
     "endCount": 420,
     "resignCount": 11,
-    "resignRate": 0.025821596244131457,
+    "resignRate": 0.025851938895417155,
     "zhiJi": {
       "店长": 1,
       "中级训练员": 1,
@@ -51,10 +51,10 @@ window.DASHBOARD_DATA = {
     },
     {
       "name": "徐乾",
-      "beginCount": 120,
+      "beginCount": 119,
       "endCount": 116,
       "resignCount": 3,
-      "resignRate": 0.0254237288135593,
+      "resignRate": 0.025531914893617,
       "zhiJi": {
         "店长": 0,
         "中级训练员": 0,
@@ -250,10 +250,10 @@ window.DASHBOARD_DATA = {
       "brand": "古德墨柠",
       "qujing": "徐乾",
       "name": "旷瑶",
-      "beginCount": 34,
+      "beginCount": 33,
       "endCount": 31,
       "resignCount": 2,
-      "resignRate": 0.0615384615384615,
+      "resignRate": 0.0625,
       "zhiJi": {
         "店长": 0,
         "中级训练员": 0,

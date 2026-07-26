@@ -702,7 +702,7 @@ window.DASHBOARD_DATA = {
       "resignType": "主动离职",
       "reason1": "个人能力",
       "reason2": null,
-      "reasonDetail": "伙伴一直有离职的想法，给伙伴调整到新店后表示接受不了新店的人流量，且熟悉的伙伴离职了",
+      "reasonDetail": "伙伴一直有离职的想法，但是伙伴一直没有表露出来，给伙伴调整到新店后表示接受不了新店的人流量，且熟悉的伙伴离职了",
       "reasonTag": "个人能力",
       "hireMonth": 6,
       "gongLingQuJian": "6个月内",

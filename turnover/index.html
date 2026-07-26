@@ -28,17 +28,14 @@
         .header-title { font-size: 18px; font-weight: bold; color: #fff; }
         .header-date { font-size: 12px; color: rgba(255,255,255,0.85); font-weight: 500; }
         .header-right { display: flex; align-items: center; gap: 10px; }
-        .dash-switcher { display: flex; align-items: center; gap: 8px; }
-        .dash-switcher-label { font-size: 13px; color: rgba(255,255,255,0.95); white-space: nowrap; }
-        .dash-switcher-select {
-            padding: 6px 28px 6px 12px; border: none; border-radius: 20px; font-size: 13px;
-            background: #fff; color: #0d47a1; font-weight: 600; cursor: pointer; outline: none;
+        .switch-label { font-size: 12px; color: rgba(255,255,255,0.8); }
+        .switch-select {
+            padding: 6px 28px 6px 12px; border: none; border-radius: 5px; font-size: 12.5px;
+            background: rgba(255,255,255,0.95); color: #0d47a1; font-weight: 600; cursor: pointer; outline: none;
             appearance: none; -webkit-appearance: none;
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%230d47a1' stroke-width='3'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
-            background-repeat: no-repeat; background-position: right 10px center;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.12); min-width: 150px;
+            background-repeat: no-repeat; background-position: right 8px center;
         }
-        .dash-switcher-select:focus { box-shadow: 0 0 0 2px rgba(255,255,255,0.4); }
 
         /* ===== 逻辑说明区 ===== */
         .logic-bar {
@@ -277,11 +274,7 @@
             .cards-row { grid-template-columns: repeat(2, 1fr); }
             .filter-bar { flex-direction: column; align-items: stretch; }
             .search-box { margin-left: 0; }
-            .header-bar { padding: 12px 14px; }
-            .header-title { font-size: 15px; }
-            .header-date { font-size: 11px; }
-            .dash-switcher-label { display: none; }
-            .dash-switcher-select { min-width: 130px; font-size: 12px; }
+            .header-bar { flex-direction: column; gap: 10px; align-items: flex-start; }
         }
     </style>
 </head>
@@ -295,14 +288,12 @@
         <div class="header-date" id="hdr-date"></div>
     </div>
     <div class="header-right">
-        <div class="dash-switcher">
-            <span class="dash-switcher-label">切换看板：</span>
-            <select class="dash-switcher-select" onchange="switchDashboard(this.value)">
-                <option value="current">📋 离职数据看板（当前）</option>
-                <option value="worktime">⏰ 工时墨柠看板</option>
-                <option value="hc">👥 HC招募缺口看板</option>
-            </select>
-        </div>
+        <span class="switch-label">切换看板：</span>
+        <select class="switch-select" id="dashboard-switch" onchange="switchDashboard(this.value)">
+            <option value="current">📋 离职数据看板（当前）</option>
+            <option value="worktime">⏰ 工时墨柠看板</option>
+            <option value="hc">👥 HC招募缺口看板</option>
+        </select>
     </div>
 </div>
 
@@ -469,8 +460,8 @@ const D = window.DASHBOARD_DATA;
 
 // 看板跳转地址
 const DASHBOARD_URLS = {
-    worktime: '../',
-    hc: '../hc/',
+    worktime: 'https://djakljlkajd.github.io/moning-dashboard/',
+    hc: 'https://djakljlkajd.github.io/moning-dashboard/hc/',
 };
 function switchDashboard(v) {
     if (v === 'current') return;

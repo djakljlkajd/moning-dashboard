@@ -45921,9 +45921,8 @@ try{
 
 <script>
 function switchDashboard(sel){
-  var map={hc:'https://279682f4fde24006b36fb33b55146845.app.codebuddy.work',turnover:'https://3000-2a73735a1c624120bd63c94f8f741ddb.e2b.ap-beijing.sandbox.cloudstudio.club/',current:location.href};
-  if(sel.value!=='current' && map[sel.value]) window.open(map[sel.value],'_blank');
-  sel.value='current';
+  var map={hc:'./hc/',turnover:'./turnover/',current:location.href};
+  if(sel.value!=='current' && map[sel.value]) window.location.href = map[sel.value];
 }
 </script>
 </body>

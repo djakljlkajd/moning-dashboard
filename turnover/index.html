@@ -1,0 +1,1070 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>古德墨柠 7月离职数据看板</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+            background: #f0f2f5;
+            color: #333;
+            padding: 20px;
+        }
+        .container { max-width: 1400px; margin: 0 auto; }
+
+        /* ===== 标题栏（蓝色主题） ===== */
+        .header-bar {
+            background: linear-gradient(135deg, #0d47a1 0%, #1565c0 50%, #1e88e5 100%);
+            border-radius: 8px 8px 0 0;
+            padding: 14px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header-left { display: flex; align-items: center; gap: 16px; }
+        .header-title { font-size: 18px; font-weight: bold; color: #fff; }
+        .header-date { font-size: 12px; color: rgba(255,255,255,0.85); font-weight: 500; }
+        .header-right { display: flex; align-items: center; gap: 10px; }
+        .switch-label { font-size: 12px; color: rgba(255,255,255,0.8); }
+        .switch-select {
+            padding: 6px 28px 6px 12px; border: none; border-radius: 5px; font-size: 12.5px;
+            background: rgba(255,255,255,0.95); color: #0d47a1; font-weight: 600; cursor: pointer; outline: none;
+            appearance: none; -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%230d47a1' stroke-width='3'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+            background-repeat: no-repeat; background-position: right 8px center;
+        }
+
+        /* ===== 逻辑说明区 ===== */
+        .logic-bar {
+            background: linear-gradient(90deg, #e3f2fd 0%, #bbdefb 100%);
+            border-bottom: 2px solid #90caf9;
+            padding: 12px 24px;
+            font-size: 12.5px;
+            color: #0d47a1;
+            line-height: 1.6;
+        }
+        .logic-tags { margin-top: 4px; }
+        .logic-tag {
+            display: inline-block; padding: 2px 8px; border-radius: 3px; font-size: 11px; margin-right: 6px; font-weight: 600;
+        }
+        .tag-low { background: #ffcdd2; color: #c62828; }
+        .tag-ok { background: #c8e6c9; color: #2e7d32; }
+        .tag-high { background: #fff9c4; color: #f57f17; }
+        .tag-critical { background: #f8bbd0; color: #ad1457; }
+
+        /* ===== 看板说明 ===== */
+        .description-bar {
+            background: linear-gradient(90deg, #e3f2fd 0%, #d4e9fc 100%);
+            border-bottom: 2px solid #90caf9;
+            padding: 12px 24px;
+            font-size: 12.5px; color: #0d47a1; line-height: 1.85;
+            display: flex; gap: 12px; align-items: flex-start;
+        }
+        .description-bar-title {
+            font-weight: bold; color: #0d47a1; font-size: 13.5px;
+            white-space: nowrap; padding-top: 1px;
+        }
+        .description-list { flex: 1; }
+        .description-item { margin-bottom: 2px; }
+        .description-item strong { color: #c62828; font-weight: 600; margin-right: 4px; }
+
+        /* ===== 全局筛选栏 ===== */
+        .global-filter-bar {
+            background: #fff; padding: 12px 24px; display: flex; gap: 16px; flex-wrap: wrap; align-items: center;
+            border-bottom: 2px solid #e3f2fd;
+        }
+        .global-filter-bar label { font-size: 13px; color: #0d47a1; font-weight: bold; }
+        .filter-select {
+            padding: 6px 28px 6px 12px; border: 1px solid #90caf9; border-radius: 5px; font-size: 13px;
+            outline: none; color: #0d47a1; font-weight: 500; cursor: pointer;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%231565c0' stroke-width='3'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+            background-repeat: no-repeat; background-position: right 8px center;
+            appearance: none; -webkit-appearance: none; min-width: 140px;
+        }
+        .filter-select:disabled { background-color: #f5f5f5; color: #aaa; }
+        .btn-reset-global {
+            padding: 6px 16px; border: 1px solid #90caf9; border-radius: 5px; font-size: 12.5px; cursor: pointer;
+            font-weight: 500; background: #e3f2fd; color: #0d47a1; transition: all 0.2s;
+        }
+        .btn-reset-global:hover { background: #bbdefb; }
+        .filter-info { font-size: 12px; color: #888; margin-left: auto; }
+
+        /* ===== Section 标题 ===== */
+        .section-header {
+            background: #fff; padding: 12px 20px 8px;
+            border-bottom: 1px solid #eee; font-weight: bold; font-size: 14px; color: #0d47a1;
+            margin-top: 2px;
+        }
+
+        /* ===== KPI 卡片 ===== */
+        .cards-row {
+            display: grid; grid-template-columns: repeat(6, 1fr); gap: 0;
+            background: #fff; padding: 15px 20px;
+        }
+        .metric-card {
+            background: #fafafa; border: 1px solid #e8e8e8; border-radius: 6px;
+            padding: 16px 10px; text-align: center;
+            transition: all 0.25s ease; position: relative; overflow: hidden;
+            margin: 0 3px; cursor: default;
+        }
+        .metric-card.clickable { cursor: pointer; }
+        .metric-card.clickable:hover {
+            transform: translateY(-3px); box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+        }
+        .metric-card::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+            background: linear-gradient(90deg, #0d47a1, #1e88e5);
+        }
+        .metric-card.highlight::before { background: linear-gradient(90deg, #d32f2f, #f44336); }
+        .metric-card.danger { background: #fff5f5; border-color: #ffcdd2; }
+        .metric-card.danger::before { background: linear-gradient(90deg, #c62828, #f44336); }
+        .metric-card.info::before { background: linear-gradient(90deg, #1565c0, #42a5f5); }
+        .metric-card.success::before { background: linear-gradient(90deg, #2e7d32, #66bb6a); }
+        .card-label { font-size: 11.5px; color: #546e7a; margin-bottom: 6px; line-height: 1.35; }
+        .card-label-sub { font-size: 10px; color: #90a4ae; }
+        .card-value { font-size: 28px; font-weight: bold; color: #263238; line-height: 1.2; }
+        .card-value.red { color: #c62828; }
+        .card-value.blue { color: #1565c0; }
+        .card-value.green { color: #2e7d32; }
+        .card-unit { font-size: 12px; color: #90a4ae; margin-left: 2px; }
+        .card-sub-text { font-size: 11px; color: #90a4ae; margin-top: 4px; }
+        .card-detail-btn {
+            display: inline-block; margin-top: 6px; padding: 3px 12px;
+            background: #c62828; color: #fff; border-radius: 12px; font-size: 11px; font-weight: 600;
+            cursor: pointer; transition: all 0.2s;
+        }
+        .card-detail-btn:hover { background: #d32f2f; transform: scale(1.05); }
+        .card-detail-btn.blue { background: #1565c0; }
+        .card-detail-btn.blue:hover { background: #1976d2; }
+
+        /* ===== 图表区域 ===== */
+        .chart-row {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 0;
+            background: #fff; padding: 15px 20px;
+        }
+        .chart-box {
+            background: #fafafa; border: 1px solid #e8e8e8; border-radius: 6px;
+            padding: 14px; margin: 0 3px;
+        }
+        .chart-title { font-size: 13px; font-weight: bold; color: #0d47a1; margin-bottom: 10px; }
+        .chart-canvas-wrap { position: relative; height: 300px; }
+
+        /* ===== 二八分析图表行 ===== */
+        .analysis-row {
+            display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 0;
+            background: #fff; padding: 15px 20px;
+        }
+        .analysis-box {
+            background: #fafafa; border: 1px solid #e8e8e8; border-radius: 6px;
+            padding: 14px; margin: 0 3px;
+        }
+        .analysis-title { font-size: 13px; font-weight: bold; color: #0d47a1; margin-bottom: 10px; }
+        .analysis-canvas-wrap { position: relative; height: 220px; }
+
+        /* ===== 筛选栏（第四排） ===== */
+        .filter-bar {
+            background: #fff; padding: 12px 20px; display: flex; gap: 12px; flex-wrap: wrap; align-items: center;
+            border-bottom: 1px solid #e8e8e8;
+        }
+        .tab-group { display: flex; gap: 0; border: 1px solid #90caf9; border-radius: 6px; overflow: hidden; }
+        .tab-btn {
+            padding: 7px 18px; font-size: 13px; cursor: pointer; border: none; background: #e3f2fd;
+            color: #0d47a1; transition: all 0.2s; font-weight: 500;
+        }
+        .tab-btn.active { background: #1565c0; color: #fff; }
+        .search-box {
+            display: flex; align-items: center; border: 1px solid #ddd; border-radius: 5px; padding: 5px 10px; margin-left: auto;
+        }
+        .search-box input { border: none; outline: none; font-size: 13px; width: 160px; }
+        .action-btn {
+            padding: 6px 16px; border: none; border-radius: 5px; font-size: 12.5px; cursor: pointer;
+            font-weight: 500; transition: all 0.2s;
+        }
+        .btn-reset { background: #eceff1; color: #455a64; }
+        .btn-reset:hover { background: #cfd8dc; }
+
+        /* ===== 表格区 ===== */
+        .table-wrapper { background: #fff; overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; table-layout: fixed; }
+        thead th {
+            background: linear-gradient(180deg, #0d47a1 0%, #1565c0 100%);
+            color: #fff; padding: 11px 8px; text-align: center; font-weight: 600; font-size: 12.5px;
+            white-space: nowrap; letter-spacing: 0.3px;
+        }
+        tbody td {
+            padding: 10px 8px; text-align: center; border-bottom: 1px solid #f0f0f0; color: #333;
+        }
+        tbody tr:nth-child(even) { background: #f5f9ff; }
+        tbody tr:hover { background: #e3f2fd; }
+        .text-left { text-align: left !important; padding-left: 16px !important; }
+        .val-red { color: #c62828; font-weight: bold; }
+        .val-green { color: #2e7d32; font-weight: bold; }
+        .val-highlight { color: #c62828; font-weight: bold; font-size: 14px; background: #fff5f5; }
+
+        tfoot td {
+            background: linear-gradient(180deg, #e3f2fd 0%, #bbdefb 100%);
+            font-weight: bold; padding: 12px 8px; color: #0d47a1; font-size: 13px;
+        }
+        tfoot .total-note { font-size: 11.5px; color: #546e7a; font-weight: normal; }
+
+        .panel { display: none; }
+        .panel.active { display: block; }
+
+        /* ===== 明细表 ===== */
+        .store-table-wrap { max-height: 500px; overflow-y: auto; }
+        .store-table-wrap thead th { position: sticky; top: 0; z-index: 2; }
+
+        /* ===== 弹窗 ===== */
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5); z-index: 100; justify-content: center; align-items: center;
+            padding: 20px;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal-box {
+            background: #fff; border-radius: 8px; width: 100%; max-width: 1000px; max-height: 80vh;
+            display: flex; flex-direction: column; box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+            animation: modalIn 0.25s ease;
+        }
+        @keyframes modalIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .modal-header {
+            background: linear-gradient(135deg, #0d47a1 0%, #1565c0 100%);
+            color: #fff; padding: 14px 20px; display: flex; justify-content: space-between; align-items: center;
+            border-radius: 8px 8px 0 0;
+        }
+        .modal-title { font-size: 15px; font-weight: bold; }
+        .modal-close {
+            background: rgba(255,255,255,0.2); border: none; color: #fff; width: 28px; height: 28px;
+            border-radius: 50%; font-size: 18px; cursor: pointer; line-height: 1;
+        }
+        .modal-close:hover { background: rgba(255,255,255,0.35); }
+        .modal-body { padding: 0; overflow: auto; flex: 1; }
+        .modal-table-wrap { overflow: auto; width: 100%; }
+        .modal-table-wrap table { width: max-content; min-width: 100%; font-size: 12.5px; border-collapse: separate; border-spacing: 0; }
+        .modal-table-wrap th,
+        .modal-table-wrap td { white-space: nowrap; }
+        .modal-table-wrap th { position: sticky; top: 0; z-index: 1; }
+        .modal-table-wrap .col-detail { max-width: 320px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .modal-body thead th { background: linear-gradient(180deg, #1565c0 0%, #1e88e5 100%); }
+        .modal-body tbody td { padding: 9px 8px; }
+        .modal-empty { padding: 40px 20px; text-align: center; color: #888; font-size: 14px; }
+
+        /* ===== 离职原因标签 ===== */
+        .reason-badge {
+            display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 600;
+        }
+        .reason-fazhan { background: #e3f2fd; color: #1565c0; }
+        .reason-shenti { background: #fff3e0; color: #e65100; }
+        .reason-geren { background: #f3e5f5; color: #7b1fa2; }
+        .reason-qita { background: #fce4ec; color: #c62828; }
+        .reason-nengli { background: #e8f5e9; color: #2e7d32; }
+
+        /* ===== 响应式 ===== */
+        @media (max-width: 1200px) {
+            .cards-row { grid-template-columns: repeat(3, 1fr); }
+            .chart-row, .analysis-row { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 768px) {
+            .cards-row { grid-template-columns: repeat(2, 1fr); }
+            .filter-bar { flex-direction: column; align-items: stretch; }
+            .search-box { margin-left: 0; }
+            .header-bar { flex-direction: column; gap: 10px; align-items: flex-start; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+<!-- ===== 标题栏 ===== -->
+<div class="header-bar">
+    <div class="header-left">
+        <div class="header-title" id="hdr-title">● 古德墨柠 7月离职数据看板</div>
+        <div class="header-date" id="hdr-date"></div>
+    </div>
+    <div class="header-right">
+        <span class="switch-label">切换看板：</span>
+        <select class="switch-select" id="dashboard-switch" onchange="switchDashboard(this.value)">
+            <option value="current">📋 离职数据看板（当前）</option>
+            <option value="worktime">⏰ 工时墨柠看板</option>
+            <option value="hc">👥 HC招募缺口看板</option>
+        </select>
+    </div>
+</div>
+
+<!-- ===== 逻辑说明区 ===== -->
+<div class="logic-bar">
+    🎯 <strong>数据逻辑：</strong>当月离职率 = 当期离职人数 / ((期初在职人数 + 期末在职人数) / 2) × 100%
+    <div class="logic-tags">
+        <span class="logic-tag tag-ok">达标 ≤ 5%</span>
+        <span class="logic-tag tag-high">预警 5%~8%</span>
+        <span class="logic-tag tag-low">超标 &gt; 8%</span>
+        <span class="logic-tag tag-critical">严重 &gt; 10%</span>
+    </div>
+</div>
+
+<!-- ===== 看板说明 ===== -->
+<div class="description-bar">
+    <div class="description-bar-title">📋 看板说明</div>
+    <div class="description-list">
+        <div class="description-item">1、<strong>统计周期：</strong>7月1日 - 7月25日（半月数据，全月预测见趋势区）</div>
+        <div class="description-item">2、<strong>数据范围：</strong>古德墨柠品牌全职人员，含4位区经理、14位大店长管辖门店</div>
+        <div class="description-item">3、<strong>离职类型：</strong>主动离职（不含被动离职/试用期淘汰），目标主动离职率 ≤ 5%</div>
+        <div class="description-item">4、<strong>筛选联动：</strong>顶部「区域/大店区」筛选可联动第一、二、三排数据，点击红色/蓝色卡片可查看对应人员明细</div>
+    </div>
+</div>
+
+<!-- ===== 全局筛选栏 ===== -->
+<div class="global-filter-bar">
+    <label>🔍 数据筛选：</label>
+    <select class="filter-select" id="global-qujing" onchange="onGlobalQujingChange(this.value)">
+        <option value="all">区域：全部</option>
+    </select>
+    <select class="filter-select" id="global-dadianchang" onchange="onGlobalFilterChange()">
+        <option value="all">大店区：全部</option>
+    </select>
+    <button class="btn-reset-global" onclick="resetGlobalFilter()">🔄 重置筛选</button>
+    <span class="filter-info" id="filter-info"></span>
+</div>
+
+<!-- ===== 第一排：核心KPI ===== -->
+<div class="section-header">【第一排】核心指标总览 - 古德墨柠 7月离职情况</div>
+<div class="cards-row" id="cards-row"></div>
+
+<!-- ===== 第二排：趋势图表 ===== -->
+<div class="section-header">【第二排】离职率趋势分析 - 古德墨柠 4-7月</div>
+<div class="chart-row">
+    <div class="chart-box">
+        <div class="chart-title">📈 古德墨柠 月度主动离职率趋势 (4-7月)</div>
+        <div class="chart-canvas-wrap"><canvas id="chart-monthly"></canvas></div>
+    </div>
+    <div class="chart-box">
+        <div class="chart-title">📊 各月离职人数对比 (4-7月)</div>
+        <div class="chart-canvas-wrap"><canvas id="chart-monthly-count"></canvas></div>
+    </div>
+</div>
+
+<!-- ===== 第三排：二八分析 ===== -->
+<div class="section-header">【第三排】二八定律分析 - 关键问题识别</div>
+<div class="analysis-row">
+    <div class="analysis-box">
+        <div class="analysis-title">职级分布</div>
+        <div class="analysis-canvas-wrap"><canvas id="chart-zhiji"></canvas></div>
+    </div>
+    <div class="analysis-box">
+        <div class="analysis-title">工龄分布</div>
+        <div class="analysis-canvas-wrap"><canvas id="chart-gongling"></canvas></div>
+    </div>
+    <div class="analysis-box">
+        <div class="analysis-title">离职原因分布</div>
+        <div class="analysis-canvas-wrap"><canvas id="chart-reason"></canvas></div>
+    </div>
+    <div class="analysis-box">
+        <div class="analysis-title">大店长离职人数排名</div>
+        <div class="analysis-canvas-wrap"><canvas id="chart-dadianchang"></canvas></div>
+    </div>
+</div>
+
+<!-- ===== 第四排：区经/大店长维度表格 ===== -->
+<div class="section-header">【第四排】多维度离职数据明细</div>
+<div class="filter-bar">
+    <div style="font-size:13px;color:#0d47a1;font-weight:bold;">维度：</div>
+    <div class="tab-group">
+        <button class="tab-btn active" id="tab-qujing" onclick="switchTab('qujing')">👥 区经理维度</button>
+        <button class="tab-btn" id="tab-dadianchang" onclick="switchTab('dadianchang')">🏪 大店长维度</button>
+    </div>
+    <div class="search-box">
+        🔍<input type="text" placeholder="搜索姓名..." oninput="searchTable(this.value)">
+    </div>
+    <button class="action-btn btn-reset" onclick="resetTableFilter()">🔄 重置</button>
+</div>
+
+<!-- 区经理面板 -->
+<div id="panel-qujing" class="panel active table-wrapper">
+    <table>
+        <colgroup>
+            <col style="width:8%"><col style="width:8%"><col style="width:8%"><col style="width:8%">
+            <col style="width:8%"><col style="width:6%"><col style="width:6%"><col style="width:6%">
+            <col style="width:6%"><col style="width:6%"><col style="width:6%"><col style="width:6%">
+            <col style="width:6%"><col style="width:6%">
+        </colgroup>
+        <thead><tr id="qujing-head"></tr></thead>
+        <tbody id="qujing-tbody"></tbody>
+        <tfoot><tr id="qujing-foot"></tr></tfoot>
+    </table>
+</div>
+
+<!-- 大店长面板 -->
+<div id="panel-dadianchang" class="panel table-wrapper">
+    <table>
+        <colgroup>
+            <col style="width:6%"><col style="width:7%"><col style="width:8%"><col style="width:7%">
+            <col style="width:7%"><col style="width:7%"><col style="width:6%"><col style="width:6%">
+            <col style="width:6%"><col style="width:6%"><col style="width:6%"><col style="width:6%">
+            <col style="width:6%"><col style="width:6%">
+        </colgroup>
+        <thead><tr id="dadianchang-head"></tr></thead>
+        <tbody id="dadianchang-tbody"></tbody>
+        <tfoot><tr id="dadianchang-foot"></tr></tfoot>
+    </table>
+</div>
+
+<!-- ===== 第五排：离职人员明细 ===== -->
+<div class="section-header">【第五排】离职人员明细 - 完整信息</div>
+<div class="filter-bar">
+    <div style="font-size:13px;color:#0d47a1;font-weight:bold;">筛选：</div>
+    <select class="filter-select" id="emp-reason-filter" onchange="filterEmployees()">
+        <option value="all">离职原因：全部</option>
+    </select>
+    <div class="search-box">
+        🔍<input id="emp-search" type="text" placeholder="搜索姓名/门店..." oninput="filterEmployees()">
+    </div>
+    <button class="action-btn btn-reset" onclick="resetEmpFilter()">🔄 重置</button>
+</div>
+<div class="table-wrapper store-table-wrap">
+    <table>
+        <colgroup>
+            <col style="width:4%"><col style="width:7%"><col style="width:7%"><col style="width:7%">
+            <col style="width:6%"><col style="width:7%"><col style="width:8%"><col style="width:8%">
+            <col style="width:8%"><col style="width:6%"><col style="width:6%"><col style="width:6%">
+            <col style="width:18%">
+        </colgroup>
+        <thead><tr id="emp-head"></tr></thead>
+        <tbody id="emp-tbody"></tbody>
+    </table>
+</div>
+
+<!-- ===== 弹窗 ===== -->
+<div class="modal-overlay" id="detail-modal" onclick="closeModal(event)">
+    <div class="modal-box" onclick="event.stopPropagation()">
+        <div class="modal-header">
+            <span class="modal-title" id="modal-title">明细</span>
+            <button class="modal-close" onclick="closeModal()">×</button>
+        </div>
+        <div class="modal-body" id="modal-body">
+            <div class="modal-empty">暂无数据</div>
+        </div>
+    </div>
+</div>
+
+</div><!-- end container -->
+
+<script src="data.js"></script>
+<script>
+const D = window.DASHBOARD_DATA;
+
+// 看板跳转地址
+const DASHBOARD_URLS = {
+    worktime: '../',
+    hc: '../hc/',
+};
+function switchDashboard(v) {
+    if (v === 'current') return;
+    if (DASHBOARD_URLS[v]) window.location.href = DASHBOARD_URLS[v];
+}
+
+// ===== 工具函数 =====
+function pct(v) { return (v * 100).toFixed(2) + '%'; }
+function pct1(v) { return (v * 100).toFixed(1) + '%'; }
+function rateColor(rate) {
+    if (rate > 0.10) return 'val-red';
+    if (rate > 0.05) return 'val-red';
+    return 'val-green';
+}
+function rateBadge(rate) {
+    if (rate > 0.10) return '<span class="reason-badge reason-qita">严重</span>';
+    if (rate > 0.08) return '<span class="reason-badge reason-shenti">超标</span>';
+    if (rate > 0.05) return '<span class="reason-badge reason-geren">预警</span>';
+    return '<span class="reason-badge reason-nengli">达标</span>';
+}
+function reasonClass(reason) {
+    const map = {
+        '发展原因': 'reason-fazhan', '身体原因': 'reason-shenti',
+        '个人原因': 'reason-geren', '其他原因': 'reason-qita', '个人能力': 'reason-nengli'
+    };
+    return map[reason] || 'reason-qita';
+}
+
+// ===== 标题/日期 =====
+document.getElementById('hdr-title').textContent = '● ' + D.meta.title;
+document.getElementById('hdr-date').textContent = '数据截止: ' + D.meta.asOf + ' | 统计周期: ' + D.meta.period;
+
+// ===== 全局筛选状态 =====
+let globalQujing = 'all';
+let globalDadianchang = 'all';
+
+// 获取筛选后的员工列表
+function getFilteredEmployees() {
+    let list = D.employees;
+    if (globalDadianchang !== 'all') {
+        list = list.filter(e => e.dadianchang === globalDadianchang);
+    } else if (globalQujing !== 'all') {
+        list = list.filter(e => e.qujing === globalQujing);
+    }
+    return list;
+}
+
+// 获取筛选后的期初/期末人数
+function getFilteredBeginEnd() {
+    if (globalDadianchang !== 'all') {
+        const dd = D.dadianchang.find(x => x.name === globalDadianchang);
+        if (dd) return { begin: dd.beginCount, end: dd.endCount };
+        return { begin: 0, end: 0 };
+    }
+    if (globalQujing !== 'all') {
+        const qj = D.qujing.find(x => x.name === globalQujing);
+        if (qj) return { begin: qj.beginCount, end: qj.endCount };
+        return { begin: 0, end: 0 };
+    }
+    return { begin: D.overview.beginCount, end: D.overview.endCount };
+}
+
+// 计算筛选后的聚合指标
+function getFilteredStats() {
+    const emps = getFilteredEmployees();
+    const { begin, end } = getFilteredBeginEnd();
+    const resignCount = emps.length;
+    const avgCount = (begin + end) / 2;
+    const resignRate = avgCount > 0 ? resignCount / avgCount : 0;
+
+    // 职级分布
+    const zhiJi = { '店长': 0, '中级训练员': 0, '初级训练员': 0, '服务员': 0, '见习生': 0 };
+    emps.forEach(e => {
+        const pos = e.position || '';
+        if (pos.indexOf('店长') >= 0) zhiJi['店长']++;
+        else if (pos.indexOf('中级') >= 0) zhiJi['中级训练员']++;
+        else if (pos.indexOf('初级') >= 0 || pos.indexOf('练习') >= 0) zhiJi['初级训练员']++;
+        else if (pos.indexOf('见习') >= 0) zhiJi['见习生']++;
+        else zhiJi['服务员']++;
+    });
+
+    // 工龄分布
+    const gongLing = { '6个月内': 0, '6-12个月': 0, '1-3年': 0, '3年以上': 0 };
+    emps.forEach(e => {
+        const g = e.gongLingQuJian || '';
+        if (g.indexOf('6个月') >= 0 && g.indexOf('6-12') < 0) gongLing['6个月内']++;
+        else if (g.indexOf('6-12') >= 0) gongLing['6-12个月']++;
+        else if (g.indexOf('1-3') >= 0) gongLing['1-3年']++;
+        else if (g.indexOf('3年') >= 0) gongLing['3年以上']++;
+    });
+
+    // 店长职级离职人数
+    const dianZhangCount = emps.filter(e => (e.position || '').indexOf('店长') >= 0).length;
+    // 入职年限>3年离职人数
+    const over3YearsCount = emps.filter(e => (e.gongLingQuJian || '').indexOf('3年以上') >= 0).length;
+
+    // 离职原因分布
+    const reasonCount = {};
+    emps.forEach(e => {
+        const r = e.reasonTag || e.reason1 || '未知';
+        reasonCount[r] = (reasonCount[r] || 0) + 1;
+    });
+
+    return { emps, begin, end, resignCount, resignRate, zhiJi, gongLing, dianZhangCount, over3YearsCount, reasonCount };
+}
+
+// ===== 全局筛选器初始化 =====
+function initGlobalFilters() {
+    const qSel = document.getElementById('global-qujing');
+    D.qujing.forEach(q => qSel.add(new Option(q.name + ' 区', q.name)));
+    updateDadianchangOptions();
+}
+
+function updateDadianchangOptions() {
+    const dSel = document.getElementById('global-dadianchang');
+    dSel.innerHTML = '<option value="all">大店区：全部</option>';
+    let list = D.dadianchang;
+    if (globalQujing !== 'all') list = list.filter(d => d.qujing === globalQujing);
+    list.forEach(d => dSel.add(new Option(d.name, d.name)));
+}
+
+function onGlobalQujingChange(v) {
+    globalQujing = v;
+    globalDadianchang = 'all';
+    updateDadianchangOptions();
+    onGlobalFilterChange();
+}
+
+function onGlobalFilterChange() {
+    globalDadianchang = document.getElementById('global-dadianchang').value;
+    refreshAll();
+}
+
+function resetGlobalFilter() {
+    globalQujing = 'all';
+    globalDadianchang = 'all';
+    document.getElementById('global-qujing').value = 'all';
+    updateDadianchangOptions();
+    refreshAll();
+}
+
+function updateFilterInfo() {
+    const info = document.getElementById('filter-info');
+    if (globalDadianchang !== 'all') {
+        info.textContent = '当前范围：' + globalDadianchang + ' 大店区';
+    } else if (globalQujing !== 'all') {
+        info.textContent = '当前范围：' + globalQujing + ' 区';
+    } else {
+        info.textContent = '当前范围：古德墨柠全量';
+    }
+}
+
+// ===== 刷新所有数据 =====
+let chartMonthly = null, chartMonthlyCount = null, chartZhiJi = null, chartGongLing = null, chartReason = null, chartDadianchang = null;
+
+function refreshAll() {
+    updateFilterInfo();
+    renderCards();
+    renderTables();
+    renderEmpTable();
+    renderAnalysisCharts();
+}
+
+// ===== KPI 卡片 =====
+function renderCards() {
+    const stats = getFilteredStats();
+    const isOnTarget = stats.resignRate <= 0.05;
+    const cards = [
+        { label: '期初全职人数', sub: '(7月1日)', value: stats.begin, unit: '人', cls: '' },
+        { label: '期末全职人数', sub: '(7月25日)', value: stats.end, unit: '人', cls: '' },
+        { label: '主动离职人数', sub: '(7月1-25日)', value: stats.resignCount, unit: '人', cls: 'danger clickable', valColor: 'red',
+          detailBtn: '<span class="card-detail-btn" onclick="event.stopPropagation();openAllResignModal()">▶ 详情</span>',
+          onclick: 'openAllResignModal()' },
+        { label: '主动离职率', sub: '目标 ≤ 5%', value: pct(stats.resignRate), unit: '', cls: isOnTarget ? 'success' : 'highlight', valColor: isOnTarget ? 'green' : 'red',
+          subText: isOnTarget ? '✅ 达标' : '⚠️ 需关注' },
+        { label: '店长职级离职人数', sub: '店长岗位', value: stats.dianZhangCount, unit: '人', cls: 'info clickable', valColor: 'blue',
+          detailBtn: '<span class="card-detail-btn blue" onclick="event.stopPropagation();openDianZhangModal()">▶ 详情</span>',
+          onclick: 'openDianZhangModal()' },
+        { label: '入职年限>3年离职人���', sub: '资深员工', value: stats.over3YearsCount, unit: '人', cls: 'info clickable', valColor: 'blue',
+          detailBtn: '<span class="card-detail-btn blue" onclick="event.stopPropagation();openOver3YearsModal()">▶ 详情</span>',
+          onclick: 'openOver3YearsModal()' },
+    ];
+    const row = document.getElementById('cards-row');
+    row.innerHTML = '';
+    cards.forEach(c => {
+        const div = document.createElement('div');
+        div.className = 'metric-card ' + c.cls;
+        if (c.onclick) div.setAttribute('onclick', c.onclick);
+        div.innerHTML =
+            '<div class="card-label">' + c.label + '<br><span class="card-label-sub">' + c.sub + '</span></div>' +
+            '<div class="card-value ' + (c.valColor || '') + '">' + c.value + (c.unit ? '<span class="card-unit">' + c.unit + '</span>' : '') + '</div>' +
+            (c.detailBtn || '') +
+            (c.subText ? '<div class="card-sub-text">' + c.subText + '</div>' : '');
+        row.appendChild(div);
+    });
+}
+
+// ===== 月度趋势图（4-7月，古德墨柠） =====
+function renderMonthlyChart() {
+    const ctx = document.getElementById('chart-monthly').getContext('2d');
+    const t = D.monthlyTrend;
+    const vals = t.brands['古德墨柠'] || [];
+    if (chartMonthly) chartMonthly.destroy();
+    chartMonthly = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: t.labels,
+            datasets: [{
+                label: '古德墨柠',
+                data: vals.map(v => +(v * 100).toFixed(2)),
+                borderColor: '#1565c0',
+                backgroundColor: 'rgba(21,101,192,0.12)',
+                borderWidth: 3.5,
+                tension: 0.35,
+                pointRadius: 6,
+                pointHoverRadius: 9,
+                pointBackgroundColor: '#0d47a1',
+                fill: true,
+            }]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 }, padding: 8 } },
+                tooltip: { callbacks: { label: ctx => '古德墨柠: ' + ctx.parsed.y.toFixed(2) + '%' } },
+                annotation: {}
+            },
+            scales: {
+                y: {
+                    ticks: { callback: v => v + '%', font: { size: 10 } },
+                    grid: { color: 'rgba(0,0,0,0.05)' },
+                    suggestedMax: 6,
+                },
+                x: { ticks: { font: { size: 12, weight: 'bold' } } }
+            }
+        }
+    });
+}
+
+// ===== 月度离职人数对比柱状图 =====
+function renderMonthlyCountChart() {
+    const ctx = document.getElementById('chart-monthly-count').getContext('2d');
+    const t = D.monthlyTrend;
+    // 4-7月离职人数，默认兜底，优先读取 data.js 中的 resignCounts
+    const counts = (t.resignCounts && t.resignCounts.length === t.labels.length) ? t.resignCounts : [20, 9, 13, 11];
+    if (chartMonthlyCount) chartMonthlyCount.destroy();
+    chartMonthlyCount = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: t.labels,
+            datasets: [{
+                label: '离职人数',
+                data: counts,
+                backgroundColor: ['#1e88e5', '#42a5f5', '#1565c0', '#0d47a1'],
+                borderRadius: 6,
+                barPercentage: 0.6,
+            }]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: { callbacks: { label: ctx => ctx.parsed.y + '人' } }
+            },
+            scales: {
+                y: { ticks: { font: { size: 10 }, stepSize: 5 }, grid: { color: 'rgba(0,0,0,0.05)' } },
+                x: { ticks: { font: { size: 12, weight: 'bold' } } }
+            }
+        }
+    });
+}
+
+// ===== 二八分析图表 =====
+function renderAnalysisCharts() {
+    const stats = getFilteredStats();
+
+    // 职级分布
+    const ctx1 = document.getElementById('chart-zhiji').getContext('2d');
+    if (chartZhiJi) chartZhiJi.destroy();
+    const zKeys = Object.keys(stats.zhiJi);
+    chartZhiJi = new Chart(ctx1, {
+        type: 'doughnut',
+        data: {
+            labels: zKeys,
+            datasets: [{
+                data: zKeys.map(k => stats.zhiJi[k]),
+                backgroundColor: ['#c62828', '#1565c0', '#f57f17', '#42a5f5', '#90a4ae'],
+                borderWidth: 2, borderColor: '#fff'
+            }]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'right', labels: { boxWidth: 12, font: { size: 11 }, padding: 8 } },
+                tooltip: { callbacks: { label: ctx => ctx.label + ': ' + ctx.parsed + '人' } }
+            }
+        }
+    });
+
+    // 工龄分布
+    const ctx2 = document.getElementById('chart-gongling').getContext('2d');
+    if (chartGongLing) chartGongLing.destroy();
+    const gKeys = Object.keys(stats.gongLing);
+    chartGongLing = new Chart(ctx2, {
+        type: 'doughnut',
+        data: {
+            labels: gKeys,
+            datasets: [{
+                data: gKeys.map(k => stats.gongLing[k]),
+                backgroundColor: ['#c62828', '#f57f17', '#1565c0', '#2e7d32'],
+                borderWidth: 2, borderColor: '#fff'
+            }]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'right', labels: { boxWidth: 12, font: { size: 11 }, padding: 8 } },
+                tooltip: { callbacks: { label: ctx => ctx.label + ': ' + ctx.parsed + '人' } }
+            }
+        }
+    });
+
+    // 离职原因分布
+    const ctx3 = document.getElementById('chart-reason').getContext('2d');
+    if (chartReason) chartReason.destroy();
+    const rKeys = Object.keys(stats.reasonCount);
+    const rColors = rKeys.map(l => {
+        const map = { '发展原因': '#1565c0', '身体原因': '#e65100', '个人原因': '#7b1fa2', '其他原因': '#c62828', '个人能力': '#2e7d32' };
+        return map[l] || '#757575';
+    });
+    chartReason = new Chart(ctx3, {
+        type: 'bar',
+        data: { labels: rKeys, datasets: [{ data: rKeys.map(k => stats.reasonCount[k]), backgroundColor: rColors, borderRadius: 4 }] },
+        options: {
+            indexAxis: 'y',
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ctx.parsed.x + '人' } } },
+            scales: {
+                x: { ticks: { font: { size: 10 }, stepSize: 1 }, grid: { color: 'rgba(0,0,0,0.05)' } },
+                y: { ticks: { font: { size: 11 } } }
+            }
+        }
+    });
+
+    // 大店长离职排名
+    const ctx4 = document.getElementById('chart-dadianchang').getContext('2d');
+    if (chartDadianchang) chartDadianchang.destroy();
+    let sorted = D.dadianchang;
+    if (globalQujing !== 'all') sorted = sorted.filter(d => d.qujing === globalQujing);
+    sorted = sorted.filter(d => d.resignCount > 0).sort((a, b) => b.resignCount - a.resignCount);
+    const dcColors = sorted.map(d => d.resignCount >= 3 ? '#c62828' : d.resignCount >= 2 ? '#f57f17' : '#42a5f5');
+    chartDadianchang = new Chart(ctx4, {
+        type: 'bar',
+        data: { labels: sorted.map(d => d.name), datasets: [{ data: sorted.map(d => d.resignCount), backgroundColor: dcColors, borderRadius: 4 }] },
+        options: {
+            indexAxis: 'y',
+            responsive: true, maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: { callbacks: { label: ctx => ctx.parsed.x + '人 (' + (sorted[ctx.dataIndex].resignRate * 100).toFixed(1) + '%)' } }
+            },
+            scales: {
+                x: { ticks: { font: { size: 10 }, stepSize: 1 }, grid: { color: 'rgba(0,0,0,0.05)' } },
+                y: { ticks: { font: { size: 11 } } }
+            }
+        }
+    });
+}
+
+// ===== 区经理表格 =====
+function renderTables() {
+    const head = ['区经理', '期初人数', '期末人数', '主动离职<br>人数', '主动离职率', '店长', '中级<br>训练员', '初级<br>训练员', '服务员', '见习生', '6个月内', '6-12<br>个月', '1-3年', '3年以上'];
+    document.getElementById('qujing-head').innerHTML = head.map(h => '<th>' + h + '</th>').join('');
+
+    const tb = document.getElementById('qujing-tbody');
+    tb.innerHTML = '';
+    let qList = D.qujing;
+    if (globalQujing !== 'all') qList = qList.filter(q => q.name === globalQujing);
+    qList.forEach(r => {
+        const tr = document.createElement('tr');
+        tr.dataset.name = r.name;
+        tr.innerHTML =
+            '<td class="text-left"><strong>' + r.name + '</strong></td>' +
+            '<td>' + r.beginCount + '</td>' +
+            '<td>' + r.endCount + '</td>' +
+            '<td class="val-highlight">' + r.resignCount + '</td>' +
+            '<td class="' + rateColor(r.resignRate) + '">' + pct(r.resignRate) + ' ' + rateBadge(r.resignRate) + '</td>' +
+            '<td>' + r.zhiJi['店长'] + '</td>' +
+            '<td>' + r.zhiJi['中级训练员'] + '</td>' +
+            '<td>' + r.zhiJi['初级训练员'] + '</td>' +
+            '<td>' + r.zhiJi['服务员'] + '</td>' +
+            '<td>' + r.zhiJi['见习生'] + '</td>' +
+            '<td>' + pct1(r.gongLing['6个月内']) + '</td>' +
+            '<td>' + pct1(r.gongLing['6-12个月']) + '</td>' +
+            '<td>' + pct1(r.gongLing['1-3年']) + '</td>' +
+            '<td>' + pct1(r.gongLing['3年以上']) + '</td>';
+        tr.onclick = function() { openEmpModalByFilter(r.name + ' 区经理 - 离职人员明细', e => e.qujing === r.name); };
+        tr.style.cursor = 'pointer';
+        tb.appendChild(tr);
+    });
+
+    // 合计
+    const stats = getFilteredStats();
+    const o = stats;
+    document.getElementById('qujing-foot').innerHTML =
+        '<td class="text-left"><strong>合计</strong></td>' +
+        '<td><strong>' + o.begin + '</strong></td>' +
+        '<td><strong>' + o.end + '</strong></td>' +
+        '<td><strong class="val-highlight">' + o.resignCount + '</strong></td>' +
+        '<td><strong class="' + rateColor(o.resignRate) + '">' + pct(o.resignRate) + '</strong></td>' +
+        '<td><strong>' + o.zhiJi['店长'] + '</strong></td>' +
+        '<td><strong>' + o.zhiJi['中级训练员'] + '</strong></td>' +
+        '<td><strong>' + o.zhiJi['初级训练员'] + '</strong></td>' +
+        '<td><strong>' + o.zhiJi['服务员'] + '</strong></td>' +
+        '<td><strong>' + o.zhiJi['见习生'] + '</strong></td>' +
+        '<td><strong>' + o.gongLing['6个月内'] + '</strong></td>' +
+        '<td><strong>' + o.gongLing['6-12个月'] + '</strong></td>' +
+        '<td><strong>' + o.gongLing['1-3年'] + '</strong></td>' +
+        '<td><strong>' + o.gongLing['3年以上'] + '</strong></td>';
+}
+
+// ===== 大店长表格 =====
+function renderDadianchangTable() {
+    const head = ['区经理', '大店长', '期初人数', '期末人数', '主动离职<br>人数', '主动离职率', '店长', '中级<br>训练员', '初级<br>训练员', '服务员', '见习生', '6个月内', '1-3年', '3年以上'];
+    document.getElementById('dadianchang-head').innerHTML = head.map(h => '<th>' + h + '</th>').join('');
+
+    const tb = document.getElementById('dadianchang-tbody');
+    tb.innerHTML = '';
+    let dList = D.dadianchang;
+    if (globalQujing !== 'all') dList = dList.filter(d => d.qujing === globalQujing);
+    if (globalDadianchang !== 'all') dList = dList.filter(d => d.name === globalDadianchang);
+    dList.forEach(r => {
+        const tr = document.createElement('tr');
+        tr.dataset.name = r.name;
+        tr.innerHTML =
+            '<td>' + r.qujing + '</td>' +
+            '<td class="text-left"><strong>' + r.name + '</strong></td>' +
+            '<td>' + r.beginCount + '</td>' +
+            '<td>' + r.endCount + '</td>' +
+            '<td class="val-highlight">' + r.resignCount + '</td>' +
+            '<td class="' + rateColor(r.resignRate) + '">' + (r.resignRate > 0 ? pct(r.resignRate) : '--') + (r.resignRate > 0 ? ' ' + rateBadge(r.resignRate) : '') + '</td>' +
+            '<td>' + r.zhiJi['店长'] + '</td>' +
+            '<td>' + r.zhiJi['中级训练员'] + '</td>' +
+            '<td>' + r.zhiJi['初级训练员'] + '</td>' +
+            '<td>' + r.zhiJi['服务员'] + '</td>' +
+            '<td>' + r.zhiJi['见习生'] + '</td>' +
+            '<td>' + r.gongLing['6个月内'] + '</td>' +
+            '<td>' + r.gongLing['1-3年'] + '</td>' +
+            '<td>' + r.gongLing['3年以上'] + '</td>';
+        tr.onclick = function() { openEmpModalByFilter(r.name + ' 大店长 - 离职人员明细', e => e.dadianchang === r.name); };
+        tr.style.cursor = 'pointer';
+        tb.appendChild(tr);
+    });
+}
+
+// ===== 离职人员明细表 =====
+function renderEmpTable() {
+    const head = ['序号', '区经', '大店长', '门店', '姓名', '职位', '入职日期', '离职日期', '在职月数', '工龄区间', '离职原因', '原因标签', '离职详情'];
+    document.getElementById('emp-head').innerHTML = head.map(h => '<th>' + h + '</th>').join('');
+
+    const tb = document.getElementById('emp-tbody');
+    tb.innerHTML = '';
+    const emps = getFilteredEmployees();
+    emps.forEach((e, idx) => {
+        const tr = document.createElement('tr');
+        tr.dataset.reason = e.reasonTag || e.reason1;
+        tr.dataset.name = (e.name + ' ' + e.store);
+        const months = e.hireMonth || 0;
+        tr.innerHTML =
+            '<td>' + (idx + 1) + '</td>' +
+            '<td>' + e.qujing + '</td>' +
+            '<td>' + e.dadianchang + '</td>' +
+            '<td class="text-left">' + e.store + '</td>' +
+            '<td><strong>' + e.name + '</strong></td>' +
+            '<td>' + e.position + '</td>' +
+            '<td>' + e.hireDate + '</td>' +
+            '<td>' + e.resignDate + '</td>' +
+            '<td>' + months + '个月</td>' +
+            '<td>' + (e.gongLingQuJian || '') + '</td>' +
+            '<td>' + (e.reason1 || '') + '</td>' +
+            '<td><span class="reason-badge ' + reasonClass(e.reasonTag || e.reason1) + '">' + (e.reasonTag || e.reason1) + '</span></td>' +
+            '<td class="text-left" style="font-size:11.5px;color:#666;max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="' + (e.reasonDetail || '').replace(/"/g, '&quot;') + '">' + (e.reasonDetail || '--') + '</td>';
+        tb.appendChild(tr);
+    });
+
+    // 填充离职原因筛选器
+    const rSel = document.getElementById('emp-reason-filter');
+    const curR = rSel.value;
+    rSel.innerHTML = '<option value="all">离职原因：全部</option>';
+    [...new Set(D.employees.map(e => e.reasonTag || e.reason1))].forEach(r => {
+        rSel.add(new Option(r, r));
+    });
+    rSel.value = curR;
+}
+
+// ===== Tab切换 =====
+let currentTab = 'qujing';
+function switchTab(tab) {
+    currentTab = tab;
+    document.getElementById('tab-qujing').classList.toggle('active', tab === 'qujing');
+    document.getElementById('tab-dadianchang').classList.toggle('active', tab === 'dadianchang');
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('panel-' + tab).classList.add('active');
+    if (tab === 'dadianchang') renderDadianchangTable();
+}
+
+function searchTable(kw) {
+    const k = kw.toLowerCase();
+    const activePanel = document.querySelector('.panel.active');
+    activePanel.querySelectorAll('tbody tr').forEach(row => {
+        row.style.display = (!k || row.textContent.toLowerCase().includes(k)) ? '' : 'none';
+    });
+}
+
+function resetTableFilter() {
+    document.querySelector('.filter-bar .search-box input').value = '';
+    document.querySelectorAll('.panel').forEach(p => {
+        p.querySelectorAll('tbody tr').forEach(row => row.style.display = '');
+    });
+}
+
+function filterEmployees() {
+    const r = document.getElementById('emp-reason-filter').value;
+    const k = (document.getElementById('emp-search').value || '').toLowerCase();
+    document.querySelectorAll('#emp-tbody tr').forEach(row => {
+        const okR = r === 'all' || row.dataset.reason === r;
+        const okK = !k || (row.dataset.name || '').toLowerCase().includes(k);
+        row.style.display = (okR && okK) ? '' : 'none';
+    });
+}
+
+function resetEmpFilter() {
+    document.getElementById('emp-reason-filter').value = 'all';
+    document.getElementById('emp-search').value = '';
+    document.querySelectorAll('#emp-tbody tr').forEach(row => row.style.display = '');
+}
+
+// ===== 弹窗 =====
+function openAllResignModal() {
+    const emps = getFilteredEmployees();
+    const { begin, end } = getFilteredBeginEnd();
+    const title = '主动离职人员明细 - 共' + emps.length + '人 (期初' + begin + ' 期末' + end + ')';
+    showEmpModal(title, emps);
+}
+
+function openDianZhangModal() {
+    const emps = getFilteredEmployees().filter(e => (e.position || '').indexOf('店长') >= 0);
+    showEmpModal('店长职级离职人员明细 - 共' + emps.length + '人', emps);
+}
+
+function openOver3YearsModal() {
+    const emps = getFilteredEmployees().filter(e => (e.gongLingQuJian || '').indexOf('3年以上') >= 0);
+    showEmpModal('入职年限>3年离职人员明细 - 共' + emps.length + '人', emps);
+}
+
+function openEmpModalByFilter(title, filterFn) {
+    const list = getFilteredEmployees().filter(filterFn);
+    showEmpModal(title + ' (' + list.length + '人)', list);
+}
+
+function showEmpModal(title, list) {
+    document.getElementById('modal-title').textContent = title;
+    const body = document.getElementById('modal-body');
+    if (list.length === 0) {
+        body.innerHTML = '<div class="modal-empty">该维度暂无离职人员</div>';
+    } else {
+        const cols = ['序号', '区经', '大店长', '姓名', '职位', '门店', '入职日期', '离职日期', '工龄', '离职原因', '详情'];
+        body.innerHTML =
+            '<div class="modal-table-wrap"><table><thead><tr>' + cols.map(h => '<th>' + h + '</th>').join('') + '</tr></thead>' +
+            '<tbody>' + list.map((e, i) =>
+                '<tr>' +
+                '<td>' + (i + 1) + '</td>' +
+                '<td>' + e.qujing + '</td>' +
+                '<td>' + e.dadianchang + '</td>' +
+                '<td><strong>' + e.name + '</strong></td>' +
+                '<td>' + e.position + '</td>' +
+                '<td class="text-left">' + e.store + '</td>' +
+                '<td>' + e.hireDate + '</td>' +
+                '<td>' + e.resignDate + '</td>' +
+                '<td>' + (e.gongLingQuJian || '') + '</td>' +
+                '<td><span class="reason-badge ' + reasonClass(e.reasonTag || e.reason1) + '">' + (e.reasonTag || e.reason1) + '</span></td>' +
+                '<td class="text-left col-detail" title="' + (e.reasonDetail || '').replace(/"/g, '&quot;') + '">' + (e.reasonDetail || '--') + '</td>' +
+                '</tr>'
+            ).join('') + '</tbody></table></div>';
+    }
+    document.getElementById('detail-modal').classList.add('active');
+}
+
+function closeModal(event) {
+    if (!event || event.target.id === 'detail-modal' || event.target.className === 'modal-close') {
+        document.getElementById('detail-modal').classList.remove('active');
+    }
+}
+
+// ===== 初始化 =====
+initGlobalFilters();
+renderCards();
+renderMonthlyChart();
+renderMonthlyCountChart();
+renderAnalysisCharts();
+renderTables();
+renderEmpTable();
+switchTab('qujing');
+</script>
+</body>
+</html>

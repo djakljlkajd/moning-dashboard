@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HC 招募缺口看板</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+            background: #f0f2f5;
+            color: #333;
+            padding: 20px;
+        }
+        .container { max-width: 1400px; margin: 0 auto; }
+
+        /* ===== 标题栏 ===== */
+        .header-bar {
+            background: linear-gradient(135deg, #1a5fb4 0%, #2e86de 100%);
+            border-radius: 8px 8px 0 0;
+            padding: 14px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header-title { font-size: 18px; font-weight: bold; color: #fff; }
+        .header-date { font-size: 12px; color: rgba(255,255,255,0.85); font-weight: 500; }
+
+        /* ===== 逻辑说明区 ===== */
+        .logic-bar {
+            background: linear-gradient(90deg, #fff9c4 0%, #fef5c5 100%);
+            border-bottom: 2px solid #f9e79f;
+            padding: 12px 24px;
+            font-size: 12.5px;
+            color: #5d4037;
+            line-height: 1.6;
+        }
+        .logic-tags { margin-top: 4px; }
+        .logic-tag {
+            display: inline-block; padding: 2px 8px; border-radius: 3px; font-size: 11px; margin-right: 6px; font-weight: 600;
+        }
+        .tag-low { background: #fadbd8; color: #c0392b; }
+        .tag-ok { background: #d5f5e3; color: #27ae60; }
+        .tag-high { background: #d6eaf8; color: #2980b9; }
+        .tag-critical { background: #e8daef; color: #8e44ad; }
+
+        /* ===== 看板相关说明 ===== */
+        .description-bar {
+            background: linear-gradient(90deg, #e8f4fd 0%, #d6eaf8 100%);
+            border-bottom: 2px solid #aed6f1;
+            padding: 12px 24px;
+            font-size: 12.5px; color: #1a5276; line-height: 1.85;
+            display: flex; gap: 12px; align-items: flex-start;
+        }
+        .description-bar-title {
+            font-weight: bold; color: #1a5fb4; font-size: 13.5px;
+            white-space: nowrap; padding-top: 1px;
+        }
+        .description-list { flex: 1; }
+        .description-item { margin-bottom: 2px; }
+        .description-item strong { color: #c0392b; font-weight: 600; margin-right: 4px; }
+
+        /* ===== 第一排标题 ===== */
+        .section-header {
+            background: #fff; padding: 12px 20px 8px;
+            border-bottom: 1px solid #eee; font-weight: bold; font-size: 14px; color: #1a5fb4;
+        }
+
+        /* ===== 7个指标卡片横排 ===== */
+        .cards-row {
+            display: grid; grid-template-columns: repeat(7, 1fr); gap: 0;
+            background: #fff; padding: 15px 20px;
+        }
+        .metric-card {
+            background: #fafafa; border: 1px solid #e8e8e8; border-radius: 6px;
+            padding: 14px 8px; text-align: center;
+            transition: all 0.25s ease; position: relative; overflow: hidden;
+        }
+        .metric-card:hover {
+            transform: translateY(-3px); box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+            border-color: #2e86de;
+        }
+        .metric-card.clickable {
+            cursor: pointer;
+        }
+        .metric-card.clickable::after {
+            content: '点击查看明细'; position: absolute; bottom: 4px; left: 0; right: 0;
+            font-size: 10px; color: #888; opacity: 0; transition: opacity 0.2s;
+        }
+        .metric-card.clickable:hover::after {
+            opacity: 1;
+        }
+        .metric-card.highlight.clickable:hover::after { color: #c0392b; }
+        .click-hint {
+            position: absolute; bottom: 4px; right: 4px;
+            display: inline-flex; align-items: center; gap: 4px;
+            font-size: 10px; background: rgba(255,255,255,0.9);
+            border: 1px solid #e0b4b0; border-radius: 10px; padding: 1px 7px;
+            pointer-events: none; opacity: 0.95; transition: all 0.2s;
+        }
+        .click-hint svg {
+            width: 12px; height: 12px; fill: #b0b0b0;
+            filter: drop-shadow(1px 1px 1px rgba(0,0,0,0.35));
+            transition: fill 0.2s;
+        }
+        .click-hint .hint-text { font-weight: bold; color: #e74c3c; letter-spacing: 0.5px; }
+        .metric-card.clickable:hover .click-hint {
+            opacity: 1; border-color: #e74c3c; background: #fff;
+            box-shadow: 0 2px 6px rgba(231,76,60,0.25);
+        }
+        .metric-card.clickable:hover .click-hint svg { fill: #e74c3c; }
+        .metric-card.highlight.clickable .click-hint { border-color: #e74c3c; }
+        .metric-card.highlight.clickable:hover .click-hint { box-shadow: 0 2px 8px rgba(192,57,43,0.35); }
+        .metric-card::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+            background: linear-gradient(90deg, #3498db, #2ecc71);
+        }
+        .metric-card.highlight::before { background: linear-gradient(90deg, #e74c3c, #c0392b); }
+        .card-label { font-size: 11.5px; color: #7f8c8d; margin-bottom: 6px; line-height: 1.35; }
+        .card-label-sub { font-size: 10px; color: #95a5a6; }
+        .card-value { font-size: 26px; font-weight: bold; color: #2c3e50; line-height: 1.2; }
+        .card-value.red { color: #e74c3c; }
+        .card-unit { font-size: 12px; color: #95a5a6; margin-left: 2px; }
+
+        /* ===== 最终招募突出行 ===== */
+        .recruit-highlight {
+            background: linear-gradient(135deg, #fdf2f0 0%, #fce8e4 100%);
+            border-top: 2px dashed #e74c3c; border-bottom: 2px dashed #e74c3c;
+            padding: 14px 20px; text-align: center; display: flex; align-items: center; justify-content: center; gap: 30px;
+        }
+        .recruit-label { font-size: 14px; font-weight: bold; color: #c0392b; }
+        .recruit-number { font-size: 42px; font-weight: bold; color: #e74c3c; }
+
+        /* ===== 招募达成进度两个方块 ===== */
+        .recruit-progress-row {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
+            background: #fff; padding: 0 20px 18px;
+        }
+        .progress-card {
+            border: 1px solid #e8e8e8; border-radius: 8px; overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+        }
+        .progress-card-title {
+            color: #fff; padding: 8px 14px; font-size: 13px; font-weight: bold;
+            display: flex; align-items: center; gap: 6px;
+        }
+        .progress-card-fulltime .progress-card-title { background: linear-gradient(90deg, #1a5fb4 0%, #2e86de 100%); }
+        .progress-card-student  .progress-card-title { background: linear-gradient(90deg, #16a085 0%, #1abc9c 100%); }
+        .progress-card-body {
+            display: grid; grid-template-columns: 1fr 1fr 1fr; padding: 14px 12px; gap: 10px;
+            background: #fafbfc;
+        }
+        .progress-stat {
+            text-align: center; padding: 10px 6px; background: #fff;
+            border: 1px solid #eef0f3; border-radius: 6px;
+            transition: all 0.2s;
+        }
+        .progress-stat:hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.06); }
+        .progress-stat .stat-label { font-size: 11.5px; color: #7f8c8d; margin-bottom: 4px; }
+        .progress-stat .stat-value { font-size: 22px; font-weight: bold; color: #2c3e50; line-height: 1.2; }
+        .progress-stat .stat-unit   { font-size: 11px; color: #95a5a6; margin-left: 2px; }
+        .progress-stat.is-rate .stat-value { color: #e74c3c; }
+        .progress-card-student .progress-stat.is-rate .stat-value { color: #16a085; }
+        .progress-stat.is-rate .stat-value.zero { color: #95a5a6; }
+        .progress-card-foot {
+            padding: 6px 14px; font-size: 11px; color: #95a5a6;
+            background: #fff; border-top: 1px dashed #eef0f3;
+        }
+        /* 进度卡片标题栏详情按钮 */
+        .progress-card-title { justify-content: space-between; }
+        .progress-detail-btn {
+            display: inline-flex; align-items: center; gap: 3px;
+            background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.4);
+            color: #fff; padding: 1px 7px; border-radius: 10px; font-size: 10.5px;
+            cursor: pointer; transition: all 0.2s; font-weight: bold;
+        }
+        .progress-detail-btn:hover {
+            background: rgba(255,255,255,0.35); transform: scale(1.05);
+        }
+        .progress-detail-btn svg { width: 10px; height: 10px; fill: currentColor; }
+
+        /* ===== 第二排筛选栏 ===== */
+        .filter-bar {
+            background: #fff; padding: 12px 20px; display: flex; gap: 12px; flex-wrap: wrap; align-items: center;
+            border-bottom: 1px solid #e8e8e8;
+        }
+        .tab-group { display: flex; gap: 0; border: 1px solid #ddd; border-radius: 6px; overflow: hidden; }
+        .tab-btn {
+            padding: 7px 18px; font-size: 13px; cursor: pointer; border: none; background: #f8f9fa;
+            color: #555; transition: all 0.2s; font-weight: 500;
+        }
+        .tab-btn.active { background: #2e86de; color: #fff; }
+        .filter-select {
+            padding: 6px 12px; border: 1px solid #ddd; border-radius: 5px; font-size: 13px; outline: none; color: #555;
+        }
+        .search-box {
+            display: flex; align-items: center; border: 1px solid #ddd; border-radius: 5px; padding: 5px 10px; margin-left: auto;
+        }
+        .search-box input { border: none; outline: none; font-size: 13px; width: 160px; }
+        .action-btn {
+            padding: 6px 16px; border: none; border-radius: 5px; font-size: 12.5px; cursor: pointer;
+            font-weight: 500; transition: all 0.2s;
+        }
+        .btn-reset { background: #ecf0f1; color: #555; }
+        .btn-reset:hover { background: #dcdde1; }
+        .btn-export { background: #2ecc71; color: #fff; }
+        .btn-export:hover { background: #27ae60; }
+
+        /* ===== 表格区 ===== */
+        .table-wrapper { background: #fff; overflow-x: visible; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; table-layout: fixed; }
+        thead th {
+            background: linear-gradient(180deg, #2980b9 0%, #2471a3 100%);
+            color: #fff; padding: 11px 10px; text-align: center; font-weight: 600; font-size: 12.5px;
+            white-space: nowrap; letter-spacing: 0.3px;
+        }
+        tbody td {
+            padding: 10px 8px; text-align: center; border-bottom: 1px solid #f0f0f0; color: #333;
+        }
+        tbody tr:nth-child(even) { background: #fafffe; }
+        tbody tr:hover { background: #e8f6fd; }
+        .text-left { text-align: left !important; padding-left: 16px !important; }
+        .val-negative { color: #e74c3c; font-weight: bold; }
+        .val-positive { color: #27ae60; font-weight: bold; }
+        .val-highlight { color: #e74c3c; font-weight: bold; font-size: 14px; background: #fdf2f0; }
+
+        /* 合计行样式 */
+        tfoot td {
+            background: linear-gradient(180deg, #d4e6f1 0%, #aed6f1 100%);
+            font-weight: bold; padding: 12px 8px; color: #1a5276; font-size: 13px;
+        }
+        tfoot .total-note { font-size: 11.5px; color: #5d6d7e; font-weight: normal; }
+
+        /* Tab面板切换 */
+        .panel { display: none; }
+        .panel.active { display: block; }
+
+        /* ===== 第三排：单店招募缺口（可滚动 + 表头吸顶） ===== */
+        .store-table-wrap { max-height: 460px; overflow-y: auto; }
+        .store-table-wrap thead th { position: sticky; top: 0; z-index: 2; }
+        .store-note { font-weight: normal; font-size: 12px; color: #a08030; margin-left: 6px; }
+
+        /* ===== 卡片明细弹窗 ===== */
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5); z-index: 100; justify-content: center; align-items: center;
+            padding: 20px;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal-box {
+            background: #fff; border-radius: 8px; width: 100%; max-width: 900px; max-height: 80vh;
+            display: flex; flex-direction: column; box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+            animation: modalIn 0.25s ease;
+        }
+        @keyframes modalIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .modal-header {
+            background: linear-gradient(135deg, #1a5fb4 0%, #2e86de 100%);
+            color: #fff; padding: 14px 20px; display: flex; justify-content: space-between; align-items: center;
+            border-radius: 8px 8px 0 0;
+        }
+        .modal-title { font-size: 15px; font-weight: bold; }
+        .modal-close {
+            background: rgba(255,255,255,0.2); border: none; color: #fff; width: 28px; height: 28px;
+            border-radius: 50%; font-size: 18px; cursor: pointer; line-height: 1;
+        }
+        .modal-close:hover { background: rgba(255,255,255,0.35); }
+        .modal-body { padding: 0; overflow: auto; flex: 1; }
+        .modal-body table { font-size: 12.5px; }
+        .modal-body thead th { background: linear-gradient(180deg, #2471a3 0%, #1a5276 100%); }
+        .modal-body tbody td { padding: 9px 8px; }
+        .modal-empty {
+            padding: 40px 20px; text-align: center; color: #888; font-size: 14px;
+        }
+
+        /* 响应式 */
+        @media (max-width: 1200px) {
+            .cards-row { grid-template-columns: repeat(4, 1fr); }
+            .card-value { font-size: 22px; }
+            .recruit-progress-row { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 768px) {
+            .cards-row { grid-template-columns: repeat(2, 1fr); }
+            .filter-bar { flex-direction: column; align-items: stretch; }
+            .search-box { margin-left: 0; }
+            .recruit-progress-row { grid-template-columns: 1fr; }
+            .description-bar { flex-direction: column; }
+        }
+        /* ===== 看板切换器 ===== */
+        .dash-switcher { display: flex; align-items: center; gap: 8px; }
+        .dash-switcher-label { color: rgba(255,255,255,.95); font-size: 13px; white-space: nowrap; }
+        .dash-switcher-select { background: #fff; color: #333; border: none; border-radius: 20px; padding: 6px 28px 6px 12px; font-size: 13px; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,.12); appearance: none; -webkit-appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%231a5fb4' d='M6 8L1 3h10z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; min-width: 150px; }
+        .dash-switcher-select:focus { outline: none; box-shadow: 0 0 0 2px rgba(255,255,255,.4); }
+        @media(max-width: 768px) { .dash-switcher-label { display: none; } .dash-switcher-select { min-width: 130px; } }
+    </style>
+</head>
+<body>
+<div class="container">
+
+<!-- ===== 标题栏 ===== -->
+<div class="header-bar">
+    <div class="header-title" id="hdr-title">● HC 招募缺口看板</div>
+    <div style="display:flex;align-items:center;gap:16px">
+        <div class="dash-switcher">
+            <span class="dash-switcher-label">切换看板：</span>
+            <select class="dash-switcher-select" onchange="switchDashboard(this)">
+                <option value="current">HC 招募缺口（当前）</option>
+                <option value="hours">墨柠工时分析看板</option>
+                <option value="turnover">古德墨柠离职数据看板</option>
+            </select>
+        </div>
+        <div class="header-date" id="hdr-date"></div>
+    </div>
+</div>
+
+<!-- ===== 逻辑说明区 ===== -->
+<div class="logic-bar">
+    🎯 <strong>数据逻辑：</strong>门店底表AT列(单店缺口) → 区域汇总 → 与区经理人工确认分配 → N列(最终招募)
+    <div class="logic-tags">
+        <span class="logic-tag tag-critical">严重超额 &gt;150%</span>
+        <span class="logic-tag tag-high">超额 100%~150%</span>
+        <span class="logic-tag tag-ok">合格 80%~100%</span>
+        <span class="logic-tag tag-low">偏低 &lt;80%</span>
+    </div>
+</div>
+
+<!-- ===== 看板相关说明 ===== -->
+<div class="description-bar">
+    <div class="description-bar-title">📋 看板相关说明</div>
+    <div class="description-list">
+        <div class="description-item">1、<strong>核对时间：</strong>月中 15 日前后（具体时间依据集团上会时间由 BP 通知区域）</div>
+        <div class="description-item">2、<strong>核对链路：</strong>运营与本区域 BP 确认好招募需求后填写在文档中 HC 测算表格中，本月提交次月全职需求，提交完成后当月 24 日前确认最终单店全职招募指标</div>
+    </div>
+</div>
+
+<!-- ===== 第一排：核心指标 ===== -->
+<div class="section-header">【第一排】最终招募缺口总览 - 核心指标（引用HC整体情况汇总表）</div>
+
+<div class="cards-row" id="cards-row"></div>
+
+<!-- ===== 第一排：招募达成进度两个方块 ===== -->
+<div class="recruit-progress-row" id="recruit-progress-row"></div>
+
+<!-- 最终招募核心数字突出显示 -->
+<div class="recruit-highlight">
+    <span class="recruit-label" id="recruit-label"></span>
+    <span class="recruit-number" id="recruit-number"></span>
+</div>
+
+<!-- ===== 第二排标题 ===== -->
+<div class="section-header" style="margin-top:2px;">【第二排】区域明细看板 - HC情况对比</div>
+
+<!-- ===== 筛选栏 ===== -->
+<div class="filter-bar">
+    <div style="font-size:13px;color:#666;font-weight:bold;">维度：</div>
+    <div class="tab-group">
+        <button class="tab-btn active" id="tab-region" onclick="switchTab('region')">📊 区域汇总</button>
+        <button class="tab-btn" id="tab-manager" onclick="switchTab('manager')">👥 大店长汇总</button>
+    </div>
+    <select class="filter-select" id="dimension-filter" onchange="filterDimension(this.value)">
+        <option value="all">区域：全部</option>
+    </select>
+    <select class="filter-select" onchange="filterData(this.value)">
+        <option value="all">状态：全部</option>
+        <option value="need">需招募</option>
+        <option value="covered">已覆盖</option>
+    </select>
+    <div class="search-box">
+        🔍<input type="text" placeholder="搜索名称..." oninput="searchTable(this.value)">
+    </div>
+    <button class="action-btn btn-reset" onclick="resetFilter()">🔄 重置筛选</button>
+    <button class="action-btn btn-export" onclick="exportData()">📥 导出数据</button>
+</div>
+
+<!-- ===== 面板1：区域汇总表格 ===== -->
+<div id="panel-region" class="panel active table-wrapper">
+    <table>
+        <colgroup>
+            <col style="width:7%"><col style="width:6%"><col style="width:8%"><col style="width:8%">
+            <col style="width:7%"><col style="width:6%"><col style="width:7%"><col style="width:7%">
+            <col style="width:6%"><col style="width:7%"><col style="width:18%">
+        </colgroup>
+        <thead><tr id="region-head"></tr></thead>
+        <tbody id="region-tbody"></tbody>
+        <tfoot><tr id="region-foot"></tr></tfoot>
+    </table>
+</div>
+
+<!-- ===== 面板2：大店长汇总表格 ===== -->
+<div id="panel-manager" class="panel table-wrapper">
+    <table>
+        <colgroup>
+            <col style="width:4%"><col style="width:7%"><col style="width:5%"><col style="width:7%">
+            <col style="width:8%"><col style="width:7%"><col style="width:6%"><col style="width:6%">
+            <col style="width:6%"><col style="width:6%"><col style="width:16%">
+        </colgroup>
+        <thead><tr id="manager-head"></tr></thead>
+        <tbody id="manager-tbody"></tbody>
+        <tfoot><tr id="manager-foot"></tr></tfoot>
+    </table>
+</div>
+
+<!-- ===== 第三排：13家需招募门店明细 ===== -->
+<div class="section-header" style="margin-top:2px;">【第三排】13家需招募门店明细
+    <span class="store-note" style="color:#c0392b;font-weight:bold;" id="store-count-badge"></span>
+</div>
+
+<div class="filter-bar">
+    <div style="font-size:13px;color:#666;font-weight:bold;">筛选：</div>
+    <select class="filter-select" id="store-region-filter" onchange="filterStores()">
+        <option value="all">区域：全部</option>
+        <option value="李曦">李曦</option>
+        <option value="林阳阳">林阳阳</option>
+        <option value="徐乾">徐乾</option>
+        <option value="张良东">张良东</option>
+    </select>
+    <select class="filter-select" id="store-manager-filter" onchange="filterStores()">
+        <option value="all">大店长：全部</option>
+        <option value="何海云">何海云</option>
+        <option value="童璐">童璐</option>
+        <option value="周思凡">周思凡</option>
+        <option value="李奔">李奔</option>
+        <option value="廖灿">廖灿</option>
+        <option value="赵思洁">赵思洁</option>
+        <option value="旷瑶">旷瑶</option>
+        <option value="李鼎">李鼎</option>
+        <option value="易彪">易彪</option>
+        <option value="钟天祥">钟天祥</option>
+        <option value="杜强">杜强</option>
+        <option value="刘旺林">刘旺林</option>
+        <option value="邵宝生">邵宝生</option>
+        <option value="徐宇辉">徐宇辉</option>
+    </select>
+    <div class="search-box">
+        🔍<input id="store-search" type="text" placeholder="搜索门店 / 大店长..." oninput="searchStores(this.value)">
+    </div>
+    <button class="action-btn btn-reset" onclick="resetStoreFilter()">🔄 重置</button>
+</div>
+
+<div class="table-wrapper store-table-wrap">
+    <table>
+        <colgroup>
+            <col style="width:7%"><col style="width:8%"><col style="width:25%">
+            <col style="width:8%"><col style="width:8%"><col style="width:8%">
+            <col style="width:8%"><col style="width:8%"><col style="width:8%"><col style="width:9%">
+        </colgroup>
+        <thead><tr id="store-head"></tr></thead>
+        <tbody id="store-tbody"></tbody>
+        <tfoot><tr id="store-foot"></tr></tfoot>
+    </table>
+</div>
+
+<!-- ===== 卡片明细弹窗 ===== -->
+<div class="modal-overlay" id="detail-modal" onclick="closeModal(event)">
+    <div class="modal-box" onclick="event.stopPropagation()">
+        <div class="modal-header">
+            <span class="modal-title" id="modal-title">明细</span>
+            <button class="modal-close" onclick="closeModal()">×</button>
+        </div>
+        <div class="modal-body" id="modal-body">
+            <div class="modal-empty">暂无数据</div>
+        </div>
+    </div>
+</div>
+
+</div><!-- end container -->
+
+<script src="data.js"></script>
+<script src="stores.js"></script>
+<script src="details.js"></script>
+<script>
+const D = window.DASHBOARD_DATA;
+
+// ---------- 标题 / 日期 ----------
+document.getElementById('hdr-title').textContent = '● ' + D.meta.title;
+document.getElementById('hdr-date').textContent = '数据截止日期: ' + D.meta.asOf;
+
+// ---------- 第一排卡片 ----------
+function fmtVal(v) { return (v < 0 ? '(' + Math.abs(v) + ')' : String(v)); }
+const cardsRow = document.getElementById('cards-row');
+
+// ---------- 最终招募 ----------
+document.getElementById('recruit-label').textContent = D.recruitFinal.label;
+document.getElementById('recruit-number').textContent = D.recruitFinal.value;
+
+// ---------- 招募达成进度两个方块（全职 / 学生） ----------
+function renderProgressCard(type, cfg, title, footNote) {
+    const recruit = cfg.recruit || 0;
+    const arrived = cfg.arrived || 0;
+    const rate = recruit > 0 ? Math.round(arrived / recruit * 100) : 0;
+    const rateZero = (recruit > 0 && arrived === 0);
+    const arrowSvg = '<svg viewBox="0 0 24 24"><path d="M4 2 L4 20 L9 15 L12 21 L15 20 L12 14 L18 14 Z"/></svg>';
+    return '<div class="progress-card progress-card-' + type + '">' +
+        '<div class="progress-card-title">' +
+            '<span>' + title + '</span>' +
+            '<button class="progress-detail-btn" onclick="openRecruitDetailModal(\'' + type + '\')">' + arrowSvg + '详情</button>' +
+        '</div>' +
+        '<div class="progress-card-body">' +
+            '<div class="progress-stat"><div class="stat-label">招募人数</div>' +
+                '<div class="stat-value">' + recruit + '<span class="stat-unit">人</span></div></div>' +
+            '<div class="progress-stat"><div class="stat-label">到岗人数</div>' +
+                '<div class="stat-value">' + arrived + '<span class="stat-unit">人</span></div></div>' +
+            '<div class="progress-stat is-rate"><div class="stat-label">达成率</div>' +
+                '<div class="stat-value' + (rateZero ? ' zero' : '') + '">' + rate + '<span class="stat-unit">%</span></div></div>' +
+        '</div>' +
+        '<div class="progress-card-foot">' + footNote + '</div>' +
+    '</div>';
+}
+(function renderRecruitProgress() {
+    const p = D.recruitProgress || { fullTime:{recruit:0,arrived:0}, student:{recruit:0,arrived:0} };
+    const html =
+        renderProgressCard('fulltime', p.fullTime || {}, '👔 全职招募达成', '到岗数据按月更新，达成率=到岗/招募') +
+        renderProgressCard('student',  p.student  || {}, '🎓 学生招募达成', '到岗数据按月更新，达成率=到岗/招募');
+    document.getElementById('recruit-progress-row').innerHTML = html;
+})();
+
+// ---------- 招募进度弹窗（全职/学生单店明细） ----------
+function openRecruitDetailModal(type) {
+    const stores = window.STORE_DATA || [];
+    let filtered, columns, modalTitle;
+
+    if (type === 'fulltime') {
+        // 全职招募：显示实际招募人数 > 0 的门店
+        filtered = stores.filter(s => s.实际招募人数 > 0);
+        columns = ['区域', '大店长', '门店', '标准需求人数', '花名册人数', '缺口人数', '最终核对人数', '实际招募人数'];
+        modalTitle = '全职招募明细 - 共 ' + filtered.length + ' 家';
+    } else {
+        // 学生招募：显示学生招募 > 0 的门店
+        filtered = stores.filter(s => s.学生招募 > 0);
+        columns = ['区域', '大店长', '门店', '标准需求人数', '花名册人数', '缺口人数', '最终核对人数', '学生招募'];
+        modalTitle = '学生招募明细 - 共 ' + filtered.length + ' 家';
+    }
+
+    const modal = document.getElementById('detail-modal');
+    const title = document.getElementById('modal-title');
+    const body = document.getElementById('modal-body');
+
+    // 根据类型设置标题颜色
+    title.textContent = modalTitle;
+
+    if (filtered.length === 0) {
+        body.innerHTML = '<div class="modal-empty">暂无数据</div>';
+    } else {
+        body.innerHTML =
+            '<table><thead><tr>' + columns.map(h => '<th>' + h + '</th>').join('') + '</tr></thead>' +
+            '<tbody>' + filtered.map(r =>
+                '<tr>' + columns.map(h => '<td>' + (r[h] === undefined ? '' : r[h]) + '</td>').join('') + '</tr>'
+            ).join('') + '</tbody></table>';
+    }
+    modal.classList.add('active');
+}
+
+// ---------- 工具 ----------
+function gapCell(v) {
+    if (v === 0) return '<span class="val-positive">0</span>';
+    if (v < 0)  return '<span class="val-negative">' + v + '</span>';
+    return '<span class="val-positive">+' + v + '</span>';
+}
+function totalGap(v) { return (v < 0 ? '<strong class="val-negative">(' + Math.abs(v) + ')</strong>' : '<strong>' + v + '</strong>'); }
+
+// ---------- 区域表 ----------
+document.getElementById('region-head').innerHTML = D.region.columns.map(h => '<th>' + h + '</th>').join('');
+const rtb = document.getElementById('region-tbody');
+D.region.rows.forEach(r => {
+    const tr = document.createElement('tr');
+    tr.dataset.name = r.name; tr.dataset.status = r.status;
+    tr.innerHTML =
+        '<td class="text-left"><strong>' + r.name + '</strong></td>' +
+        '<td>' + r.store + '</td><td>' + r.std + '</td><td>' + r.roster + '</td>' +
+        '<td>' + r.leave + '</td><td>' + r.preLeave + '</td><td>' + r.attend + '</td>' +
+        '<td>' + gapCell(r.gap) + '</td><td>' + r.closed + '</td>' +
+        '<td class="val-highlight">' + r.final + '</td><td class="text-left">' + r.note + '</td>';
+    rtb.appendChild(tr);
+});
+const rsum = D.region.rows.reduce((a, r) => ({
+    store:a.store+r.store, std:a.std+r.std, roster:a.roster+r.roster, leave:a.leave+r.leave,
+    preLeave:a.preLeave+r.preLeave, attend:a.attend+r.attend, gap:a.gap+r.gap, closed:a.closed+r.closed, final:a.final+r.final
+}), {store:0,std:0,roster:0,leave:0,preLeave:0,attend:0,gap:0,closed:0,final:0});
+document.getElementById('region-foot').innerHTML =
+    '<td class="text-left"><strong>合计</strong></td>' +
+    '<td><strong>' + rsum.store + '</strong></td><td><strong>' + rsum.std + '</strong><td><strong>' + rsum.roster + '</strong>' +
+    '<td><strong>' + rsum.leave + '</strong></td><td><strong>' + rsum.preLeave + '</strong><td><strong>' + rsum.attend + '</strong>' +
+    '<td>' + totalGap(rsum.gap) + '</td><td><strong>' + rsum.closed + '</strong><td><strong class="val-highlight">' + rsum.final + '</strong>' +
+    '<td class="text-left total-note">' + D.region.totalNote + '</td>';
+
+// ---------- 大店长表 ----------
+document.getElementById('manager-head').innerHTML = D.manager.columns.map(h => '<th>' + h + '</th>').join('');
+const mtb = document.getElementById('manager-tbody');
+D.manager.rows.forEach(r => {
+    const tr = document.createElement('tr');
+    tr.dataset.name = r.name; tr.dataset.status = r.status;
+    tr.innerHTML =
+        '<td>' + r.area + '</td><td class="text-left"><strong>' + r.name + '</strong></td>' +
+        '<td>' + r.store + '</td><td>' + r.std + '</td><td>' + r.roster + '</td>' +
+        '<td>' + r.leave + '</td><td>' + r.preLeave + '</td><td>' + r.attend + '</td>' +
+        '<td>' + gapCell(r.gap) + '</td><td class="val-highlight">' + r.final + '</td><td class="text-left">' + r.note + '</td>';
+    mtb.appendChild(tr);
+});
+const msum = D.manager.rows.reduce((a, r) => ({
+    store:a.store+r.store, std:a.std+r.std, roster:a.roster+r.roster, leave:a.leave+r.leave,
+    preLeave:a.preLeave+r.preLeave, attend:a.attend+r.attend, gap:a.gap+r.gap, final:a.final+r.final
+}), {store:0,std:0,roster:0,leave:0,preLeave:0,attend:0,gap:0,final:0});
+document.getElementById('manager-foot').innerHTML =
+    '<td colspan="2" class="text-left"><strong>合计</strong></td>' +
+    '<td><strong>' + msum.store + '</strong></td><td><strong>' + msum.std + '</strong><td><strong>' + msum.roster + '</strong>' +
+    '<td><strong>' + msum.leave + '</strong></td><td><strong>' + msum.preLeave + '</strong><td><strong>' + msum.attend + '</strong>' +
+    '<td>' + totalGap(msum.gap) + '</td><td><strong class="val-highlight">' + msum.final + '</strong>' +
+    '<td class="text-left total-note">' + D.manager.totalNote + '</td>';
+
+// ---------- 交互 ----------
+let currentTab = 'region';
+let currentDimension = 'all';
+
+// 第一排卡片渲染（支持汇总数据替换）
+function renderCards(source) {
+    // source 为 D.cards 原始结构时，元素含 label；为行数据时，元素含 store/std/...
+    const isRowData = Array.isArray(source) && source.length > 0 && ('store' in source[0]);
+    let cards;
+    if (isRowData) {
+        const sum = source.reduce((a, r) => ({
+            store: a.store + r.store,
+            std: a.std + r.std,
+            roster: a.roster + r.roster,
+            leave: a.leave + r.leave,
+            preLeave: a.preLeave + r.preLeave,
+            gap: a.gap + r.gap,
+            closed: a.closed + (r.closed || 0),
+            final: a.final + r.final
+        }), {store:0, std:0, roster:0, leave:0, preLeave:0, gap:0, closed:0, final:0});
+        cards = [
+            { label: "营业门店数", sub: "(家)", value: sum.store, red: false, highlight: false },
+            { label: "全职标准合计", sub: "(D列/人)", value: sum.std, red: false, highlight: false },
+            { label: "花名册在职合计", sub: "(G列/人)", value: sum.roster, red: false, highlight: false },
+            { label: "特殊请假合计", sub: "(H列/人)", value: sum.leave, red: true, highlight: false },
+            { label: "预离职合计", sub: "(I列/人)", value: sum.preLeave, red: true, highlight: false },
+            { label: "8月全职缺口", sub: "(K列/人)", value: sum.gap, red: true, highlight: true },
+            { label: "撤店合计", sub: "(L列/家)", value: sum.closed, red: false, highlight: false }
+        ];
+    } else {
+        cards = source;
+    }
+    const clickableCards = ['特殊请假合计', '预离职合计', '撤店合计'];
+    const arrowSvg = '<svg viewBox="0 0 24 24"><path d="M4 2 L4 20 L9 15 L12 21 L15 20 L12 14 L18 14 Z"/></svg>';
+    const cardsRow = document.getElementById('cards-row');
+    cardsRow.innerHTML = '';
+    cards.forEach(c => {
+        const div = document.createElement('div');
+        div.className = 'metric-card' + (c.highlight ? ' highlight' : '') + (clickableCards.includes(c.label) ? ' clickable' : '');
+        div.innerHTML =
+            '<div class="card-label">' + c.label + '<br><span class="card-label-sub">' + c.sub + '</span></div>' +
+            '<div class="card-value' + (c.red ? ' red' : '') + '">' + fmtVal(c.value) + '</div>' +
+            (clickableCards.includes(c.label) ? '<div class="click-hint">' + arrowSvg + '<span class="hint-text">详情</span></div>' : '');
+        if (clickableCards.includes(c.label)) {
+            div.onclick = function() { openDetailModal(c.label); };
+        }
+        cardsRow.appendChild(div);
+    });
+
+    // 最终招募数字同步
+    const finalSum = isRowData
+        ? source.reduce((a, r) => a + r.final, 0)
+        : parseInt((D.recruitFinal.value || '13').replace(/\D/g, ''), 10) || 13;
+    document.getElementById('recruit-number').textContent = finalSum + ' 人';
+}
+
+// ---------- 卡片明细弹窗 ----------
+const detailMap = {
+    '特殊请假合计': '特殊请假',
+    '预离职合计': '预离职',
+    '撤店合计': '撤店'
+};
+const detailColumns = ['区域', '大店长', '门店', '工号', '姓名', '备注原因'];
+
+function openDetailModal(cardLabel) {
+    const key = detailMap[cardLabel];
+    if (!key) return;
+    const all = window.DETAIL_DATA[key] || [];
+
+    // 按当前第二排筛选条件过滤
+    let filtered = all;
+    if (currentDimension !== 'all') {
+        if (currentTab === 'region') {
+            filtered = all.filter(r => r.区域 === currentDimension);
+        } else if (currentTab === 'manager') {
+            filtered = all.filter(r => r.大店长 === currentDimension);
+        }
+    }
+
+    const modal = document.getElementById('detail-modal');
+    const title = document.getElementById('modal-title');
+    const body = document.getElementById('modal-body');
+    title.textContent = cardLabel + '明细' + (currentDimension !== 'all' ? '（当前：' + currentDimension + '）' : '') + ' - 共 ' + filtered.length + ' 条';
+
+    if (filtered.length === 0) {
+        body.innerHTML = '<div class="modal-empty">当前筛选条件下暂无数据</div>';
+    } else {
+        body.innerHTML =
+            '<table><thead><tr>' + detailColumns.map(h => '<th>' + h + '</th>').join('') + '</tr></thead>' +
+            '<tbody>' + filtered.map(r =>
+                '<tr>' + detailColumns.map(h => '<td>' + (r[h] === undefined || r[h] === null ? '' : r[h]) + '</td>').join('') + '</tr>'
+            ).join('') + '</tbody></table>';
+    }
+    modal.classList.add('active');
+}
+
+function closeModal(event) {
+    if (!event || event.target.id === 'detail-modal' || event.target.className === 'modal-close') {
+        document.getElementById('detail-modal').classList.remove('active');
+    }
+}
+
+// 切换 Tab
+function switchTab(tabName) {
+    currentTab = tabName;
+    document.getElementById('tab-region').classList.toggle('active', tabName === 'region');
+    document.getElementById('tab-manager').classList.toggle('active', tabName === 'manager');
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('panel-' + tabName).classList.add('active');
+
+    // 重建维度下拉
+    const sel = document.getElementById('dimension-filter');
+    sel.innerHTML = '';
+    const placeholder = tabName === 'region' ? '区域：全部' : '大店长：全部';
+    sel.add(new Option(placeholder, 'all'));
+    const src = D[tabName].rows;
+    src.forEach(r => sel.add(new Option(r.name, r.name)));
+
+    // 恢复为全部，并重置卡片/表格
+    sel.value = 'all';
+    currentDimension = 'all';
+    renderCards(D.cards);
+    filterDimension('all');
+}
+
+// 选择具体区域/大店长
+function filterDimension(value) {
+    currentDimension = value;
+    const activePanel = document.querySelector('.panel.active');
+    activePanel.querySelectorAll('tbody tr').forEach(row => {
+        row.style.display = (value === 'all' || row.dataset.name === value) ? '' : 'none';
+    });
+
+    // 同步更新第一排卡片
+    if (value === 'all') {
+        renderCards(D.cards);
+    } else {
+        const row = D[currentTab].rows.find(r => r.name === value);
+        if (row) renderCards([row]);
+    }
+
+    // 同步联动第三排：仅显示该区域/大店区的招募门店
+    syncStoreFilterWithDimension();
+}
+
+// 第二排维度筛选联动第三排
+function syncStoreFilterWithDimension() {
+    const regionSel = document.getElementById('store-region-filter');
+    const managerSel = document.getElementById('store-manager-filter');
+    if (currentDimension === 'all') {
+        regionSel.value = 'all';
+        managerSel.value = 'all';
+    } else if (currentTab === 'region') {
+        regionSel.value = currentDimension;
+        managerSel.value = 'all';
+    } else if (currentTab === 'manager') {
+        managerSel.value = currentDimension;
+        regionSel.value = 'all';
+    }
+    filterStores();
+}
+
+function filterData(status) {
+    const activePanel = document.querySelector('.panel.active');
+    activePanel.querySelectorAll('tbody tr').forEach(row => {
+        const okStatus = (status === 'all' || row.dataset.status === status);
+        const okDim = (currentDimension === 'all' || row.dataset.name === currentDimension);
+        row.style.display = (okStatus && okDim) ? '' : 'none';
+    });
+}
+function searchTable(keyword) {
+    const kw = keyword.toLowerCase();
+    const activePanel = document.querySelector('.panel.active');
+    activePanel.querySelectorAll('tbody tr').forEach(row => {
+        const name = (row.dataset.name || '').toLowerCase();
+        const okK = name.includes(kw) || row.textContent.toLowerCase().includes(kw);
+        const okDim = (currentDimension === 'all' || row.dataset.name === currentDimension);
+        row.style.display = (okK && okDim) ? '' : 'none';
+    });
+}
+function resetFilter() {
+    document.querySelectorAll('.filter-select').forEach(s => s.value = 'all');
+    document.querySelector('.search-box input').value = '';
+    currentDimension = 'all';
+    document.getElementById('dimension-filter').value = 'all';
+    renderCards(D.cards);
+    document.querySelectorAll('.panel').forEach(p => {
+        p.querySelectorAll('tbody tr').forEach(row => row.style.display = '');
+    });
+    resetStoreFilter(); // 同时重置第三排
+}
+function exportData() {
+    alert('📥 数据导出功能\n\n可导出当前视图的Excel/CSV格式数据。\n（实际部署时连接后端API）');
+}
+
+// ---------- 第三排：13家需招募门店明细 ----------
+const S = window.STORE_DATA || [];
+const T = window.STORE_TOTALS || { 门店数: 13, 实际招募: 3, 学生招募: 16.0 };
+
+// 表头：区域、大店长、门店、标准需求人数、花名册人数、缺口人数、招募人数、最终核对人数、实际招募人数、学生招募
+document.getElementById('store-head').innerHTML =
+    ['区域','大店长','门店','标准需求<br>人数','花名册<br>人数','缺口<br>人数','招募<br>人数','最终核对<br>人数','实际招募<br>人数','学生招募']
+    .map(h => '<th>' + h + '</th>').join('');
+
+// 徽标
+document.getElementById('store-count-badge').textContent =
+    '共 ' + T.门店数 + ' 家需招募 · 实际招募 ' + T.实际招募 + ' 人 · 学生招募 ' + T.学生招募 + ' 人';
+
+// 渲染行
+function renderStoreRows(data) {
+    const stb = document.getElementById('store-tbody');
+    stb.innerHTML = '';
+    data.forEach(r => {
+        const tr = document.createElement('tr');
+        tr.dataset.region = r.区域;
+        tr.dataset.manager = r.大店长;
+        tr.dataset.name = (r.门店 + ' ' + r.大店长);
+        const gapCls = r.缺口人数 < 0 ? 'val-negative' : (r.缺口人数 > 0 ? 'val-positive' : '');
+        tr.innerHTML =
+            '<td>' + r.区域 + '</td>' +
+            '<td>' + r.大店长 + '</td>' +
+            '<td>' + r.门店 + '</td>' +
+            '<td>' + r.标准需求人数 + '</td>' +
+            '<td>' + r.花名册人数 + '</td>' +
+            '<td class="' + gapCls + '">' + r.缺口人数 + '</td>' +
+            '<td>' + r.招募人数 + '</td>' +
+            '<td class="val-highlight">' + r.最终核对人数 + '</td>' +
+            '<td>' + r.实际招募人数 + '</td>' +
+            '<td>' + (r.学生招募 === 0 ? '0' : r.学生招募) + '</td>';
+        stb.appendChild(tr);
+    });
+}
+
+// 合计行
+function renderStoreFoot() {
+    const ssum = S.reduce((a, r) => ({
+        std: a.std + r.标准需求人数,
+        cnt: a.cnt + r.花名册人数,
+        gap: a.gap + r.缺口人数,
+        apply: a.apply + r.招募人数,
+        final: a.final + r.最终核对人数,
+        actual: a.actual + r.实际招募人数,
+        student: a.student + r.学生招募
+    }), {std:0, cnt:0, gap:0, apply:0, final:0, actual:0, student:0});
+    document.getElementById('store-foot').innerHTML =
+        '<td colspan="3" class="text-left"><strong>合计（' + S.length + '家）</strong></td>' +
+        '<td><strong>' + ssum.std + '</strong></td>' +
+        '<td><strong>' + ssum.cnt + '</strong></td>' +
+        '<td class="val-negative"><strong>(' + Math.abs(ssum.gap) + ')</strong></td>' +
+        '<td><strong>' + ssum.apply + '</strong></td>' +
+        '<td><strong class="val-highlight">' + ssum.final + '</strong></td>' +
+        '<td><strong>' + ssum.actual + '</strong></td>' +
+        '<td><strong>' + ssum.student + '</strong></td>';
+}
+
+renderStoreRows(S);
+renderStoreFoot();
+
+function filterStores() {
+    const rv = document.getElementById('store-region-filter').value;
+    const mv = document.getElementById('store-manager-filter').value;
+    const k = (document.getElementById('store-search') || {}).value || '';
+    document.querySelectorAll('#store-tbody tr').forEach(row => {
+        const okR = (rv === 'all' || row.dataset.region === rv);
+        const okM = (mv === 'all' || row.dataset.manager === mv);
+        const okK = !k || (row.dataset.name || '').toLowerCase().includes(k.toLowerCase());
+        row.style.display = (okR && okM && okK) ? '' : 'none';
+    });
+}
+function searchStores(kw) {
+    document.getElementById('store-search').value = kw;
+    filterStores();
+}
+function resetStoreFilter() {
+    document.getElementById('store-region-filter').value = 'all';
+    document.getElementById('store-manager-filter').value = 'all';
+    document.getElementById('store-search').value = '';
+    document.querySelectorAll('#store-tbody tr').forEach(row => row.style.display = '');
+}
+
+// 初始化：填充区域维度下拉并确保第一排为全量
+switchTab('region');
+</script>
+<script>
+function switchDashboard(sel){
+    var map={hours:'../',turnover:'../turnover/',current:location.href};
+    if(sel.value!=='current' && map[sel.value]) window.location.href = map[sel.value];
+}
+</script>
+</body>
+</html>

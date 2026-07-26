@@ -233,6 +233,12 @@ body{font-family:-apple-system,'PingFang SC','Helvetica Neue',sans-serif;backgro
   font-size:12px;line-height:1.5;padding:10px 14px;text-align:center}
 #wxTip b{color:#FFD54F}
 #wxTip .x{float:right;margin-left:10px;color:#9aa0a6;cursor:pointer;font-weight:700}
+/* ===== 看板切换器 ===== */
+.dash-switcher{display:flex;align-items:center;gap:8px}
+.dash-switcher-label{color:rgba(255,255,255,.95);font-size:13px;white-space:nowrap}
+.dash-switcher-select{background:#fff;color:var(--pri);border:none;border-radius:20px;padding:6px 28px 6px 12px;font-size:13px;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.12);appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23378ADD' d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;min-width:150px}
+.dash-switcher-select:focus{outline:none;box-shadow:0 0 0 2px rgba(255,255,255,.4)}
+@media(max-width:768px){.dash-switcher-label{display:none}.dash-switcher-select{min-width:130px}}
 </style>
 </head>
 <body>
@@ -243,7 +249,17 @@ body{font-family:-apple-system,'PingFang SC','Helvetica Neue',sans-serif;backgro
 <!-- 顶部蓝色横幅 -->
 <div class="topbar">
   <h1><span class="dot"></span> 墨柠工时分析看板 <span id="scopeTag" class="scope-tag"></span></h1>
-  <div class="meta" id="dateRange"></div>
+  <div style="display:flex;align-items:center;gap:16px">
+    <div class="dash-switcher">
+      <span class="dash-switcher-label">切换看板：</span>
+      <select class="dash-switcher-select" onchange="switchDashboard(this)">
+        <option value="current">工时墨柠（当前）</option>
+        <option value="hc">HC 招募缺口看板</option>
+        <option value="turnover">古德墨柠离职数据看板</option>
+      </select>
+    </div>
+    <div class="meta" id="dateRange"></div>
+  </div>
 </div>
 
 <!-- 黄色信息条 -->
@@ -45903,5 +45919,12 @@ try{
   </div>
 </div>
 
+<script>
+function switchDashboard(sel){
+  var map={hc:'https://279682f4fde24006b36fb33b55146845.app.codebuddy.work',turnover:'https://3000-2a73735a1c624120bd63c94f8f741ddb.e2b.ap-beijing.sandbox.cloudstudio.club/',current:location.href};
+  if(sel.value!=='current' && map[sel.value]) window.open(map[sel.value],'_blank');
+  sel.value='current';
+}
+</script>
 </body>
 </html>

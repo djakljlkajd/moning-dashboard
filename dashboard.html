@@ -44,10 +44,13 @@
 body{font-family:-apple-system,'PingFang SC','Helvetica Neue',sans-serif;background:var(--bg);color:var(--pri);font-size:13px;line-height:1.6;padding:0}
 
 /* ===== 顶部蓝色横幅 ===== */
-.topbar{background:linear-gradient(90deg,#378ADD 0%,#4A9AE8 100%);color:#fff;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 8px rgba(55,138,221,.18)}
-.topbar h1{font-size:18px;font-weight:500;display:flex;align-items:center;gap:10px}
+.topbar{background:linear-gradient(90deg,#378ADD 0%,#4A9AE8 100%);color:#fff;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 8px rgba(55,138,221,.18);gap:12px}
+.topbar h1{font-size:18px;font-weight:500;display:flex;align-items:center;gap:10px;flex:1}
 .topbar .dot{width:10px;height:10px;background:#fff;border-radius:50%;display:inline-block}
-.topbar .meta{font-size:13px;opacity:.92}
+.topbar .meta{font-size:13px;opacity:.92;white-space:nowrap}
+.topbar .dash-switch{display:flex;align-items:center;gap:6px;font-size:13px;white-space:nowrap}
+.topbar .dash-switch select{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.35);color:#fff;border-radius:6px;padding:5px 26px 5px 10px;font-size:13px;cursor:pointer;outline:none;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath fill='%23fff' d='M0 1l5 4 5-4z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 9px center}
+.topbar .dash-switch select option{background:#fff;color:#333}
 
 /* ===== 黄色信息条 ===== */
 .infobar{background:var(--yellowBg);border-bottom:1px solid var(--yellowBorder);padding:12px 24px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
@@ -244,6 +247,14 @@ body{font-family:-apple-system,'PingFang SC','Helvetica Neue',sans-serif;backgro
 <div class="topbar">
   <h1><span class="dot"></span> 墨柠工时分析看板 <span id="scopeTag" class="scope-tag"></span></h1>
   <div class="meta" id="dateRange"></div>
+  <div class="dash-switch">
+    <span>切换看板：</span>
+    <select id="dashSwitch" onchange="switchDashboard(this.value)">
+      <option value="./">墨柠工时看板</option>
+      <option value="./hc/">HC招募缺口看板</option>
+      <option value="./turnover/">离职率看板</option>
+    </select>
+  </div>
 </div>
 
 <!-- 黄色信息条 -->
@@ -274,12 +285,12 @@ body{font-family:-apple-system,'PingFang SC','Helvetica Neue',sans-serif;backgro
   <div class="metrics-hd">
     <div class="sec-title">【第一排】工时核心指标</div>
     <div class="f-bar">
-      <select id="lvFilter" class="lv-filter" onchange="onLvChange()">
-        <option value="all">全部层级</option>
-        <option value="region">仅区域汇总</option>
-        <option value="manager">仅大店区明细</option>
+      <select id="regionFilter" class="region-filter" onchange="onRegionChange()">
+        <option value="">全部区域</option>
       </select>
-      <select id="rgFilter" class="rg-filter" onchange="onRgChange()"><option value="">全部</option></select>
+      <select id="managerFilter" class="manager-filter" onchange="onManagerChange()">
+        <option value="">全部大店长</option>
+      </select>
     </div>
   </div>
   <div class="metrics" id="metricsGrid"></div>
@@ -296,12 +307,12 @@ body{font-family:-apple-system,'PingFang SC','Helvetica Neue',sans-serif;backgro
     <div class="sec-hd">
       <h2>【第二排】区域 / 大店区工时汇总</h2>
       <div class="f-bar">
-        <select class="lv-filter" onchange="changeLv(this.value)">
-          <option value="all">全部层级</option>
-          <option value="region">仅区域汇总</option>
-          <option value="manager">仅大店区明细</option>
+        <select class="region-filter" onchange="changeRegion(this.value)">
+          <option value="">全部区域</option>
         </select>
-        <select class="rg-filter" onchange="changeRg(this.value)"><option value="">全部</option></select>
+        <select class="manager-filter" onchange="changeManager(this.value)">
+          <option value="">全部大店长</option>
+        </select>
       </div>
     </div>
     <div class="tbl-wrap"><table><thead><tr id="tHead"></tr></thead><tbody id="tBody"></tbody></table></div>
@@ -321,12 +332,12 @@ body{font-family:-apple-system,'PingFang SC','Helvetica Neue',sans-serif;backgro
         <button class="tab" onclick="switchTab('student_detail',this)">学生明细数据</button>
       </div>
       <div class="f-bar">
-        <select class="lv-filter" onchange="changeLv(this.value)">
-          <option value="all">全部层级</option>
-          <option value="region">仅区域汇总</option>
-          <option value="manager">仅大店区明细</option>
+        <select class="region-filter" onchange="changeRegion(this.value)">
+          <option value="">全部区域</option>
         </select>
-        <select class="rg-filter" onchange="changeRg(this.value)"><option value="">全部</option></select>
+        <select class="manager-filter" onchange="changeManager(this.value)">
+          <option value="">全部大店长</option>
+        </select>
         <button class="btn-export" onclick="exportDetail()">导出Excel</button>
       </div>
       <span id="detailCount" style="font-size:12px;color:var(--sec);white-space:nowrap"></span>
@@ -47984,6 +47995,14 @@ window.onerror=function(msg,src,line,col,err){
 if(/MicroMessenger/i.test(navigator.userAgent)){document.getElementById('wxTip').style.display='block';}
 const D=DASHBOARD_DATA,S=D.summary,M=D.meta;
 
+/* 看板切换 */
+function switchDashboard(path){
+  if(!path)return;
+  const base=location.pathname.replace(/\/[^\/]*$/,'/');
+  const target=new URL(path,location.origin+base).href;
+  if(target!==location.href){ location.href=target; }
+}
+
 document.getElementById('dateRange').textContent=`数据周期：${M.date_from} ~ ${M.date_to}（共${M.days}天）`;
 const n=new Date();
 
@@ -48009,57 +48028,45 @@ D.rows.forEach(r=>{
 });
 
 /* ========== 当前筛选状态 ==========
- * scope: {lv:'all'|'region'|'manager', rg:''|regionName|managerName}
+ * scope: {region:'', manager:''}
  * getVisibleRows(): 返回当前应显示的 rows（用于表格）
  * getAggregateRows(): 返回用于聚合指标卡的行（避免重复计算）
  * getDetailFilterFn(): 返回函数(p)=>bool 用于过滤明细记录
 */
-let scope={lv:'all',rg:''};
+let scope={region:'',manager:''};
 
 function getVisibleRows(){
   let rows=D.rows.slice();
-  if(scope.lv==='all' && !scope.rg) return rows;
-  if(scope.lv==='region'||scope.rg){
-    const target=scope.rg||'';
-    if(!target) return rows;
-    const isRegion=regions.some(R=>R.label===target);
-    if(isRegion){
-      return rows.filter(r=>r.label===target||(r.type==='manager'&&r._parentRegion===target));
-    } else {
-      return rows.filter(r=>r.type==='manager'&&r.sub_label===target);
-    }
+  if(!scope.region && !scope.manager) return rows;
+  if(scope.manager){
+    return rows.filter(r=>r.type==='manager'&&r.sub_label===scope.manager);
   }
-  if(scope.lv==='manager' && !scope.rg){
-    return rows.filter(r=>r.type==='manager');
+  if(scope.region){
+    return rows.filter(r=>r.label===scope.region||(r.type==='manager'&&r._parentRegion===scope.region));
   }
   return rows;
 }
 
 function getAggregateRows(){
   const rows=D.rows;
-  if(scope.rg){
-    const isRegion=regions.some(R=>R.label===scope.rg);
-    if(isRegion){
-      return rows.filter(r=>r.type==='region' && r.label===scope.rg);
-    } else {
-      return rows.filter(r=>r.type==='manager' && r.sub_label===scope.rg);
-    }
+  if(scope.manager){
+    return rows.filter(r=>r.type==='manager' && r.sub_label===scope.manager);
   }
-  if(scope.lv==='manager'){
-    return rows.filter(r=>r.type==='manager');
+  if(scope.region){
+    return rows.filter(r=>r.type==='region' && r.label===scope.region);
   }
   return rows.filter(r=>r.type==='region');
 }
 
 function getDetailFilterFn(){
-  const target=scope.rg;
-  if(!target || (scope.lv==='all' && !target)) return ()=>true;
-  const isRegion=regions.some(R=>R.label===target);
-  if(isRegion){
-    return p=>p['区域']===target;
-  } else {
-    return p=>p['大店长']===target;
+  if(!scope.region && !scope.manager) return ()=>true;
+  if(scope.manager){
+    return p=>p['大店长']===scope.manager;
   }
+  if(scope.region){
+    return p=>p['区域']===scope.region;
+  }
+  return ()=>true;
 }
 
 // 给每个manager行打上_parentRegion标记
@@ -48069,56 +48076,68 @@ D.rows.forEach(r=>{
   else r._parentRegion=curR;
 });
 
-/* ========== 下拉框逻辑 ========== */
-function rebuildRgOptions(){
-  const isMgrMode=scope.lv==='manager';
-  document.querySelectorAll('.rg-filter').forEach(sel=>{
-    sel.innerHTML='<option value="">全部</option>';
-    if(isMgrMode){
-      allManagers.forEach(m=>{
-        sel.innerHTML+=`<option value="${m.sub_label}">${m.sub_label}</option>`;
-      });
-    } else {
-      regions.forEach(R=>{
-        sel.innerHTML+=`<option value="${R.label}">${R.label}</option>`;
-      });
-    }
-    if(scope.rg){
-      const opts=[...sel.options].map(o=>o.value);
-      if(opts.includes(scope.rg)) sel.value=scope.rg;
-      else sel.value='';
-    } else {
-      sel.value='';
-    }
+/* ========== 下拉框逻辑：区域 + 大店长级联 ========== */
+function rebuildRegionOptions(){
+  document.querySelectorAll('.region-filter').forEach(sel=>{
+    sel.innerHTML='<option value="">全部区域</option>';
+    regions.forEach(R=>{
+      sel.innerHTML+=`<option value="${R.label}">${R.label}</option>`;
+    });
+    sel.value=scope.region||'';
   });
 }
 
-function syncLvSelects(val){
-  document.querySelectorAll('.lv-filter').forEach(s=>s.value=val);
-}
-function syncRgSelects(val){
-  document.querySelectorAll('.rg-filter').forEach(s=>s.value=val);
-}
-
-function changeLv(val){
-  syncLvSelects(val);
-  onLvChange();
-}
-function changeRg(val){
-  syncRgSelects(val);
-  onRgChange();
+function rebuildManagerOptions(){
+  document.querySelectorAll('.manager-filter').forEach(sel=>{
+    sel.innerHTML='<option value="">全部大店长</option>';
+    const list=scope.region
+      ? allManagers.filter(m=>m.parentRegion===scope.region)
+      : allManagers;
+    list.forEach(m=>{
+      sel.innerHTML+=`<option value="${m.sub_label}">${m.sub_label}</option>`;
+    });
+    sel.value=scope.manager||'';
+  });
 }
 
-function onLvChange(){
-  scope.lv=document.querySelector('.lv-filter').value;
-  scope.rg='';
-  syncRgSelects('');
-  rebuildRgOptions();
+function syncRegionSelects(val){
+  document.querySelectorAll('.region-filter').forEach(s=>s.value=val);
+}
+function syncManagerSelects(val){
+  document.querySelectorAll('.manager-filter').forEach(s=>s.value=val);
+}
+
+function changeRegion(val){
+  syncRegionSelects(val);
+  onRegionChange();
+}
+function changeManager(val){
+  syncManagerSelects(val);
+  onManagerChange();
+}
+
+function onRegionChange(){
+  scope.region=document.querySelector('.region-filter').value;
+  // 如果当前已选的大店长不在新区域下，清空大店长
+  if(scope.manager && !allManagers.some(m=>m.sub_label===scope.manager && m.parentRegion===scope.region)){
+    scope.manager='';
+    syncManagerSelects('');
+  }
+  rebuildManagerOptions();
   refreshAll();
 }
 
-function onRgChange(){
-  scope.rg=document.querySelector('.rg-filter').value;
+function onManagerChange(){
+  scope.manager=document.querySelector('.manager-filter').value;
+  // 如果选了大店长，自动联动到其区域
+  if(scope.manager){
+    const m=allManagers.find(x=>x.sub_label===scope.manager);
+    if(m && m.parentRegion && m.parentRegion!==scope.region){
+      scope.region=m.parentRegion;
+      syncRegionSelects(scope.region);
+      rebuildManagerOptions(); // 区域变了需要重新生成大店长列表，但保留当前选中的大店长
+    }
+  }
   refreshAll();
 }
 
@@ -48720,18 +48739,19 @@ function confirmManagerAdviceEdit(){
 /* ========== Scope 标签 ========== */
 function updateScopeTag(){
   const el=document.getElementById('scopeTag');
-  if(scope.lv==='all'&&!scope.rg){el.innerHTML='';return;}
+  if(!scope.region&&!scope.manager){el.innerHTML='';return;}
   const parts=[];
-  if(scope.lv!=='all'){parts.push(scope.lv==='region'?'仅区域':scope.lv==='manager'?'仅大店区':'');}
-  if(scope.rg){parts.push(scope.rg);}
+  if(scope.region){parts.push(scope.region);}
+  if(scope.manager){parts.push(scope.manager);}
   el.innerHTML=`📍 ${parts.join(' · ')} <span class="x-btn" onclick="clearScope()">✕</span>`;
 }
 
 function clearScope(){
-  scope={lv:'all',rg:''};
-  syncLvSelects('all');
-  syncRgSelects('');
-  rebuildRgOptions();
+  scope={region:'',manager:''};
+  syncRegionSelects('');
+  syncManagerSelects('');
+  rebuildRegionOptions();
+  rebuildManagerOptions();
   refreshAll();
 }
 
@@ -48788,10 +48808,11 @@ function matchesDetailSearch(p){
 
 function updateDetailScopeHint(){
   const el=document.getElementById('detailScopeHint');
-  if(scope.lv==='all'&&!scope.rg){el.textContent='';return;}
+  if(!scope.region&&!scope.manager){el.textContent='';return;}
   const parts=[];
-  if(scope.rg) parts.push(`当前: ${scope.rg}`);
-  el.textContent=parts.length ? `（${parts.join('')}）` : '';
+  if(scope.region) parts.push(scope.region);
+  if(scope.manager) parts.push(scope.manager);
+  el.textContent=parts.length ? `（当前: ${parts.join(' · ')}）` : '';
 }
 
 function renderDetail(){
@@ -49018,11 +49039,22 @@ async function exportDetail(){
 }
 
 /* ========== 初始化 ========== */
+function initDashSwitch(){
+  const sel=document.getElementById('dashSwitch');
+  if(!sel)return;
+  const p=location.pathname;
+  if(p.includes('/hc/')) sel.value='./hc/';
+  else if(p.includes('/turnover/')) sel.value='./turnover/';
+  else sel.value='./';
+}
+
 try{
   loadZeroFullEdits();
-  rebuildRgOptions();
+  rebuildRegionOptions();
+  rebuildManagerOptions();
+  initDashSwitch();
   refreshAll();
-  // 从后端加载违规核实数据，并每10秒自动同步最新数据
+  // 从后端加载违规核实数据，并每30秒自动同步最新数据
   loadViolationData();
   setInterval(loadViolationData,30000);
 }catch(e){

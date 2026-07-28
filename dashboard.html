@@ -92,6 +92,8 @@ body{font-family:-apple-system,'PingFang SC','Helvetica Neue',sans-serif;backgro
 .m-card.red .val{color:var(--red)}
 .m-card.amber .val{color:var(--amber)}
 .m-card .sub{font-size:11px;color:var(--hint);margin-top:6px}
+.m-card .calc{font-size:10px;color:var(--hint);margin-top:4px;opacity:.75}
+.m-card .unit{font-size:14px;color:var(--sec);margin-left:2px;font-weight:500}
 
 /* 可点击指标卡 + 详情按钮 */
 .m-card.clickable{cursor:pointer}
@@ -49851,6 +49853,8 @@ function renderMetrics(){
     agg.student_hours += (r['学生总工时']||0);
   });
   const studentRatio=agg.total_hours>0 ? ((agg.student_hours/agg.total_hours)*100).toFixed(1) : 0;
+  const fullAvgHours=agg.full_total>0 ? ((agg.total_hours-agg.student_hours)/agg.full_total).toFixed(1) : 0;
+  const studentAvgHours=agg.student_active>0 ? (agg.student_hours/agg.student_active).toFixed(1) : 0;
   // 7天预警：卡片与弹窗均按尾段连续>=7统计，保持一致
   const filt=getDetailFilterFn();
   const consec7Count=(D.warn7||[]).filter(filt).filter(x=>x['尾段连续未休']>=7).length;
@@ -49864,7 +49868,9 @@ function renderMetrics(){
     {l:'连续出勤7天预警',v:consec7Count,s:'需排休',c:consec7Count>0?'amber':'teal',type:'consec7'},
     {l:'学生用工人数',v:agg.student_total,s:`出勤${agg.student_active}人`,c:'purple'},
     {l:'学生总工时(h)',v:agg.student_hours.toLocaleString(undefined,{maximumFractionDigits:1}),s:`占比 ${studentRatio}%`,c:'purple'},
-    {l:'学生工时占比',v:`${studentRatio}%`,s:'学生/(全职+学生)',c:'coral'}
+    {l:'学生工时占比',v:`${studentRatio}%`,s:'学生/(全职+学生)',c:'coral'},
+    {l:'全职人均工时',v:`${fullAvgHours}<span class="unit">人/时</span>`,s:'含0工时全职',calc:'(总工时-学生工时)/全职人数',c:'teal'},
+    {l:'学生人均工时',v:`${studentAvgHours}<span class="unit">人/时</span>`,s:'仅统计出勤学生',calc:'学生总工时/出勤人数',c:'purple'}
   ];
   let h='';
   mDat.forEach(m=>{
@@ -49872,7 +49878,8 @@ function renderMetrics(){
     const onClick=m.type?`onclick="showAlertDetail('${m.type}')"`:'style="cursor:default"';
     const detailBtn=m.type?'<div class="detail-btn">详情</div>':'';
     const sub2=m.s2?`<div class="sub" style="font-size:10px;margin-top:2px">${m.s2}</div>`:'';
-    h+=`<div class="m-card ${m.c} ${clickable}" ${onClick}><div class="lbl">${m.l}</div><div class="val">${m.v}</div>${m.s?`<div class="sub">${m.s}</div>`:''}${sub2}${detailBtn}</div>`;
+    const calcHtml=m.calc?`<div class="calc">${m.calc}</div>`:'';
+    h+=`<div class="m-card ${m.c} ${clickable}" ${onClick}><div class="lbl">${m.l}</div><div class="val">${m.v}</div>${m.s?`<div class="sub">${m.s}</div>`:''}${sub2}${calcHtml}${detailBtn}</div>`;
   });
   document.getElementById('metricsGrid').innerHTML=h;
 }

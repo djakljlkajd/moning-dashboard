@@ -394,7 +394,42 @@ const DASHBOARD_DATA={
       "07/28",
       "07/29",
       "07/30"
-    ]
+    ],
+    "consec_from": "2026-07-01",
+    "consec_to": "2026-07-30",
+    "consec_date_strs": [
+      "07/01",
+      "07/02",
+      "07/03",
+      "07/04",
+      "07/05",
+      "07/06",
+      "07/07",
+      "07/08",
+      "07/09",
+      "07/10",
+      "07/11",
+      "07/12",
+      "07/13",
+      "07/14",
+      "07/15",
+      "07/16",
+      "07/17",
+      "07/18",
+      "07/19",
+      "07/20",
+      "07/21",
+      "07/22",
+      "07/23",
+      "07/24",
+      "07/25",
+      "07/26",
+      "07/27",
+      "07/28",
+      "07/29",
+      "07/30"
+    ],
+    "has_preperiod": false
   },
   "summary": {
     "total_stores": 113,
@@ -55374,7 +55409,9 @@ function switchDashboard(path){
   if(target!==location.href){ location.href=target; }
 }
 
-document.getElementById('dateRange').textContent=`数据周期：${M.date_from} ~ ${M.date_to}（共${M.days}天）`;
+const _dr=`数据周期：${M.date_from} ~ ${M.date_to}（共${M.days}天）`;
+const _cds=M.consec_date_strs||M.date_strs;
+document.getElementById('dateRange').textContent=M.has_preperiod?`${_dr}（连续出勤计算范围：${M.consec_from} ~ ${M.consec_to}，共${_cds.length}天）`:_dr;
 const n=new Date();
 
 /* ========== 构建辅助索引：区域→其下大店长列表 ==========
@@ -55658,11 +55695,11 @@ function showAlertDetail(type){
        '<th style="width:66px">工号</th><th style="width:78px">姓名</th><th style="width:72px">职级</th>'+
        '<th style="width:50px">出勤/休</th><th style="width:60px">总工时</th><th style="width:48px">日均</th>'+
        '<th style="width:62px" class="c-red">最大连续</th><th style="width:62px" class="c-amber">尾段连续</th>'+
-       M.date_strs.map(d=>`<th style="min-width:42px;width:42px">${d}</th>`).join('');
+       _cds.map(d=>`<th style="min-width:42px;width:42px">${d}</th>`).join('');
     data.forEach(p=>{
       const maxC=p['当月最大连续'], tailC=p['尾段连续未休'];
       const isTailAmber=tailC>=7 && tailC<8, isTailRed=tailC>=8;
-      const dc=M.date_strs.map(d=>{
+      const dc=_cds.map(d=>{
         const v=p['每日工时'][d];
         return isNaN(v)?'<td>-</td>':v>11?`<td><span class="day-over">${v}</span></td>`:`<td>${v}</td>`;
       }).join('');
@@ -56207,12 +56244,12 @@ function renderDetail(){
        '<th style="width:68px">工号</th><th style="width:52px">姓名</th><th style="width:52px">职级</th>'+
        '<th style="width:50px">出勤/休</th><th style="width:60px">总工时</th><th style="width:48px">日均</th>'+
        '<th style="width:52px" class="c-red">最大<br>连续</th><th style="width:52px" class="c-amber">尾段<br>连续</th>'+
-       M.date_strs.map(d=>`<th style="min-width:42px;width:42px">${d}</th>`).join('');
+       _cds.map(d=>`<th style="min-width:42px;width:42px">${d}</th>`).join('');
     data.forEach(p=>{
       const maxC=p['当月最大连续'], tailC=p['尾段连续未休'];
       const isRed=maxC>=9, isOran=maxC>=7&&!isRed;
       const isTailWarn=tailC>=7;
-      const dc=M.date_strs.map(d=>{
+      const dc=_cds.map(d=>{
         const v=p['每日工时'][d];
         return isNaN(v)?'<td>-</td>':v>11?`<td><span class="day-over">${v}</span></td>`:`<td>${v}</td>`;
       }).join('');
@@ -56235,12 +56272,12 @@ function renderDetail(){
        '<th style="width:50px">出勤/休</th><th style="width:60px">总工时</th><th style="width:48px">日均</th>'+
        '<th style="width:52px" class="c-amber">尾段<br>连续</th><th style="width:52px" class="c-red">最大<br>连续</th>'+
        '<th style="width:120px">距红线还剩</th>'+
-       M.date_strs.map(d=>`<th style="min-width:42px;width:42px">${d}</th>`).join('');
+       _cds.map(d=>`<th style="min-width:42px;width:42px">${d}</th>`).join('');
     data.forEach(p=>{
       const tailC=p['尾段连续未休'], maxC=p['当月最大连续'];
       const isTailRed=tailC>=8, isTailAmber=tailC>=5&&!isTailRed;
       const remain=Math.max(0, 9-tailC);
-      const dc=M.date_strs.map(d=>{
+      const dc=_cds.map(d=>{
         const v=p['每日工时'][d];
         return isNaN(v)?'<td>-</td>':v>11?`<td><span class="day-over">${v}</span></td>`:`<td>${v}</td>`;
       }).join('');
@@ -56252,7 +56289,7 @@ function renderDetail(){
         <td>${maxC}天</td>
         <td style="${remain<=2?'color:var(--red);font-weight:600':''}">${remain}天</td>${dc}</tr>`;
     });
-    if(data.length===0) bb='<tr><td colspan="'+(12+M.date_strs.length)+'" style="text-align:center;padding:30px;color:var(--hint)">✅ 当前无人接近连续出勤红线</td></tr>';
+    if(data.length===0) bb='<tr><td colspan="'+(12+_cds.length)+'" style="text-align:center;padding:30px;color:var(--hint)">✅ 当前无人接近连续出勤红线</td></tr>';
   } else if(curTab.startsWith('zeros_')){
     const isFull=curTab==='zeros_full';
     const base=isFull?(D.zeros_full||[]):(D.zeros_student||[]);
@@ -56342,7 +56379,7 @@ function ensureXLSX(){
 
 async function exportDetail(){
   const filt=getDetailFilterFn();
-  const dateCols=M.date_strs;
+  const dateCols=(curTab==='warn7'||curTab==='tailWarn')?_cds:M.date_strs;
   let headers=[], rows=[], tabName='明细';
   const fmt=(v)=>(v===undefined||v===null)?'':v;
 

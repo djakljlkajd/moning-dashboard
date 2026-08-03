@@ -265,6 +265,62 @@
         .modal-body tbody td { padding: 9px 8px; }
         .modal-empty { padding: 40px 20px; text-align: center; color: #888; font-size: 14px; }
 
+        /* ===== 离职原因在线填写 ===== */
+        .reason-edit {
+            display: inline-block; padding: 2px 8px; border-radius: 4px;
+            background: #fff3e0; color: #e65100; font-size: 12px;
+            cursor: pointer; transition: all 0.2s; border: 1px dashed #ffb74d; line-height: 1.4;
+        }
+        .reason-edit:hover { background: #ffe0b2; border-color: #f57c00; }
+        .reason-edit.filled {
+            background: transparent; color: #666; border: none; padding: 0;
+            cursor: pointer; font-size: 11.5px;
+        }
+        .reason-edit.filled:hover { color: #0d47a1; text-decoration: underline; }
+        /* 编辑弹窗 */
+        .edit-modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5); z-index: 200; justify-content: center; align-items: center;
+            padding: 20px;
+        }
+        .edit-modal-overlay.active { display: flex; }
+        .edit-modal-box {
+            background: #fff; border-radius: 8px; width: 100%; max-width: 560px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.25); animation: modalIn 0.25s ease;
+        }
+        .edit-modal-body { padding: 20px; }
+        .edit-modal-info {
+            background: #e3f2fd; border-radius: 6px; padding: 12px 14px;
+            margin-bottom: 16px; font-size: 13px; color: #0d47a1; line-height: 1.7;
+        }
+        .edit-modal-info strong { color: #c62828; }
+        .edit-modal-label {
+            font-size: 13px; color: #546e7a; margin-bottom: 6px; font-weight: 600;
+        }
+        .edit-modal-textarea {
+            width: 100%; min-height: 120px; border: 1px solid #90caf9; border-radius: 6px;
+            padding: 10px 12px; font-size: 13px; line-height: 1.6; resize: vertical; outline: none;
+        }
+        .edit-modal-textarea:focus { border-color: #1565c0; }
+        .edit-modal-input {
+            width: 100%; border: 1px solid #90caf9; border-radius: 6px;
+            padding: 8px 12px; font-size: 13px; outline: none; margin-bottom: 16px;
+        }
+        .edit-modal-actions {
+            display: flex; justify-content: flex-end; gap: 10px; margin-top: 16px;
+        }
+        .edit-modal-actions button {
+            padding: 8px 18px; border: none; border-radius: 5px; font-size: 13px;
+            cursor: pointer; font-weight: 500; transition: all 0.2s;
+        }
+        .edit-modal-actions .btn-cancel { background: #eceff1; color: #455a64; }
+        .edit-modal-actions .btn-cancel:hover { background: #cfd8dc; }
+        .edit-modal-actions .btn-save { background: #1565c0; color: #fff; }
+        .edit-modal-actions .btn-save:hover { background: #0d47a1; }
+        .edit-modal-hint {
+            font-size: 11.5px; color: #78909c; margin-top: 8px; line-height: 1.5;
+        }
+
         /* ===== 离职原因标签 ===== */
         .reason-badge {
             display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 600;
@@ -327,6 +383,7 @@
         <div class="description-item">3、<strong>离职类型：</strong>目标主动离职率 ≤ 5%</div>
         <div class="description-item">4、<strong>筛选联动：</strong>顶部「区域/大店区」筛选可联动第一、二、三排数据，点击红色/蓝色卡片可查看对应人员明细</div>
         <div class="description-item">5、<strong>更新节奏：</strong>月中15号更新半月度数据，月末25日更新全月数据；链路：伙伴提出离职 → 中训/带店以下职级大店长3个工作日内完成沟通和离职报备 → 离职原因需反馈至区域BP → 戴嘉伟收口刷新离职看板和分析报告</div>
+        <div class="description-item">6、<strong>原因填写：</strong>点击第一排「主动离职人数」或第五排明细表，缺失离职详情的伙伴显示「待填写」，点击即可在线补充，数据实时同步到云端</div>
     </div>
 </div>
 
@@ -459,6 +516,28 @@
         </div>
         <div class="modal-body" id="modal-body">
             <div class="modal-empty">暂无数据</div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== 离职原因编辑弹窗 ===== -->
+<div class="edit-modal-overlay" id="reason-edit-modal" onclick="closeReasonEdit(event)">
+    <div class="edit-modal-box" onclick="event.stopPropagation()">
+        <div class="modal-header">
+            <span class="modal-title">填写离职原因</span>
+            <button class="modal-close" onclick="closeReasonEdit()">×</button>
+        </div>
+        <div class="edit-modal-body">
+            <div class="edit-modal-info" id="reason-edit-info"></div>
+            <div class="edit-modal-label">离职原因 / 详情</div>
+            <textarea class="edit-modal-textarea" id="reason-edit-text" placeholder="请填写该伙伴的离职原因或详情…"></textarea>
+            <div class="edit-modal-label">填写人（选填）</div>
+            <input type="text" class="edit-modal-input" id="reason-edit-by" placeholder="例如：张三">
+            <div class="edit-modal-hint">填写后自动保存到云端，其他人刷新看板即可看到。</div>
+            <div class="edit-modal-actions">
+                <button class="btn-cancel" onclick="closeReasonEdit()">取消</button>
+                <button class="btn-save" onclick="confirmReasonEdit()">保存</button>
+            </div>
         </div>
     </div>
 </div>
@@ -954,7 +1033,7 @@ function renderEmpTable() {
             '<td>' + (e.gongLingQuJian || '') + '</td>' +
             '<td>' + (e.reason1 || '') + '</td>' +
             '<td><span class="reason-badge ' + reasonClass(e.reasonTag || e.reason1) + '">' + (e.reasonTag || e.reason1) + '</span></td>' +
-            '<td class="text-left" style="font-size:11.5px;color:#666;min-width:180px;" title="' + (e.reasonDetail || '').replace(/"/g, '&quot;') + '">' + (e.reasonDetail || '--') + '</td>';
+            '<td class="text-left" style="font-size:11.5px;color:#666;min-width:180px;">' + getReasonEditHtml(e) + '</td>';
         tb.appendChild(tr);
     });
 
@@ -1033,7 +1112,12 @@ function openEmpModalByFilter(title, filterFn) {
     showEmpModal(title + ' (' + list.length + '人)', list);
 }
 
+let currentModalTitle = '';
+let currentModalList = [];
+
 function showEmpModal(title, list) {
+    currentModalTitle = title;
+    currentModalList = list;
     document.getElementById('modal-title').textContent = title;
     const body = document.getElementById('modal-body');
     if (list.length === 0) {
@@ -1054,7 +1138,7 @@ function showEmpModal(title, list) {
                 '<td>' + e.resignDate + '</td>' +
                 '<td>' + (e.gongLingQuJian || '') + '</td>' +
                 '<td><span class="reason-badge ' + reasonClass(e.reasonTag || e.reason1) + '">' + (e.reasonTag || e.reason1) + '</span></td>' +
-                '<td class="text-left col-detail" title="' + (e.reasonDetail || '').replace(/"/g, '&quot;') + '">' + (e.reasonDetail || '--') + '</td>' +
+                '<td class="text-left col-detail">' + getReasonEditHtml(e) + '</td>' +
                 '</tr>'
             ).join('') + '</tbody></table></div>';
     }
@@ -1067,6 +1151,176 @@ function closeModal(event) {
     }
 }
 
+// ===== 离职原因在线填写（Supabase 共享数据库） =====
+const SUPA_URL='https://tclfmnfvlrlxquiojjya.supabase.co';
+const SUPA_KEY='sb_publishable_6sa-Pz6dX0BSlTJX3gNiRA_CbtZkf_b';
+const SUPA_TABLE='violation_data';
+let turnoverReasons={};
+let turnoverRowId=null;
+let turnoverSyncTimer=null;
+let turnoverWriteLock=false;
+let currentEditEmpId=null;
+
+function escapeHtml(str){
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function backupTurnoverToLocal(){
+    try{
+        localStorage.setItem('turnoverReasonsBackup',JSON.stringify({
+            reasons:turnoverReasons, rowId:turnoverRowId, ts:Date.now()
+        }));
+    }catch(e){}
+}
+function restoreTurnoverFromLocal(){
+    try{
+        const raw=localStorage.getItem('turnoverReasonsBackup');
+        if(!raw)return false;
+        const data=JSON.parse(raw);
+        turnoverReasons=data.reasons||{};
+        if(!turnoverRowId)turnoverRowId=data.rowId||null;
+        return true;
+    }catch(e){return false;}
+}
+
+async function loadTurnoverData(){
+    restoreTurnoverFromLocal();
+    try{
+        const res=await fetch(SUPA_URL+'/rest/v1/'+SUPA_TABLE+'?select=id,data',{
+            headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY}
+        });
+        if(!res.ok)throw new Error('supabase '+res.status);
+        const rows=await res.json();
+        const row=(rows||[]).find(r=>{
+            const d=r&&r.data||{};
+            return d._type==='turnover_reasons';
+        });
+        if(row){
+            turnoverRowId=row.id;
+            turnoverReasons=row.data&&row.data.turnover_reasons||{};
+            backupTurnoverToLocal();
+            refreshTurnoverDisplays();
+        }else{
+            await createTurnoverRow();
+        }
+    }catch(e){
+        console.error('loadTurnoverData failed',e);
+        restoreTurnoverFromLocal();
+    }
+}
+
+async function createTurnoverRow(){
+    try{
+        const res=await fetch(SUPA_URL+'/rest/v1/'+SUPA_TABLE,{
+            method:'POST',
+            headers:{
+                'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY,
+                'Content-Type':'application/json','Prefer':'return=representation'
+            },
+            body:JSON.stringify({id:2,data:{_type:'turnover_reasons',turnover_reasons:{}}})
+        });
+        if(!res.ok)throw new Error('create turnover row '+res.status);
+        const rows=await res.json();
+        if(rows&&rows.length){
+            turnoverRowId=rows[0].id;
+            turnoverReasons={};
+            backupTurnoverToLocal();
+        }
+    }catch(e){console.error('createTurnoverRow failed',e);}
+}
+
+async function syncTurnoverData(){
+    if(turnoverWriteLock||!turnoverRowId)return;
+    turnoverWriteLock=true;
+    try{
+        backupTurnoverToLocal();
+        const res=await fetch(SUPA_URL+'/rest/v1/'+SUPA_TABLE+'?id=eq.'+turnoverRowId,{
+            method:'PATCH',
+            headers:{
+                'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY,
+                'Content-Type':'application/json','Prefer':'return=minimal'
+            },
+            body:JSON.stringify({
+                data:{_type:'turnover_reasons',turnover_reasons:turnoverReasons},
+                updated_at:new Date().toISOString()
+            })
+        });
+        if(!res.ok){
+            const txt=await res.text();
+            console.error('syncTurnoverData failed',res.status,txt);
+        }
+    }catch(e){console.error('syncTurnoverData failed',e);}
+    turnoverWriteLock=false;
+}
+function scheduleTurnoverSync(){
+    if(turnoverSyncTimer)clearTimeout(turnoverSyncTimer);
+    turnoverSyncTimer=setTimeout(()=>{syncTurnoverData();},800);
+}
+
+function getTurnoverReason(empId){
+    const r=turnoverReasons[empId];
+    return r&&r.reason?r.reason:'';
+}
+
+function getEffectiveReasonDetail(emp){
+    if(emp.reasonDetail&&emp.reasonDetail.trim())return emp.reasonDetail.trim();
+    return getTurnoverReason(emp.empId);
+}
+
+function getReasonEditHtml(emp){
+    const detail=getEffectiveReasonDetail(emp);
+    if(detail){
+        return '<span class="reason-edit filled" title="'+escapeHtml(detail)+'" onclick="openReasonEdit(\''+emp.empId+'\')">'+escapeHtml(detail)+'</span>';
+    }
+    return '<span class="reason-edit" onclick="openReasonEdit(\''+emp.empId+'\')">待填写</span>';
+}
+
+function findEmployeeById(empId){
+    return (D.employees||[]).find(e=>e.empId===empId);
+}
+
+function openReasonEdit(empId){
+    currentEditEmpId=empId;
+    const emp=findEmployeeById(empId);
+    if(!emp){alert('未找到该员工');return;}
+    const info=document.getElementById('reason-edit-info');
+    info.innerHTML='姓名：<strong>'+escapeHtml(emp.name)+'</strong>　工号：<strong>'+escapeHtml(emp.empId)+'</strong><br>门店：'+escapeHtml(emp.store)+'　职位：'+escapeHtml(emp.position);
+    const r=turnoverReasons[empId]||{};
+    document.getElementById('reason-edit-text').value=r.reason||'';
+    document.getElementById('reason-edit-by').value=r.updated_by||'';
+    document.getElementById('reason-edit-modal').classList.add('active');
+}
+
+function closeReasonEdit(event){
+    if(!event || event.target.id==='reason-edit-modal' || event.target.className==='modal-close'){
+        document.getElementById('reason-edit-modal').classList.remove('active');
+        currentEditEmpId=null;
+    }
+}
+
+function confirmReasonEdit(){
+    if(!currentEditEmpId)return;
+    const reason=document.getElementById('reason-edit-text').value.trim();
+    const by=document.getElementById('reason-edit-by').value.trim();
+    if(!reason){alert('请填写离职原因');return;}
+    turnoverReasons[currentEditEmpId]={
+        reason:reason,
+        updated_by:by,
+        updated_at:new Date().toISOString()
+    };
+    scheduleTurnoverSync();
+    closeReasonEdit();
+    refreshTurnoverDisplays();
+}
+
+function refreshTurnoverDisplays(){
+    renderEmpTable();
+    const modal=document.getElementById('detail-modal');
+    if(modal.classList.contains('active') && currentModalList.length){
+        showEmpModal(currentModalTitle, currentModalList);
+    }
+}
+
 // ===== 初始化 =====
 initGlobalFilters();
 renderCards();
@@ -1076,6 +1330,7 @@ renderAnalysisCharts();
 renderTables();
 renderEmpTable();
 switchTab('qujing');
+loadTurnoverData();
 </script>
 </body>
 </html>

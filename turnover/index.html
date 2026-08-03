@@ -101,7 +101,7 @@
 
         /* ===== KPI 卡片 ===== */
         .cards-row {
-            display: grid; grid-template-columns: repeat(6, 1fr); gap: 0;
+            display: grid; grid-template-columns: repeat(7, 1fr); gap: 0;
             background: #fff; padding: 15px 20px;
         }
         .metric-card {
@@ -588,6 +588,122 @@
     </div>
 </div>
 
+<!-- ===== 预离职人员新增/编辑弹窗 ===== -->
+<div class="edit-modal-overlay" id="pre-turnover-edit-modal" onclick="closePreTurnoverEdit(event)">
+    <div class="edit-modal-box" style="max-width:900px;" onclick="event.stopPropagation()">
+        <div class="modal-header">
+            <span class="modal-title" id="pre-turnover-edit-title">新增预离职人员</span>
+            <button class="modal-close" onclick="closePreTurnoverEdit()">×</button>
+        </div>
+        <div class="edit-modal-body">
+            <div class="edit-modal-grid">
+                <div>
+                    <div class="edit-modal-label">姓名 *</div>
+                    <input type="text" class="edit-modal-input" id="pre-edit-name" placeholder="例如：张三" style="margin-bottom:0;">
+                </div>
+                <div>
+                    <div class="edit-modal-label">工号 / ID（选填）</div>
+                    <input type="text" class="edit-modal-input" id="pre-edit-emp-id" placeholder="不填则自动生成" style="margin-bottom:0;">
+                </div>
+                <div>
+                    <div class="edit-modal-label">区经 *</div>
+                    <input type="text" class="edit-modal-input" id="pre-edit-qujing" placeholder="例如：李曦" style="margin-bottom:0;">
+                </div>
+                <div>
+                    <div class="edit-modal-label">大店长 *</div>
+                    <input type="text" class="edit-modal-input" id="pre-edit-dadianchang" placeholder="例如：张力木" style="margin-bottom:0;">
+                </div>
+                <div>
+                    <div class="edit-modal-label">门店 *</div>
+                    <input type="text" class="edit-modal-input" id="pre-edit-store" placeholder="例如：五一广场店" style="margin-bottom:0;">
+                </div>
+                <div>
+                    <div class="edit-modal-label">职位 *</div>
+                    <input type="text" class="edit-modal-input" id="pre-edit-position" placeholder="例如：服务员" style="margin-bottom:0;">
+                </div>
+                <div>
+                    <div class="edit-modal-label">入职日期</div>
+                    <input type="text" class="edit-modal-input" id="pre-edit-hire-date" placeholder="如：2024-03-01" style="margin-bottom:0;">
+                </div>
+                <div>
+                    <div class="edit-modal-label">预计离职日期</div>
+                    <input type="text" class="edit-modal-input" id="pre-edit-resign-date" placeholder="如：2026-08-15" style="margin-bottom:0;">
+                </div>
+                <div>
+                    <div class="edit-modal-label">工龄区间</div>
+                    <select class="edit-modal-input" id="pre-edit-gongling" style="margin-bottom:0;">
+                        <option value="">请选择</option>
+                        <option value="6个月内">6个月内</option>
+                        <option value="6-12个月">6-12个月</option>
+                        <option value="1-3年">1-3年</option>
+                        <option value="3年以上">3年以上</option>
+                    </select>
+                </div>
+                <div>
+                    <div class="edit-modal-label">原因标签</div>
+                    <select class="edit-modal-input" id="pre-edit-reason-tag" style="margin-bottom:0;">
+                        <option value="">请选择</option>
+                        <option value="发展原因">发展原因</option>
+                        <option value="身体原因">身体原因</option>
+                        <option value="个人原因">个人原因</option>
+                        <option value="其他原因">其他原因</option>
+                        <option value="个人能力">个人能力</option>
+                    </select>
+                </div>
+                <div class="full-width">
+                    <div class="edit-modal-label">离职原因</div>
+                    <input type="text" class="edit-modal-input" id="pre-edit-reason1" placeholder="简要原因" style="margin-bottom:0;">
+                </div>
+                <div class="full-width">
+                    <div class="edit-modal-label">离职详情 / 备注</div>
+                    <textarea class="edit-modal-textarea" id="pre-edit-reason-detail" placeholder="请填写该伙伴的离职详情或备注…" style="min-height:70px;"></textarea>
+                </div>
+                <div>
+                    <div class="edit-modal-label">沟通时间</div>
+                    <input type="text" class="edit-modal-input" id="pre-edit-communication-time" placeholder="如：8月3日" style="margin-bottom:0;">
+                </div>
+                <div>
+                    <div class="edit-modal-label">运营判定离职原因</div>
+                    <input type="text" class="edit-modal-input" id="pre-edit-operation-reason" style="margin-bottom:0;">
+                </div>
+                <div class="full-width">
+                    <div class="edit-modal-label">BP沟通离职原因</div>
+                    <textarea class="edit-modal-textarea" id="pre-edit-bp-reason" style="min-height:60px;"></textarea>
+                </div>
+                <div>
+                    <div class="edit-modal-label">BP沟通时间</div>
+                    <input type="text" class="edit-modal-input" id="pre-edit-bp-time" placeholder="如：8月3日" style="margin-bottom:0;">
+                </div>
+                <div>
+                    <div class="edit-modal-label">BP判定离职原因打标</div>
+                    <input type="text" class="edit-modal-input" id="pre-edit-bp-tag" style="margin-bottom:0;">
+                </div>
+                <div>
+                    <div class="edit-modal-label">和运营是否一致</div>
+                    <select class="edit-modal-input" id="pre-edit-is-consistent" style="margin-bottom:0;">
+                        <option value="">请选择</option>
+                        <option value="一致">一致</option>
+                        <option value="不一致">不一致</option>
+                    </select>
+                </div>
+                <div>
+                    <div class="edit-modal-label">不一致情况说明</div>
+                    <input type="text" class="edit-modal-input" id="pre-edit-inconsistency" style="margin-bottom:0;">
+                </div>
+                <div>
+                    <div class="edit-modal-label">填写人（选填）</div>
+                    <input type="text" class="edit-modal-input" id="pre-edit-by" placeholder="例如：张三" style="margin-bottom:0;">
+                </div>
+            </div>
+            <div class="edit-modal-hint">新增后自动保存到云端，其他人刷新看板即可看到。</div>
+            <div class="edit-modal-actions">
+                <button class="btn-cancel" onclick="closePreTurnoverEdit()">取消</button>
+                <button class="btn-save" onclick="confirmPreTurnoverEdit()">保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 </div><!-- end container -->
 
 <script src="data.js"></script>
@@ -771,6 +887,9 @@ function renderCards() {
         { label: '主动离职人数', sub: '(7月1-25日)', value: stats.resignCount, unit: '人', cls: 'danger clickable', valColor: 'red',
           detailBtn: '<span class="card-detail-btn" onclick="event.stopPropagation();openAllResignModal()">▶ 详情</span>',
           onclick: 'openAllResignModal()' },
+        { label: '预离职人员填写', sub: '实时补充名单', value: preTurnoverList.length, unit: '人', cls: 'info clickable', valColor: 'blue',
+          detailBtn: '<span class="card-detail-btn blue" onclick="event.stopPropagation();openPreTurnoverModal()">▶ 填写</span>',
+          onclick: 'openPreTurnoverModal()' },
         { label: '主动离职率', sub: '目标 ≤ 5%', value: pct(stats.resignRate), unit: '', cls: isOnTarget ? 'success' : 'highlight', valColor: isOnTarget ? 'green' : 'red',
           subText: isOnTarget ? '✅ 达标' : '⚠️ 需关注' },
         { label: '店长职级离职人数', sub: '店长岗位', value: stats.dianZhangCount, unit: '人', cls: 'info clickable', valColor: 'blue',
@@ -1168,8 +1287,10 @@ function openEmpModalByFilter(title, filterFn) {
 
 let currentModalTitle = '';
 let currentModalList = [];
+let currentModalMode = 'resign';
 
 function showEmpModal(title, list) {
+    currentModalMode = 'resign';
     currentModalTitle = title;
     currentModalList = list;
     document.getElementById('modal-title').textContent = title;
@@ -1223,6 +1344,12 @@ let turnoverSyncTimer=null;
 let turnoverWriteLock=false;
 let currentEditEmpId=null;
 
+let preTurnoverList=[];
+let preTurnoverRowId=null;
+let preTurnoverSyncTimer=null;
+let preTurnoverWriteLock=false;
+let currentEditPreId=null;
+
 function escapeHtml(str){
     return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
@@ -1241,6 +1368,24 @@ function restoreTurnoverFromLocal(){
         const data=JSON.parse(raw);
         turnoverReasons=data.reasons||{};
         if(!turnoverRowId)turnoverRowId=data.rowId||null;
+        return true;
+    }catch(e){return false;}
+}
+
+function backupPreTurnoverToLocal(){
+    try{
+        localStorage.setItem('preTurnoverBackup',JSON.stringify({
+            list:preTurnoverList, rowId:preTurnoverRowId, ts:Date.now()
+        }));
+    }catch(e){}
+}
+function restorePreTurnoverFromLocal(){
+    try{
+        const raw=localStorage.getItem('preTurnoverBackup');
+        if(!raw)return false;
+        const data=JSON.parse(raw);
+        preTurnoverList=data.list||[];
+        if(!preTurnoverRowId)preTurnoverRowId=data.rowId||null;
         return true;
     }catch(e){return false;}
 }
@@ -1291,6 +1436,80 @@ async function createTurnoverRow(){
     }catch(e){console.error('createTurnoverRow failed',e);}
 }
 
+async function loadPreTurnoverData(){
+    restorePreTurnoverFromLocal();
+    try{
+        const res=await fetch(SUPA_URL+'/rest/v1/'+SUPA_TABLE+'?select=id,data',{
+            headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY}
+        });
+        if(!res.ok)throw new Error('supabase '+res.status);
+        const rows=await res.json();
+        const row=(rows||[]).find(r=>{
+            const d=r&&r.data||{};
+            return d._type==='pre_turnover';
+        });
+        if(row){
+            preTurnoverRowId=row.id;
+            preTurnoverList=row.data&&row.data.pre_turnover||[];
+            backupPreTurnoverToLocal();
+            refreshPreTurnoverDisplays();
+        }else{
+            await createPreTurnoverRow();
+        }
+    }catch(e){
+        console.error('loadPreTurnoverData failed',e);
+        restorePreTurnoverFromLocal();
+    }
+}
+
+async function createPreTurnoverRow(){
+    try{
+        const res=await fetch(SUPA_URL+'/rest/v1/'+SUPA_TABLE,{
+            method:'POST',
+            headers:{
+                'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY,
+                'Content-Type':'application/json','Prefer':'return=representation'
+            },
+            body:JSON.stringify({id:3,data:{_type:'pre_turnover',pre_turnover:[]}})
+        });
+        if(!res.ok)throw new Error('create pre turnover row '+res.status);
+        const rows=await res.json();
+        if(rows&&rows.length){
+            preTurnoverRowId=rows[0].id;
+            preTurnoverList=[];
+            backupPreTurnoverToLocal();
+        }
+    }catch(e){console.error('createPreTurnoverRow failed',e);}
+}
+
+async function syncPreTurnoverData(){
+    if(preTurnoverWriteLock||!preTurnoverRowId)return;
+    preTurnoverWriteLock=true;
+    try{
+        backupPreTurnoverToLocal();
+        const res=await fetch(SUPA_URL+'/rest/v1/'+SUPA_TABLE+'?id=eq.'+preTurnoverRowId,{
+            method:'PATCH',
+            headers:{
+                'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY,
+                'Content-Type':'application/json','Prefer':'return=minimal'
+            },
+            body:JSON.stringify({
+                data:{_type:'pre_turnover',pre_turnover:preTurnoverList},
+                updated_at:new Date().toISOString()
+            })
+        });
+        if(!res.ok){
+            const txt=await res.text();
+            console.error('syncPreTurnoverData failed',res.status,txt);
+        }
+    }catch(e){console.error('syncPreTurnoverData failed',e);}
+    preTurnoverWriteLock=false;
+}
+function schedulePreTurnoverSync(){
+    if(preTurnoverSyncTimer)clearTimeout(preTurnoverSyncTimer);
+    preTurnoverSyncTimer=setTimeout(()=>{syncPreTurnoverData();},800);
+}
+
 async function syncTurnoverData(){
     if(turnoverWriteLock||!turnoverRowId)return;
     turnoverWriteLock=true;
@@ -1325,8 +1544,13 @@ function getTurnoverReason(empId){
 }
 
 function getEffectiveReasonDetail(emp){
+    if(emp._isPre)return (emp.reasonDetail||'').trim();
     if(emp.reasonDetail&&emp.reasonDetail.trim())return emp.reasonDetail.trim();
     return getTurnoverReason(emp.empId);
+}
+
+function findPreTurnoverById(empId){
+    return (preTurnoverList||[]).find(p=>p.empId===empId);
 }
 
 function getTurnoverField(empId, field){
@@ -1334,7 +1558,9 @@ function getTurnoverField(empId, field){
     if(field==='reason'){
         return r.reason||getTurnoverReason(empId);
     }
-    return r[field]||'';
+    if(r[field])return r[field];
+    const pre=findPreTurnoverById(empId);
+    return pre?pre[field]||'':'';
 }
 
 function getReasonEditHtml(emp, field, label){
@@ -1351,7 +1577,7 @@ function getReasonEditHtml(emp, field, label){
 }
 
 function findEmployeeById(empId){
-    return (D.employees||[]).find(e=>e.empId===empId);
+    return (D.employees||[]).find(e=>e.empId===empId) || findPreTurnoverById(empId);
 }
 
 function openReasonEdit(empId){
@@ -1394,7 +1620,7 @@ function confirmReasonEdit(){
     if(!reason && !communicationTime && !operationReason && !bpReason && !bpCommunicationTime && !bpTag && !isConsistent && !inconsistencyNote){
         alert('请至少填写一项内容');return;
     }
-    turnoverReasons[currentEditEmpId]={
+    const payload={
         reason:reason,
         communicationTime:communicationTime,
         operationReason:operationReason,
@@ -1406,16 +1632,170 @@ function confirmReasonEdit(){
         updated_by:by,
         updated_at:new Date().toISOString()
     };
-    scheduleTurnoverSync();
+    const pre=findPreTurnoverById(currentEditEmpId);
+    if(pre){
+        Object.assign(pre,payload);
+        schedulePreTurnoverSync();
+    }else{
+        turnoverReasons[currentEditEmpId]=payload;
+        scheduleTurnoverSync();
+    }
     closeReasonEdit();
     refreshTurnoverDisplays();
 }
 
 function refreshTurnoverDisplays(){
     renderEmpTable();
+    renderCards();
     const modal=document.getElementById('detail-modal');
-    if(modal.classList.contains('active') && currentModalList.length){
+    if(!modal.classList.contains('active')) return;
+    if(currentModalMode==='pre'){
+        openPreTurnoverModal();
+    }else if(currentModalList.length){
         showEmpModal(currentModalTitle, currentModalList);
+    }
+}
+
+// ===== 预离职人员弹窗 =====
+function openPreTurnoverModal(){
+    currentModalMode='pre';
+    const title='预离职人员填写 - 共'+preTurnoverList.length+'人';
+    document.getElementById('modal-title').textContent=title;
+    const body=document.getElementById('modal-body');
+    const toolbar='<div style="padding:12px 20px;"><button class="action-btn" style="background:#1565c0;color:#fff;" onclick="openPreTurnoverEditModal()">+ 新增预离职人员</button></div>';
+    if(preTurnoverList.length===0){
+        body.innerHTML=toolbar+'<div class="modal-empty">暂无预离职人员，请点击上方「新增」按钮添加</div>';
+    }else{
+        const cols=['序号','区经','大店长','姓名','职位','门店','入职日期','预计离职日期','工龄','离职原因','详情','沟通时间','运营判定离职原因','BP沟通离职原因','BP沟通时间','BP判定原因','是否一致','不一致说明','操作'];
+        body.innerHTML=toolbar+'<div class="modal-table-wrap"><table><thead><tr>'+cols.map(h=>'<th>'+h+'</th>').join('')+'</tr></thead><tbody>'+preTurnoverList.map((e,i)=>
+            '<tr>'+
+            '<td>'+(i+1)+'</td>'+
+            '<td>'+escapeHtml(e.qujing||'')+'</td>'+
+            '<td>'+escapeHtml(e.dadianchang||'')+'</td>'+
+            '<td><strong>'+escapeHtml(e.name||'')+'</strong></td>'+
+            '<td>'+escapeHtml(e.position||'')+'</td>'+
+            '<td class="text-left">'+escapeHtml(e.store||'')+'</td>'+
+            '<td>'+escapeHtml(e.hireDate||'')+'</td>'+
+            '<td>'+escapeHtml(e.resignDate||'')+'</td>'+
+            '<td>'+escapeHtml(e.gongLingQuJian||'')+'</td>'+
+            '<td>'+escapeHtml(e.reason1||'')+'</td>'+
+            '<td class="text-left col-detail">'+getReasonEditHtml(e,'reason','离职详情')+'</td>'+
+            '<td class="col-edit col-edit-time">'+getReasonEditHtml(e,'communicationTime','沟通时间')+'</td>'+
+            '<td class="col-edit">'+getReasonEditHtml(e,'operationReason','运营判定离职原因')+'</td>'+
+            '<td class="col-edit">'+getReasonEditHtml(e,'bpReason','BP沟通离职原因')+'</td>'+
+            '<td class="col-edit col-edit-time">'+getReasonEditHtml(e,'bpCommunicationTime','BP沟通时间')+'</td>'+
+            '<td class="col-edit">'+getReasonEditHtml(e,'bpTag','BP判定原因')+'</td>'+
+            '<td class="col-edit">'+getReasonEditHtml(e,'isConsistent','是否一致')+'</td>'+
+            '<td class="col-edit">'+getReasonEditHtml(e,'inconsistencyNote','不一致说明')+'</td>'+
+            '<td><button class="action-btn" style="background:#e3f2fd;color:#1565c0;padding:3px 10px;font-size:12px;" onclick="event.stopPropagation();openPreTurnoverEditModal(\''+e.empId+'\')">编辑</button> <button class="action-btn" style="background:#ffcdd2;color:#c62828;padding:3px 10px;font-size:12px;" onclick="event.stopPropagation();deletePreTurnover(\''+e.empId+'\')">删除</button></td>'+
+            '</tr>'
+        ).join('')+'</tbody></table></div>';
+    }
+    document.getElementById('detail-modal').classList.add('active');
+}
+
+function openPreTurnoverEditModal(empId){
+    currentEditPreId=empId||null;
+    const isNew=!currentEditPreId;
+    document.getElementById('pre-turnover-edit-title').textContent=isNew?'新增预离职人员':'编辑预离职人员';
+    const emp=isNew?{}:findPreTurnoverById(currentEditPreId)||{};
+    document.getElementById('pre-edit-name').value=emp.name||'';
+    document.getElementById('pre-edit-emp-id').value=isNew?'':(emp.empId||'');
+    document.getElementById('pre-edit-qujing').value=emp.qujing||'';
+    document.getElementById('pre-edit-dadianchang').value=emp.dadianchang||'';
+    document.getElementById('pre-edit-store').value=emp.store||'';
+    document.getElementById('pre-edit-position').value=emp.position||'';
+    document.getElementById('pre-edit-hire-date').value=emp.hireDate||'';
+    document.getElementById('pre-edit-resign-date').value=emp.resignDate||'';
+    document.getElementById('pre-edit-gongling').value=emp.gongLingQuJian||'';
+    document.getElementById('pre-edit-reason-tag').value=emp.reasonTag||'';
+    document.getElementById('pre-edit-reason1').value=emp.reason1||'';
+    document.getElementById('pre-edit-reason-detail').value=emp.reasonDetail||'';
+    document.getElementById('pre-edit-communication-time').value=emp.communicationTime||'';
+    document.getElementById('pre-edit-operation-reason').value=emp.operationReason||'';
+    document.getElementById('pre-edit-bp-reason').value=emp.bpReason||'';
+    document.getElementById('pre-edit-bp-time').value=emp.bpCommunicationTime||'';
+    document.getElementById('pre-edit-bp-tag').value=emp.bpTag||'';
+    document.getElementById('pre-edit-is-consistent').value=emp.isConsistent||'';
+    document.getElementById('pre-edit-inconsistency').value=emp.inconsistencyNote||'';
+    document.getElementById('pre-edit-by').value=emp.updated_by||'';
+    document.getElementById('pre-turnover-edit-modal').classList.add('active');
+}
+
+function closePreTurnoverEdit(event){
+    if(!event || event.target.id==='pre-turnover-edit-modal' || event.target.className==='modal-close'){
+        document.getElementById('pre-turnover-edit-modal').classList.remove('active');
+        currentEditPreId=null;
+    }
+}
+
+function confirmPreTurnoverEdit(){
+    const name=document.getElementById('pre-edit-name').value.trim();
+    const qujing=document.getElementById('pre-edit-qujing').value.trim();
+    const dadianchang=document.getElementById('pre-edit-dadianchang').value.trim();
+    const store=document.getElementById('pre-edit-store').value.trim();
+    const position=document.getElementById('pre-edit-position').value.trim();
+    if(!name||!qujing||!dadianchang||!store||!position){
+        alert('请填写必填项：姓名、区经、大店长、门店、职位');return;
+    }
+    const empIdInput=document.getElementById('pre-edit-emp-id').value.trim();
+    const isNew=!currentEditPreId;
+    let empId=isNew?('pre_'+Date.now()):currentEditPreId;
+    if(isNew && empIdInput){
+        if(preTurnoverList.some(p=>p.empId===empIdInput && p.empId!==currentEditPreId)){
+            alert('该工号/ID已存在，请更换');return;
+        }
+        empId=empIdInput;
+    }
+    const record={
+        empId:empId,
+        _isPre:true,
+        name:name,
+        qujing:qujing,
+        dadianchang:dadianchang,
+        store:store,
+        position:position,
+        hireDate:document.getElementById('pre-edit-hire-date').value.trim(),
+        resignDate:document.getElementById('pre-edit-resign-date').value.trim(),
+        gongLingQuJian:document.getElementById('pre-edit-gongling').value.trim(),
+        reasonTag:document.getElementById('pre-edit-reason-tag').value.trim(),
+        reason1:document.getElementById('pre-edit-reason1').value.trim(),
+        reasonDetail:document.getElementById('pre-edit-reason-detail').value.trim(),
+        communicationTime:document.getElementById('pre-edit-communication-time').value.trim(),
+        operationReason:document.getElementById('pre-edit-operation-reason').value.trim(),
+        bpReason:document.getElementById('pre-edit-bp-reason').value.trim(),
+        bpCommunicationTime:document.getElementById('pre-edit-bp-time').value.trim(),
+        bpTag:document.getElementById('pre-edit-bp-tag').value.trim(),
+        isConsistent:document.getElementById('pre-edit-is-consistent').value.trim(),
+        inconsistencyNote:document.getElementById('pre-edit-inconsistency').value.trim(),
+        updated_by:document.getElementById('pre-edit-by').value.trim(),
+        updated_at:new Date().toISOString()
+    };
+    if(isNew){
+        preTurnoverList.push(record);
+    }else{
+        const idx=preTurnoverList.findIndex(p=>p.empId===currentEditPreId);
+        if(idx>=0) preTurnoverList[idx]=record;
+    }
+    schedulePreTurnoverSync();
+    closePreTurnoverEdit();
+    renderCards();
+    openPreTurnoverModal();
+}
+
+function deletePreTurnover(empId){
+    if(!confirm('确定删除该预离职人员吗？'))return;
+    preTurnoverList=preTurnoverList.filter(p=>p.empId!==empId);
+    schedulePreTurnoverSync();
+    renderCards();
+    openPreTurnoverModal();
+}
+
+function refreshPreTurnoverDisplays(){
+    renderCards();
+    const modal=document.getElementById('detail-modal');
+    if(modal.classList.contains('active') && currentModalMode==='pre'){
+        openPreTurnoverModal();
     }
 }
 
@@ -1429,6 +1809,7 @@ renderTables();
 renderEmpTable();
 switchTab('qujing');
 loadTurnoverData();
+loadPreTurnoverData();
 </script>
 </body>
 </html>

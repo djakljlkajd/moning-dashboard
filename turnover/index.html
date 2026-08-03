@@ -1544,7 +1544,10 @@ function getTurnoverReason(empId){
 }
 
 function getEffectiveReasonDetail(emp){
-    if(emp._isPre)return (emp.reasonDetail||'').trim();
+    if(emp._isPre){
+        if(emp.reason&&emp.reason.trim())return emp.reason.trim();
+        return (emp.reasonDetail||'').trim();
+    }
     if(emp.reasonDetail&&emp.reasonDetail.trim())return emp.reasonDetail.trim();
     return getTurnoverReason(emp.empId);
 }

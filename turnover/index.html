@@ -237,7 +237,7 @@
             animation: modalIn 0.25s ease;
         }
         @media (min-width: 1400px) {
-            .modal-box { max-width: 1300px; }
+            .modal-box { max-width: 1600px; }
         }
         @keyframes modalIn {
             from { opacity: 0; transform: translateY(-20px); }
@@ -260,7 +260,9 @@
         .modal-table-wrap th,
         .modal-table-wrap td { white-space: nowrap; }
         .modal-table-wrap th { position: sticky; top: 0; z-index: 1; }
-        .modal-table-wrap .col-detail { min-width: 360px; max-width: 520px; overflow: visible; text-overflow: clip; white-space: normal; line-height: 1.5; }
+        .modal-table-wrap .col-detail { min-width: 220px; max-width: 360px; overflow: visible; text-overflow: clip; white-space: normal; line-height: 1.5; }
+        .modal-table-wrap .col-edit { min-width: 110px; max-width: 220px; overflow: visible; text-overflow: clip; white-space: normal; line-height: 1.5; font-size: 11.5px; color: #666; }
+        .modal-table-wrap .col-edit-time { min-width: 80px; white-space: nowrap; }
         .modal-body thead th { background: linear-gradient(180deg, #1565c0 0%, #1e88e5 100%); }
         .modal-body tbody td { padding: 9px 8px; }
         .modal-empty { padding: 40px 20px; text-align: center; color: #888; font-size: 14px; }
@@ -285,10 +287,14 @@
         }
         .edit-modal-overlay.active { display: flex; }
         .edit-modal-box {
-            background: #fff; border-radius: 8px; width: 100%; max-width: 560px;
+            background: #fff; border-radius: 8px; width: 100%; max-width: 760px;
             box-shadow: 0 20px 60px rgba(0,0,0,0.25); animation: modalIn 0.25s ease;
         }
         .edit-modal-body { padding: 20px; }
+        .edit-modal-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 14px 20px;
+        }
+        .edit-modal-grid .full-width { grid-column: 1 / -1; }
         .edit-modal-info {
             background: #e3f2fd; border-radius: 6px; padding: 12px 14px;
             margin-bottom: 16px; font-size: 13px; color: #0d47a1; line-height: 1.7;
@@ -497,10 +503,12 @@
 <div class="table-wrapper store-table-wrap">
     <table>
         <colgroup>
-            <col style="width:4%"><col style="width:7%"><col style="width:7%"><col style="width:10%">
-            <col style="width:6%"><col style="width:8%"><col style="width:8%"><col style="width:8%">
-            <col style="width:7%"><col style="width:8%"><col style="width:8%"><col style="width:8%">
-            <col style="width:17%">
+            <col style="width:3%"><col style="width:6%"><col style="width:6%"><col style="width:8%">
+            <col style="width:5%"><col style="width:6%"><col style="width:6%"><col style="width:6%">
+            <col style="width:5%"><col style="width:6%"><col style="width:6%"><col style="width:6%">
+            <col style="width:9%">
+            <col style="width:6%"><col style="width:7%"><col style="width:7%"><col style="width:6%">
+            <col style="width:7%"><col style="width:6%"><col style="width:7%">
         </colgroup>
         <thead><tr id="emp-head"></tr></thead>
         <tbody id="emp-tbody"></tbody>
@@ -529,10 +537,48 @@
         </div>
         <div class="edit-modal-body">
             <div class="edit-modal-info" id="reason-edit-info"></div>
-            <div class="edit-modal-label">离职原因 / 详情</div>
-            <textarea class="edit-modal-textarea" id="reason-edit-text" placeholder="请填写该伙伴的离职原因或详情…"></textarea>
-            <div class="edit-modal-label">填写人（选填）</div>
-            <input type="text" class="edit-modal-input" id="reason-edit-by" placeholder="例如：张三">
+            <div class="edit-modal-grid">
+                <div class="full-width">
+                    <div class="edit-modal-label">离职原因 / 详情</div>
+                    <textarea class="edit-modal-textarea" id="reason-edit-text" placeholder="请填写该伙伴的离职原因或详情…" style="min-height:80px;"></textarea>
+                </div>
+                <div>
+                    <div class="edit-modal-label">沟通时间</div>
+                    <input type="text" class="edit-modal-input" id="reason-edit-communication-time" placeholder="如：6月8日" style="margin-bottom:0;">
+                </div>
+                <div>
+                    <div class="edit-modal-label">运营判定离职原因</div>
+                    <input type="text" class="edit-modal-input" id="reason-edit-operation-reason" placeholder="" style="margin-bottom:0;">
+                </div>
+                <div class="full-width">
+                    <div class="edit-modal-label">BP沟通离职原因填写</div>
+                    <textarea class="edit-modal-textarea" id="reason-edit-bp-reason" placeholder="" style="min-height:70px;"></textarea>
+                </div>
+                <div>
+                    <div class="edit-modal-label">BP沟通时间</div>
+                    <input type="text" class="edit-modal-input" id="reason-edit-bp-time" placeholder="如：6月8日" style="margin-bottom:0;">
+                </div>
+                <div>
+                    <div class="edit-modal-label">BP判定离职原因打标</div>
+                    <input type="text" class="edit-modal-input" id="reason-edit-bp-tag" placeholder="" style="margin-bottom:0;">
+                </div>
+                <div>
+                    <div class="edit-modal-label">和运营是否一致</div>
+                    <select class="edit-modal-input" id="reason-edit-is-consistent" style="margin-bottom:0;">
+                        <option value="">请选择</option>
+                        <option value="一致">一致</option>
+                        <option value="不一致">不一致</option>
+                    </select>
+                </div>
+                <div>
+                    <div class="edit-modal-label">不一致情况说明</div>
+                    <input type="text" class="edit-modal-input" id="reason-edit-inconsistency" placeholder="" style="margin-bottom:0;">
+                </div>
+                <div>
+                    <div class="edit-modal-label">填写人（选填）</div>
+                    <input type="text" class="edit-modal-input" id="reason-edit-by" placeholder="例如：张三" style="margin-bottom:0;">
+                </div>
+            </div>
             <div class="edit-modal-hint">填写后自动保存到云端，其他人刷新看板即可看到。</div>
             <div class="edit-modal-actions">
                 <button class="btn-cancel" onclick="closeReasonEdit()">取消</button>
@@ -1009,7 +1055,8 @@ function renderDadianchangTable() {
 
 // ===== 离职人员明细表 =====
 function renderEmpTable() {
-    const head = ['序号', '区经', '大店长', '门店', '姓名', '职位', '入职日期', '离职日期', '在职月数', '工龄区间', '离职原因', '原因标签', '离职详情'];
+    const head = ['序号', '区经', '大店长', '门店', '姓名', '职位', '入职日期', '离职日期', '在职月数', '工龄区间', '离职原因', '原因标签', '离职详情',
+        '沟通时间', '运营判定离职原因', 'BP沟通离职原因', 'BP沟通时间', 'BP判定原因', '是否一致', '不一致说明'];
     document.getElementById('emp-head').innerHTML = head.map(h => '<th>' + h + '</th>').join('');
 
     const tb = document.getElementById('emp-tbody');
@@ -1033,7 +1080,14 @@ function renderEmpTable() {
             '<td>' + (e.gongLingQuJian || '') + '</td>' +
             '<td>' + (e.reason1 || '') + '</td>' +
             '<td><span class="reason-badge ' + reasonClass(e.reasonTag || e.reason1) + '">' + (e.reasonTag || e.reason1) + '</span></td>' +
-            '<td class="text-left" style="font-size:11.5px;color:#666;min-width:180px;">' + getReasonEditHtml(e) + '</td>';
+            '<td class="text-left col-detail">' + getReasonEditHtml(e, 'reason', '离职详情') + '</td>' +
+            '<td class="col-edit col-edit-time">' + getReasonEditHtml(e, 'communicationTime', '沟通时间') + '</td>' +
+            '<td class="col-edit">' + getReasonEditHtml(e, 'operationReason', '运营判定离职原因') + '</td>' +
+            '<td class="col-edit">' + getReasonEditHtml(e, 'bpReason', 'BP沟通离职原因') + '</td>' +
+            '<td class="col-edit col-edit-time">' + getReasonEditHtml(e, 'bpCommunicationTime', 'BP沟通时间') + '</td>' +
+            '<td class="col-edit">' + getReasonEditHtml(e, 'bpTag', 'BP判定原因') + '</td>' +
+            '<td class="col-edit">' + getReasonEditHtml(e, 'isConsistent', '是否一致') + '</td>' +
+            '<td class="col-edit">' + getReasonEditHtml(e, 'inconsistencyNote', '不一致说明') + '</td>';
         tb.appendChild(tr);
     });
 
@@ -1123,7 +1177,8 @@ function showEmpModal(title, list) {
     if (list.length === 0) {
         body.innerHTML = '<div class="modal-empty">该维度暂无离职人员</div>';
     } else {
-        const cols = ['序号', '区经', '大店长', '姓名', '职位', '门店', '入职日期', '离职日期', '工龄', '离职原因', '详情'];
+        const cols = ['序号', '区经', '大店长', '姓名', '职位', '门店', '入职日期', '离职日期', '工龄', '离职原因', '详情',
+            '沟通时间', '运营判定离职原因', 'BP沟通离职原因', 'BP沟通时间', 'BP判定原因', '是否一致', '不一致说明'];
         body.innerHTML =
             '<div class="modal-table-wrap"><table><thead><tr>' + cols.map(h => '<th>' + h + '</th>').join('') + '</tr></thead>' +
             '<tbody>' + list.map((e, i) =>
@@ -1138,7 +1193,14 @@ function showEmpModal(title, list) {
                 '<td>' + e.resignDate + '</td>' +
                 '<td>' + (e.gongLingQuJian || '') + '</td>' +
                 '<td><span class="reason-badge ' + reasonClass(e.reasonTag || e.reason1) + '">' + (e.reasonTag || e.reason1) + '</span></td>' +
-                '<td class="text-left col-detail">' + getReasonEditHtml(e) + '</td>' +
+                '<td class="text-left col-detail">' + getReasonEditHtml(e, 'reason', '离职详情') + '</td>' +
+                '<td class="col-edit col-edit-time">' + getReasonEditHtml(e, 'communicationTime', '沟通时间') + '</td>' +
+                '<td class="col-edit">' + getReasonEditHtml(e, 'operationReason', '运营判定离职原因') + '</td>' +
+                '<td class="col-edit">' + getReasonEditHtml(e, 'bpReason', 'BP沟通离职原因') + '</td>' +
+                '<td class="col-edit col-edit-time">' + getReasonEditHtml(e, 'bpCommunicationTime', 'BP沟通时间') + '</td>' +
+                '<td class="col-edit">' + getReasonEditHtml(e, 'bpTag', 'BP判定原因') + '</td>' +
+                '<td class="col-edit">' + getReasonEditHtml(e, 'isConsistent', '是否一致') + '</td>' +
+                '<td class="col-edit">' + getReasonEditHtml(e, 'inconsistencyNote', '不一致说明') + '</td>' +
                 '</tr>'
             ).join('') + '</tbody></table></div>';
     }
@@ -1267,10 +1329,23 @@ function getEffectiveReasonDetail(emp){
     return getTurnoverReason(emp.empId);
 }
 
-function getReasonEditHtml(emp){
-    const detail=getEffectiveReasonDetail(emp);
+function getTurnoverField(empId, field){
+    const r=turnoverReasons[empId]||{};
+    if(field==='reason'){
+        return r.reason||getTurnoverReason(empId);
+    }
+    return r[field]||'';
+}
+
+function getReasonEditHtml(emp, field, label){
+    let detail='';
+    if(field==='reason'){
+        detail=getEffectiveReasonDetail(emp);
+    }else{
+        detail=getTurnoverField(emp.empId, field);
+    }
     if(detail){
-        return '<span class="reason-edit filled" title="'+escapeHtml(detail)+'" onclick="openReasonEdit(\''+emp.empId+'\')">'+escapeHtml(detail)+'</span>';
+        return '<span class="reason-edit filled" title="'+escapeHtml(label)+'：'+escapeHtml(detail)+'" onclick="openReasonEdit(\''+emp.empId+'\')">'+escapeHtml(detail)+'</span>';
     }
     return '<span class="reason-edit" onclick="openReasonEdit(\''+emp.empId+'\')">待填写</span>';
 }
@@ -1287,6 +1362,13 @@ function openReasonEdit(empId){
     info.innerHTML='姓名：<strong>'+escapeHtml(emp.name)+'</strong>　工号：<strong>'+escapeHtml(emp.empId)+'</strong><br>门店：'+escapeHtml(emp.store)+'　职位：'+escapeHtml(emp.position);
     const r=turnoverReasons[empId]||{};
     document.getElementById('reason-edit-text').value=r.reason||'';
+    document.getElementById('reason-edit-communication-time').value=r.communicationTime||'';
+    document.getElementById('reason-edit-operation-reason').value=r.operationReason||'';
+    document.getElementById('reason-edit-bp-reason').value=r.bpReason||'';
+    document.getElementById('reason-edit-bp-time').value=r.bpCommunicationTime||'';
+    document.getElementById('reason-edit-bp-tag').value=r.bpTag||'';
+    document.getElementById('reason-edit-is-consistent').value=r.isConsistent||'';
+    document.getElementById('reason-edit-inconsistency').value=r.inconsistencyNote||'';
     document.getElementById('reason-edit-by').value=r.updated_by||'';
     document.getElementById('reason-edit-modal').classList.add('active');
 }
@@ -1301,10 +1383,26 @@ function closeReasonEdit(event){
 function confirmReasonEdit(){
     if(!currentEditEmpId)return;
     const reason=document.getElementById('reason-edit-text').value.trim();
+    const communicationTime=document.getElementById('reason-edit-communication-time').value.trim();
+    const operationReason=document.getElementById('reason-edit-operation-reason').value.trim();
+    const bpReason=document.getElementById('reason-edit-bp-reason').value.trim();
+    const bpCommunicationTime=document.getElementById('reason-edit-bp-time').value.trim();
+    const bpTag=document.getElementById('reason-edit-bp-tag').value.trim();
+    const isConsistent=document.getElementById('reason-edit-is-consistent').value.trim();
+    const inconsistencyNote=document.getElementById('reason-edit-inconsistency').value.trim();
     const by=document.getElementById('reason-edit-by').value.trim();
-    if(!reason){alert('请填写离职原因');return;}
+    if(!reason && !communicationTime && !operationReason && !bpReason && !bpCommunicationTime && !bpTag && !isConsistent && !inconsistencyNote){
+        alert('请至少填写一项内容');return;
+    }
     turnoverReasons[currentEditEmpId]={
         reason:reason,
+        communicationTime:communicationTime,
+        operationReason:operationReason,
+        bpReason:bpReason,
+        bpCommunicationTime:bpCommunicationTime,
+        bpTag:bpTag,
+        isConsistent:isConsistent,
+        inconsistencyNote:inconsistencyNote,
         updated_by:by,
         updated_at:new Date().toISOString()
     };

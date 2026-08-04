@@ -894,7 +894,7 @@ let globalDadianchang = 'all';
 
 // 获取筛选后的员工列表
 function getFilteredEmployees() {
-    let list = D.employees;
+    let list = D.employees.concat(onlineResignList||[]);
     if (globalDadianchang !== 'all') {
         list = list.filter(e => e.dadianchang === globalDadianchang);
     } else if (globalQujing !== 'all') {
@@ -921,8 +921,9 @@ function getFilteredBeginEnd() {
 // 计算筛选后的聚合指标
 function getFilteredStats() {
     const emps = getFilteredEmployees();
-    const { begin, end } = getFilteredBeginEnd();
+    const { begin } = getFilteredBeginEnd();
     const resignCount = emps.length;
+    const end = begin - resignCount;
     const avgCount = (begin + end) / 2;
     const resignRate = avgCount > 0 ? resignCount / avgCount : 0;
 
@@ -1024,9 +1025,9 @@ function renderCards() {
     const stats = getFilteredStats();
     const isOnTarget = stats.resignRate <= 0.05;
     const cards = [
-        { label: '期初全职人数', sub: '(7月1日)', value: stats.begin, unit: '人', cls: '' },
-        { label: '期末全职人数', sub: '(7月25日)', value: stats.end, unit: '人', cls: '' },
-        { label: '主动离职人数', sub: '(7月1-25日)', value: stats.resignCount, unit: '人', cls: 'danger clickable', valColor: 'red',
+        { label: '期初全职人数', sub: '(8月1日)', value: stats.begin, unit: '人', cls: '' },
+        { label: '期末全职人数', sub: '(8月至今)', value: stats.end, unit: '人', cls: '' },
+        { label: '主动离职人数', sub: '(8月)', value: stats.resignCount, unit: '人', cls: 'danger clickable', valColor: 'red',
           detailBtn: '<span class="card-detail-btn" onclick="event.stopPropagation();openAllResignModal()">▶ 详情</span>',
           onclick: 'openAllResignModal()' },
         { label: '预离职人员填写', sub: '实时补充名单', value: preTurnoverList.length, unit: '人', cls: 'info clickable', valColor: 'blue',
@@ -1407,7 +1408,8 @@ function resetEmpFilter() {
 // ===== 弹窗 =====
 function openAllResignModal() {
     const emps = getFilteredEmployees();
-    const { begin, end } = getFilteredBeginEnd();
+    const { begin } = getFilteredBeginEnd();
+    const end = begin - emps.length;
     const title = '主动离职人员明细 - 共' + emps.length + '人 (期初' + begin + ' 期末' + end + ')';
     showEmpModal(title, emps);
 }
@@ -1437,12 +1439,13 @@ function showEmpModal(title, list) {
     currentModalList = list;
     document.getElementById('modal-title').textContent = title;
     const body = document.getElementById('modal-body');
+    const toolbar='<div style="padding:12px 20px;display:flex;justify-content:space-between;align-items:center;"><button class="action-btn" style="background:#c62828;color:#fff;" onclick="openResignEditModal()">+ 新增离职人员</button><span style="font-size:12px;color:#666;">支持即辞人员快速新增</span></div>';
     if (list.length === 0) {
-        body.innerHTML = '<div class="modal-empty">该维度暂无离职人员</div>';
+        body.innerHTML = toolbar+'<div class="modal-empty">该维度暂无离职人员，可点击上方按钮新增</div>';
     } else {
         const cols = ['序号', '区经', '大店长', '姓名', '职位', '门店', '入职日期', '离职日期', '工龄', '离职原因', '详情',
-            '沟通时间', '运营判定离职原因', 'BP沟通离职原因', 'BP沟通时间', 'BP判定原因', '是否一致', '不一致说明'];
-        body.innerHTML =
+            '沟通时间', '运营判定离职原因', 'BP沟通离职原因', 'BP沟通时间', 'BP判定原因', '是否一致', '不一致说明', '操作'];
+        body.innerHTML = toolbar +
             '<div class="modal-table-wrap"><table><thead><tr>' + cols.map(h => '<th>' + h + '</th>').join('') + '</tr></thead>' +
             '<tbody>' + list.map((e, i) =>
                 '<tr>' +
@@ -1464,6 +1467,7 @@ function showEmpModal(title, list) {
                 '<td class="col-edit">' + getReasonEditHtml(e, 'bpTag', 'BP判定原因') + '</td>' +
                 '<td class="col-edit">' + getReasonEditHtml(e, 'isConsistent', '是否一致') + '</td>' +
                 '<td class="col-edit">' + getReasonEditHtml(e, 'inconsistencyNote', '不一致说明') + '</td>' +
+                '<td>'+(e._isOnline?'<button class="action-btn" style="background:#ffcdd2;color:#c62828;padding:3px 8px;font-size:11px;" onclick="event.stopPropagation();deleteOnlineResign(\''+e.empId+'\')">删除</button>':'')+'</td>' +
                 '</tr>'
             ).join('') + '</tbody></table></div>';
     }
@@ -1491,6 +1495,13 @@ let preTurnoverRowId=null;
 let preTurnoverSyncTimer=null;
 let preTurnoverWriteLock=false;
 let currentEditPreId=null;
+
+let onlineResignList=[];
+let onlineResignRowId=null;
+let onlineResignSyncTimer=null;
+let onlineResignWriteLock=false;
+let editModalMode='pre'; // 'pre' or 'resign'
+let autoTransferTimer=null;
 
 function escapeHtml(str){
     return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
@@ -1528,6 +1539,24 @@ function restorePreTurnoverFromLocal(){
         const data=JSON.parse(raw);
         preTurnoverList=data.list||[];
         if(!preTurnoverRowId)preTurnoverRowId=data.rowId||null;
+        return true;
+    }catch(e){return false;}
+}
+
+function backupOnlineResignToLocal(){
+    try{
+        localStorage.setItem('onlineResignBackup',JSON.stringify({
+            list:onlineResignList, rowId:onlineResignRowId, ts:Date.now()
+        }));
+    }catch(e){}
+}
+function restoreOnlineResignFromLocal(){
+    try{
+        const raw=localStorage.getItem('onlineResignBackup');
+        if(!raw)return false;
+        const data=JSON.parse(raw);
+        onlineResignList=data.list||[];
+        if(!onlineResignRowId)onlineResignRowId=data.rowId||null;
         return true;
     }catch(e){return false;}
 }
@@ -1622,6 +1651,126 @@ async function createPreTurnoverRow(){
             backupPreTurnoverToLocal();
         }
     }catch(e){console.error('createPreTurnoverRow failed',e);}
+}
+
+// ===== 在线离职人员存储 (Supabase id=4) =====
+async function loadOnlineResignData(){
+    restoreOnlineResignFromLocal();
+    try{
+        const res=await fetch(SUPA_URL+'/rest/v1/'+SUPA_TABLE+'?select=id,data',{
+            headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY}
+        });
+        if(!res.ok)throw new Error('supabase '+res.status);
+        const rows=await res.json();
+        const row=(rows||[]).find(r=>{
+            const d=r&&r.data||{};
+            return d._type==='online_resigns';
+        });
+        if(row){
+            onlineResignRowId=row.id;
+            onlineResignList=row.data&&row.data.online_resigns||[];
+            backupOnlineResignToLocal();
+            refreshAll();
+        }else{
+            await createOnlineResignRow();
+        }
+    }catch(e){
+        console.error('loadOnlineResignData failed',e);
+        restoreOnlineResignFromLocal();
+    }
+}
+
+async function createOnlineResignRow(){
+    try{
+        const res=await fetch(SUPA_URL+'/rest/v1/'+SUPA_TABLE,{
+            method:'POST',
+            headers:{
+                'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY,
+                'Content-Type':'application/json','Prefer':'return=representation'
+            },
+            body:JSON.stringify({id:4,data:{_type:'online_resigns',online_resigns:[]}})
+        });
+        if(!res.ok)throw new Error('create online resign row '+res.status);
+        const rows=await res.json();
+        if(rows&&rows.length){
+            onlineResignRowId=rows[0].id;
+            onlineResignList=[];
+            backupOnlineResignToLocal();
+        }
+    }catch(e){console.error('createOnlineResignRow failed',e);}
+}
+
+async function syncOnlineResignData(){
+    if(onlineResignWriteLock||!onlineResignRowId)return;
+    onlineResignWriteLock=true;
+    try{
+        backupOnlineResignToLocal();
+        const res=await fetch(SUPA_URL+'/rest/v1/'+SUPA_TABLE+'?id=eq.'+onlineResignRowId,{
+            method:'PATCH',
+            headers:{
+                'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY,
+                'Content-Type':'application/json','Prefer':'return=minimal'
+            },
+            body:JSON.stringify({
+                data:{_type:'online_resigns',online_resigns:onlineResignList},
+                updated_at:new Date().toISOString()
+            })
+        });
+        if(!res.ok){
+            const txt=await res.text();
+            console.error('syncOnlineResignData failed',res.status,txt);
+        }
+    }catch(e){console.error('syncOnlineResignData failed',e);}
+    onlineResignWriteLock=false;
+}
+function scheduleOnlineResignSync(){
+    if(onlineResignSyncTimer)clearTimeout(onlineResignSyncTimer);
+    onlineResignSyncTimer=setTimeout(()=>{syncOnlineResignData();},800);
+}
+
+// ===== 预离职自动转移逻辑 =====
+function parseResignDate(str){
+    if(!str)return null;
+    str=String(str).trim();
+    let m=str.match(/(\d{4})[-\/.](\d{1,2})[-\/.](\d{1,2})/);
+    if(m)return new Date(parseInt(m[1]),parseInt(m[2])-1,parseInt(m[3]));
+    m=str.match(/(\d{1,2})月(\d{1,2})[日号]/);
+    if(m){
+        const year=new Date().getFullYear();
+        return new Date(year,parseInt(m[1])-1,parseInt(m[2]));
+    }
+    return null;
+}
+
+function shouldTransferToResign(resignDateStr){
+    const d=parseResignDate(resignDateStr);
+    if(!d)return false;
+    const today=new Date();
+    today.setHours(23,59,59,999);
+    return d<=today;
+}
+
+async function autoTransferPreTurnover(){
+    if(!preTurnoverList||preTurnoverList.length===0)return;
+    const toTransfer=preTurnoverList.filter(p=>shouldTransferToResign(p.resignDate));
+    if(toTransfer.length===0)return;
+    console.log('Auto-transferring',toTransfer.length,'pre-turnover to online resigns');
+    for(const emp of toTransfer){
+        emp._isOnline=true;
+        emp._transferredFromPre=true;
+        emp.transferredAt=new Date().toISOString();
+        onlineResignList.push(emp);
+    }
+    const transferredIds=new Set(toTransfer.map(p=>p.empId));
+    preTurnoverList=preTurnoverList.filter(p=>!transferredIds.has(p.empId));
+    schedulePreTurnoverSync();
+    scheduleOnlineResignSync();
+    refreshAll();
+    const modal=document.getElementById('detail-modal');
+    if(modal.classList.contains('active')){
+        if(currentModalMode==='pre')openPreTurnoverModal();
+        else if(currentModalList.length)showEmpModal(currentModalTitle,currentModalList);
+    }
 }
 
 async function syncPreTurnoverData(){
@@ -1859,6 +2008,7 @@ function onPreStoreInput(){
 }
 
 function openPreTurnoverEditModal(empId){
+    editModalMode='pre';
     currentEditPreId=empId||null;
     const isNew=!currentEditPreId;
     document.getElementById('pre-turnover-edit-title').textContent=isNew?'新增预离职人员':'编辑预离职人员';
@@ -1894,6 +2044,36 @@ function closePreTurnoverEdit(event){
     }
 }
 
+function openResignEditModal(empId){
+    editModalMode='resign';
+    currentEditPreId=empId||null;
+    const isNew=!currentEditPreId;
+    document.getElementById('pre-turnover-edit-title').textContent=isNew?'新增离职人员':'编辑离职人员';
+    const emp=isNew?{}:(onlineResignList.find(p=>p.empId===currentEditPreId)||{});
+    document.getElementById('pre-edit-name').value=emp.name||'';
+    document.getElementById('pre-edit-emp-id').value=isNew?'':(emp.empId||'');
+    document.getElementById('pre-edit-qujing').value=emp.qujing||'';
+    document.getElementById('pre-edit-dadianchang').value=emp.dadianchang||'';
+    document.getElementById('pre-edit-store').value=emp.store||'';
+    document.getElementById('pre-edit-position').value=emp.position||'';
+    document.getElementById('pre-edit-hire-date').value=emp.hireDate||'';
+    document.getElementById('pre-edit-resign-date').value=emp.resignDate||'';
+    document.getElementById('pre-edit-gongling').value=emp.gongLingQuJian||'';
+    document.getElementById('pre-edit-reason-tag').value=emp.reasonTag||'';
+    document.getElementById('pre-edit-reason1').value=emp.reason1||'';
+    document.getElementById('pre-edit-reason-detail').value=emp.reasonDetail||'';
+    document.getElementById('pre-edit-communication-time').value=emp.communicationTime||'';
+    document.getElementById('pre-edit-operation-reason').value=emp.operationReason||'';
+    document.getElementById('pre-edit-bp-reason').value=emp.bpReason||'';
+    document.getElementById('pre-edit-bp-time').value=emp.bpCommunicationTime||'';
+    document.getElementById('pre-edit-bp-tag').value=emp.bpTag||'';
+    document.getElementById('pre-edit-is-consistent').value=emp.isConsistent||'';
+    document.getElementById('pre-edit-inconsistency').value=emp.inconsistencyNote||'';
+    document.getElementById('pre-edit-by').value=emp.updated_by||'';
+    onPreStoreInput();
+    document.getElementById('pre-turnover-edit-modal').classList.add('active');
+}
+
 function confirmPreTurnoverEdit(){
     const name=document.getElementById('pre-edit-name').value.trim();
     const qujing=document.getElementById('pre-edit-qujing').value.trim();
@@ -1905,16 +2085,21 @@ function confirmPreTurnoverEdit(){
     }
     const empIdInput=document.getElementById('pre-edit-emp-id').value.trim();
     const isNew=!currentEditPreId;
-    let empId=isNew?('pre_'+Date.now()):currentEditPreId;
+    let empId=isNew?(editModalMode==='resign'?('resign_'+Date.now()):('pre_'+Date.now())):currentEditPreId;
     if(isNew && empIdInput){
-        if(preTurnoverList.some(p=>p.empId===empIdInput && p.empId!==currentEditPreId)){
-            alert('该工号/ID已存在，请更换');return;
+        if(editModalMode==='resign'){
+            if(onlineResignList.some(p=>p.empId===empIdInput)){
+                alert('该工号/ID已存在，请更换');return;
+            }
+        }else{
+            if(preTurnoverList.some(p=>p.empId===empIdInput)){
+                alert('该工号/ID已存在，请更换');return;
+            }
         }
         empId=empIdInput;
     }
     const record={
         empId:empId,
-        _isPre:true,
         name:name,
         qujing:qujing,
         dadianchang:dadianchang,
@@ -1936,16 +2121,31 @@ function confirmPreTurnoverEdit(){
         updated_by:document.getElementById('pre-edit-by').value.trim(),
         updated_at:new Date().toISOString()
     };
-    if(isNew){
-        preTurnoverList.push(record);
+    if(editModalMode==='resign'){
+        record._isOnline=true;
+        if(isNew){
+            onlineResignList.push(record);
+        }else{
+            const idx=onlineResignList.findIndex(p=>p.empId===currentEditPreId);
+            if(idx>=0) onlineResignList[idx]=record;
+        }
+        scheduleOnlineResignSync();
+        closePreTurnoverEdit();
+        refreshAll();
+        openAllResignModal();
     }else{
-        const idx=preTurnoverList.findIndex(p=>p.empId===currentEditPreId);
-        if(idx>=0) preTurnoverList[idx]=record;
+        record._isPre=true;
+        if(isNew){
+            preTurnoverList.push(record);
+        }else{
+            const idx=preTurnoverList.findIndex(p=>p.empId===currentEditPreId);
+            if(idx>=0) preTurnoverList[idx]=record;
+        }
+        schedulePreTurnoverSync();
+        closePreTurnoverEdit();
+        renderCards();
+        openPreTurnoverModal();
     }
-    schedulePreTurnoverSync();
-    closePreTurnoverEdit();
-    renderCards();
-    openPreTurnoverModal();
 }
 
 function deletePreTurnover(empId){
@@ -1954,6 +2154,14 @@ function deletePreTurnover(empId){
     schedulePreTurnoverSync();
     renderCards();
     openPreTurnoverModal();
+}
+
+function deleteOnlineResign(empId){
+    if(!confirm('确定删除该离职人员记录吗？'))return;
+    onlineResignList=onlineResignList.filter(p=>p.empId!==empId);
+    scheduleOnlineResignSync();
+    refreshAll();
+    openAllResignModal();
 }
 
 function refreshPreTurnoverDisplays(){
@@ -1974,7 +2182,12 @@ renderTables();
 renderEmpTable();
 switchTab('qujing');
 loadTurnoverData();
-loadPreTurnoverData();
+loadPreTurnoverData().then(()=>{
+    return loadOnlineResignData();
+}).then(()=>{
+    autoTransferPreTurnover();
+    autoTransferTimer=setInterval(autoTransferPreTurnover,600000);
+});
 </script>
 </body>
 </html>

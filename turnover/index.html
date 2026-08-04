@@ -289,8 +289,9 @@
         .edit-modal-box {
             background: #fff; border-radius: 8px; width: 100%; max-width: 760px;
             box-shadow: 0 20px 60px rgba(0,0,0,0.25); animation: modalIn 0.25s ease;
+            display: flex; flex-direction: column; max-height: 90vh;
         }
-        .edit-modal-body { padding: 20px; }
+        .edit-modal-body { padding: 20px; flex: 1; overflow: auto; min-height: 0; }
         .edit-modal-grid {
             display: grid; grid-template-columns: 1fr 1fr; gap: 14px 20px;
         }
@@ -313,7 +314,9 @@
             padding: 8px 12px; font-size: 13px; outline: none; margin-bottom: 16px;
         }
         .edit-modal-actions {
-            display: flex; justify-content: flex-end; gap: 10px; margin-top: 16px;
+            display: flex; justify-content: flex-end; gap: 10px; margin-top: 0;
+            padding: 12px 20px; border-top: 1px solid #e3f2fd; background: #fff;
+            border-radius: 0 0 8px 8px;
         }
         .edit-modal-actions button {
             padding: 8px 18px; border: none; border-radius: 5px; font-size: 13px;
@@ -407,7 +410,10 @@
 </div>
 
 <!-- ===== 第一排：核心KPI ===== -->
-<div class="section-header">【第一排】核心指标总览 - 古德墨柠 7月离职情况</div>
+<div class="section-header" style="display:flex;align-items:center;justify-content:space-between;">
+    <span>【第一排】核心指标总览 - 古德墨柠 7月离职情况</span>
+    <button class="action-btn" style="background:#1565c0;color:#fff;padding:6px 16px;font-size:13px;" onclick="openPreTurnoverEditModal()">+ 新增预离职人员</button>
+</div>
 <div class="cards-row" id="cards-row"></div>
 
 <!-- ===== 第二排：趋势图表 ===== -->
@@ -580,10 +586,10 @@
                 </div>
             </div>
             <div class="edit-modal-hint">填写后自动保存到云端，其他人刷新看板即可看到。</div>
-            <div class="edit-modal-actions">
-                <button class="btn-cancel" onclick="closeReasonEdit()">取消</button>
-                <button class="btn-save" onclick="confirmReasonEdit()">保存</button>
-            </div>
+        </div>
+        <div class="edit-modal-actions">
+            <button class="btn-cancel" onclick="closeReasonEdit()">取消</button>
+            <button class="btn-save" onclick="confirmReasonEdit()">保存</button>
         </div>
     </div>
 </div>
@@ -607,15 +613,25 @@
                 </div>
                 <div>
                     <div class="edit-modal-label">区经 *</div>
-                    <input type="text" class="edit-modal-input" id="pre-edit-qujing" placeholder="例如：李曦" style="margin-bottom:0;">
+                    <select class="edit-modal-input" id="pre-edit-qujing" style="margin-bottom:0;">
+                        <option value="">请选择区经</option>
+                        <option value="张良东">张良东</option>
+                        <option value="徐乾">徐乾</option>
+                        <option value="李曦">李曦</option>
+                        <option value="林阳阳">林阳阳</option>
+                    </select>
                 </div>
                 <div>
                     <div class="edit-modal-label">大店长 *</div>
-                    <input type="text" class="edit-modal-input" id="pre-edit-dadianchang" placeholder="例如：张力木" style="margin-bottom:0;">
+                    <select class="edit-modal-input" id="pre-edit-dadianchang" style="margin-bottom:0;">
+                        <option value="">请选择大店长</option>
+                        <option value="何海云">何海云</option><option value="刘旺林">刘旺林</option><option value="周思凡">周思凡</option><option value="廖灿">廖灿</option><option value="徐宇辉">徐宇辉</option><option value="旷瑶">旷瑶</option><option value="易彪">易彪</option><option value="李奔">李奔</option><option value="杜强">杜强</option><option value="童璐">童璐</option><option value="赵思洁">赵思洁</option><option value="邵宝生">邵宝生</option><option value="钟天祥">钟天祥</option>
+                    </select>
                 </div>
                 <div>
-                    <div class="edit-modal-label">门店 *</div>
-                    <input type="text" class="edit-modal-input" id="pre-edit-store" placeholder="例如：五一广场店" style="margin-bottom:0;">
+                    <div class="edit-modal-label">门店 *（输入关键词搜索，如"蝴蝶"）</div>
+                    <input type="text" class="edit-modal-input" id="pre-edit-store" list="store-options" placeholder="输入门店名关键词…" style="margin-bottom:0;" oninput="onPreStoreInput()">
+                    <datalist id="store-options"></datalist>
                 </div>
                 <div>
                     <div class="edit-modal-label">职位 *</div>
@@ -652,7 +668,14 @@
                 </div>
                 <div class="full-width">
                     <div class="edit-modal-label">离职原因</div>
-                    <input type="text" class="edit-modal-input" id="pre-edit-reason1" placeholder="简要原因" style="margin-bottom:0;">
+                    <select class="edit-modal-input" id="pre-edit-reason1" style="margin-bottom:0;">
+                        <option value="">请选择</option>
+                        <option value="发展原因">发展原因</option>
+                        <option value="其他原因">其他原因</option>
+                        <option value="身体原因">身体原因</option>
+                        <option value="个人能力">个人能力</option>
+                        <option value="个人原因">个人原因</option>
+                    </select>
                 </div>
                 <div class="full-width">
                     <div class="edit-modal-label">离职详情 / 备注</div>
@@ -696,10 +719,10 @@
                 </div>
             </div>
             <div class="edit-modal-hint">新增后自动保存到云端，其他人刷新看板即可看到。</div>
-            <div class="edit-modal-actions">
-                <button class="btn-cancel" onclick="closePreTurnoverEdit()">取消</button>
-                <button class="btn-save" onclick="confirmPreTurnoverEdit()">保存</button>
-            </div>
+        </div>
+        <div class="edit-modal-actions">
+            <button class="btn-cancel" onclick="closePreTurnoverEdit()">取消</button>
+            <button class="btn-save" onclick="confirmPreTurnoverEdit()">保存</button>
         </div>
     </div>
 </div>
@@ -708,6 +731,125 @@
 
 <script src="data.js"></script>
 <script>
+const STORE_DATA={
+qujing:["张良东", "徐乾", "李曦", "林阳阳"],
+dadianchang:["何海云", "刘旺林", "周思凡", "廖灿", "徐宇辉", "旷瑶", "易彪", "李奔", "杜强", "童璐", "赵思洁", "邵宝生", "钟天祥"],
+stores:["古德墨柠7mallM层店", "古德墨柠7mall外街店", "古德墨柠IFS国金中心LG层店", "古德墨柠万家丽一楼南门店", "古德墨柠万家丽一楼店", "古德墨柠万家丽家居广场店", "古德墨柠万家丽负一楼店", "古德墨柠东庆街店", "古德墨柠东怡外国店", "古德墨柠中山亭店", "古德墨柠中心广场楼梯口店", "古德墨柠丰盈西里店", "古德墨柠九龙仓四楼店", "古德墨柠云玺潮汇北广场店", "古德墨柠五一平和堂负一楼店", "古德墨柠五一广场新大新店", "古德墨柠人间草木店", "古德墨柠仰天湖公交站店", "古德墨柠佳兆业广场店", "古德墨柠保利时光汇一楼店", "古德墨柠北辰三角洲站1号口店", "古德墨柠北辰三角洲站2号口店", "古德墨柠协信星光PARK店", "古德墨柠南门口联成百货大楼店", "古德墨柠友阿百货人民路店", "古德墨柠吉联Mall西广场店", "古德墨柠后湖小区店", "古德墨柠和而不同店", "古德墨柠嘉顿新天地一楼店", "古德墨柠四方坪商贸城南门店", "古德墨柠国金街B层12号口店", "古德墨柠地科家园一楼店", "古德墨柠城市生活家店", "古德墨柠太平粮仓店", "古德墨柠太平街148号店", "古德墨柠太平街新胜村口店", "古德墨柠太平街解放路口店", "古德墨柠奥林匹克店", "古德墨柠开福万达广场一楼店", "古德墨柠德思勤L1层店", "古德墨柠德思勤四季汇店", "古德墨柠德思勤苹果街店", "古德墨柠悦方一楼店", "古德墨柠悦麓汇美食地标店", "古德墨柠惠农大厦东门店", "古德墨柠惠农大厦店", "古德墨柠招商蛇口花园店", "古德墨柠新大陆银座店", "古德墨柠新时空大厦店", "古德墨柠方圆荟G层店", "古德墨柠旭辉里一楼店", "古德墨柠星月楼西北角店", "古德墨柠星沙万象汇内街店", "古德墨柠星沙吾悦外街店", "古德墨柠星沙天虹一楼店", "古德墨柠星沙永旺梦乐城店", "古德墨柠望城永旺梦乐城店", "古德墨柠机场T1B5店", "古德墨柠机场T2A安检店", "古德墨柠机场T2D44店", "古德墨柠杉杉奥特莱斯店", "古德墨柠林科大后街店", "古德墨柠树木岭新梁仓店", "古德墨柠步行街B区店", "古德墨柠步行街E区店", "古德墨柠步行街中心广场东北角店", "古德墨柠河西王府井负一楼店", "古德墨柠河西通程店", "古德墨柠泉塘店", "古德墨柠海信二楼店", "古德墨柠涉外美食街店", "古德墨柠渔湾市公交车站店", "古德墨柠温尔登超市店", "古德墨柠湖南大剧院一楼店", "古德墨柠湖南省博物馆四楼店", "古德墨柠湘腾广场拐角店", "古德墨柠溪悦荟店", "古德墨柠潮宗街文化街店", "古德墨柠潮宗街水道巷店", "古德墨柠牛车水美食城店", "古德墨柠王府井桃花源店", "古德墨柠登隆街内街店", "古德墨柠百联奥特莱斯店", "古德墨柠砂之船一楼外街店", "古德墨柠科佳电脑城店", "古德墨柠突兀店", "古德墨柠粉巢一楼店", "古德墨柠育英街店", "古德墨柠芙蓉广场亭子店", "古德墨柠荷花路店", "古德墨柠蝴蝶大厦店", "古德墨柠裕园小区店", "古德墨柠西中心T3写字楼店", "古德墨柠解放路世纪情店", "古德墨柠谢子龙艺术馆一楼店", "古德墨柠都正街内街店", "古德墨柠金茂三楼店", "古德墨柠长郡中学门口店", "古德墨柠阜埠河地铁1号口店", "古德墨柠雨花亭凯德二楼店", "古德墨柠音乐学院对面店", "古德墨柠高铁B24对面店", "古德墨柠高铁东广场美食城店", "古德墨柠高铁南站A8二楼店", "古德墨柠高铁南站西广场F15店", "古德墨柠高铁吾悦广场外街店", "古德墨柠麓山南路公交站店", "古德墨柠黄兴步行街F区一楼店", "古德墨柠龙塘小区店", "古德墨柠龙湖月亮岛天街店", "古德墨柠龙湖长沙芙蓉天街店"],
+mapping:{
+"古德墨柠7mallM层店":{qujing:"张良东",dadianchang:"徐宇辉"},
+"古德墨柠7mall外街店":{qujing:"张良东",dadianchang:"徐宇辉"},
+"古德墨柠IFS国金中心LG层店":{qujing:"张良东",dadianchang:"邵宝生"},
+"古德墨柠万家丽一楼南门店":{qujing:"李曦",dadianchang:"童璐"},
+"古德墨柠万家丽一楼店":{qujing:"李曦",dadianchang:"童璐"},
+"古德墨柠万家丽家居广场店":{qujing:"李曦",dadianchang:"童璐"},
+"古德墨柠万家丽负一楼店":{qujing:"李曦",dadianchang:"童璐"},
+"古德墨柠东庆街店":{qujing:"张良东",dadianchang:"徐宇辉"},
+"古德墨柠东怡外国店":{qujing:"徐乾",dadianchang:"廖灿"},
+"古德墨柠中山亭店":{qujing:"李曦",dadianchang:"何海云"},
+"古德墨柠中心广场楼梯口店":{qujing:"林阳阳",dadianchang:"李奔"},
+"古德墨柠丰盈西里店":{qujing:"李曦",dadianchang:"童璐"},
+"古德墨柠九龙仓四楼店":{qujing:"张良东",dadianchang:"邵宝生"},
+"古德墨柠云玺潮汇北广场店":{qujing:"张良东",dadianchang:"杜强"},
+"古德墨柠五一平和堂负一楼店":{qujing:"张良东",dadianchang:"徐宇辉"},
+"古德墨柠五一广场新大新店":{qujing:"李曦",dadianchang:"周思凡"},
+"古德墨柠人间草木店":{qujing:"徐乾",dadianchang:"旷瑶"},
+"古德墨柠仰天湖公交站店":{qujing:"徐乾",dadianchang:"廖灿"},
+"古德墨柠佳兆业广场店":{qujing:"徐乾",dadianchang:"徐宇辉"},
+"古德墨柠保利时光汇一楼店":{qujing:"张良东",dadianchang:"杜强"},
+"古德墨柠北辰三角洲站1号口店":{qujing:"李曦",dadianchang:"何海云"},
+"古德墨柠北辰三角洲站2号口店":{qujing:"李曦",dadianchang:"何海云"},
+"古德墨柠协信星光PARK店":{qujing:"张良东",dadianchang:"杜强"},
+"古德墨柠南门口联成百货大楼店":{qujing:"林阳阳",dadianchang:"赵思洁"},
+"古德墨柠友阿百货人民路店":{qujing:"徐乾",dadianchang:"钟天祥"},
+"古德墨柠吉联Mall西广场店":{qujing:"徐乾",dadianchang:"钟天祥"},
+"古德墨柠后湖小区店":{qujing:"林阳阳",dadianchang:"李奔"},
+"古德墨柠和而不同店":{qujing:"张良东",dadianchang:"杜强"},
+"古德墨柠嘉顿新天地一楼店":{qujing:"李曦",dadianchang:"何海云"},
+"古德墨柠四方坪商贸城南门店":{qujing:"李曦",dadianchang:"何海云"},
+"古德墨柠国金街B层12号口店":{qujing:"张良东",dadianchang:"邵宝生"},
+"古德墨柠地科家园一楼店":{qujing:"徐乾",dadianchang:"邵宝生"},
+"古德墨柠城市生活家店":{qujing:"林阳阳",dadianchang:"邵宝生"},
+"古德墨柠太平粮仓店":{qujing:"李曦",dadianchang:"周思凡"},
+"古德墨柠太平街148号店":{qujing:"李曦",dadianchang:"周思凡"},
+"古德墨柠太平街新胜村口店":{qujing:"李曦",dadianchang:"周思凡"},
+"古德墨柠太平街解放路口店":{qujing:"李曦",dadianchang:"周思凡"},
+"古德墨柠奥林匹克店":{qujing:"张良东",dadianchang:"刘旺林"},
+"古德墨柠开福万达广场一楼店":{qujing:"李曦",dadianchang:"何海云"},
+"古德墨柠德思勤L1层店":{qujing:"林阳阳",dadianchang:"廖灿"},
+"古德墨柠德思勤四季汇店":{qujing:"林阳阳",dadianchang:"廖灿"},
+"古德墨柠德思勤苹果街店":{qujing:"林阳阳",dadianchang:"廖灿"},
+"古德墨柠悦方一楼店":{qujing:"张良东",dadianchang:"杜强"},
+"古德墨柠悦麓汇美食地标店":{qujing:"林阳阳",dadianchang:"赵思洁"},
+"古德墨柠惠农大厦东门店":{qujing:"张良东",dadianchang:"邵宝生"},
+"古德墨柠惠农大厦店":{qujing:"张良东",dadianchang:"邵宝生"},
+"古德墨柠招商蛇口花园店":{qujing:"张良东",dadianchang:"杜强"},
+"古德墨柠新大陆银座店":{qujing:"林阳阳",dadianchang:"赵思洁"},
+"古德墨柠新时空大厦店":{qujing:"林阳阳",dadianchang:"廖灿"},
+"古德墨柠方圆荟G层店":{qujing:"李曦",dadianchang:"何海云"},
+"古德墨柠旭辉里一楼店":{qujing:"林阳阳",dadianchang:"廖灿"},
+"古德墨柠星月楼西北角店":{qujing:"张良东",dadianchang:"杜强"},
+"古德墨柠星沙万象汇内街店":{qujing:"徐乾",dadianchang:"旷瑶"},
+"古德墨柠星沙吾悦外街店":{qujing:"徐乾",dadianchang:"旷瑶"},
+"古德墨柠星沙天虹一楼店":{qujing:"徐乾",dadianchang:"旷瑶"},
+"古德墨柠星沙永旺梦乐城店":{qujing:"徐乾",dadianchang:"易彪"},
+"古德墨柠望城永旺梦乐城店":{qujing:"张良东",dadianchang:"刘旺林"},
+"古德墨柠机场T1B5店":{qujing:"徐乾",dadianchang:"易彪"},
+"古德墨柠机场T2A安检店":{qujing:"徐乾",dadianchang:"易彪"},
+"古德墨柠机场T2D44店":{qujing:"徐乾",dadianchang:"易彪"},
+"古德墨柠杉杉奥特莱斯店":{qujing:"徐乾",dadianchang:"旷瑶"},
+"古德墨柠林科大后街店":{qujing:"林阳阳",dadianchang:"廖灿"},
+"古德墨柠树木岭新梁仓店":{qujing:"徐乾",dadianchang:"钟天祥"},
+"古德墨柠步行街B区店":{qujing:"林阳阳",dadianchang:"李奔"},
+"古德墨柠步行街E区店":{qujing:"林阳阳",dadianchang:"李奔"},
+"古德墨柠步行街中心广场东北角店":{qujing:"林阳阳",dadianchang:"李奔"},
+"古德墨柠河西王府井负一楼店":{qujing:"张良东",dadianchang:"刘旺林"},
+"古德墨柠河西通程店":{qujing:"林阳阳",dadianchang:"赵思洁"},
+"古德墨柠泉塘店":{qujing:"徐乾",dadianchang:"易彪"},
+"古德墨柠海信二楼店":{qujing:"张良东",dadianchang:"杜强"},
+"古德墨柠涉外美食街店":{qujing:"张良东",dadianchang:"刘旺林"},
+"古德墨柠渔湾市公交车站店":{qujing:"林阳阳",dadianchang:"赵思洁"},
+"古德墨柠温尔登超市店":{qujing:"徐乾",dadianchang:"钟天祥"},
+"古德墨柠湖南大剧院一楼店":{qujing:"徐乾",dadianchang:"邵宝生"},
+"古德墨柠湖南省博物馆四楼店":{qujing:"李曦",dadianchang:"何海云"},
+"古德墨柠湘腾广场拐角店":{qujing:"张良东",dadianchang:"刘旺林"},
+"古德墨柠溪悦荟店":{qujing:"徐乾",dadianchang:"易彪"},
+"古德墨柠潮宗街文化街店":{qujing:"李曦",dadianchang:"何海云"},
+"古德墨柠潮宗街水道巷店":{qujing:"李曦",dadianchang:"周思凡"},
+"古德墨柠牛车水美食城店":{qujing:"李曦",dadianchang:"周思凡"},
+"古德墨柠王府井桃花源店":{qujing:"张良东",dadianchang:"徐宇辉"},
+"古德墨柠登隆街内街店":{qujing:"徐乾",dadianchang:"童璐"},
+"古德墨柠百联奥特莱斯店":{qujing:"徐乾",dadianchang:"易彪"},
+"古德墨柠砂之船一楼外街店":{qujing:"张良东",dadianchang:"刘旺林"},
+"古德墨柠科佳电脑城店":{qujing:"徐乾",dadianchang:"钟天祥"},
+"古德墨柠突兀店":{qujing:"张良东",dadianchang:"徐宇辉"},
+"古德墨柠粉巢一楼店":{qujing:"李曦",dadianchang:"周思凡"},
+"古德墨柠育英街店":{qujing:"徐乾",dadianchang:"李奔"},
+"古德墨柠芙蓉广场亭子店":{qujing:"张良东",dadianchang:"徐宇辉"},
+"古德墨柠荷花路店":{qujing:"李曦",dadianchang:"童璐"},
+"古德墨柠蝴蝶大厦店":{qujing:"张良东",dadianchang:"徐宇辉"},
+"古德墨柠裕园小区店":{qujing:"林阳阳",dadianchang:"李奔"},
+"古德墨柠西中心T3写字楼店":{qujing:"张良东",dadianchang:"刘旺林"},
+"古德墨柠解放路世纪情店":{qujing:"李曦",dadianchang:"周思凡"},
+"古德墨柠谢子龙艺术馆一楼店":{qujing:"林阳阳",dadianchang:"李奔"},
+"古德墨柠都正街内街店":{qujing:"李曦",dadianchang:"童璐"},
+"古德墨柠金茂三楼店":{qujing:"张良东",dadianchang:"刘旺林"},
+"古德墨柠长郡中学门口店":{qujing:"林阳阳",dadianchang:"赵思洁"},
+"古德墨柠阜埠河地铁1号口店":{qujing:"林阳阳",dadianchang:"赵思洁"},
+"古德墨柠雨花亭凯德二楼店":{qujing:"林阳阳",dadianchang:"廖灿"},
+"古德墨柠音乐学院对面店":{qujing:"林阳阳",dadianchang:"李奔"},
+"古德墨柠高铁B24对面店":{qujing:"徐乾",dadianchang:"旷瑶"},
+"古德墨柠高铁东广场美食城店":{qujing:"徐乾",dadianchang:"钟天祥"},
+"古德墨柠高铁南站A8二楼店":{qujing:"徐乾",dadianchang:"旷瑶"},
+"古德墨柠高铁南站西广场F15店":{qujing:"徐乾",dadianchang:"钟天祥"},
+"古德墨柠高铁吾悦广场外街店":{qujing:"徐乾",dadianchang:"钟天祥"},
+"古德墨柠麓山南路公交站店":{qujing:"林阳阳",dadianchang:"赵思洁"},
+"古德墨柠黄兴步行街F区一楼店":{qujing:"林阳阳",dadianchang:"杜强"},
+"古德墨柠龙塘小区店":{qujing:"徐乾",dadianchang:"旷瑶"},
+"古德墨柠龙湖月亮岛天街店":{qujing:"张良东",dadianchang:"刘旺林"},
+"古德墨柠龙湖长沙芙蓉天街店":{qujing:"徐乾",dadianchang:"易彪"},
+}
+};
+
 const D = window.DASHBOARD_DATA;
 
 // 看板跳转地址
@@ -1697,6 +1839,25 @@ function openPreTurnoverModal(){
     document.getElementById('detail-modal').classList.add('active');
 }
 
+function onPreStoreInput(){
+    const input=document.getElementById('pre-edit-store');
+    const val=input.value.trim();
+    const dl=document.getElementById('store-options');
+    let list;
+    if(!val){
+        list=STORE_DATA.stores;
+    }else{
+        list=STORE_DATA.stores.filter(s=>s.indexOf(val)>=0);
+    }
+    if(list.length>60) list=list.slice(0,60);
+    dl.innerHTML=list.map(s=>'<option value="'+s+'">').join('');
+    if(STORE_DATA.mapping[val]){
+        const m=STORE_DATA.mapping[val];
+        document.getElementById('pre-edit-qujing').value=m.qujing;
+        document.getElementById('pre-edit-dadianchang').value=m.dadianchang;
+    }
+}
+
 function openPreTurnoverEditModal(empId){
     currentEditPreId=empId||null;
     const isNew=!currentEditPreId;
@@ -1722,6 +1883,7 @@ function openPreTurnoverEditModal(empId){
     document.getElementById('pre-edit-is-consistent').value=emp.isConsistent||'';
     document.getElementById('pre-edit-inconsistency').value=emp.inconsistencyNote||'';
     document.getElementById('pre-edit-by').value=emp.updated_by||'';
+    onPreStoreInput();
     document.getElementById('pre-turnover-edit-modal').classList.add('active');
 }
 

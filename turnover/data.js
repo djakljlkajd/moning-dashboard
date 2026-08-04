@@ -72,8 +72,8 @@ window.DASHBOARD_DATA = {
     },
     {
       "name": "林阳阳",
-      "beginCount": 87,
-      "endCount": 87,
+      "beginCount": 86,
+      "endCount": 86,
       "resignCount": 0,
       "resignRate": 0.0,
       "zhiJi": {
@@ -93,8 +93,8 @@ window.DASHBOARD_DATA = {
     },
     {
       "name": "张良东",
-      "beginCount": 107,
-      "endCount": 107,
+      "beginCount": 108,
+      "endCount": 108,
       "resignCount": 0,
       "resignRate": 0.0,
       "zhiJi": {
@@ -162,8 +162,8 @@ window.DASHBOARD_DATA = {
       "brand": "古德墨柠",
       "qujing": "李曦",
       "name": "何海云",
-      "beginCount": 32,
-      "endCount": 32,
+      "beginCount": 33,
+      "endCount": 33,
       "resignCount": 0,
       "resignRate": 0.0,
       "zhiJi": {
@@ -228,8 +228,8 @@ window.DASHBOARD_DATA = {
       "brand": "古德墨柠",
       "qujing": "林阳阳",
       "name": "赵思洁",
-      "beginCount": 29,
-      "endCount": 29,
+      "beginCount": 27,
+      "endCount": 27,
       "resignCount": 0,
       "resignRate": 0.0,
       "zhiJi": {
@@ -294,8 +294,8 @@ window.DASHBOARD_DATA = {
       "brand": "古德墨柠",
       "qujing": "徐乾",
       "name": "易彪",
-      "beginCount": 33,
-      "endCount": 33,
+      "beginCount": 34,
+      "endCount": 34,
       "resignCount": 0,
       "resignRate": 0.0,
       "zhiJi": {
@@ -316,8 +316,8 @@ window.DASHBOARD_DATA = {
       "brand": "古德墨柠",
       "qujing": "张良东",
       "name": "刘旺林",
-      "beginCount": 28,
-      "endCount": 28,
+      "beginCount": 27,
+      "endCount": 27,
       "resignCount": 0,
       "resignRate": 0.0,
       "zhiJi": {
@@ -404,8 +404,8 @@ window.DASHBOARD_DATA = {
       "brand": "古德墨柠",
       "qujing": "张良东",
       "name": "杜强",
-      "beginCount": 27,
-      "endCount": 27,
+      "beginCount": 28,
+      "endCount": 28,
       "resignCount": 0,
       "resignRate": 0.0,
       "zhiJi": {

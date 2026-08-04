@@ -8,8 +8,8 @@ window.DASHBOARD_DATA = {
   },
   "overview": {
     "city": "古德墨柠运营",
-    "beginCount": 420,
-    "endCount": 420,
+    "beginCount": 416,
+    "endCount": 416,
     "resignCount": 0,
     "resignRate": 0.0,
     "zhiJi": {
@@ -30,8 +30,8 @@ window.DASHBOARD_DATA = {
   "qujing": [
     {
       "name": "李曦",
-      "beginCount": 108,
-      "endCount": 108,
+      "beginCount": 107,
+      "endCount": 107,
       "resignCount": 0,
       "resignRate": 0.0,
       "zhiJi": {
@@ -51,8 +51,8 @@ window.DASHBOARD_DATA = {
     },
     {
       "name": "徐乾",
-      "beginCount": 116,
-      "endCount": 116,
+      "beginCount": 115,
+      "endCount": 115,
       "resignCount": 0,
       "resignRate": 0.0,
       "zhiJi": {
@@ -72,8 +72,8 @@ window.DASHBOARD_DATA = {
     },
     {
       "name": "林阳阳",
-      "beginCount": 88,
-      "endCount": 88,
+      "beginCount": 87,
+      "endCount": 87,
       "resignCount": 0,
       "resignRate": 0.0,
       "zhiJi": {
@@ -93,8 +93,8 @@ window.DASHBOARD_DATA = {
     },
     {
       "name": "张良东",
-      "beginCount": 108,
-      "endCount": 108,
+      "beginCount": 107,
+      "endCount": 107,
       "resignCount": 0,
       "resignRate": 0.0,
       "zhiJi": {
@@ -162,8 +162,8 @@ window.DASHBOARD_DATA = {
       "brand": "古德墨柠",
       "qujing": "李曦",
       "name": "何海云",
-      "beginCount": 33,
-      "endCount": 33,
+      "beginCount": 32,
+      "endCount": 32,
       "resignCount": 0,
       "resignRate": 0.0,
       "zhiJi": {
@@ -184,8 +184,8 @@ window.DASHBOARD_DATA = {
       "brand": "古德墨柠",
       "qujing": "李曦",
       "name": "周思凡",
-      "beginCount": 46,
-      "endCount": 46,
+      "beginCount": 45,
+      "endCount": 45,
       "resignCount": 0,
       "resignRate": 0.0,
       "zhiJi": {
@@ -250,8 +250,8 @@ window.DASHBOARD_DATA = {
       "brand": "古德墨柠",
       "qujing": "徐乾",
       "name": "旷瑶",
-      "beginCount": 31,
-      "endCount": 31,
+      "beginCount": 30,
+      "endCount": 30,
       "resignCount": 0,
       "resignRate": 0.0,
       "zhiJi": {
@@ -294,8 +294,8 @@ window.DASHBOARD_DATA = {
       "brand": "古德墨柠",
       "qujing": "徐乾",
       "name": "易彪",
-      "beginCount": 34,
-      "endCount": 34,
+      "beginCount": 33,
+      "endCount": 33,
       "resignCount": 0,
       "resignRate": 0.0,
       "zhiJi": {

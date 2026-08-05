@@ -287,9 +287,6 @@
             .search-box { margin-left: 0; }
             .recruit-progress-row { grid-template-columns: 1fr; }
             .description-bar { flex-direction: column; }
-            .header-bar { padding: 12px 14px; }
-            .header-title { font-size: 15px; }
-            .header-date { font-size: 11px; }
         }
         /* ===== 看板切换器 ===== */
         .dash-switcher { display: flex; align-items: center; gap: 8px; }
@@ -674,12 +671,17 @@ const detailMap = {
     '预离职合计': '预离职',
     '撤店合计': '撤店'
 };
-const detailColumns = ['区域', '大店长', '门店', '工号', '姓名', '备注原因'];
+const detailColumnsMap = {
+    '特殊请假': ['区域', '大店长', '门店', '工号', '姓名', '开始时间', '结束时间', '休息天数', '备注原因'],
+    '预离职': ['区域', '大店长', '门店', '工号', '姓名', '备注原因'],
+    '撤店': ['区域', '大店长', '门店', '工号', '姓名', '备注原因']
+};
 
 function openDetailModal(cardLabel) {
     const key = detailMap[cardLabel];
     if (!key) return;
     const all = window.DETAIL_DATA[key] || [];
+    const detailColumns = detailColumnsMap[key];
 
     // 按当前第二排筛选条件过滤
     let filtered = all;
@@ -897,7 +899,7 @@ switchTab('region');
 </script>
 <script>
 function switchDashboard(sel){
-    var map={hours:'https://djakljlkajd.github.io/moning-dashboard/',turnover:'https://djakljlkajd.github.io/moning-dashboard/turnover/',current:location.href};
+    var map={hours:'https://djakljlkajd.github.io/moning-dashboard/',turnover:'https://2a73735a1c624120bd63c94f8f741ddb.app.codebuddy.work',current:location.href};
     if(sel.value!=='current' && map[sel.value]) window.location.href = map[sel.value];
 }
 </script>

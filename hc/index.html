@@ -309,6 +309,7 @@
                 <option value="current">HC 招募缺口（当前）</option>
                 <option value="hours">墨柠工时分析看板</option>
                 <option value="turnover">古德墨柠离职数据看板</option>
+                <option value="mlday">墨柠节人力供班看板</option>
             </select>
         </div>
         <div class="header-date" id="hdr-date"></div>
@@ -899,7 +900,7 @@ switchTab('region');
 </script>
 <script>
 function switchDashboard(sel){
-    var map={hours:'https://djakljlkajd.github.io/moning-dashboard/',turnover:'https://2a73735a1c624120bd63c94f8f741ddb.app.codebuddy.work',current:location.href};
+    var map={hours:'https://djakljlkajd.github.io/moning-dashboard/',turnover:'https://2a73735a1c624120bd63c94f8f741ddb.app.codebuddy.work',mlday:'https://76b9aae0f5b347eb83352455b762d94c.sh5.agentos-app.net',current:location.href};
     if(sel.value!=='current' && map[sel.value]) window.location.href = map[sel.value];
 }
 </script>

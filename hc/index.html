@@ -310,6 +310,7 @@
                 <option value="hours">墨柠工时分析看板</option>
                 <option value="turnover">古德墨柠离职数据看板</option>
                 <option value="mlday">墨柠节人力供班看板</option>
+                <option value="gudm">巷战看板</option>
             </select>
         </div>
         <div class="header-date" id="hdr-date"></div>
@@ -900,7 +901,7 @@ switchTab('region');
 </script>
 <script>
 function switchDashboard(sel){
-    var map={hours:'https://djakljlkajd.github.io/moning-dashboard/',turnover:'https://djakljlkajd.github.io/moning-dashboard/turnover/',mlday:'https://djakljlkajd.github.io/moning-dashboard/mlday/',current:location.href};
+    var map={hours:'https://djakljlkajd.github.io/moning-dashboard/',turnover:'https://djakljlkajd.github.io/moning-dashboard/turnover/',mlday:'https://djakljlkajd.github.io/moning-dashboard/mlday/',gudm:'https://djakljlkajd.github.io/moning-dashboard/gudm/',current:location.href};
     if(sel.value!=='current' && map[sel.value]) window.location.href = map[sel.value];
 }
 </script>

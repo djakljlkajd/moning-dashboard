@@ -1306,7 +1306,10 @@ function showApprovedIdeasModal(){
         <div class="idea-section-content">${escapeHtml(idea.result||'暂未填写')}</div>
       </div>
       <div class="idea-section" style="background:#F1F8E9;border-radius:var(--rs);padding:10px 12px;margin-top:10px">
-        <div class="idea-section-label" style="color:#2E7D32">评审结论</div>
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div class="idea-section-label" style="color:#2E7D32">评审结论</div>
+          <button class="review-delete-btn" onclick="deleteIdeaReview('${escapeHtml(idea.store_mgr)}',${idea.idx},0,true)">删除此评审</button>
+        </div>
         <div style="font-size:13px;color:var(--sec)">
           <strong>${formatReviewVerdict(latest.verdict)}</strong>
           ${latest.reason?` · ${escapeHtml(latest.reason)}`:''}
@@ -1478,7 +1481,7 @@ function getApprovedIdeas(mgr='', week=''){
   return list;
 }
 
-function deleteIdeaReview(mgr, idx, reviewIndex){
+function deleteIdeaReview(mgr, idx, reviewIndex, fromApprovedModal){
   const key=ideaReviewKey(mgr,idx);
   const reviews=ideaReviewCache[key]||[];
   if(reviewIndex<0 || reviewIndex>=reviews.length)return;
@@ -1486,7 +1489,11 @@ function deleteIdeaReview(mgr, idx, reviewIndex){
   reviews.splice(reviewIndex,1);
   if(reviews.length===0){delete ideaReviewCache[key];}else{ideaReviewCache[key]=reviews;}
   scheduleIdeaReviewSync();
-  openManagerIdeasModal(mgr);
+  if(fromApprovedModal){
+    showApprovedIdeasModal();
+  }else{
+    openManagerIdeasModal(mgr);
+  }
 }
 
 function saveIdeaReview(mgr, idx){

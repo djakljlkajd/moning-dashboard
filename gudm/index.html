@@ -1408,8 +1408,7 @@ async function loadIdeaReviewsFromSupa(){
     safeRender(()=>renderIdeasSummary(mgr, ideaWeek),'金点子汇总');
     safeRender(()=>renderAwards(mgr, ideaWeek),'前线口碑奖');
     safeRender(()=>renderManagerIdeasCards(mgr, ideaWeek),'大店长金点子卡片');
-    // 只有全部管理弹窗打开时才重建弹窗；单条填写/评审弹窗保持当前输入不动
-    if(ideaModalMode==='manager' && ideaReviewModalMgr){openManagerIdeasModal(ideaReviewModalMgr);}
+    // 轮询期间任何弹窗打开时都不重建弹窗，避免清除用户正在填写的内容；关闭弹窗后会自动显示最新数据
   }catch(e){
     console.error('loadIdeaReviewsFromSupa failed',e);
     restoreIdeaReviewsFromLocal();

@@ -576,6 +576,7 @@
 <script src="details.js?v=20260811"></script>
 <script>
 const D = window.DASHBOARD_DATA;
+let specialLeaveExtra = [];
 
 // ---------- 标题 / 日期 ----------
 document.getElementById('hdr-title').textContent = '● ' + D.meta.title;
@@ -988,7 +989,6 @@ switchTab('manager');
 const SUPA_URL_SL = 'https://tclfmnfvlrlxquiojjya.supabase.co';
 const SUPA_KEY_SL = 'sb_publishable_6sa-Pz6dX0BSlTJX3gNiRA_CbtZkf_b';
 const SUPA_TABLE_SL = 'violation_data';
-let specialLeaveExtra = [];
 let slSyncTimer = null;
 let slWriteLock = false;
 

@@ -350,17 +350,13 @@
 </div>
 
 <!-- ===== 第二排标题 ===== -->
-<div class="section-header" style="margin-top:2px;">【第二排】区域明细看板 - HC情况对比</div>
+<div class="section-header" style="margin-top:2px;">【第二排】大店长明细看板 - HC情况对比</div>
 
 <!-- ===== 筛选栏 ===== -->
 <div class="filter-bar">
     <div style="font-size:13px;color:#666;font-weight:bold;">维度：</div>
-    <div class="tab-group">
-        <button class="tab-btn active" id="tab-region" onclick="switchTab('region')">📊 区域汇总</button>
-        <button class="tab-btn" id="tab-manager" onclick="switchTab('manager')">👥 大店长汇总</button>
-    </div>
     <select class="filter-select" id="dimension-filter" onchange="filterDimension(this.value)">
-        <option value="all">区域：全部</option>
+        <option value="all">大店长：全部</option>
     </select>
     <select class="filter-select" onchange="filterData(this.value)">
         <option value="all">状态：全部</option>
@@ -374,27 +370,13 @@
     <button class="action-btn btn-export" onclick="exportData()">📥 导出数据</button>
 </div>
 
-<!-- ===== 面板1：区域汇总表格 ===== -->
-<div id="panel-region" class="panel active table-wrapper">
+<!-- ===== 面板：大店长汇总表格 ===== -->
+<div id="panel-manager" class="panel active table-wrapper">
     <table>
         <colgroup>
-            <col style="width:7%"><col style="width:6%"><col style="width:8%"><col style="width:8%">
-            <col style="width:7%"><col style="width:6%"><col style="width:7%"><col style="width:7%">
-            <col style="width:6%"><col style="width:7%"><col style="width:18%">
-        </colgroup>
-        <thead><tr id="region-head"></tr></thead>
-        <tbody id="region-tbody"></tbody>
-        <tfoot><tr id="region-foot"></tr></tfoot>
-    </table>
-</div>
-
-<!-- ===== 面板2：大店长汇总表格 ===== -->
-<div id="panel-manager" class="panel table-wrapper">
-    <table>
-        <colgroup>
-            <col style="width:4%"><col style="width:7%"><col style="width:5%"><col style="width:7%">
-            <col style="width:8%"><col style="width:7%"><col style="width:6%"><col style="width:6%">
-            <col style="width:6%"><col style="width:6%"><col style="width:16%">
+            <col style="width:7%"><col style="width:5%"><col style="width:7%"><col style="width:8%">
+            <col style="width:7%"><col style="width:6%"><col style="width:6%"><col style="width:6%">
+            <col style="width:6%"><col style="width:16%">
         </colgroup>
         <thead><tr id="manager-head"></tr></thead>
         <tbody id="manager-tbody"></tbody>
@@ -409,13 +391,6 @@
 
 <div class="filter-bar">
     <div style="font-size:13px;color:#666;font-weight:bold;">筛选：</div>
-    <select class="filter-select" id="store-region-filter" onchange="filterStores()">
-        <option value="all">区域：全部</option>
-        <option value="李曦">李曦</option>
-        <option value="林阳阳">林阳阳</option>
-        <option value="徐乾">徐乾</option>
-        <option value="张良东">张良东</option>
-    </select>
     <select class="filter-select" id="store-manager-filter" onchange="filterStores()">
         <option value="all">大店长：全部</option>
         <option value="何海云">何海云</option>
@@ -442,7 +417,7 @@
 <div class="table-wrapper store-table-wrap">
     <table>
         <colgroup>
-            <col style="width:7%"><col style="width:8%"><col style="width:25%">
+            <col style="width:8%"><col style="width:28%">
             <col style="width:8%"><col style="width:8%"><col style="width:8%">
             <col style="width:8%"><col style="width:8%"><col style="width:8%"><col style="width:9%">
         </colgroup>
@@ -467,9 +442,9 @@
 
 </div><!-- end container -->
 
-<script src="data.js?v=20260806"></script>
-<script src="stores.js?v=20260806"></script>
-<script src="details.js?v=20260806"></script>
+<script src="data.js?v=20260811"></script>
+<script src="stores.js?v=20260811"></script>
+<script src="details.js?v=20260811"></script>
 <script>
 const D = window.DASHBOARD_DATA;
 
@@ -524,12 +499,12 @@ function openRecruitDetailModal(type) {
     if (type === 'fulltime') {
         // 全职招募：显示实际招募人数 > 0 的门店
         filtered = stores.filter(s => s.实际招募人数 > 0);
-        columns = ['区域', '大店长', '门店', '标准需求人数', '花名册人数', '缺口人数', '最终核对人数', '实际招募人数'];
+        columns = ['大店长', '门店', '标准需求人数', '花名册人数', '缺口人数', '最终核对人数', '实际招募人数'];
         modalTitle = '全职招募明细 - 共 ' + filtered.length + ' 家';
     } else {
         // 学生招募：显示学生招募 > 0 的门店
         filtered = stores.filter(s => s.学生招募 > 0);
-        columns = ['区域', '大店长', '门店', '标准需求人数', '花名册人数', '缺口人数', '最终核对人数', '学生招募'];
+        columns = ['大店长', '门店', '标准需求人数', '花名册人数', '缺口人数', '最终核对人数', '学生招募'];
         modalTitle = '学生招募明细 - 共 ' + filtered.length + ' 家';
     }
 
@@ -560,31 +535,6 @@ function gapCell(v) {
 }
 function totalGap(v) { return (v < 0 ? '<strong class="val-negative">(' + Math.abs(v) + ')</strong>' : '<strong>' + v + '</strong>'); }
 
-// ---------- 区域表 ----------
-document.getElementById('region-head').innerHTML = D.region.columns.map(h => '<th>' + h + '</th>').join('');
-const rtb = document.getElementById('region-tbody');
-D.region.rows.forEach(r => {
-    const tr = document.createElement('tr');
-    tr.dataset.name = r.name; tr.dataset.status = r.status;
-    tr.innerHTML =
-        '<td class="text-left"><strong>' + r.name + '</strong></td>' +
-        '<td>' + r.store + '</td><td>' + r.std + '</td><td>' + r.roster + '</td>' +
-        '<td>' + r.leave + '</td><td>' + r.preLeave + '</td><td>' + r.attend + '</td>' +
-        '<td>' + gapCell(r.gap) + '</td><td>' + r.closed + '</td>' +
-        '<td class="val-highlight">' + r.final + '</td><td class="text-left">' + r.note + '</td>';
-    rtb.appendChild(tr);
-});
-const rsum = D.region.rows.reduce((a, r) => ({
-    store:a.store+r.store, std:a.std+r.std, roster:a.roster+r.roster, leave:a.leave+r.leave,
-    preLeave:a.preLeave+r.preLeave, attend:a.attend+r.attend, gap:a.gap+r.gap, closed:a.closed+r.closed, final:a.final+r.final
-}), {store:0,std:0,roster:0,leave:0,preLeave:0,attend:0,gap:0,closed:0,final:0});
-document.getElementById('region-foot').innerHTML =
-    '<td class="text-left"><strong>合计</strong></td>' +
-    '<td><strong>' + rsum.store + '</strong></td><td><strong>' + rsum.std + '</strong><td><strong>' + rsum.roster + '</strong>' +
-    '<td><strong>' + rsum.leave + '</strong></td><td><strong>' + rsum.preLeave + '</strong><td><strong>' + rsum.attend + '</strong>' +
-    '<td>' + totalGap(rsum.gap) + '</td><td><strong>' + rsum.closed + '</strong><td><strong class="val-highlight">' + rsum.final + '</strong>' +
-    '<td class="text-left total-note">' + D.region.totalNote + '</td>';
-
 // ---------- 大店长表 ----------
 document.getElementById('manager-head').innerHTML = D.manager.columns.map(h => '<th>' + h + '</th>').join('');
 const mtb = document.getElementById('manager-tbody');
@@ -592,7 +542,7 @@ D.manager.rows.forEach(r => {
     const tr = document.createElement('tr');
     tr.dataset.name = r.name; tr.dataset.status = r.status;
     tr.innerHTML =
-        '<td>' + r.area + '</td><td class="text-left"><strong>' + r.name + '</strong></td>' +
+        '<td class="text-left"><strong>' + r.name + '</strong></td>' +
         '<td>' + r.store + '</td><td>' + r.std + '</td><td>' + r.roster + '</td>' +
         '<td>' + r.leave + '</td><td>' + r.preLeave + '</td><td>' + r.attend + '</td>' +
         '<td>' + gapCell(r.gap) + '</td><td class="val-highlight">' + r.final + '</td><td class="text-left">' + r.note + '</td>';
@@ -603,14 +553,14 @@ const msum = D.manager.rows.reduce((a, r) => ({
     preLeave:a.preLeave+r.preLeave, attend:a.attend+r.attend, gap:a.gap+r.gap, final:a.final+r.final
 }), {store:0,std:0,roster:0,leave:0,preLeave:0,attend:0,gap:0,final:0});
 document.getElementById('manager-foot').innerHTML =
-    '<td colspan="2" class="text-left"><strong>合计</strong></td>' +
+    '<td class="text-left"><strong>合计</strong></td>' +
     '<td><strong>' + msum.store + '</strong></td><td><strong>' + msum.std + '</strong><td><strong>' + msum.roster + '</strong>' +
     '<td><strong>' + msum.leave + '</strong></td><td><strong>' + msum.preLeave + '</strong><td><strong>' + msum.attend + '</strong>' +
     '<td>' + totalGap(msum.gap) + '</td><td><strong class="val-highlight">' + msum.final + '</strong>' +
     '<td class="text-left total-note">' + D.manager.totalNote + '</td>';
 
 // ---------- 交互 ----------
-let currentTab = 'region';
+let currentTab = 'manager';
 let currentDimension = 'all';
 
 // 第一排卡片渲染（支持汇总数据替换）
@@ -672,9 +622,9 @@ const detailMap = {
     '撤店合计': '撤店'
 };
 const detailColumnsMap = {
-    '特殊请假': ['区域', '大店长', '门店', '工号', '姓名', '开始时间', '结束时间', '休息天数', '备注原因'],
-    '预离职': ['区域', '大店长', '门店', '工号', '姓名', '备注原因'],
-    '撤店': ['区域', '大店长', '门店', '工号', '姓名', '备注原因']
+    '特殊请假': ['大店长', '门店', '工号', '姓名', '开始时间', '结束时间', '休息天数', '备注原因'],
+    '预离职': ['大店长', '门店', '工号', '姓名', '备注原因'],
+    '撤店': ['大店长', '门店', '工号', '姓名', '备注原因']
 };
 
 function openDetailModal(cardLabel) {
@@ -683,14 +633,10 @@ function openDetailModal(cardLabel) {
     const all = window.DETAIL_DATA[key] || [];
     const detailColumns = detailColumnsMap[key];
 
-    // 按当前第二排筛选条件过滤
+    // 按当前大店长筛选条件过滤
     let filtered = all;
     if (currentDimension !== 'all') {
-        if (currentTab === 'region') {
-            filtered = all.filter(r => r.区域 === currentDimension);
-        } else if (currentTab === 'manager') {
-            filtered = all.filter(r => r.大店长 === currentDimension);
-        }
+        filtered = all.filter(r => r.大店长 === currentDimension);
     }
 
     const modal = document.getElementById('detail-modal');
@@ -716,34 +662,27 @@ function closeModal(event) {
     }
 }
 
-// 切换 Tab
-function switchTab(tabName) {
-    currentTab = tabName;
-    document.getElementById('tab-region').classList.toggle('active', tabName === 'region');
-    document.getElementById('tab-manager').classList.toggle('active', tabName === 'manager');
-    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-    document.getElementById('panel-' + tabName).classList.add('active');
-
-    // 重建维度下拉
+// 初始化维度下拉（仅大店长）
+function initDimensionFilter() {
     const sel = document.getElementById('dimension-filter');
     sel.innerHTML = '';
-    const placeholder = tabName === 'region' ? '区域：全部' : '大店长：全部';
-    sel.add(new Option(placeholder, 'all'));
-    const src = D[tabName].rows;
-    src.forEach(r => sel.add(new Option(r.name, r.name)));
+    sel.add(new Option('大店长：全部', 'all'));
+    D.manager.rows.forEach(r => sel.add(new Option(r.name, r.name)));
+}
 
-    // 恢复为全部，并重置卡片/表格
-    sel.value = 'all';
+// 兼容旧入口：直接刷新大店长面板
+function switchTab(tabName) {
+    currentTab = 'manager';
+    initDimensionFilter();
     currentDimension = 'all';
     renderCards(D.cards);
     filterDimension('all');
 }
 
-// 选择具体区域/大店长
+// 选择具体大店长
 function filterDimension(value) {
     currentDimension = value;
-    const activePanel = document.querySelector('.panel.active');
-    activePanel.querySelectorAll('tbody tr').forEach(row => {
+    document.querySelectorAll('#panel-manager tbody tr').forEach(row => {
         row.style.display = (value === 'all' || row.dataset.name === value) ? '' : 'none';
     });
 
@@ -751,34 +690,23 @@ function filterDimension(value) {
     if (value === 'all') {
         renderCards(D.cards);
     } else {
-        const row = D[currentTab].rows.find(r => r.name === value);
+        const row = D.manager.rows.find(r => r.name === value);
         if (row) renderCards([row]);
     }
 
-    // 同步联动第三排：仅显示该区域/大店区的招募门店
+    // 同步联动第三排
     syncStoreFilterWithDimension();
 }
 
 // 第二排维度筛选联动第三排
 function syncStoreFilterWithDimension() {
-    const regionSel = document.getElementById('store-region-filter');
     const managerSel = document.getElementById('store-manager-filter');
-    if (currentDimension === 'all') {
-        regionSel.value = 'all';
-        managerSel.value = 'all';
-    } else if (currentTab === 'region') {
-        regionSel.value = currentDimension;
-        managerSel.value = 'all';
-    } else if (currentTab === 'manager') {
-        managerSel.value = currentDimension;
-        regionSel.value = 'all';
-    }
+    managerSel.value = currentDimension === 'all' ? 'all' : currentDimension;
     filterStores();
 }
 
 function filterData(status) {
-    const activePanel = document.querySelector('.panel.active');
-    activePanel.querySelectorAll('tbody tr').forEach(row => {
+    document.querySelectorAll('#panel-manager tbody tr').forEach(row => {
         const okStatus = (status === 'all' || row.dataset.status === status);
         const okDim = (currentDimension === 'all' || row.dataset.name === currentDimension);
         row.style.display = (okStatus && okDim) ? '' : 'none';
@@ -786,8 +714,7 @@ function filterData(status) {
 }
 function searchTable(keyword) {
     const kw = keyword.toLowerCase();
-    const activePanel = document.querySelector('.panel.active');
-    activePanel.querySelectorAll('tbody tr').forEach(row => {
+    document.querySelectorAll('#panel-manager tbody tr').forEach(row => {
         const name = (row.dataset.name || '').toLowerCase();
         const okK = name.includes(kw) || row.textContent.toLowerCase().includes(kw);
         const okDim = (currentDimension === 'all' || row.dataset.name === currentDimension);
@@ -800,9 +727,7 @@ function resetFilter() {
     currentDimension = 'all';
     document.getElementById('dimension-filter').value = 'all';
     renderCards(D.cards);
-    document.querySelectorAll('.panel').forEach(p => {
-        p.querySelectorAll('tbody tr').forEach(row => row.style.display = '');
-    });
+    document.querySelectorAll('#panel-manager tbody tr').forEach(row => row.style.display = '');
     resetStoreFilter(); // 同时重置第三排
 }
 function exportData() {
@@ -813,9 +738,9 @@ function exportData() {
 const S = window.STORE_DATA || [];
 const T = window.STORE_TOTALS || { 门店数: 13, 实际招募: 3, 学生招募: 16.0 };
 
-// 表头：区域、大店长、门店、标准需求人数、花名册人数、缺口人数、招募人数、最终核对人数、实际招募人数、学生招募
+// 表头：大店长、门店、标准需求人数、花名册人数、缺口人数、招募人数、最终核对人数、实际招募人数、学生招募
 document.getElementById('store-head').innerHTML =
-    ['区域','大店长','门店','标准需求<br>人数','花名册<br>人数','缺口<br>人数','招募<br>人数','最终核对<br>人数','实际招募<br>人数','学生招募']
+    ['大店长','门店','标准需求<br>人数','花名册<br>人数','缺口<br>人数','招募<br>人数','最终核对<br>人数','实际招募<br>人数','学生招募']
     .map(h => '<th>' + h + '</th>').join('');
 
 // 徽标
@@ -828,12 +753,10 @@ function renderStoreRows(data) {
     stb.innerHTML = '';
     data.forEach(r => {
         const tr = document.createElement('tr');
-        tr.dataset.region = r.区域;
         tr.dataset.manager = r.大店长;
         tr.dataset.name = (r.门店 + ' ' + r.大店长);
         const gapCls = r.缺口人数 < 0 ? 'val-negative' : (r.缺口人数 > 0 ? 'val-positive' : '');
         tr.innerHTML =
-            '<td>' + r.区域 + '</td>' +
             '<td>' + r.大店长 + '</td>' +
             '<td>' + r.门店 + '</td>' +
             '<td>' + r.标准需求人数 + '</td>' +
@@ -859,7 +782,7 @@ function renderStoreFoot() {
         student: a.student + r.学生招募
     }), {std:0, cnt:0, gap:0, apply:0, final:0, actual:0, student:0});
     document.getElementById('store-foot').innerHTML =
-        '<td colspan="3" class="text-left"><strong>合计（' + S.length + '家）</strong></td>' +
+        '<td colspan="2" class="text-left"><strong>合计（' + S.length + '家）</strong></td>' +
         '<td><strong>' + ssum.std + '</strong></td>' +
         '<td><strong>' + ssum.cnt + '</strong></td>' +
         '<td class="val-negative"><strong>(' + Math.abs(ssum.gap) + ')</strong></td>' +
@@ -873,14 +796,12 @@ renderStoreRows(S);
 renderStoreFoot();
 
 function filterStores() {
-    const rv = document.getElementById('store-region-filter').value;
     const mv = document.getElementById('store-manager-filter').value;
     const k = (document.getElementById('store-search') || {}).value || '';
     document.querySelectorAll('#store-tbody tr').forEach(row => {
-        const okR = (rv === 'all' || row.dataset.region === rv);
         const okM = (mv === 'all' || row.dataset.manager === mv);
         const okK = !k || (row.dataset.name || '').toLowerCase().includes(k.toLowerCase());
-        row.style.display = (okR && okM && okK) ? '' : 'none';
+        row.style.display = (okM && okK) ? '' : 'none';
     });
 }
 function searchStores(kw) {
@@ -888,14 +809,14 @@ function searchStores(kw) {
     filterStores();
 }
 function resetStoreFilter() {
-    document.getElementById('store-region-filter').value = 'all';
     document.getElementById('store-manager-filter').value = 'all';
     document.getElementById('store-search').value = '';
     document.querySelectorAll('#store-tbody tr').forEach(row => row.style.display = '');
 }
 
-// 初始化：填充区域维度下拉并确保第一排为全量
-switchTab('region');
+// 初始化：填充大店长维度下拉并确保第一排为全量
+initDimensionFilter();
+switchTab('manager');
 </script>
 <script>
 function switchDashboard(sel){

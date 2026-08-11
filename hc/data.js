@@ -145,7 +145,6 @@ window.DASHBOARD_DATA = {
   },
   "manager": {
     "columns": [
-      "大区",
       "大店长",
       "门店数",
       "标准需求<br>(D列)",

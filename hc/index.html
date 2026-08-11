@@ -581,12 +581,13 @@
 
 </div><!-- end container -->
 
-<script src="data.js?v=20260811c"></script>
-<script src="stores.js?v=20260811c"></script>
-<script src="details.js?v=20260811c"></script>
+<script src="data.js?v=20260811d"></script>
+<script src="stores.js?v=20260811d"></script>
+<script src="details.js?v=20260811d"></script>
 <script>
 const D = window.DASHBOARD_DATA;
 let specialLeaveExtra = [];
+let specialLeaveHidden = [];
 
 // ---------- 标题 / 日期 ----------
 document.getElementById('hdr-title').textContent = '● ' + D.meta.title;
@@ -707,6 +708,9 @@ let currentDimension = 'all';
 function renderCards(source) {
     // source 为 D.cards 原始结构时，元素含 label；为行数据时，元素含 store/std/...
     const isRowData = Array.isArray(source) && source.length > 0 && ('store' in source[0]);
+    // 特殊请假合计：根据当前维度动态计算（Excel 原始 - 已隐藏 + 用户新增）
+    const slAll = getMergedSpecialLeave();
+    const slCount = currentDimension === 'all' ? slAll.length : slAll.filter(r => r.大店长 === currentDimension).length;
     let cards;
     if (isRowData) {
         const sum = source.reduce((a, r) => ({
@@ -723,13 +727,13 @@ function renderCards(source) {
             { label: "营业门店数", sub: "(家)", value: sum.store, red: false, highlight: false },
             { label: "全职标准合计", sub: "(D列/人)", value: sum.std, red: false, highlight: false },
             { label: "花名册在职合计", sub: "(G列/人)", value: sum.roster, red: false, highlight: false },
-            { label: "特殊请假合计", sub: "(H列/人)", value: sum.leave + (currentDimension === 'all' ? specialLeaveExtra.length : specialLeaveExtra.filter(r => r.大店长 === currentDimension).length), red: true, highlight: false },
+            { label: "特殊请假合计", sub: "(H列/人)", value: slCount, red: true, highlight: false },
             { label: "预离职合计", sub: "(I列/人)", value: sum.preLeave, red: true, highlight: false },
             { label: "8月全职缺口", sub: "(K列/人)", value: sum.gap, red: true, highlight: true },
             { label: "撤店合计", sub: "(L列/家)", value: sum.closed, red: false, highlight: false }
         ];
     } else {
-        cards = source;
+        cards = source.map(c => c.label === '特殊请假合计' ? { ...c, value: slCount } : c);
     }
     const clickableCards = ['特殊请假合计', '预离职合计', '撤店合计'];
     const arrowSvg = '<svg viewBox="0 0 24 24"><path d="M4 2 L4 20 L9 15 L12 21 L15 20 L12 14 L18 14 Z"/></svg>';
@@ -739,17 +743,9 @@ function renderCards(source) {
         const div = document.createElement('div');
         div.className = 'metric-card' + (c.highlight ? ' highlight' : '') + (clickableCards.includes(c.label) ? ' clickable' : '');
 
-        // 特殊请假合计：数字 = Excel数据 + 用户新增
-        let displayValue = c.value;
-        if (c.label === '特殊请假合计') {
-            const excelCount = c.value;  // Excel 原始数据条数（用于作为基准值）
-            const extraCount = specialLeaveExtra.length;
-            displayValue = excelCount + extraCount;
-        }
-
         div.innerHTML =
             '<div class="card-label">' + c.label + '<br><span class="card-label-sub">' + c.sub + '</span></div>' +
-            '<div class="card-value' + (c.red ? ' red' : '') + '">' + fmtVal(displayValue) + '</div>' +
+            '<div class="card-value' + (c.red ? ' red' : '') + '">' + fmtVal(c.value) + '</div>' +
             (clickableCards.includes(c.label) ? '<div class="click-hint">' + arrowSvg + '<span class="hint-text">详情</span></div>' : '');
         if (clickableCards.includes(c.label)) {
             div.onclick = function() { openDetailModal(c.label); };
@@ -809,8 +805,10 @@ function openDetailModal(cardLabel) {
     const showActions = (key === '特殊请假');
     const displayColumns = showActions ? [...detailColumns, '操作'] : detailColumns;
 
-    title.textContent = cardLabel + '明细' + (currentDimension !== 'all' ? '（当前：' + currentDimension + '）' : '') + ' - 共 ' + filtered.length + ' 条'
-        + (key === '特殊请假' && specialLeaveExtra.length > 0 ? '（含新增 ' + specialLeaveExtra.length + ' 条）' : '');
+    const slExtraInfo = (key === '特殊请假')
+        ? '（新增 ' + specialLeaveExtra.length + ' 条' + (specialLeaveHidden.length > 0 ? '，已隐藏 ' + specialLeaveHidden.length + ' 条' : '') + '）'
+        : '';
+    title.textContent = cardLabel + '明细' + (currentDimension !== 'all' ? '（当前：' + currentDimension + '）' : '') + ' - 共 ' + filtered.length + ' 条' + slExtraInfo;
 
     if (filtered.length === 0) {
         body.innerHTML = '<div class="modal-empty">当前筛选条件下暂无数据</div>';
@@ -820,11 +818,8 @@ function openDetailModal(cardLabel) {
             '<tbody>' + filtered.map(r => {
                 let cells = detailColumns.map(h => '<td>' + (r[h] === undefined || r[h] === null ? '' : r[h]) + '</td>').join('');
                 if (showActions) {
-                    if (r._isAdded && r.id) {
-                        cells += '<td><button class="btn-delete-record" onclick="event.stopPropagation();deleteSpecialLeaveRecord(\'' + r.id + '\')">删除</button></td>';
-                    } else {
-                        cells += '<td></td>';
-                    }
+                    const rowId = r.id || r.工号 || '';
+                    cells += '<td><button class="btn-delete-record" onclick="event.stopPropagation();deleteSpecialLeaveRecord(\'' + rowId + '\')">删除</button></td>';
                 }
                 const rowClass = (r._isAdded ? ' class="record-row-added"' : '');
                 return '<tr' + rowClass + '>' + cells + '</tr>';
@@ -1012,10 +1007,18 @@ function calcRestDays(start, end) {
 }
 
 function slBackupToLocal() {
-    try { localStorage.setItem('hc_special_leave_extra', JSON.stringify(specialLeaveExtra)); } catch(e) {}
+    try {
+        localStorage.setItem('hc_special_leave_extra', JSON.stringify(specialLeaveExtra));
+        localStorage.setItem('hc_special_leave_hidden', JSON.stringify(specialLeaveHidden));
+    } catch(e) {}
 }
 function slRestoreFromLocal() {
-    try { const raw = localStorage.getItem('hc_special_leave_extra'); if (raw) specialLeaveExtra = JSON.parse(raw); } catch(e) {}
+    try {
+        const raw = localStorage.getItem('hc_special_leave_extra');
+        if (raw) specialLeaveExtra = JSON.parse(raw);
+        const rawHidden = localStorage.getItem('hc_special_leave_hidden');
+        if (rawHidden) specialLeaveHidden = JSON.parse(rawHidden);
+    } catch(e) {}
 }
 
 async function loadSpecialLeaveExtra() {
@@ -1028,9 +1031,12 @@ async function loadSpecialLeaveExtra() {
         if (rows && rows.length) {
             const data = rows[0].data || {};
             const cloudData = data.special_leave_extra || [];
+            const cloudHidden = data.special_leave_hidden || [];
             const localData = JSON.parse(localStorage.getItem('hc_special_leave_extra') || '[]');
+            const localHidden = JSON.parse(localStorage.getItem('hc_special_leave_hidden') || '[]');
             const cloudIds = new Set(cloudData.map(r => r.id));
             specialLeaveExtra = [...cloudData, ...localData.filter(r => !cloudIds.has(r.id))];
+            specialLeaveHidden = [...new Set([...cloudHidden, ...localHidden])];
         }
         slBackupToLocal();
     } catch(e) {
@@ -1053,6 +1059,7 @@ async function syncSpecialLeaveExtra() {
         const rows = await readRes.json();
         const curData = (rows && rows.length) ? (rows[0].data || {}) : {};
         curData.special_leave_extra = specialLeaveExtra;
+        curData.special_leave_hidden = specialLeaveHidden;
         const writeRes = await fetch(SUPA_URL_SL + '/rest/v1/' + SUPA_TABLE_SL + '?id=eq.1', {
             method: 'PATCH',
             headers: {
@@ -1086,7 +1093,12 @@ function updateSyncStatus(state) {
 
 function getMergedSpecialLeave() {
     var excelData = (window.DETAIL_DATA && window.DETAIL_DATA['特殊请假']) || [];
-    return excelData.concat(specialLeaveExtra);
+    var visibleExcel = excelData.filter(function(r) {
+        return r.工号 && !specialLeaveHidden.includes(r.工号);
+    }).map(function(r) {
+        return Object.assign({}, r, { id: r.工号 });
+    });
+    return visibleExcel.concat(specialLeaveExtra);
 }
 
 // 新增记录弹窗
@@ -1155,8 +1167,15 @@ async function submitAddRecord(e) {
 }
 
 function deleteSpecialLeaveRecord(id) {
-    if (!confirm('确定要删除这条新增记录吗？')) return;
-    specialLeaveExtra = specialLeaveExtra.filter(function(r) { return r.id !== id; });
+    if (!id) return;
+    var isExtra = specialLeaveExtra.some(function(r) { return r.id === id; });
+    if (isExtra) {
+        if (!confirm('确定要删除这条新增记录吗？')) return;
+        specialLeaveExtra = specialLeaveExtra.filter(function(r) { return r.id !== id; });
+    } else {
+        if (!confirm('确定要隐藏这条原始记录吗？隐藏后将从合计中扣除。')) return;
+        if (!specialLeaveHidden.includes(id)) specialLeaveHidden.push(id);
+    }
     scheduleSLSync();
     refreshAll();
     if (document.getElementById('detail-modal').classList.contains('active')) {

@@ -524,11 +524,11 @@
     </div>
 </div>
 
-<!-- ===== 新增特殊请假记录弹窗 ===== -->
+<!-- ===== 新增特殊请假/预离职记录弹窗 ===== -->
 <div class="modal-overlay" id="add-record-modal" onclick="closeAddRecordModal(event)">
     <div class="modal-box add-record-form" onclick="event.stopPropagation()">
         <div class="modal-header" style="background:linear-gradient(135deg,#27ae60 0%,#2ecc71 100%);">
-            <span class="modal-title">+ 新增特殊请假记录</span>
+            <span class="modal-title" id="add-record-title">+ 新增特殊请假记录</span>
             <button class="modal-close" onclick="closeAddRecordModal()">&times;</button>
         </div>
         <div class="form-body">
@@ -555,7 +555,7 @@
                         <input class="form-input" id="add-store" placeholder="如 古德墨柠XX店" required>
                     </div>
                 </div>
-                <div class="form-row">
+                <div class="form-row" id="add-date-row">
                     <div class="form-group">
                         <label class="form-label">开始时间<span class="required">*</span></label>
                         <input class="form-input" type="date" id="add-start" required>
@@ -567,7 +567,7 @@
                 </div>
                 <div class="form-group">
                     <label class="form-label">备注原因<span class="required">*</span></label>
-                    <textarea class="form-textarea" id="add-reason" placeholder="请输入特殊请假原因..." required></textarea>
+                    <textarea class="form-textarea" id="add-reason" placeholder="请输入备注原因..." required></textarea>
                 </div>
                 <div class="form-actions">
                     <span class="sync-status" id="sync-status">✓ 已同步</span>
@@ -581,13 +581,16 @@
 
 </div><!-- end container -->
 
-<script src="data.js?v=20260811d"></script>
-<script src="stores.js?v=20260811d"></script>
-<script src="details.js?v=20260811d"></script>
+<script src="data.js?v=20260812a"></script>
+<script src="stores.js?v=20260812a"></script>
+<script src="details.js?v=20260812a"></script>
 <script>
 const D = window.DASHBOARD_DATA;
 let specialLeaveExtra = [];
 let specialLeaveHidden = [];
+let preLeaveExtra = [];
+let preLeaveHidden = [];
+let addRecordType = 'special';  // 'special' | 'preleave'
 
 // ---------- 标题 / 日期 ----------
 document.getElementById('hdr-title').textContent = '● ' + D.meta.title;
@@ -708,9 +711,11 @@ let currentDimension = 'all';
 function renderCards(source) {
     // source 为 D.cards 原始结构时，元素含 label；为行数据时，元素含 store/std/...
     const isRowData = Array.isArray(source) && source.length > 0 && ('store' in source[0]);
-    // 特殊请假合计：根据当前维度动态计算（Excel 原始 - 已隐藏 + 用户新增）
+    // 特殊请假/预离职合计：根据当前维度动态计算（Excel 原始 - 已隐藏 + 用户新增）
     const slAll = getMergedSpecialLeave();
     const slCount = currentDimension === 'all' ? slAll.length : slAll.filter(r => r.大店长 === currentDimension).length;
+    const plAll = getMergedPreLeave();
+    const plCount = currentDimension === 'all' ? plAll.length : plAll.filter(r => r.大店长 === currentDimension).length;
     let cards;
     if (isRowData) {
         const sum = source.reduce((a, r) => ({
@@ -728,12 +733,16 @@ function renderCards(source) {
             { label: "全职标准合计", sub: "(D列/人)", value: sum.std, red: false, highlight: false },
             { label: "花名册在职合计", sub: "(G列/人)", value: sum.roster, red: false, highlight: false },
             { label: "特殊请假合计", sub: "(H列/人)", value: slCount, red: true, highlight: false },
-            { label: "预离职合计", sub: "(I列/人)", value: sum.preLeave, red: true, highlight: false },
+            { label: "预离职合计", sub: "(I列/人)", value: plCount, red: true, highlight: false },
             { label: "8月全职缺口", sub: "(K列/人)", value: sum.gap, red: true, highlight: true },
             { label: "撤店合计", sub: "(L列/家)", value: sum.closed, red: false, highlight: false }
         ];
     } else {
-        cards = source.map(c => c.label === '特殊请假合计' ? { ...c, value: slCount } : c);
+        cards = source.map(c => {
+            if (c.label === '特殊请假合计') return { ...c, value: slCount };
+            if (c.label === '预离职合计') return { ...c, value: plCount };
+            return c;
+        });
     }
     const clickableCards = ['特殊请假合计', '预离职合计', '撤店合计'];
     const arrowSvg = '<svg viewBox="0 0 24 24"><path d="M4 2 L4 20 L9 15 L12 21 L15 20 L12 14 L18 14 Z"/></svg>';
@@ -784,6 +793,10 @@ function openDetailModal(cardLabel) {
         // 标记每条记录的来源
         const extraIds = new Set(specialLeaveExtra.map(r => r.id));
         all.forEach(r => { r._isAdded = extraIds.has(r.id); });
+    } else if (key === '预离职') {
+        all = getMergedPreLeave();
+        const extraIds = new Set(preLeaveExtra.map(r => r.id));
+        all.forEach(r => { r._isAdded = extraIds.has(r.id); });
     } else {
         all = window.DETAIL_DATA[key] || [];
         all.forEach(r => { r._isAdded = false; });
@@ -799,27 +812,36 @@ function openDetailModal(cardLabel) {
     const title = document.getElementById('modal-title');
     const body = document.getElementById('modal-body');
     const addBtn = document.getElementById('modal-add-btn');
-    if (addBtn) addBtn.style.display = (key === '特殊请假') ? 'inline-block' : 'none';
+    if (addBtn) {
+        addBtn.style.display = (key === '特殊请假' || key === '预离职') ? 'inline-block' : 'none';
+        addBtn.onclick = function(ev) {
+            ev.stopPropagation();
+            openAddRecordModal(key === '特殊请假' ? 'special' : 'preleave');
+        };
+    }
 
-    // 新增列用于删除按钮（仅特殊请假、仅对新增记录）
-    const showActions = (key === '特殊请假');
+    // 特殊请假/预离职：显示操作列（删除按钮）
+    const showActions = (key === '特殊请假' || key === '预离职');
     const displayColumns = showActions ? [...detailColumns, '操作'] : detailColumns;
 
     const slExtraInfo = (key === '特殊请假')
         ? '（新增 ' + specialLeaveExtra.length + ' 条' + (specialLeaveHidden.length > 0 ? '，已隐藏 ' + specialLeaveHidden.length + ' 条' : '') + '）'
-        : '';
+        : (key === '预离职')
+            ? '（新增 ' + preLeaveExtra.length + ' 条' + (preLeaveHidden.length > 0 ? '，已隐藏 ' + preLeaveHidden.length + ' 条' : '') + '）'
+            : '';
     title.textContent = cardLabel + '明细' + (currentDimension !== 'all' ? '（当前：' + currentDimension + '）' : '') + ' - 共 ' + filtered.length + ' 条' + slExtraInfo;
 
     if (filtered.length === 0) {
         body.innerHTML = '<div class="modal-empty">当前筛选条件下暂无数据</div>';
     } else {
+        const delFn = (key === '特殊请假') ? 'deleteSpecialLeaveRecord' : 'deletePreLeaveRecord';
         body.innerHTML =
             '<table><thead><tr>' + displayColumns.map(h => '<th>' + h + '</th>').join('') + '</tr></thead>' +
             '<tbody>' + filtered.map(r => {
                 let cells = detailColumns.map(h => '<td>' + (r[h] === undefined || r[h] === null ? '' : r[h]) + '</td>').join('');
                 if (showActions) {
                     const rowId = r.id || r.工号 || '';
-                    cells += '<td><button class="btn-delete-record" onclick="event.stopPropagation();deleteSpecialLeaveRecord(\'' + rowId + '\')">删除</button></td>';
+                    cells += '<td><button class="btn-delete-record" onclick="event.stopPropagation();' + delFn + '(\'' + rowId + '\')">删除</button></td>';
                 }
                 const rowClass = (r._isAdded ? ' class="record-row-added"' : '');
                 return '<tr' + rowClass + '>' + cells + '</tr>';
@@ -1010,6 +1032,8 @@ function slBackupToLocal() {
     try {
         localStorage.setItem('hc_special_leave_extra', JSON.stringify(specialLeaveExtra));
         localStorage.setItem('hc_special_leave_hidden', JSON.stringify(specialLeaveHidden));
+        localStorage.setItem('hc_pre_leave_extra', JSON.stringify(preLeaveExtra));
+        localStorage.setItem('hc_pre_leave_hidden', JSON.stringify(preLeaveHidden));
     } catch(e) {}
 }
 function slRestoreFromLocal() {
@@ -1018,6 +1042,10 @@ function slRestoreFromLocal() {
         if (raw) specialLeaveExtra = JSON.parse(raw);
         const rawHidden = localStorage.getItem('hc_special_leave_hidden');
         if (rawHidden) specialLeaveHidden = JSON.parse(rawHidden);
+        const rawPre = localStorage.getItem('hc_pre_leave_extra');
+        if (rawPre) preLeaveExtra = JSON.parse(rawPre);
+        const rawPreHidden = localStorage.getItem('hc_pre_leave_hidden');
+        if (rawPreHidden) preLeaveHidden = JSON.parse(rawPreHidden);
     } catch(e) {}
 }
 
@@ -1037,6 +1065,14 @@ async function loadSpecialLeaveExtra() {
             const cloudIds = new Set(cloudData.map(r => r.id));
             specialLeaveExtra = [...cloudData, ...localData.filter(r => !cloudIds.has(r.id))];
             specialLeaveHidden = [...new Set([...cloudHidden, ...localHidden])];
+            // 预离职
+            const cloudPre = data.pre_leave_extra || [];
+            const cloudPreHidden = data.pre_leave_hidden || [];
+            const localPre = JSON.parse(localStorage.getItem('hc_pre_leave_extra') || '[]');
+            const localPreHidden = JSON.parse(localStorage.getItem('hc_pre_leave_hidden') || '[]');
+            const cloudPreIds = new Set(cloudPre.map(r => r.id));
+            preLeaveExtra = [...cloudPre, ...localPre.filter(r => !cloudPreIds.has(r.id))];
+            preLeaveHidden = [...new Set([...cloudPreHidden, ...localPreHidden])];
         }
         slBackupToLocal();
     } catch(e) {
@@ -1060,6 +1096,8 @@ async function syncSpecialLeaveExtra() {
         const curData = (rows && rows.length) ? (rows[0].data || {}) : {};
         curData.special_leave_extra = specialLeaveExtra;
         curData.special_leave_hidden = specialLeaveHidden;
+        curData.pre_leave_extra = preLeaveExtra;
+        curData.pre_leave_hidden = preLeaveHidden;
         const writeRes = await fetch(SUPA_URL_SL + '/rest/v1/' + SUPA_TABLE_SL + '?id=eq.1', {
             method: 'PATCH',
             headers: {
@@ -1101,8 +1139,19 @@ function getMergedSpecialLeave() {
     return visibleExcel.concat(specialLeaveExtra);
 }
 
-// 新增记录弹窗
-function openAddRecordModal() {
+function getMergedPreLeave() {
+    var excelData = (window.DETAIL_DATA && window.DETAIL_DATA['预离职']) || [];
+    var visibleExcel = excelData.filter(function(r) {
+        return r.工号 && !preLeaveHidden.includes(r.工号);
+    }).map(function(r) {
+        return Object.assign({}, r, { id: r.工号 });
+    });
+    return visibleExcel.concat(preLeaveExtra);
+}
+
+// 新增记录弹窗（type: 'special' 特殊请假 | 'preleave' 预离职）
+function openAddRecordModal(type) {
+    addRecordType = (type === 'preleave') ? 'preleave' : 'special';
     var sel = document.getElementById('add-manager');
     sel.innerHTML = '<option value="">请选择大店长</option>';
     if (D && D.manager && D.manager.rows) {
@@ -1116,6 +1165,11 @@ function openAddRecordModal() {
     document.getElementById('add-reason').value = '';
     document.getElementById('btn-submit-record').disabled = false;
     document.getElementById('btn-submit-record').textContent = '确认添加';
+    // 标题与字段切换
+    document.getElementById('add-record-title').textContent = addRecordType === 'preleave' ? '+ 新增预离职记录' : '+ 新增特殊请假记录';
+    document.getElementById('add-date-row').style.display = addRecordType === 'preleave' ? 'none' : '';
+    document.getElementById('add-start').required = (addRecordType !== 'preleave');
+    document.getElementById('add-reason').placeholder = addRecordType === 'preleave' ? '请输入预离职原因...' : '请输入特殊请假原因...';
     updateSyncStatus('');
     document.getElementById('add-record-modal').classList.add('active');
 }
@@ -1141,6 +1195,32 @@ async function submitAddRecord(e) {
     var reason = document.getElementById('add-reason').value.trim();
     var restDays = calcRestDays(start, end);
 
+    if (addRecordType === 'preleave') {
+        // 预离职：不需要开始时间
+        if (!manager || !gonghao || !name || !store || !reason) {
+            alert('请填写所有必填字段（大店长、工号、姓名、门店、备注原因）');
+            btn.disabled = false;
+            btn.textContent = '确认添加';
+            return;
+        }
+        var record = {
+            id: genSLId(),
+            大店长: manager, 门店: store, 工号: gonghao, 姓名: name,
+            备注原因: reason, addedBy: 'user', addedAt: new Date().toISOString().slice(0, 19)
+        };
+        preLeaveExtra.push(record);
+        scheduleSLSync();
+        closeAddRecordModal();
+        refreshAll();
+        // 如果预离职弹窗已打开，刷新弹窗
+        if (document.getElementById('detail-modal').classList.contains('active')) {
+            var t = document.getElementById('modal-title').textContent;
+            if (t.indexOf('预离职') >= 0) openDetailModal('预离职合计');
+        }
+        return;
+    }
+
+    // 特殊请假：需要开始时间
     if (!manager || !gonghao || !name || !store || !start || !reason) {
         alert('请填写所有必填字段（大店长、工号、姓名、门店、开始时间、备注原因）');
         btn.disabled = false;
@@ -1180,6 +1260,23 @@ function deleteSpecialLeaveRecord(id) {
     refreshAll();
     if (document.getElementById('detail-modal').classList.contains('active')) {
         openDetailModal('特殊请假合计');
+    }
+}
+
+function deletePreLeaveRecord(id) {
+    if (!id) return;
+    var isExtra = preLeaveExtra.some(function(r) { return r.id === id; });
+    if (isExtra) {
+        if (!confirm('确定要删除这条新增记录吗？')) return;
+        preLeaveExtra = preLeaveExtra.filter(function(r) { return r.id !== id; });
+    } else {
+        if (!confirm('确定要隐藏这条原始记录吗？隐藏后将从合计中扣除。')) return;
+        if (!preLeaveHidden.includes(id)) preLeaveHidden.push(id);
+    }
+    scheduleSLSync();
+    refreshAll();
+    if (document.getElementById('detail-modal').classList.contains('active')) {
+        openDetailModal('预离职合计');
     }
 }
 

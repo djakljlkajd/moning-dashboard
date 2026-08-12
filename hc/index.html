@@ -179,6 +179,44 @@
         }
         .progress-detail-btn svg { width: 10px; height: 10px; fill: currentColor; }
 
+        /* ===== 机场区域办证进度区块 ===== */
+        .airport-cert-section {
+            background: #fff; padding: 0 20px 18px;
+        }
+        .airport-cert-header {
+            font-size: 14px; font-weight: bold; color: #2c3e50;
+            padding: 14px 0 10px; display: flex; align-items: center; gap: 6px;
+        }
+        .airport-cert-row {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px;
+        }
+        .airport-cert-card {
+            border: 1px solid #e8e8e8; border-radius: 8px; overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04); cursor: pointer;
+            transition: all 0.2s; background: #fafbfc;
+        }
+        .airport-cert-card:hover { transform: translateY(-2px); box-shadow: 0 6px 14px rgba(0,0,0,0.08); }
+        .airport-cert-card.has    .airport-cert-title { background: linear-gradient(90deg, #27ae60 0%, #2ecc71 100%); }
+        .airport-cert-card.doing  .airport-cert-title { background: linear-gradient(90deg, #f39c12 0%, #f1c40f 100%); }
+        .airport-cert-card.todo   .airport-cert-title { background: linear-gradient(90deg, #8e44ad 0%, #9b59b6 100%); }
+        .airport-cert-title {
+            color: #fff; padding: 8px 14px; font-size: 13px; font-weight: bold;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .airport-cert-body {
+            padding: 14px 12px; text-align: center;
+        }
+        .airport-cert-value {
+            font-size: 32px; font-weight: bold; color: #2c3e50; line-height: 1.2;
+        }
+        .airport-cert-sub {
+            font-size: 12px; color: #7f8c8d; margin-top: 4px;
+        }
+        .airport-cert-foot {
+            padding: 6px 14px; font-size: 11px; color: #95a5a6;
+            background: #fff; border-top: 1px dashed #eef0f3; text-align: center;
+        }
+
         /* ===== 第二排筛选栏 ===== */
         .filter-bar {
             background: #fff; padding: 12px 20px; display: flex; gap: 12px; flex-wrap: wrap; align-items: center;
@@ -439,6 +477,12 @@
 <!-- ===== 第一排：招募达成进度两个方块 ===== -->
 <div class="recruit-progress-row" id="recruit-progress-row"></div>
 
+<!-- ===== 机场区域办证进度 ===== -->
+<div class="airport-cert-section" id="airport-cert-section">
+    <div class="airport-cert-header">✈️ 机场区域办证进度（周期约半年，需前置统计）</div>
+    <div class="airport-cert-row" id="airport-cert-row"></div>
+</div>
+
 <!-- 最终招募核心数字突出显示 -->
 <div class="recruit-highlight">
     <span class="recruit-label" id="recruit-label"></span>
@@ -580,6 +624,16 @@
                         <input class="form-input" type="date" id="add-end">
                     </div>
                 </div>
+                <div class="form-row" id="add-airport-status-row" style="display:none;">
+                    <div class="form-group">
+                        <label class="form-label">办证状态<span class="required">*</span></label>
+                        <select class="form-select" id="add-airport-status">
+                            <option value="有机场证员工">有机场证员工</option>
+                            <option value="办理中员工">办理中员工</option>
+                            <option value="待办理员工">待办理员工</option>
+                        </select>
+                    </div>
+                </div>
                 <div class="form-group">
                     <label class="form-label">备注原因<span class="required">*</span></label>
                     <textarea class="form-textarea" id="add-reason" placeholder="请输入备注原因..." required></textarea>
@@ -596,17 +650,19 @@
 
 </div><!-- end container -->
 
-<script src="data.js?v=20260812c"></script>
-<script src="stores.js?v=20260812c"></script>
-<script src="details.js?v=20260812c"></script>
-<script src="staff_lookup.js?v=20260812c"></script>
+<script src="data.js?v=20260812d"></script>
+<script src="stores.js?v=20260812d"></script>
+<script src="details.js?v=20260812d"></script>
+<script src="staff_lookup.js?v=20260812d"></script>
 <script>
 const D = window.DASHBOARD_DATA;
 let specialLeaveExtra = [];
 let specialLeaveHidden = [];
 let preLeaveExtra = [];
 let preLeaveHidden = [];
-let addRecordType = 'special';  // 'special' | 'preleave'
+let airportCertExtra = [];
+let airportCertHidden = [];
+let addRecordType = 'special';  // 'special' | 'preleave' | 'airport'
 
 // ---------- 标题 / 日期 ----------
 document.getElementById('hdr-title').textContent = '● ' + D.meta.title;
@@ -650,6 +706,52 @@ function renderProgressCard(type, cfg, title, footNote) {
         renderProgressCard('student',  p.student  || {}, '🎓 学生招募达成', '到岗数据按月更新，达成率=到岗/招募');
     document.getElementById('recruit-progress-row').innerHTML = html;
 })();
+
+// ---------- 机场区域办证进度三个方块 ----------
+const AIRPORT_STATUS = {
+    has:   { key: 'has',   label: '有机场证员工', cls: 'has',   color: '#27ae60' },
+    doing: { key: 'doing', label: '办理中员工',   cls: 'doing', color: '#f39c12' },
+    todo:  { key: 'todo',  label: '待办理员工',   cls: 'todo',  color: '#8e44ad' }
+};
+
+function getAirportRecords() {
+    // 合并 Excel 原始 + 用户新增；原始记录中被隐藏的剔除
+    var excelData = (window.DETAIL_DATA && window.DETAIL_DATA['机场办证']) || [];
+    var visibleExcel = excelData.filter(function(r) {
+        return r.工号 && !airportCertHidden.includes(r.工号);
+    }).map(function(r) {
+        return Object.assign({}, r, { id: r.工号 });
+    });
+    return visibleExcel.concat(airportCertExtra);
+}
+
+function renderAirportCert() {
+    var all = getAirportRecords();
+    var counts = {
+        has: all.filter(function(r) { return r.状态 === AIRPORT_STATUS.has.label; }).length,
+        doing: all.filter(function(r) { return r.状态 === AIRPORT_STATUS.doing.label; }).length,
+        todo: all.filter(function(r) { return r.状态 === AIRPORT_STATUS.todo.label; }).length
+    };
+    var total = counts.has + counts.doing + counts.todo;
+    var html = '';
+    Object.keys(AIRPORT_STATUS).forEach(function(k) {
+        var s = AIRPORT_STATUS[k];
+        var pct = total > 0 ? Math.round(counts[k] / total * 100) : 0;
+        html +=
+            '<div class="airport-cert-card ' + s.cls + '" onclick="openAirportCertModal(\'' + k + '\')">' +
+                '<div class="airport-cert-title">' +
+                    '<span>' + s.label + '</span>' +
+                    '<span style="font-size:11px;opacity:0.9">详情</span>' +
+                '</div>' +
+                '<div class="airport-cert-body">' +
+                    '<div class="airport-cert-value">' + counts[k] + '<span class="stat-unit">人</span></div>' +
+                    '<div class="airport-cert-sub">占比 ' + pct + '%</div>' +
+                '</div>' +
+                '<div class="airport-cert-foot">点击方块查看明细 / 新增 / 删除</div>' +
+            '</div>';
+    });
+    document.getElementById('airport-cert-row').innerHTML = html;
+}
 
 // ---------- 招募进度弹窗（全职/学生单店明细） ----------
 function openRecruitDetailModal(type) {
@@ -872,6 +974,55 @@ function closeModal(event) {
     }
 }
 
+// ---------- 机场办证进度弹窗 ----------
+const AIRPORT_DETAIL_COLUMNS = ['大店长', '门店', '工号', '姓名', '状态', '备注原因'];
+
+function openAirportCertModal(statusKey) {
+    var status = AIRPORT_STATUS[statusKey];
+    if (!status) return;
+
+    var all = getAirportRecords().filter(function(r) { return r.状态 === status.label; });
+    var extraIds = new Set(airportCertExtra.map(function(r) { return r.id; }));
+    all.forEach(function(r) { r._isAdded = extraIds.has(r.id); });
+
+    if (currentDimension !== 'all') {
+        all = all.filter(function(r) { return r.大店长 === currentDimension; });
+    }
+
+    var modal = document.getElementById('detail-modal');
+    var title = document.getElementById('modal-title');
+    var body = document.getElementById('modal-body');
+    var addBtn = document.getElementById('modal-add-btn');
+    if (addBtn) {
+        addBtn.style.display = 'inline-block';
+        addBtn.onclick = function(ev) {
+            ev.stopPropagation();
+            openAddRecordModal('airport', statusKey);
+        };
+    }
+
+    var extraInfo = '（新增 ' + airportCertExtra.length + ' 条' +
+        (airportCertHidden.length > 0 ? '，已隐藏 ' + airportCertHidden.length + ' 条' : '') + '）';
+    title.textContent = status.label + '明细' + (currentDimension !== 'all' ? '（当前：' + currentDimension + '）' : '') + ' - 共 ' + all.length + ' 条' + extraInfo;
+
+    if (all.length === 0) {
+        body.innerHTML = '<div class="modal-empty">当前筛选条件下暂无数据</div>';
+    } else {
+        body.innerHTML =
+            '<table><thead><tr>' + AIRPORT_DETAIL_COLUMNS.map(function(h) { return '<th>' + h + '</th>'; }).join('') + '<th>操作</th></tr></thead>' +
+            '<tbody>' + all.map(function(r) {
+                var cells = AIRPORT_DETAIL_COLUMNS.map(function(h) {
+                    return '<td>' + (r[h] === undefined || r[h] === null ? '' : r[h]) + '</td>';
+                }).join('');
+                var rowId = r.id || r.工号 || '';
+                cells += '<td><button class="btn-delete-record" onclick="event.stopPropagation();deleteAirportCertRecord(\'' + rowId + '\')">删除</button></td>';
+                var rowClass = r._isAdded ? ' class="record-row-added"' : '';
+                return '<tr' + rowClass + '>' + cells + '</tr>';
+            }).join('') + '</tbody></table>';
+    }
+    modal.classList.add('active');
+}
+
 // 初始化维度下拉（仅大店长）
 function initDimensionFilter() {
     const sel = document.getElementById('dimension-filter');
@@ -1050,6 +1201,8 @@ function slBackupToLocal() {
         localStorage.setItem('hc_special_leave_hidden', JSON.stringify(specialLeaveHidden));
         localStorage.setItem('hc_pre_leave_extra', JSON.stringify(preLeaveExtra));
         localStorage.setItem('hc_pre_leave_hidden', JSON.stringify(preLeaveHidden));
+        localStorage.setItem('hc_airport_cert_extra', JSON.stringify(airportCertExtra));
+        localStorage.setItem('hc_airport_cert_hidden', JSON.stringify(airportCertHidden));
     } catch(e) {}
 }
 function slRestoreFromLocal() {
@@ -1062,6 +1215,10 @@ function slRestoreFromLocal() {
         if (rawPre) preLeaveExtra = JSON.parse(rawPre);
         const rawPreHidden = localStorage.getItem('hc_pre_leave_hidden');
         if (rawPreHidden) preLeaveHidden = JSON.parse(rawPreHidden);
+        const rawAir = localStorage.getItem('hc_airport_cert_extra');
+        if (rawAir) airportCertExtra = JSON.parse(rawAir);
+        const rawAirHidden = localStorage.getItem('hc_airport_cert_hidden');
+        if (rawAirHidden) airportCertHidden = JSON.parse(rawAirHidden);
     } catch(e) {}
 }
 
@@ -1089,6 +1246,14 @@ async function loadSpecialLeaveExtra() {
             const cloudPreIds = new Set(cloudPre.map(r => r.id));
             preLeaveExtra = [...cloudPre, ...localPre.filter(r => !cloudPreIds.has(r.id))];
             preLeaveHidden = [...new Set([...cloudPreHidden, ...localPreHidden])];
+            // 机场办证
+            const cloudAir = data.airport_cert_extra || [];
+            const cloudAirHidden = data.airport_cert_hidden || [];
+            const localAir = JSON.parse(localStorage.getItem('hc_airport_cert_extra') || '[]');
+            const localAirHidden = JSON.parse(localStorage.getItem('hc_airport_cert_hidden') || '[]');
+            const cloudAirIds = new Set(cloudAir.map(r => r.id));
+            airportCertExtra = [...cloudAir, ...localAir.filter(r => !cloudAirIds.has(r.id))];
+            airportCertHidden = [...new Set([...cloudAirHidden, ...localAirHidden])];
         }
         slBackupToLocal();
     } catch(e) {
@@ -1114,6 +1279,8 @@ async function syncSpecialLeaveExtra() {
         curData.special_leave_hidden = specialLeaveHidden;
         curData.pre_leave_extra = preLeaveExtra;
         curData.pre_leave_hidden = preLeaveHidden;
+        curData.airport_cert_extra = airportCertExtra;
+        curData.airport_cert_hidden = airportCertHidden;
         const writeRes = await fetch(SUPA_URL_SL + '/rest/v1/' + SUPA_TABLE_SL + '?id=eq.1', {
             method: 'PATCH',
             headers: {
@@ -1166,8 +1333,10 @@ function getMergedPreLeave() {
 }
 
 // 新增记录弹窗（type: 'special' 特殊请假 | 'preleave' 预离职）
-function openAddRecordModal(type) {
-    addRecordType = (type === 'preleave') ? 'preleave' : 'special';
+function openAddRecordModal(type, statusKey) {
+    if (type === 'preleave') addRecordType = 'preleave';
+    else if (type === 'airport') addRecordType = 'airport';
+    else addRecordType = 'special';
     var sel = document.getElementById('add-manager');
     sel.innerHTML = '<option value="">请选择大店长</option>';
     if (D && D.manager && D.manager.rows) {
@@ -1182,10 +1351,21 @@ function openAddRecordModal(type) {
     document.getElementById('btn-submit-record').disabled = false;
     document.getElementById('btn-submit-record').textContent = '确认添加';
     // 标题与字段切换
-    document.getElementById('add-record-title').textContent = addRecordType === 'preleave' ? '+ 新增预离职记录' : '+ 新增特殊请假记录';
-    document.getElementById('add-date-row').style.display = addRecordType === 'preleave' ? 'none' : '';
-    document.getElementById('add-start').required = (addRecordType !== 'preleave');
-    document.getElementById('add-reason').placeholder = addRecordType === 'preleave' ? '请输入预离职原因...' : '请输入特殊请假原因...';
+    var titleMap = { special: '+ 新增特殊请假记录', preleave: '+ 新增预离职记录', airport: '+ 新增机场办证记录' };
+    document.getElementById('add-record-title').textContent = titleMap[addRecordType];
+    document.getElementById('add-date-row').style.display = (addRecordType === 'preleave' || addRecordType === 'airport') ? 'none' : '';
+    document.getElementById('add-start').required = (addRecordType === 'special');
+    document.getElementById('add-airport-status-row').style.display = (addRecordType === 'airport') ? '' : 'none';
+    var statusSel = document.getElementById('add-airport-status');
+    if (addRecordType === 'airport' && statusKey && AIRPORT_STATUS[statusKey]) {
+        statusSel.value = AIRPORT_STATUS[statusKey].label;
+    }
+    var placeholderMap = {
+        special: '请输入特殊请假原因...',
+        preleave: '请输入预离职原因...',
+        airport: '请输入办证进度备注（如办证开始时间、预计取证时间等）...'
+    };
+    document.getElementById('add-reason').placeholder = placeholderMap[addRecordType];
     updateSyncStatus('');
     document.getElementById('add-record-modal').classList.add('active');
 }
@@ -1196,9 +1376,9 @@ function closeAddRecordModal(event) {
     }
 }
 
-// 预离职新增：输入工号后自动回填姓名、门店、大店长
+// 预离职/机场办证新增：输入工号后自动回填姓名、门店、大店长
 function handleGonghaoInput() {
-    if (addRecordType !== 'preleave') return;
+    if (addRecordType !== 'preleave' && addRecordType !== 'airport') return;
     var gonghao = (document.getElementById('add-gonghao').value || '').trim().toUpperCase();
     if (!gonghao || !window.STAFF_LOOKUP) return;
     var info = window.STAFF_LOOKUP[gonghao];
@@ -1255,6 +1435,37 @@ async function submitAddRecord(e) {
         if (document.getElementById('detail-modal').classList.contains('active')) {
             var t = document.getElementById('modal-title').textContent;
             if (t.indexOf('预离职') >= 0) openDetailModal('预离职合计');
+        }
+        return;
+    }
+
+    if (addRecordType === 'airport') {
+        var status = document.getElementById('add-airport-status').value;
+        if (!manager || !gonghao || !name || !store || !reason || !status) {
+            alert('请填写所有必填字段（大店长、工号、姓名、门店、办证状态、备注原因）');
+            btn.disabled = false;
+            btn.textContent = '确认添加';
+            return;
+        }
+        var airRecord = {
+            id: genSLId(),
+            大店长: manager, 门店: store, 工号: gonghao, 姓名: name,
+            状态: status, 备注原因: reason,
+            addedBy: 'user', addedAt: new Date().toISOString().slice(0, 19)
+        };
+        airportCertExtra.push(airRecord);
+        scheduleSLSync();
+        closeAddRecordModal();
+        refreshAll();
+        // 如果机场办证弹窗已打开，刷新对应状态弹窗
+        if (document.getElementById('detail-modal').classList.contains('active')) {
+            var t2 = document.getElementById('modal-title').textContent;
+            for (var k2 in AIRPORT_STATUS) {
+                if (t2.indexOf(AIRPORT_STATUS[k2].label) >= 0) {
+                    openAirportCertModal(k2);
+                    break;
+                }
+            }
         }
         return;
     }
@@ -1319,6 +1530,30 @@ function deletePreLeaveRecord(id) {
     }
 }
 
+function deleteAirportCertRecord(id) {
+    if (!id) return;
+    var isExtra = airportCertExtra.some(function(r) { return r.id === id; });
+    if (isExtra) {
+        if (!confirm('确定要删除这条新增记录吗？')) return;
+        airportCertExtra = airportCertExtra.filter(function(r) { return r.id !== id; });
+    } else {
+        if (!confirm('确定要隐藏这条原始记录吗？隐藏后将从合计中扣除。')) return;
+        if (!airportCertHidden.includes(id)) airportCertHidden.push(id);
+    }
+    scheduleSLSync();
+    refreshAll();
+    if (document.getElementById('detail-modal').classList.contains('active')) {
+        // 根据当前弹窗标题判断刷新哪个状态
+        var t = document.getElementById('modal-title').textContent;
+        for (var k in AIRPORT_STATUS) {
+            if (t.indexOf(AIRPORT_STATUS[k].label) >= 0) {
+                openAirportCertModal(k);
+                break;
+            }
+        }
+    }
+}
+
 // 全局 Toast 提示
 function showToast(html, duration) {
     duration = duration || 5000;
@@ -1337,6 +1572,7 @@ function refreshAll() {
         var row = D.manager.rows.find(function(r) { return r.name === currentDimension; });
         if (row) renderCards([row]);
     }
+    renderAirportCert();
 }
 
 // 初始化：加载线上协作数据

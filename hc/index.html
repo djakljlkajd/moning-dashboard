@@ -356,6 +356,21 @@
         .sync-status.visible { opacity: 1; }
         .sync-status.error { color: #e74c3c; }
 
+        /* 全局 Toast 提示 */
+        .global-toast {
+            position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(100px);
+            background: rgba(30, 40, 60, 0.95); color: #fff; padding: 12px 20px;
+            border-radius: 8px; font-size: 13px; box-shadow: 0 6px 20px rgba(0,0,0,0.35);
+            opacity: 0; transition: all 0.35s ease; z-index: 2000; max-width: 560px;
+            text-align: center; line-height: 1.5; border: 1px solid rgba(255,255,255,0.08);
+        }
+        .global-toast.visible { opacity: 1; transform: translateX(-50%) translateY(0); }
+        .global-toast a { color: #5dade2; text-decoration: underline; cursor: pointer; }
+        .global-toast code {
+            background: rgba(255,255,255,0.12); padding: 2px 6px; border-radius: 4px;
+            font-family: Menlo, Monaco, monospace; font-size: 12px;
+        }
+
         /* 响应式 */
         @media (max-width: 1200px) {
             .cards-row { grid-template-columns: repeat(4, 1fr); }
@@ -581,10 +596,10 @@
 
 </div><!-- end container -->
 
-<script src="data.js?v=20260812b"></script>
-<script src="stores.js?v=20260812b"></script>
-<script src="details.js?v=20260812b"></script>
-<script src="staff_lookup.js?v=20260812b"></script>
+<script src="data.js?v=20260812c"></script>
+<script src="stores.js?v=20260812c"></script>
+<script src="details.js?v=20260812c"></script>
+<script src="staff_lookup.js?v=20260812c"></script>
 <script>
 const D = window.DASHBOARD_DATA;
 let specialLeaveExtra = [];
@@ -1234,6 +1249,8 @@ async function submitAddRecord(e) {
         scheduleSLSync();
         closeAddRecordModal();
         refreshAll();
+        // 提示用户回写到 Excel
+        showToast('已新增预离职记录：' + name + '（' + gonghao + '）。<br>如需同步到桌面 Excel，请在 WorkBuddy 运行：<code>python3 sync_back_to_excel.py</code>', 8000);
         // 如果预离职弹窗已打开，刷新弹窗
         if (document.getElementById('detail-modal').classList.contains('active')) {
             var t = document.getElementById('modal-title').textContent;
@@ -1302,6 +1319,17 @@ function deletePreLeaveRecord(id) {
     }
 }
 
+// 全局 Toast 提示
+function showToast(html, duration) {
+    duration = duration || 5000;
+    var el = document.getElementById('global-toast');
+    if (!el) return;
+    el.innerHTML = html;
+    el.classList.add('visible');
+    if (el._toastTimer) clearTimeout(el._toastTimer);
+    el._toastTimer = setTimeout(function() { el.classList.remove('visible'); }, duration);
+}
+
 function refreshAll() {
     if (currentDimension === 'all') {
         renderCards(D.cards);
@@ -1320,5 +1348,7 @@ function switchDashboard(sel){
     if(sel.value!=='current' && map[sel.value]) window.location.href = map[sel.value];
 }
 </script>
+    <!-- 全局提示 -->
+    <div class="global-toast" id="global-toast"></div>
 </body>
 </html>

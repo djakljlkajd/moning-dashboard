@@ -41,9 +41,9 @@ window.DASHBOARD_DATA = {
       "highlight": false
     },
     {
-      "label": "8月全职缺口",
+      "label": "9月全职缺口",
       "sub": "(K列/人)",
-      "value": -16,
+      "value": -33,
       "red": true,
       "highlight": true
     },
@@ -56,8 +56,8 @@ window.DASHBOARD_DATA = {
     }
   ],
   "recruitFinal": {
-    "label": "★ 8月最终招募缺口 (N列合计 / 区经最终合计招募人数)",
-    "value": "13 人"
+    "label": "★ 9月最终招募缺口 (N列合计 / 区经最终合计招募人数)",
+    "value": ""
   },
   "recruitProgress": {
     "fullTime": {

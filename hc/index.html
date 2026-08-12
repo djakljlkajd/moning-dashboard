@@ -690,11 +690,11 @@
 
 </div><!-- end container -->
 
-<script src="data.js?v=20260812g"></script>
-<script src="stores.js?v=20260812g"></script>
-<script src="details.js?v=20260812g"></script>
-<script src="staff_lookup.js?v=20260812g"></script>
-<script src="store_base.js?v=20260812g"></script>
+<script src="data.js?v=20260812h"></script>
+<script src="stores.js?v=20260812h"></script>
+<script src="details.js?v=20260812h"></script>
+<script src="staff_lookup.js?v=20260812h"></script>
+<script src="store_base.js?v=20260812h"></script>
 <script>
 const D = window.DASHBOARD_DATA;
 let specialLeaveExtra = [];
@@ -716,7 +716,7 @@ const cardsRow = document.getElementById('cards-row');
 
 // ---------- 最终招募 ----------
 document.getElementById('recruit-label').textContent = D.recruitFinal.label;
-document.getElementById('recruit-number').textContent = D.recruitFinal.value;
+document.getElementById('recruit-number').textContent = D.recruitFinal.value || '';
 
 // ---------- 招募达成进度两个方块（全职 / 学生） ----------
 function renderProgressCard(type, cfg, title, footNote) {
@@ -894,13 +894,16 @@ function renderCards(source) {
             { label: "花名册在职合计", sub: "(G列/人)", value: sum.roster, red: false, highlight: false },
             { label: "特殊请假合计", sub: "(H列/人)", value: slCount, red: true, highlight: false },
             { label: "预离职合计", sub: "(I列/人)", value: plCount, red: true, highlight: false },
-            { label: "8月全职缺口", sub: "(K列/人)", value: sum.gap, red: true, highlight: true },
+            { label: "9月全职缺口", sub: "(K列/人)", value: sum.roster - sum.std - sum.leave - sum.preLeave, red: true, highlight: true },
             { label: "撤店合计", sub: "(L列/家)", value: sum.closed, red: false, highlight: false }
         ];
     } else {
+        const rosterVal = source.find(c => c.label === '花名册在职合计')?.value || 0;
+        const stdVal = source.find(c => c.label === '全职标准合计')?.value || 0;
         cards = source.map(c => {
             if (c.label === '特殊请假合计') return { ...c, value: slCount };
             if (c.label === '预离职合计') return { ...c, value: plCount };
+            if (c.label === '9月全职缺口') return { ...c, value: rosterVal - stdVal - slCount - plCount };
             return c;
         });
     }
@@ -926,11 +929,15 @@ function renderCards(source) {
         cardsRow.appendChild(div);
     });
 
-    // 最终招募数字同步
-    const finalSum = isRowData
-        ? source.reduce((a, r) => a + r.final, 0)
-        : parseInt((D.recruitFinal.value || '13').replace(/\D/g, ''), 10) || 13;
-    document.getElementById('recruit-number').textContent = finalSum + ' 人';
+    // 最终招募数字同步（value 为空时隐藏数字）
+    if (D.recruitFinal.value) {
+        const finalSum = isRowData
+            ? source.reduce((a, r) => a + r.final, 0)
+            : parseInt((D.recruitFinal.value || '13').replace(/\D/g, ''), 10) || 13;
+        document.getElementById('recruit-number').textContent = finalSum + ' 人';
+    } else {
+        document.getElementById('recruit-number').textContent = '';
+    }
 }
 
 // ---------- 卡片明细弹窗 ----------

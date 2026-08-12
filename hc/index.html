@@ -68,7 +68,7 @@
 
         /* ===== 7个指标卡片横排 ===== */
         .cards-row {
-            display: grid; grid-template-columns: repeat(7, 1fr); gap: 0;
+            display: grid; grid-template-columns: repeat(8, 1fr); gap: 0;
             background: #fff; padding: 15px 20px;
         }
         .metric-card {
@@ -372,6 +372,17 @@
         }
         .btn-cancel:hover { background: #dcdde1; }
 
+        /* ===== 单店特殊新增HC 表单：门店职级信息 ===== */
+        .store-grade-info {
+            background: #f4f9ff; border: 1px dashed #2e86de; border-radius: 6px;
+            padding: 10px 14px; margin-bottom: 14px;
+        }
+        .store-grade-title { font-size: 12px; font-weight: 600; color: #1a5276; margin-bottom: 6px; }
+        .store-grade-items { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 12.5px; color: #333; }
+        .store-grade-items b { color: #1a5fb4; font-size: 13px; }
+        .store-grade-empty { color: #95a5a6; font-size: 12.5px; }
+        .form-input[readonly] { background: #f4f6f7; color: #555; }
+
         /* ===== 明细弹窗中用户新增记录标记 ===== */
         .record-row-added { background: #e8f8f0 !important; }
         .record-row-added:hover { background: #d0f0e0 !important; }
@@ -592,7 +603,7 @@
         </div>
         <div class="form-body">
             <form id="add-record-form" onsubmit="submitAddRecord(event)">
-                <div class="form-row">
+                <div class="form-row" id="add-staff-row">
                     <div class="form-group">
                         <label class="form-label">大店长<span class="required">*</span></label>
                         <select class="form-select" id="add-manager" required>
@@ -604,7 +615,7 @@
                         <input class="form-input" id="add-gonghao" placeholder="如 CY12345" required oninput="handleGonghaoInput()" onblur="handleGonghaoInput()">
                     </div>
                 </div>
-                <div class="form-row">
+                <div class="form-row" id="add-name-store-row">
                     <div class="form-group">
                         <label class="form-label">姓名<span class="required">*</span></label>
                         <input class="form-input" id="add-name" placeholder="请输入姓名" required>
@@ -634,7 +645,36 @@
                         </select>
                     </div>
                 </div>
-                <div class="form-group">
+                <!-- 单店特殊新增HC 专属字段 -->
+                <div id="storehc-fields" style="display:none;">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">门店名称<span class="required">*</span></label>
+                            <select class="form-select" id="add-storehc-store" required onchange="handleStoreHcChange()">
+                                <option value="">请选择门店（在职名单D列）</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">大店长<span class="required">*</span></label>
+                            <input class="form-input" id="add-storehc-manager" readonly placeholder="选择门店后自动带出（在职名单C列）">
+                        </div>
+                    </div>
+                    <div class="store-grade-info">
+                        <div class="store-grade-title">该门店单店全职各职级人数（门店底表 X~AB 列）</div>
+                        <div class="store-grade-items" id="storehc-grade-items"><span class="store-grade-empty">请先选择门店</span></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">新增人员数量<span class="required">*</span></label>
+                            <input type="number" class="form-input" id="add-storehc-qty" min="1" step="1" placeholder="请输入新增人数">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">新增HC原因<span class="required">*</span></label>
+                            <input class="form-input" id="add-storehc-reason" placeholder="请输入新增HC原因">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group" id="add-reason-row">
                     <label class="form-label">备注原因<span class="required">*</span></label>
                     <textarea class="form-textarea" id="add-reason" placeholder="请输入备注原因..." required></textarea>
                 </div>
@@ -650,10 +690,11 @@
 
 </div><!-- end container -->
 
-<script src="data.js?v=20260812d"></script>
-<script src="stores.js?v=20260812d"></script>
-<script src="details.js?v=20260812d"></script>
-<script src="staff_lookup.js?v=20260812d"></script>
+<script src="data.js?v=20260812e"></script>
+<script src="stores.js?v=20260812e"></script>
+<script src="details.js?v=20260812e"></script>
+<script src="staff_lookup.js?v=20260812e"></script>
+<script src="store_base.js?v=20260812e"></script>
 <script>
 const D = window.DASHBOARD_DATA;
 let specialLeaveExtra = [];
@@ -662,7 +703,8 @@ let preLeaveExtra = [];
 let preLeaveHidden = [];
 let airportCertExtra = [];
 let airportCertHidden = [];
-let addRecordType = 'special';  // 'special' | 'preleave' | 'airport'
+let storeHcExtra = [];
+let addRecordType = 'special';  // 'special' | 'preleave' | 'airport' | 'storehc'
 
 // ---------- 标题 / 日期 ----------
 document.getElementById('hdr-title').textContent = '● ' + D.meta.title;
@@ -862,7 +904,11 @@ function renderCards(source) {
             return c;
         });
     }
-    const clickableCards = ['特殊请假合计', '预离职合计', '撤店合计'];
+    // 单店特殊新增HC 卡片：插在「预离职合计」后面，数值 = 用户新增记录的人数合计
+    const storeHcTotal = storeHcExtra.reduce((a, r) => a + (parseInt(r.新增人员数量, 10) || 0), 0);
+    const shcIdx = cards.findIndex(c => c.label === '预离职合计');
+    if (shcIdx >= 0) cards.splice(shcIdx + 1, 0, { label: '单店特殊新增HC人数', sub: '(人)', value: storeHcTotal, red: true, highlight: false });
+    const clickableCards = ['特殊请假合计', '预离职合计', '撤店合计', '单店特殊新增HC人数'];
     const arrowSvg = '<svg viewBox="0 0 24 24"><path d="M4 2 L4 20 L9 15 L12 21 L15 20 L12 14 L18 14 Z"/></svg>';
     const cardsRow = document.getElementById('cards-row');
     cardsRow.innerHTML = '';
@@ -891,13 +937,26 @@ function renderCards(source) {
 const detailMap = {
     '特殊请假合计': '特殊请假',
     '预离职合计': '预离职',
-    '撤店合计': '撤店'
+    '撤店合计': '撤店',
+    '单店特殊新增HC人数': '单店特殊新增HC'
 };
 const detailColumnsMap = {
     '特殊请假': ['大店长', '门店', '工号', '姓名', '开始时间', '结束时间', '休息天数', '备注原因'],
     '预离职': ['大店长', '门店', '工号', '姓名', '备注原因'],
-    '撤店': ['大店长', '门店', '工号', '姓名', '备注原因']
+    '撤店': ['大店长', '门店', '工号', '姓名', '备注原因'],
+    '单店特殊新增HC': ['大店长', '门店', '新增人员数量', '新增HC原因']
 };
+// 单店特殊新增HC 明细的职级列（门店底表 X~AB，按门店名实时查询）
+const STORE_HC_GRADE_COLS = ['全职需求合计', '店长', '中级训练员', '初级训练员', '服务员'];
+
+function getStoreHcGradeRow(storeName) {
+    const b = (window.STORE_BASE && storeName) ? window.STORE_BASE[storeName] : null;
+    if (!b) return null;
+    return {
+        全职需求合计: b.全职需求合计, 店长: b.店长, 中级训练员: b.中级训练员,
+        初级训练员: b.初级训练员, 服务员: b.服务员
+    };
+}
 
 function openDetailModal(cardLabel) {
     const key = detailMap[cardLabel];
@@ -915,6 +974,16 @@ function openDetailModal(cardLabel) {
         all = getMergedPreLeave();
         const extraIds = new Set(preLeaveExtra.map(r => r.id));
         all.forEach(r => { r._isAdded = extraIds.has(r.id); });
+    } else if (key === '单店特殊新增HC') {
+        // 全部来自用户新增；职级列按门店从门店底表实时查询
+        all = storeHcExtra.map(r => {
+            const g = getStoreHcGradeRow(r.门店);
+            return Object.assign({}, r, g || {}, { _isAdded: true });
+        });
+        // 补全缺失的职级字段为 '—'
+        all.forEach(r => {
+            STORE_HC_GRADE_COLS.forEach(h => { if (r[h] === undefined || r[h] === null) r[h] = '—'; });
+        });
     } else {
         all = window.DETAIL_DATA[key] || [];
         all.forEach(r => { r._isAdded = false; });
@@ -931,32 +1000,42 @@ function openDetailModal(cardLabel) {
     const body = document.getElementById('modal-body');
     const addBtn = document.getElementById('modal-add-btn');
     if (addBtn) {
-        addBtn.style.display = (key === '特殊请假' || key === '预离职') ? 'inline-block' : 'none';
+        const showAdd = (key === '特殊请假' || key === '预离职' || key === '单店特殊新增HC');
+        addBtn.style.display = showAdd ? 'inline-block' : 'none';
         addBtn.onclick = function(ev) {
             ev.stopPropagation();
-            openAddRecordModal(key === '特殊请假' ? 'special' : 'preleave');
+            if (key === '特殊请假') openAddRecordModal('special');
+            else if (key === '预离职') openAddRecordModal('preleave');
+            else if (key === '单店特殊新增HC') openAddRecordModal('storehc');
         };
     }
 
-    // 特殊请假/预离职：显示操作列（删除按钮）
-    const showActions = (key === '特殊请假' || key === '预离职');
-    const displayColumns = showActions ? [...detailColumns, '操作'] : detailColumns;
+    // 特殊请假/预离职/单店特殊新增HC：显示操作列（删除按钮）
+    const showActions = (key === '特殊请假' || key === '预离职' || key === '单店特殊新增HC');
+    // 单店特殊新增HC：在核心列后插入职级列
+    let finalColumns = detailColumns;
+    if (key === '单店特殊新增HC') {
+        finalColumns = detailColumns.slice(0, 2).concat(STORE_HC_GRADE_COLS, detailColumns.slice(2));
+    }
+    const displayColumns = showActions ? [...finalColumns, '操作'] : finalColumns;
 
     const slExtraInfo = (key === '特殊请假')
         ? '（新增 ' + specialLeaveExtra.length + ' 条' + (specialLeaveHidden.length > 0 ? '，已隐藏 ' + specialLeaveHidden.length + ' 条' : '') + '）'
         : (key === '预离职')
             ? '（新增 ' + preLeaveExtra.length + ' 条' + (preLeaveHidden.length > 0 ? '，已隐藏 ' + preLeaveHidden.length + ' 条' : '') + '）'
-            : '';
+            : (key === '单店特殊新增HC')
+                ? '（新增 ' + storeHcExtra.length + ' 条）'
+                : '';
     title.textContent = cardLabel + '明细' + (currentDimension !== 'all' ? '（当前：' + currentDimension + '）' : '') + ' - 共 ' + filtered.length + ' 条' + slExtraInfo;
 
     if (filtered.length === 0) {
         body.innerHTML = '<div class="modal-empty">当前筛选条件下暂无数据</div>';
     } else {
-        const delFn = (key === '特殊请假') ? 'deleteSpecialLeaveRecord' : 'deletePreLeaveRecord';
+        const delFn = (key === '特殊请假') ? 'deleteSpecialLeaveRecord' : (key === '预离职') ? 'deletePreLeaveRecord' : 'deleteStoreHcRecord';
         body.innerHTML =
             '<table><thead><tr>' + displayColumns.map(h => '<th>' + h + '</th>').join('') + '</tr></thead>' +
             '<tbody>' + filtered.map(r => {
-                let cells = detailColumns.map(h => '<td>' + (r[h] === undefined || r[h] === null ? '' : r[h]) + '</td>').join('');
+                let cells = finalColumns.map(h => '<td>' + (r[h] === undefined || r[h] === null ? '' : r[h]) + '</td>').join('');
                 if (showActions) {
                     const rowId = r.id || r.工号 || '';
                     cells += '<td><button class="btn-delete-record" onclick="event.stopPropagation();' + delFn + '(\'' + rowId + '\')">删除</button></td>';
@@ -1203,6 +1282,7 @@ function slBackupToLocal() {
         localStorage.setItem('hc_pre_leave_hidden', JSON.stringify(preLeaveHidden));
         localStorage.setItem('hc_airport_cert_extra', JSON.stringify(airportCertExtra));
         localStorage.setItem('hc_airport_cert_hidden', JSON.stringify(airportCertHidden));
+        localStorage.setItem('hc_store_hc_extra', JSON.stringify(storeHcExtra));
     } catch(e) {}
 }
 function slRestoreFromLocal() {
@@ -1219,6 +1299,8 @@ function slRestoreFromLocal() {
         if (rawAir) airportCertExtra = JSON.parse(rawAir);
         const rawAirHidden = localStorage.getItem('hc_airport_cert_hidden');
         if (rawAirHidden) airportCertHidden = JSON.parse(rawAirHidden);
+        const rawShc = localStorage.getItem('hc_store_hc_extra');
+        if (rawShc) storeHcExtra = JSON.parse(rawShc);
     } catch(e) {}
 }
 
@@ -1254,6 +1336,11 @@ async function loadSpecialLeaveExtra() {
             const cloudAirIds = new Set(cloudAir.map(r => r.id));
             airportCertExtra = [...cloudAir, ...localAir.filter(r => !cloudAirIds.has(r.id))];
             airportCertHidden = [...new Set([...cloudAirHidden, ...localAirHidden])];
+            // 单店特殊新增HC
+            const cloudShc = data.store_hc_extra || [];
+            const localShc = JSON.parse(localStorage.getItem('hc_store_hc_extra') || '[]');
+            const cloudShcIds = new Set(cloudShc.map(r => r.id));
+            storeHcExtra = [...cloudShc, ...localShc.filter(r => !cloudShcIds.has(r.id))];
         }
         slBackupToLocal();
     } catch(e) {
@@ -1281,6 +1368,7 @@ async function syncSpecialLeaveExtra() {
         curData.pre_leave_hidden = preLeaveHidden;
         curData.airport_cert_extra = airportCertExtra;
         curData.airport_cert_hidden = airportCertHidden;
+        curData.store_hc_extra = storeHcExtra;
         const writeRes = await fetch(SUPA_URL_SL + '/rest/v1/' + SUPA_TABLE_SL + '?id=eq.1', {
             method: 'PATCH',
             headers: {
@@ -1332,10 +1420,11 @@ function getMergedPreLeave() {
     return visibleExcel.concat(preLeaveExtra);
 }
 
-// 新增记录弹窗（type: 'special' 特殊请假 | 'preleave' 预离职）
+// 新增记录弹窗（type: 'special' 特殊请假 | 'preleave' 预离职 | 'airport' 机场办证 | 'storehc' 单店特殊新增HC）
 function openAddRecordModal(type, statusKey) {
     if (type === 'preleave') addRecordType = 'preleave';
     else if (type === 'airport') addRecordType = 'airport';
+    else if (type === 'storehc') addRecordType = 'storehc';
     else addRecordType = 'special';
     var sel = document.getElementById('add-manager');
     sel.innerHTML = '<option value="">请选择大店长</option>';
@@ -1351,23 +1440,65 @@ function openAddRecordModal(type, statusKey) {
     document.getElementById('btn-submit-record').disabled = false;
     document.getElementById('btn-submit-record').textContent = '确认添加';
     // 标题与字段切换
-    var titleMap = { special: '+ 新增特殊请假记录', preleave: '+ 新增预离职记录', airport: '+ 新增机场办证记录' };
+    var titleMap = { special: '+ 新增特殊请假记录', preleave: '+ 新增预离职记录', airport: '+ 新增机场办证记录', storehc: '+ 新增单店特殊新增HC记录' };
     document.getElementById('add-record-title').textContent = titleMap[addRecordType];
-    document.getElementById('add-date-row').style.display = (addRecordType === 'preleave' || addRecordType === 'airport') ? 'none' : '';
+    document.getElementById('add-staff-row').style.display = (addRecordType === 'storehc') ? 'none' : '';
+    document.getElementById('add-name-store-row').style.display = (addRecordType === 'storehc') ? 'none' : '';
+    document.getElementById('add-date-row').style.display = (addRecordType === 'preleave' || addRecordType === 'airport' || addRecordType === 'storehc') ? 'none' : '';
     document.getElementById('add-start').required = (addRecordType === 'special');
     document.getElementById('add-airport-status-row').style.display = (addRecordType === 'airport') ? '' : 'none';
+    document.getElementById('add-reason-row').style.display = (addRecordType === 'storehc') ? 'none' : '';
+    document.getElementById('storehc-fields').style.display = (addRecordType === 'storehc') ? '' : 'none';
     var statusSel = document.getElementById('add-airport-status');
     if (addRecordType === 'airport' && statusKey && AIRPORT_STATUS[statusKey]) {
         statusSel.value = AIRPORT_STATUS[statusKey].label;
     }
+    // storehc：填充门店下拉（在职名单 D 列）+ 清空专属字段
+    if (addRecordType === 'storehc') {
+        var storeSel = document.getElementById('add-storehc-store');
+        storeSel.innerHTML = '<option value="">请选择门店（在职名单D列）</option>';
+        var sl = window.STORE_LIST || [];
+        sl.forEach(function(s) { storeSel.add(new Option(s.门店, s.门店)); });
+        document.getElementById('add-storehc-manager').value = '';
+        document.getElementById('add-storehc-qty').value = '';
+        document.getElementById('add-storehc-reason').value = '';
+        document.getElementById('storehc-grade-items').innerHTML = '<span class="store-grade-empty">请先选择门店</span>';
+    }
     var placeholderMap = {
         special: '请输入特殊请假原因...',
         preleave: '请输入预离职原因...',
-        airport: '请输入办证进度备注（如办证开始时间、预计取证时间等）...'
+        airport: '请输入办证进度备注（如办证开始时间、预计取证时间等）...',
+        storehc: '请输入新增HC原因...'
     };
     document.getElementById('add-reason').placeholder = placeholderMap[addRecordType];
     updateSyncStatus('');
     document.getElementById('add-record-modal').classList.add('active');
+}
+
+// storehc 模式：选择门店后自动带出大店长（在职名单 C 列）并展示该门店 X~AB 职级人数（门店底表）
+function handleStoreHcChange() {
+    var store = document.getElementById('add-storehc-store').value;
+    var mgrInput = document.getElementById('add-storehc-manager');
+    var gradeEl = document.getElementById('storehc-grade-items');
+    mgrInput.value = '';
+    gradeEl.innerHTML = '<span class="store-grade-empty">请先选择门店</span>';
+    if (!store) return;
+    var mgr = '';
+    if (window.STORE_LIST) {
+        window.STORE_LIST.forEach(function(s) { if (s.门店 === store) mgr = s.大店长; });
+    }
+    mgrInput.value = mgr || '';
+    var b = window.STORE_BASE ? window.STORE_BASE[store] : null;
+    if (!b) {
+        gradeEl.innerHTML = '<span class="store-grade-empty">门店底表中未找到该门店的职级数据</span>';
+        return;
+    }
+    gradeEl.innerHTML =
+        '<span>全职需求合计(X)：<b>' + (b.全职需求合计 === undefined || b.全职需求合计 === null ? '—' : b.全职需求合计) + '</b></span>' +
+        '<span>店长(Y)：<b>' + (b.店长 === undefined || b.店长 === null ? '—' : b.店长) + '</b></span>' +
+        '<span>中级训练员(Z)：<b>' + (b.中级训练员 === undefined || b.中级训练员 === null ? '—' : b.中级训练员) + '</b></span>' +
+        '<span>初级训练员(AA)：<b>' + (b.初级训练员 === undefined || b.初级训练员 === null ? '—' : b.初级训练员) + '</b></span>' +
+        '<span>服务员(AB)：<b>' + (b.服务员 === undefined || b.服务员 === null ? '—' : b.服务员) + '</b></span>';
 }
 
 function closeAddRecordModal(event) {
@@ -1411,6 +1542,37 @@ async function submitAddRecord(e) {
     var end = document.getElementById('add-end').value;
     var reason = document.getElementById('add-reason').value.trim();
     var restDays = calcRestDays(start, end);
+
+    if (addRecordType === 'storehc') {
+        // 单店特殊新增HC：门店下拉 + 大店长自动带出 + 新增人员数量 + 新增HC原因
+        var shcStore = document.getElementById('add-storehc-store').value.trim();
+        var shcManager = document.getElementById('add-storehc-manager').value.trim();
+        var shcQty = parseInt(document.getElementById('add-storehc-qty').value, 10);
+        var shcReason = document.getElementById('add-storehc-reason').value.trim();
+        if (!shcStore || !shcManager || !shcQty || shcQty < 1 || !shcReason) {
+            alert('请填写所有必填字段（门店名称、新增人员数量、新增HC原因）');
+            btn.disabled = false;
+            btn.textContent = '确认添加';
+            return;
+        }
+        var shcRecord = {
+            id: genSLId(),
+            大店长: shcManager, 门店: shcStore,
+            新增人员数量: shcQty, 新增HC原因: shcReason,
+            addedBy: 'user', addedAt: new Date().toISOString().slice(0, 19)
+        };
+        storeHcExtra.push(shcRecord);
+        scheduleSLSync();
+        closeAddRecordModal();
+        refreshAll();
+        showToast('已新增单店特殊新增HC记录：' + shcStore + ' +' + shcQty + ' 人');
+        // 如果单店特殊新增HC弹窗已打开，刷新弹窗
+        if (document.getElementById('detail-modal').classList.contains('active')) {
+            var tShc = document.getElementById('modal-title').textContent;
+            if (tShc.indexOf('单店特殊新增HC') >= 0) openDetailModal('单店特殊新增HC人数');
+        }
+        return;
+    }
 
     if (addRecordType === 'preleave') {
         // 预离职：不需要开始时间
@@ -1551,6 +1713,18 @@ function deleteAirportCertRecord(id) {
                 break;
             }
         }
+    }
+}
+
+// 删除单店特殊新增HC记录（所有记录均为用户新增，直接移除）
+function deleteStoreHcRecord(id) {
+    if (!id) return;
+    if (!confirm('确定要删除这条新增记录吗？')) return;
+    storeHcExtra = storeHcExtra.filter(function(r) { return r.id !== id; });
+    scheduleSLSync();
+    refreshAll();
+    if (document.getElementById('detail-modal').classList.contains('active')) {
+        openDetailModal('单店特殊新增HC人数');
     }
 }
 

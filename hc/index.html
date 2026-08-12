@@ -542,7 +542,7 @@
                     </div>
                     <div class="form-group">
                         <label class="form-label">工号<span class="required">*</span></label>
-                        <input class="form-input" id="add-gonghao" placeholder="如 CY12345" required>
+                        <input class="form-input" id="add-gonghao" placeholder="如 CY12345" required oninput="handleGonghaoInput()" onblur="handleGonghaoInput()">
                     </div>
                 </div>
                 <div class="form-row">
@@ -581,9 +581,10 @@
 
 </div><!-- end container -->
 
-<script src="data.js?v=20260812a"></script>
-<script src="stores.js?v=20260812a"></script>
-<script src="details.js?v=20260812a"></script>
+<script src="data.js?v=20260812b"></script>
+<script src="stores.js?v=20260812b"></script>
+<script src="details.js?v=20260812b"></script>
+<script src="staff_lookup.js?v=20260812b"></script>
 <script>
 const D = window.DASHBOARD_DATA;
 let specialLeaveExtra = [];
@@ -1177,6 +1178,27 @@ function openAddRecordModal(type) {
 function closeAddRecordModal(event) {
     if (!event || event.target.id === 'add-record-modal' || event.target.className === 'modal-close') {
         document.getElementById('add-record-modal').classList.remove('active');
+    }
+}
+
+// 预离职新增：输入工号后自动回填姓名、门店、大店长
+function handleGonghaoInput() {
+    if (addRecordType !== 'preleave') return;
+    var gonghao = (document.getElementById('add-gonghao').value || '').trim().toUpperCase();
+    if (!gonghao || !window.STAFF_LOOKUP) return;
+    var info = window.STAFF_LOOKUP[gonghao];
+    if (!info) return;
+    if (info.name) document.getElementById('add-name').value = info.name;
+    if (info.store) document.getElementById('add-store').value = info.store;
+    // 自动选大店长
+    if (info.manager) {
+        var sel = document.getElementById('add-manager');
+        for (var i = 0; i < sel.options.length; i++) {
+            if (sel.options[i].value === info.manager) {
+                sel.selectedIndex = i;
+                break;
+            }
+        }
     }
 }
 

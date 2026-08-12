@@ -2,7 +2,7 @@
 window.DASHBOARD_DATA = {
   "meta": {
     "title": "HC 8月最终招募缺口看板",
-    "asOf": "2026-08-05"
+    "asOf": "2026-08-12"
   },
   "cards": [
     {
@@ -61,7 +61,7 @@ window.DASHBOARD_DATA = {
   },
   "recruitProgress": {
     "fullTime": {
-      "recruit": 4,
+      "recruit": 3,
       "arrived": 2
     },
     "student": {
@@ -145,6 +145,7 @@ window.DASHBOARD_DATA = {
   },
   "manager": {
     "columns": [
+      "大区",
       "大店长",
       "门店数",
       "标准需求<br>(D列)",

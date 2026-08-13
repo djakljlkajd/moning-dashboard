@@ -289,7 +289,7 @@ body{font-family:-apple-system,'PingFang SC','Helvetica Neue',sans-serif;backgro
   <div class="note-title">📋 看板相关说明</div>
   <div class="note-body">
     <b>1、刷新频次：</b>每周一至周五12点前刷新（每周5次）<br>
-    <b>2、执行链路：</b>如有违规（单日&gt;11h、连续上班超过8天）情况，请对应大店长2个工作日内完成原因填写，最终与区域经理核实是否扣分<br>
+    <b>2、执行链路：</b>如有违规（单日&gt;11h、连续上班超过8天）情况，请对应大店长2个工作日内完成原因填写<br>
     <b>在哪填？：</b>点击第一排红色方块——违规原因——点击待填写（看板有任何疑问或异常请随时联系戴嘉伟解决）
   </div>
 </div>
@@ -137632,7 +137632,6 @@ function showAlertDetail(type){
        '<th style="width:66px">工号</th><th style="width:78px">姓名</th><th style="width:60px">用工类型</th><th style="width:60px">职级</th>'+
        '<th style="width:76px">是否扣分<div style="font-size:10px;color:#FFCCCC;font-weight:400;margin-top:2px">BP凭密码填写</div></th>'+
        '<th style="width:160px">违规原因<div style="font-size:10px;color:rgba(255,255,255,.75);font-weight:400;margin-top:2px">大店长填写</div></th>'+
-       '<th style="width:160px">区经理建议</th>'+
        '<th style="width:64px">总工时</th><th style="width:48px">日均</th>'+
        M.date_strs.map(d=>`<th style="min-width:48px;width:48px">${d}</th>`).join('');
     data.forEach(p=>{
@@ -137643,11 +137642,10 @@ function showAlertDetail(type){
       const v=getViolationRecord('over13',p['工号']);
       const deductHtml=getViolationDeductHtml('over13',p['工号'],v.deducted);
       const reasonHtml=getViolationReasonHtml('over13',p['工号'],v.reason);
-      const adviceHtml=getManagerAdviceHtml('over13',p['工号'],v.managerAgree,v.managerAdvice);
       bb+=`<tr style="background:rgba(234,75,74,.04)">
         <td class="col-name">${p['区域']}</td><td class="col-name">${p['大店长']}</td><td class="col-name">${p['门店']}</td>
         <td>${p['工号']}</td><td>${p['姓名']}</td><td>${p['用工类型']||''}</td><td>${p['职级']}</td>
-        <td>${deductHtml}</td><td class="col-name">${reasonHtml}</td><td class="col-name">${adviceHtml}</td>
+        <td>${deductHtml}</td><td class="col-name">${reasonHtml}</td>
         <td>${p['总工时']}</td><td>${p['日均工时']}</td>${dc}</tr>`;
     });
   } else if(type==='consec8'){
@@ -137659,7 +137657,6 @@ function showAlertDetail(type){
        '<th style="width:66px">工号</th><th style="width:78px">姓名</th><th style="width:60px">用工类型</th><th style="width:60px">职级</th>'+
        '<th style="width:76px">是否扣分<div style="font-size:10px;color:#FFCCCC;font-weight:400;margin-top:2px">BP凭密码填写</div></th>'+
        '<th style="width:160px">违规原因<div style="font-size:10px;color:rgba(255,255,255,.75);font-weight:400;margin-top:2px">大店长填写</div></th>'+
-       '<th style="width:160px">区经理建议</th>'+
        '<th style="width:50px">出勤/休</th><th style="width:60px">总工时</th><th style="width:48px">日均</th>'+
        '<th style="width:62px" class="c-red">最大连续</th><th style="width:62px" class="c-amber">尾段连续</th>'+
        '<th style="min-width:280px;text-align:left">超休原因</th>';
@@ -137669,11 +137666,10 @@ function showAlertDetail(type){
       const v=getViolationRecord('consec8',p['工号']);
       const deductHtml=getViolationDeductHtml('consec8',p['工号'],v.deducted);
       const reasonHtml=getViolationReasonHtml('consec8',p['工号'],v.reason);
-      const adviceHtml=getManagerAdviceHtml('consec8',p['工号'],v.managerAgree,v.managerAdvice);
       bb+=`<tr style="${isRed?'background:rgba(234,75,74,.05)':''}">
         <td class="col-name">${p['区域']}</td><td class="col-name">${p['大店长']}</td><td class="col-name">${p['门店']}</td>
         <td>${p['工号']}</td><td>${p['姓名']}</td><td>${p['用工类型']||''}</td><td>${p['职级']}</td>
-        <td>${deductHtml}</td><td class="col-name">${reasonHtml}</td><td class="col-name">${adviceHtml}</td>
+        <td>${deductHtml}</td><td class="col-name">${reasonHtml}</td>
         <td>${p['出勤天数']}d/${p['休息天数']}d</td><td>${p['总工时']}</td><td>${p['日均工时']}</td>
         <td class="${isRed?'c-red':''}" style="font-weight:600">${maxC}天</td>
         <td class="${isTailWarn?'c-amber':''}" style="font-weight:600">${tailC}天</td>

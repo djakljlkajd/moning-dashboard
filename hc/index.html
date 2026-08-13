@@ -690,11 +690,11 @@
 
 </div><!-- end container -->
 
-<script src="data.js?v=20260812h"></script>
-<script src="stores.js?v=20260812h"></script>
-<script src="details.js?v=20260812h"></script>
-<script src="staff_lookup.js?v=20260812h"></script>
-<script src="store_base.js?v=20260812h"></script>
+<script src="data.js?v=20260813a"></script>
+<script src="stores.js?v=20260813a"></script>
+<script src="details.js?v=20260813a"></script>
+<script src="staff_lookup.js?v=20260813a"></script>
+<script src="store_base.js?v=20260813a"></script>
 <script>
 const D = window.DASHBOARD_DATA;
 let specialLeaveExtra = [];
@@ -911,7 +911,7 @@ function renderCards(source) {
     const storeHcTotal = storeHcExtra.reduce((a, r) => a + (parseInt(r.新增人员数量, 10) || 0), 0);
     const shcIdx = cards.findIndex(c => c.label === '预离职合计');
     if (shcIdx >= 0) cards.splice(shcIdx + 1, 0, { label: '单店特殊新增HC人数', sub: '(人)', value: storeHcTotal, red: true, highlight: false });
-    const clickableCards = ['特殊请假合计', '预离职合计', '撤店合计', '单店特殊新增HC人数'];
+    const clickableCards = ['特殊请假合计', '预离职合计', '撤店合计', '单店特殊新增HC人数', '9月全职缺口'];
     const arrowSvg = '<svg viewBox="0 0 24 24"><path d="M4 2 L4 20 L9 15 L12 21 L15 20 L12 14 L18 14 Z"/></svg>';
     const cardsRow = document.getElementById('cards-row');
     cardsRow.innerHTML = '';
@@ -945,13 +945,15 @@ const detailMap = {
     '特殊请假合计': '特殊请假',
     '预离职合计': '预离职',
     '撤店合计': '撤店',
-    '单店特殊新增HC人数': '单店特殊新增HC'
+    '单店特殊新增HC人数': '单店特殊新增HC',
+    '9月全职缺口': '9月单店缺口'
 };
 const detailColumnsMap = {
     '特殊请假': ['大店长', '门店', '工号', '姓名', '开始时间', '结束时间', '休息天数', '备注原因'],
     '预离职': ['大店长', '门店', '工号', '姓名', '备注原因'],
     '撤店': ['大店长', '门店', '工号', '姓名', '备注原因'],
-    '单店特殊新增HC': ['大店长', '门店', '新增人员数量', '新增HC原因']
+    '单店特殊新增HC': ['大店长', '门店', '新增人员数量', '新增HC原因'],
+    '9月单店缺口': ['大店长', '门店', '标准需求', '花名册', '特殊请假', '预离职', '9月缺口']
 };
 // 单店特殊新增HC 明细的职级列（门店底表 X~AB，按门店名实时查询）
 const STORE_HC_GRADE_COLS = ['全职需求合计', '店长', '中级训练员', '初级训练员', '服务员'];
@@ -963,6 +965,56 @@ function getStoreHcGradeRow(storeName) {
         全职需求合计: b.全职需求合计, 店长: b.店长, 中级训练员: b.中级训练员,
         初级训练员: b.初级训练员, 服务员: b.服务员
     };
+}
+
+// 按门店计算 9 月全职缺口：花名册 - 标准需求 - 特殊请假 - 预离职
+function buildStoreGapData() {
+    var storeMap = {};
+    // 1. 从门店底表初始化所有门店（标准需求 + 大店长）
+    Object.keys(window.STORE_BASE || {}).forEach(function(store) {
+        var b = window.STORE_BASE[store];
+        storeMap[store] = {
+            大店长: b.大店长 || '',
+            门店: store,
+            标准需求: b.全职需求合计 || 0,
+            花名册: 0,
+            特殊请假: 0,
+            预离职: 0
+        };
+    });
+    // 2. 从在职名单统计各门店花名册人数
+    Object.values(window.STAFF_LOOKUP || {}).forEach(function(r) {
+        if (!r.store) return;
+        if (!storeMap[r.store]) {
+            storeMap[r.store] = {
+                大店长: r.manager || '',
+                门店: r.store,
+                标准需求: 0,
+                花名册: 0,
+                特殊请假: 0,
+                预离职: 0
+            };
+        }
+        storeMap[r.store].花名册 += 1;
+        if (!storeMap[r.store].大店长 && r.manager) storeMap[r.store].大店长 = r.manager;
+    });
+    // 3. 按门店统计特殊请假（含用户新增/已隐藏，与卡片数字同源）
+    getMergedSpecialLeave().forEach(function(r) {
+        if (r.门店 && storeMap[r.门店]) storeMap[r.门店].特殊请假 += 1;
+    });
+    // 4. 按门店统计预离职（含用户新增/已隐藏，与卡片数字同源）
+    getMergedPreLeave().forEach(function(r) {
+        if (r.门店 && storeMap[r.门店]) storeMap[r.门店].预离职 += 1;
+    });
+    // 5. 计算缺口并排序（缺口小的在前，即负值更大的在前）
+    return Object.values(storeMap).map(function(r) {
+        r['9月缺口'] = r.花名册 - r.标准需求 - r.特殊请假 - r.预离职;
+        return r;
+    }).filter(function(r) {
+        return r.标准需求 > 0 || r.花名册 > 0;
+    }).sort(function(a, b) {
+        return a['9月缺口'] - b['9月缺口'];
+    });
 }
 
 function openDetailModal(cardLabel) {
@@ -991,6 +1043,9 @@ function openDetailModal(cardLabel) {
         all.forEach(r => {
             STORE_HC_GRADE_COLS.forEach(h => { if (r[h] === undefined || r[h] === null) r[h] = '—'; });
         });
+    } else if (key === '9月单店缺口') {
+        all = buildStoreGapData();
+        all.forEach(r => { r._isAdded = false; });
     } else {
         all = window.DETAIL_DATA[key] || [];
         all.forEach(r => { r._isAdded = false; });
@@ -1033,7 +1088,11 @@ function openDetailModal(cardLabel) {
             : (key === '单店特殊新增HC')
                 ? '（新增 ' + storeHcExtra.length + ' 条）'
                 : '';
-    title.textContent = cardLabel + '明细' + (currentDimension !== 'all' ? '（当前：' + currentDimension + '）' : '') + ' - 共 ' + filtered.length + ' 条' + slExtraInfo;
+    const gapTotal = (key === '9月单店缺口')
+        ? filtered.reduce((a, r) => a + (r['9月缺口'] || 0), 0)
+        : null;
+    title.textContent = cardLabel + '明细' + (currentDimension !== 'all' ? '（当前：' + currentDimension + '）' : '') + ' - 共 ' + filtered.length + ' 条' + slExtraInfo +
+        (gapTotal !== null ? ' / 合计缺口 ' + fmtVal(gapTotal) + ' 人' : '');
 
     if (filtered.length === 0) {
         body.innerHTML = '<div class="modal-empty">当前筛选条件下暂无数据</div>';
@@ -1042,7 +1101,11 @@ function openDetailModal(cardLabel) {
         body.innerHTML =
             '<table><thead><tr>' + displayColumns.map(h => '<th>' + h + '</th>').join('') + '</tr></thead>' +
             '<tbody>' + filtered.map(r => {
-                let cells = finalColumns.map(h => '<td>' + (r[h] === undefined || r[h] === null ? '' : r[h]) + '</td>').join('');
+                let cells = finalColumns.map(h => {
+                    let v = (r[h] === undefined || r[h] === null ? '' : r[h]);
+                    if (key === '9月单店缺口' && h === '9月缺口' && v !== '') v = fmtVal(v);
+                    return '<td>' + v + '</td>';
+                }).join('');
                 if (showActions) {
                     const rowId = r.id || r.工号 || '';
                     cells += '<td><button class="btn-delete-record" onclick="event.stopPropagation();' + delFn + '(\'' + rowId + '\')">删除</button></td>';

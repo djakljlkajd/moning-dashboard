@@ -690,11 +690,11 @@
 
 </div><!-- end container -->
 
-<script src="data.js?v=20260813a"></script>
-<script src="stores.js?v=20260813a"></script>
-<script src="details.js?v=20260813a"></script>
-<script src="staff_lookup.js?v=20260813a"></script>
-<script src="store_base.js?v=20260813a"></script>
+<script src="data.js?v=20260814a"></script>
+<script src="stores.js?v=20260814a"></script>
+<script src="details.js?v=20260814a"></script>
+<script src="staff_lookup.js?v=20260814a"></script>
+<script src="store_base.js?v=20260814a"></script>
 <script>
 const D = window.DASHBOARD_DATA;
 let specialLeaveExtra = [];
@@ -1577,9 +1577,9 @@ function closeAddRecordModal(event) {
     }
 }
 
-// 预离职/机场办证新增：输入工号后自动回填姓名、门店、大店长
+// 特殊请假/预离职/机场办证新增：输入工号后自动回填姓名、门店、大店长
 function handleGonghaoInput() {
-    if (addRecordType !== 'preleave' && addRecordType !== 'airport') return;
+    if (addRecordType !== 'special' && addRecordType !== 'preleave' && addRecordType !== 'airport') return;
     var gonghao = (document.getElementById('add-gonghao').value || '').trim().toUpperCase();
     if (!gonghao || !window.STAFF_LOOKUP) return;
     var info = window.STAFF_LOOKUP[gonghao];

@@ -194,8 +194,8 @@ body{font-family:-apple-system,'PingFang SC','Helvetica Neue',sans-serif;backgro
 .tbl-wrap tbody td:last-child{border-right:none}
 .tbl-wrap tbody tr:nth-child(even){background:#FAFBFC}
 .tbl-wrap tbody tr:hover{background:rgba(55,138,221,.05)}
-.tr-region td{font-weight:600;background:#E8F2FC}
-.tr-region td:first-child{color:var(--blue)}
+/* .tr-region td{font-weight:600;background:#E8F2FC} */
+/* .tr-region td:first-child{color:var(--blue)} */
 .c-red{color:var(--red);font-weight:600}
 .c-amber{color:var(--amber);font-weight:600}
 .c-green{color:var(--green);font-weight:600}
@@ -141066,17 +141066,16 @@ function clearScope(){
 
 /* ========== 第二排：汇总表 ========== */
 function renderTable(){
-  const visRows=getVisibleRows();
+  const visRows=getVisibleRows().filter(r=>r.type!=='region');
   document.getElementById('tHead').innerHTML=
-    '<th style="width:130px">区域/大店长</th><th style="width:46px">店数</th><th style="width:82px">总工时(h)</th>'+
+    '<th style="width:130px">大店长</th><th style="width:46px">店数</th><th style="width:82px">总工时(h)</th>'+
     '<th style="width:58px">全职人数</th><th style="width:68px">全职总工时</th><th style="width:42px">0工时</th>'+
     '<th style="width:44px">&gt;11h</th><th style="width:58px">&gt;8天连勤</th><th style="width:56px">学生人数</th>'+
     '<th style="width:54px">出勤学生</th><th style="width:72px">学生总工时</th><th style="width:60px">学生占比</th>';
   let b='';
   visRows.forEach(r=>{
-    const isR=r.type==='region';
-    b+=`<tr class="${isR?'tr-region':''}">
-      <td class="col-name">${isR?r.label:'&nbsp;&nbsp;&nbsp;'+r.sub_label}</td>
+    b+=`<tr>
+      <td class="col-name">${r.sub_label}</td>
       <td>${r['门店数']}</td><td>${r['总工时'].toLocaleString()}</td><td>${r['全职人数']}</td>
       <td>${r['全职总工时'].toLocaleString()}</td>
       <td class="${r['0工时']>0?'c-amber':''}">${r['0工时']}</td>

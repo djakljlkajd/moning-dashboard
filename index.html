@@ -140536,7 +140536,7 @@ function showAlertDetail(type){
     const data=(activeData.over13||[]).filter(filt);
     cnt=data.length;
     count.innerHTML=`当前范围共 <b>${cnt}</b> 人单日工时超过11小时，请点击「单日 >11h 预警」指标卡查看`;
-    hh='<th style="width:58px">区域</th><th style="width:82px">大店长</th><th style="width:88px">门店</th>'+
+    hh='<th style="width:82px">大店长</th><th style="width:88px">门店</th>'+
        '<th style="width:66px">工号</th><th style="width:78px">姓名</th><th style="width:60px">用工类型</th><th style="width:60px">职级</th>'+
        '<th style="width:76px">是否扣分<div style="font-size:10px;color:#FFCCCC;font-weight:400;margin-top:2px">BP凭密码填写</div></th>'+
        '<th style="width:160px">违规原因<div style="font-size:10px;color:rgba(255,255,255,.75);font-weight:400;margin-top:2px">大店长填写</div></th>'+
@@ -140551,7 +140551,7 @@ function showAlertDetail(type){
       const deductHtml=getViolationDeductHtml('over13',p['工号'],v.deducted);
       const reasonHtml=getViolationReasonHtml('over13',p['工号'],v.reason);
       bb+=`<tr style="background:rgba(234,75,74,.04)">
-        <td class="col-name">${p['区域']}</td><td class="col-name">${p['大店长']}</td><td class="col-name">${p['门店']}</td>
+        <td class="col-name">${p['大店长']}</td><td class="col-name">${p['门店']}</td>
         <td>${p['工号']}</td><td>${p['姓名']}</td><td>${p['用工类型']||''}</td><td>${p['职级']}</td>
         <td>${deductHtml}</td><td class="col-name">${reasonHtml}</td>
         <td>${p['总工时']}</td><td>${p['日均工时']}</td>${dc}</tr>`;
@@ -140561,7 +140561,7 @@ function showAlertDetail(type){
     const data=(activeData.warn7||[]).filter(filt).filter(p=>(p['当月最大连续']>=9));
     cnt=data.length;
     count.innerHTML=`当前范围共 <b>${cnt}</b> 人连续出勤超过8天（当月最大连续≥9天），请点击「全月内>8天」指标卡查看`;
-    hh='<th style="width:58px">区域</th><th style="width:82px">大店长</th><th style="width:88px">门店</th>'+
+    hh='<th style="width:82px">大店长</th><th style="width:88px">门店</th>'+
        '<th style="width:66px">工号</th><th style="width:78px">姓名</th><th style="width:60px">用工类型</th><th style="width:60px">职级</th>'+
        '<th style="width:76px">是否扣分<div style="font-size:10px;color:#FFCCCC;font-weight:400;margin-top:2px">BP凭密码填写</div></th>'+
        '<th style="width:160px">违规原因<div style="font-size:10px;color:rgba(255,255,255,.75);font-weight:400;margin-top:2px">大店长填写</div></th>'+
@@ -140575,7 +140575,7 @@ function showAlertDetail(type){
       const deductHtml=getViolationDeductHtml('consec8',p['工号'],v.deducted);
       const reasonHtml=getViolationReasonHtml('consec8',p['工号'],v.reason);
       bb+=`<tr style="${isRed?'background:rgba(234,75,74,.05)':''}">
-        <td class="col-name">${p['区域']}</td><td class="col-name">${p['大店长']}</td><td class="col-name">${p['门店']}</td>
+        <td class="col-name">${p['大店长']}</td><td class="col-name">${p['门店']}</td>
         <td>${p['工号']}</td><td>${p['姓名']}</td><td>${p['用工类型']||''}</td><td>${p['职级']}</td>
         <td>${deductHtml}</td><td class="col-name">${reasonHtml}</td>
         <td>${p['出勤天数']}d/${p['休息天数']}d</td><td>${p['总工时']}</td><td>${p['日均工时']}</td>
@@ -140588,7 +140588,7 @@ function showAlertDetail(type){
     const data=(activeData.warn7||[]).filter(filt).filter(p=>p['尾段连续未休']>=7).sort((a,b)=>b['尾段连续未休']-a['尾段连续未休']);
     cnt=data.length;
     count.innerHTML=`当前范围共 <b>${cnt}</b> 人尾段连续出勤≥7天，需尽快排休`;
-    hh='<th style="width:58px">区域</th><th style="width:82px">大店长</th><th style="width:88px">门店</th>'+
+    hh='<th style="width:82px">大店长</th><th style="width:88px">门店</th>'+
        '<th style="width:66px">工号</th><th style="width:78px">姓名</th><th style="width:72px">职级</th>'+
        '<th style="width:50px">出勤/休</th><th style="width:60px">总工时</th><th style="width:48px">日均</th>'+
        '<th style="width:62px" class="c-red">最大连续</th><th style="width:62px" class="c-amber">尾段连续</th>'+
@@ -140601,7 +140601,7 @@ function showAlertDetail(type){
         return isNaN(v)?'<td>-</td>':v>11?`<td><span class="day-over">${v}</span></td>`:`<td>${v}</td>`;
       }).join('');
       bb+=`<tr style="${isTailRed?'background:rgba(234,75,74,.05)':isTailAmber?'background:rgba(186,117,23,.04)':''}">
-        <td class="col-name">${p['区域']}</td><td class="col-name">${p['大店长']}</td><td class="col-name">${p['门店']}</td>
+        <td class="col-name">${p['大店长']}</td><td class="col-name">${p['门店']}</td>
         <td>${p['工号']}</td><td>${p['姓名']}</td><td>${p['职级']}</td>
         <td>${p['出勤天数']}d/${p['休息天数']}d</td><td>${p['总工时']}</td><td>${p['日均工时']}</td>
         <td style="font-weight:600">${maxC}天</td>
@@ -140612,7 +140612,7 @@ function showAlertDetail(type){
     const data=(activeData.zeros_full||[]).filter(filt);
     cnt=data.length;
     count.innerHTML=`当前范围共 <b>${cnt}</b> 人0工时，需核实原因`;
-    hh='<th style="width:28px">序号</th><th style="width:58px">区域</th><th style="width:82px">大店长</th>'+
+    hh='<th style="width:28px">序号</th><th style="width:82px">大店长</th>'+
        '<th style="width:88px">门店</th><th style="width:66px">工号</th><th style="width:78px">姓名</th>'+
        '<th style="width:72px">职级</th>'+
        '<th style="width:85px">开始日期</th><th style="width:85px">结束日期</th><th>请假备注</th>';
@@ -140621,7 +140621,7 @@ function showAlertDetail(type){
       const isPending=remark==='待核实';
       const remarkHtml=isPending?`<span class="remark-edit" onclick="openEditRemark('${p['工号']}','${p['姓名']}')">${remark}</span>`:remark;
       bb+=`<tr>
-        <td>${p['序号']}</td><td class="col-name">${p['区域']}</td><td class="col-name">${p['大店长']}</td>
+        <td>${p['序号']}</td><td class="col-name">${p['大店长']}</td>
         <td class="col-name">${p['门店']}</td><td>${p['工号']}</td><td>${p['姓名']}</td>
         <td>${p['职级']}</td>
         <td>${p['开始日期']||'-'}</td><td>${p['结束日期']||'-'}</td>
@@ -140632,8 +140632,8 @@ function showAlertDetail(type){
   head.innerHTML=hh;
   body.innerHTML=bb||'<tr><td colspan="20" style="padding:30px;text-align:center;color:var(--hint)">暂无数据</td></tr>';
   modal.style.display='flex';
-  const FW=type==='zeros_full'?[18,44,66,70,46,62,58]:[44,66,70,46,62,58];
-  const freezeCols=type==='zeros_full'?7:0; // 手机端取消基础信息冻结，整体可滑动
+  const FW=type==='zeros_full'?[18,66,70,46,62,58]:[66,70,46,62,58];
+  const freezeCols=type==='zeros_full'?6:0; // 手机端取消基础信息冻结，整体可滑动
   setTimeout(()=>freezeAlertCols(FW,freezeCols),0);
 }
 
@@ -141136,7 +141136,7 @@ function renderDetail(){
       `<span class="badge b-red">最大&ge;9天 ${data.filter(x=>x['当月最大连续']>=9).length}人</span>`+
       ` <span class="badge b-ora">7~8天 ${data.filter(x=>x['当月最大连续']>=7&&x['当月最大连续']<9).length}人</span>`+
       ` <span class="badge b-amber">尾段&ge;7天 ${data.filter(x=>x['尾段连续未休']>=7).length}人</span> 共${data.length}人`;
-    hh='<th style="width:88px">区域</th><th style="width:92px">大店长</th><th style="width:180px">门店</th>'+
+    hh='<th style="width:92px">大店长</th><th style="width:180px">门店</th>'+
        '<th style="width:68px">工号</th><th style="width:52px">姓名</th><th style="width:52px">职级</th>'+
        '<th style="width:50px">出勤/休</th><th style="width:60px">总工时</th><th style="width:48px">日均</th>'+
        '<th style="width:52px" class="c-red">最大<br>连续</th><th style="width:52px" class="c-amber">尾段<br>连续</th>'+
@@ -141150,7 +141150,7 @@ function renderDetail(){
         return isNaN(v)?'<td>-</td>':v>11?`<td><span class="day-over">${v}</span></td>`:`<td>${v}</td>`;
       }).join('');
       bb+=`<tr style="${isRed?'background:rgba(234,75,74,.05)':isOran?'background:rgba(186,117,23,.04)':''}">
-        <td class="col-name">${p['区域']}</td><td class="col-name">${p['大店长']}</td><td class="col-name">${p['门店']}</td>
+        <td class="col-name">${p['大店长']}</td><td class="col-name">${p['门店']}</td>
         <td>${p['工号']}</td><td>${p['姓名']}</td><td>${p['职级']}</td>
         <td>${p['出勤天数']}d/${p['休息天数']}d</td><td>${p['总工时']}</td><td>${p['日均工时']}</td>
         <td class="${isRed?'c-red':isOran?'c-amber':''}" style="font-weight:600">${maxC}天</td>
@@ -141163,7 +141163,7 @@ function renderDetail(){
     document.getElementById('detailCount').innerHTML=
       `<span class="badge b-red">尾段&ge;8天 ${data.filter(x=>x['尾段连续未休']>=8).length}人</span>`+
       ` <span class="badge b-amber">5~7天 ${data.filter(x=>x['尾段连续未休']>=5&&x['尾段连续未休']<8).length}人</span> 共${data.length}人`;
-    hh='<th style="width:88px">区域</th><th style="width:92px">大店长</th><th style="width:180px">门店">'+
+    hh='<th style="width:92px">大店长</th><th style="width:180px">门店">'+
        '<th style="width:68px">工号</th><th style="width:52px">姓名</th><th style="width:52px">职级</th>'+
        '<th style="width:50px">出勤/休</th><th style="width:60px">总工时</th><th style="width:48px">日均</th>'+
        '<th style="width:52px" class="c-amber">尾段<br>连续</th><th style="width:52px" class="c-red">最大<br>连续</th>'+
@@ -141178,14 +141178,14 @@ function renderDetail(){
         return isNaN(v)?'<td>-</td>':v>11?`<td><span class="day-over">${v}</span></td>`:`<td>${v}</td>`;
       }).join('');
       bb+=`<tr style="${isTailRed?'background:rgba(234,75,74,.05)':isTailAmber?'background:#FFF8E1':''}">
-        <td class="col-name">${p['区域']}</td><td class="col-name">${p['大店长']}</td><td class="col-name">${p['门店']}</td>
+        <td class="col-name">${p['大店长']}</td><td class="col-name">${p['门店']}</td>
         <td>${p['工号']}</td><td>${p['姓名']}</td><td>${p['职级']}</td>
         <td>${p['出勤天数']}d/${p['休息天数']}d</td><td>${p['总工时']}</td><td>${p['日均工时']}</td>
         <td class="${isTailRed?'c-red':isTailAmber?'c-amber':''}" style="font-weight:600">${tailC}天</td>
         <td>${maxC}天</td>
         <td style="${remain<=2?'color:var(--red);font-weight:600':''}">${remain}天</td>${dc}</tr>`;
     });
-    if(data.length===0) bb='<tr><td colspan="'+(12+_cds.length)+'" style="text-align:center;padding:30px;color:var(--hint)">✅ 当前无人接近连续出勤红线</td></tr>';
+    if(data.length===0) bb='<tr><td colspan="'+(11+_cds.length)+'" style="text-align:center;padding:30px;color:var(--hint)">✅ 当前无人接近连续出勤红线</td></tr>';
   } else if(curTab.startsWith('zeros_')){
     const isFull=curTab==='zeros_full';
     const base=isFull?(activeData.zeros_full||[]):(activeData.zeros_student||[]);
@@ -141193,7 +141193,7 @@ function renderDetail(){
     searchResultCount=data.length;
     const label=isFull?'0工时全职':'0工时学生';
     document.getElementById('detailCount').innerHTML=`共${data.length}人`;
-    hh='<th style="width:28px">序号</th><th style="width:58px">区域</th><th style="width:82px">大店长</th>'+
+    hh='<th style="width:28px">序号</th><th style="width:82px">大店长</th>'+
        '<th style="width:88px">门店</th><th style="width:66px">工号</th><th style="width:78px">姓名</th>'+
        '<th style="width:72px">职级</th>'+
        '<th style="width:85px">开始日期</th><th style="width:85px">结束日期</th><th>请假备注</th>';
@@ -141202,7 +141202,7 @@ function renderDetail(){
       const isPending=isFull && remark==='待核实';
       const remarkHtml=isPending?`<span class="remark-edit" onclick="openEditRemark('${p['工号']}','${p['姓名']}')">${remark}</span>`:remark;
       bb+=`<tr>
-        <td>${p['序号']}</td><td class="col-name">${p['区域']}</td><td class="col-name">${p['大店长']}</td>
+        <td>${p['序号']}</td><td class="col-name">${p['大店长']}</td>
         <td class="col-name">${p['门店']}</td><td>${p['工号']}</td><td>${p['姓名']}</td>
         <td>${p['职级']}</td>
         <td>${isFull?(p['开始日期']||'-'):''}</td><td>${isFull?(p['结束日期']||'-'):''}</td>
@@ -141213,7 +141213,7 @@ function renderDetail(){
     const data=base.filter(filt).filter(matchesDetailSearch);
     searchResultCount=data.length;
     document.getElementById('detailCount').innerHTML=`<span class="badge b-red">红线预警 共${data.length}人</span>`;
-    hh='<th style="width:88px">区域</th><th style="width:92px">大店长</th><th style="width:180px">门店</th>'+
+    hh='<th style="width:92px">大店长</th><th style="width:180px">门店</th>'+
        '<th style="width:68px">工号</th><th style="width:52px">姓名</th><th style="width:52px">职级</th>'+
        '<th style="width:64px">总工时</th><th style="width:48px">日均</th>'+
        M.date_strs.map(d=>`<th style="min-width:48px;width:48px">${d}</th>`).join('');
@@ -141223,7 +141223,7 @@ function renderDetail(){
         return v!==undefined?`<td><span class="day-over">${v}h</span></td>`:'<td>-</td>';
       }).join('');
       bb+=`<tr style="background:rgba(234,75,74,.04)">
-        <td class="col-name">${p['区域']}</td><td class="col-name">${p['大店长']}</td><td class="col-name">${p['门店']}</td>
+        <td class="col-name">${p['大店长']}</td><td class="col-name">${p['门店']}</td>
         <td>${p['工号']}</td><td>${p['姓名']}</td><td>${p['职级']}</td>
         <td>${p['总工时']}</td><td>${p['日均工时']}</td>${dc}</tr>`;
     });
@@ -141234,7 +141234,7 @@ function renderDetail(){
     searchResultCount=data.length;
     const label=isFull?'全职':'学生';
     document.getElementById('detailCount').innerHTML=`${label}全量明细 共${data.length}人`;
-    hh='<th style="width:84px">区域</th><th style="width:90px">大店长</th><th style="width:180px">门店</th>'+
+    hh='<th style="width:90px">大店长</th><th style="width:180px">门店</th>'+
        '<th style="width:70px">工号</th><th style="width:52px">姓名</th><th style="width:52px">职级</th>'+
        '<th style="width:50px">出勤/休</th><th style="width:60px">总工时</th><th style="width:48px">日均</th>'+
        '<th style="width:72px">预估月度工时</th><th style="width:42px">0工时</th>'+
@@ -141246,7 +141246,7 @@ function renderDetail(){
         return isNaN(v)?'<td>-</td>':v>11?`<td><span class="day-over">${v}</span></td>`:`<td>${v}</td>`;
       }).join('');
       bb+=`<tr style="${p['0工时']?'background:rgba(186,117,23,.05)':''}">
-        <td class="col-name">${p['区域']}</td><td class="col-name">${p['大店长']}</td><td class="col-name">${p['门店']}</td>
+        <td class="col-name">${p['大店长']}</td><td class="col-name">${p['门店']}</td>
         <td>${p['工号']}</td><td>${p['姓名']}</td><td>${p['职级']}</td>
         <td>${p['出勤天数']}d/${p['休息天数']}d</td><td>${p['总工时']}</td><td>${p['日均工时']}</td>
         <td>${p['预估月度工时']}</td><td>${p['0工时']?'是':''}</td>

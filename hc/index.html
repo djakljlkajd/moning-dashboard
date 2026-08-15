@@ -690,11 +690,11 @@
 
 </div><!-- end container -->
 
-<script src="data.js?v=20260815i"></script>
-<script src="stores.js?v=20260815i"></script>
-<script src="details.js?v=20260815i"></script>
-<script src="staff_lookup.js?v=20260815i"></script>
-<script src="store_base.js?v=20260815i"></script>
+<script src="data.js?v=20260815j"></script>
+<script src="stores.js?v=20260815j"></script>
+<script src="details.js?v=20260815j"></script>
+<script src="staff_lookup.js?v=20260815j"></script>
+<script src="store_base.js?v=20260815j"></script>
 <script>
 const D = window.DASHBOARD_DATA;
 let specialLeaveExtra = [];
@@ -1382,10 +1382,9 @@ function slRestoreFromLocal() {
         if (raw) specialLeaveExtra = JSON.parse(raw);
         const rawHidden = localStorage.getItem('hc_special_leave_hidden');
         if (rawHidden) specialLeaveHidden = JSON.parse(rawHidden);
-        const rawPre = localStorage.getItem('hc_pre_leave_extra');
-        if (rawPre) preLeaveExtra = JSON.parse(rawPre);
-        const rawPreHidden = localStorage.getItem('hc_pre_leave_hidden');
-        if (rawPreHidden) preLeaveHidden = JSON.parse(rawPreHidden);
+        // 预离职 extra/hidden 不从 localStorage 初始化，统一由云端同步决定
+        localStorage.removeItem('hc_pre_leave_extra');
+        localStorage.removeItem('hc_pre_leave_hidden');
         const rawAir = localStorage.getItem('hc_airport_cert_extra');
         if (rawAir) airportCertExtra = JSON.parse(rawAir);
         const rawAirHidden = localStorage.getItem('hc_airport_cert_hidden');
@@ -1416,12 +1415,9 @@ async function loadSpecialLeaveExtra() {
             // 预离职
             const cloudPre = data.pre_leave_extra || [];
             const cloudPreHidden = data.pre_leave_hidden || [];
-            const localPre = JSON.parse(localStorage.getItem('hc_pre_leave_extra') || '[]');
-            const localPreHidden = JSON.parse(localStorage.getItem('hc_pre_leave_hidden') || '[]');
-            const cloudPreIds = new Set(cloudPre.map(r => r.id));
-            preLeaveExtra = [...cloudPre, ...localPre.filter(r => !cloudPreIds.has(r.id))];
-            // 2026-08-15 起预离职明细来自 Excel 在职名单 J 列；隐藏记录以云端为权威，
-            // 不再合并 localStorage 旧残留（旧 17 条隐藏已清空，避免误隐藏新明细）
+            // 预离职明细来自 Excel 在职名单 J 列；extra/hidden 均以云端为权威，
+            // 不再合并 localStorage 旧残留，避免已删除的记录残留在浏览器中导致计数偏多
+            preLeaveExtra = [...cloudPre];
             preLeaveHidden = [...cloudPreHidden];
             // 机场办证
             const cloudAir = data.airport_cert_extra || [];

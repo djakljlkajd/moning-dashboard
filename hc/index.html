@@ -690,11 +690,11 @@
 
 </div><!-- end container -->
 
-<script src="data.js?v=20260815e"></script>
-<script src="stores.js?v=20260815e"></script>
-<script src="details.js?v=20260815e"></script>
-<script src="staff_lookup.js?v=20260815e"></script>
-<script src="store_base.js?v=20260815e"></script>
+<script src="data.js?v=20260815f"></script>
+<script src="stores.js?v=20260815f"></script>
+<script src="details.js?v=20260815f"></script>
+<script src="staff_lookup.js?v=20260815f"></script>
+<script src="store_base.js?v=20260815f"></script>
 <script>
 const D = window.DASHBOARD_DATA;
 let specialLeaveExtra = [];
@@ -892,7 +892,7 @@ function renderCards(source) {
         cards = [
             { label: "营业门店数", sub: "(家)", value: sum.store, red: false, highlight: false },
             { label: "全职标准合计", sub: "(D列/人)", value: sum.std, red: false, highlight: false },
-            { label: "花名册在职合计", sub: "(G列/人)", value: sum.roster, red: false, highlight: false },
+            { label: "花名册在职合计", sub: "(AE列/人)", value: getAETotal(), red: false, highlight: false },
             { label: "特殊请假合计", sub: "(H列/人)", value: slCount, red: true, highlight: false },
             { label: "预离职合计", sub: "(I列/人)", value: plCount, red: true, highlight: false },
             { label: "9月全职缺口", sub: "(BA列/人)", value: getBAGapTotal(), red: true, highlight: true },
@@ -902,6 +902,7 @@ function renderCards(source) {
         const rosterVal = source.find(c => c.label === '花名册在职合计')?.value || 0;
         const stdVal = source.find(c => c.label === '全职标准合计')?.value || 0;
         cards = source.map(c => {
+            if (c.label === '花名册在职合计') return { ...c, value: getAETotal(), sub: '(AE列/人)' };
             if (c.label === '特殊请假合计') return { ...c, value: slCount };
             if (c.label === '预离职合计') return { ...c, value: plCount };
             if (c.label === '9月全职缺口') return { ...c, value: getBAGapTotal(), sub: '(BA列/人)' };
@@ -992,6 +993,17 @@ function getStoreHcGradeRow(storeName) {
         全职需求合计: b.全职需求合计, 店长: b.店长, 中级训练员: b.中级训练员,
         初级训练员: b.初级训练员, 服务员: b.服务员
     };
+}
+
+// 花名册在职合计卡片值：门店底表 AE 列（架构人数）之和，按当前大店长筛选
+function getAETotal() {
+    var total = 0;
+    Object.keys(window.STORE_BASE || {}).forEach(function(store) {
+        var b = window.STORE_BASE[store];
+        if (currentDimension !== 'all' && b.大店长 !== currentDimension) return;
+        total += (parseInt(b.架构人数, 10) || 0);
+    });
+    return total;
 }
 
 // 9月全职缺口卡片值：门店底表 BA 列（最终合计招募人数）之和，按当前大店长筛选

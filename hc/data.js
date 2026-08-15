@@ -36,14 +36,14 @@ window.DASHBOARD_DATA = {
     {
       "label": "预离职合计",
       "sub": "(I列/人)",
-      "value": 17,
+      "value": 11,
       "red": true,
       "highlight": false
     },
     {
       "label": "9月全职缺口",
       "sub": "(K列/人)",
-      "value": -55,
+      "value": 20,
       "red": true,
       "highlight": true
     },

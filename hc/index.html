@@ -690,11 +690,11 @@
 
 </div><!-- end container -->
 
-<script src="data.js?v=20260815a"></script>
-<script src="stores.js?v=20260815a"></script>
-<script src="details.js?v=20260815a"></script>
-<script src="staff_lookup.js?v=20260815a"></script>
-<script src="store_base.js?v=20260815a"></script>
+<script src="data.js?v=20260815b"></script>
+<script src="stores.js?v=20260815b"></script>
+<script src="details.js?v=20260815b"></script>
+<script src="staff_lookup.js?v=20260815b"></script>
+<script src="store_base.js?v=20260815b"></script>
 <script>
 const D = window.DASHBOARD_DATA;
 let specialLeaveExtra = [];
@@ -894,7 +894,7 @@ function renderCards(source) {
             { label: "花名册在职合计", sub: "(G列/人)", value: sum.roster, red: false, highlight: false },
             { label: "特殊请假合计", sub: "(H列/人)", value: slCount, red: true, highlight: false },
             { label: "预离职合计", sub: "(I列/人)", value: plCount, red: true, highlight: false },
-            { label: "9月全职缺口", sub: "(K列/人)", value: sum.roster - sum.std - sum.leave - sum.preLeave, red: true, highlight: true },
+            { label: "9月全职缺口", sub: "(BA列/人)", value: getBAGapTotal(), red: true, highlight: true },
             { label: "撤店合计", sub: "(L列/家)", value: sum.closed, red: false, highlight: false }
         ];
     } else {
@@ -903,7 +903,7 @@ function renderCards(source) {
         cards = source.map(c => {
             if (c.label === '特殊请假合计') return { ...c, value: slCount };
             if (c.label === '预离职合计') return { ...c, value: plCount };
-            if (c.label === '9月全职缺口') return { ...c, value: rosterVal - stdVal - slCount - plCount };
+            if (c.label === '9月全职缺口') return { ...c, value: getBAGapTotal(), sub: '(BA列/人)' };
             return c;
         });
     }
@@ -953,7 +953,7 @@ const detailColumnsMap = {
     '预离职': ['大店长', '门店', '工号', '姓名', '备注原因'],
     '撤店': ['大店长', '门店', '工号', '姓名', '备注原因'],
     '单店特殊新增HC': ['大店长', '门店', '新增人员数量', '新增HC原因'],
-    '9月单店缺口': ['大店长', '门店', '标准需求', '花名册', '特殊请假', '预离职', '9月缺口']
+    '9月单店缺口': ['大店长', '门店', '全职需求合计', '最终合计招募人数']
 };
 // 单店特殊新增HC 明细的职级列（门店底表 X~AB，按门店名实时查询）
 const STORE_HC_GRADE_COLS = ['全职需求合计', '店长', '中级训练员', '初级训练员', '服务员'];
@@ -967,54 +967,33 @@ function getStoreHcGradeRow(storeName) {
     };
 }
 
-// 按门店计算 9 月全职缺口：花名册 - 标准需求 - 特殊请假 - 预离职
-function buildStoreGapData() {
-    var storeMap = {};
-    // 1. 从门店底表初始化所有门店（标准需求 + 大店长）
+// 9月全职缺口卡片值：门店底表 BA 列（最终合计招募人数）之和，按当前大店长筛选
+function getBAGapTotal() {
+    var total = 0;
     Object.keys(window.STORE_BASE || {}).forEach(function(store) {
         var b = window.STORE_BASE[store];
-        storeMap[store] = {
+        if (currentDimension !== 'all' && b.大店长 !== currentDimension) return;
+        total += (parseInt(b.最终合计招募人数, 10) || 0);
+    });
+    return total;
+}
+
+// 9月全职缺口明细：门店底表 BA 列（最终合计招募人数 > 0 的门店）
+function buildStoreGapData() {
+    var rows = [];
+    Object.keys(window.STORE_BASE || {}).forEach(function(store) {
+        var b = window.STORE_BASE[store];
+        var ba = parseInt(b.最终合计招募人数, 10) || 0;
+        if (ba <= 0) return;
+        rows.push({
             大店长: b.大店长 || '',
             门店: store,
-            标准需求: b.全职需求合计 || 0,
-            花名册: 0,
-            特殊请假: 0,
-            预离职: 0
-        };
+            全职需求合计: b.全职需求合计 || 0,
+            最终合计招募人数: ba
+        });
     });
-    // 2. 从在职名单统计各门店花名册人数
-    Object.values(window.STAFF_LOOKUP || {}).forEach(function(r) {
-        if (!r.store) return;
-        if (!storeMap[r.store]) {
-            storeMap[r.store] = {
-                大店长: r.manager || '',
-                门店: r.store,
-                标准需求: 0,
-                花名册: 0,
-                特殊请假: 0,
-                预离职: 0
-            };
-        }
-        storeMap[r.store].花名册 += 1;
-        if (!storeMap[r.store].大店长 && r.manager) storeMap[r.store].大店长 = r.manager;
-    });
-    // 3. 按门店统计特殊请假（含用户新增/已隐藏，与卡片数字同源）
-    getMergedSpecialLeave().forEach(function(r) {
-        if (r.门店 && storeMap[r.门店]) storeMap[r.门店].特殊请假 += 1;
-    });
-    // 4. 按门店统计预离职（含用户新增/已隐藏，与卡片数字同源）
-    getMergedPreLeave().forEach(function(r) {
-        if (r.门店 && storeMap[r.门店]) storeMap[r.门店].预离职 += 1;
-    });
-    // 5. 计算缺口并排序（缺口小的在前，即负值更大的在前）
-    return Object.values(storeMap).map(function(r) {
-        r['9月缺口'] = r.花名册 - r.标准需求 - r.特殊请假 - r.预离职;
-        return r;
-    }).filter(function(r) {
-        return r.标准需求 > 0 || r.花名册 > 0;
-    }).sort(function(a, b) {
-        return a['9月缺口'] - b['9月缺口'];
-    });
+    rows.sort(function(a, b) { return a.最终合计招募人数 - b.最终合计招募人数; });
+    return rows;
 }
 
 function openDetailModal(cardLabel) {
@@ -1089,7 +1068,7 @@ function openDetailModal(cardLabel) {
                 ? '（新增 ' + storeHcExtra.length + ' 条）'
                 : '';
     const gapTotal = (key === '9月单店缺口')
-        ? filtered.reduce((a, r) => a + (r['9月缺口'] || 0), 0)
+        ? filtered.reduce((a, r) => a + (r['最终合计招募人数'] || 0), 0)
         : null;
     title.textContent = cardLabel + '明细' + (currentDimension !== 'all' ? '（当前：' + currentDimension + '）' : '') + ' - 共 ' + filtered.length + ' 条' + slExtraInfo +
         (gapTotal !== null ? ' / 合计缺口 ' + fmtVal(gapTotal) + ' 人' : '');
@@ -1103,7 +1082,7 @@ function openDetailModal(cardLabel) {
             '<tbody>' + filtered.map(r => {
                 let cells = finalColumns.map(h => {
                     let v = (r[h] === undefined || r[h] === null ? '' : r[h]);
-                    if (key === '9月单店缺口' && h === '9月缺口' && v !== '') v = fmtVal(v);
+                    if (key === '9月单店缺口' && h === '最终合计招募人数' && v !== '') v = fmtVal(v);
                     return '<td>' + v + '</td>';
                 }).join('');
                 if (showActions) {
@@ -1397,7 +1376,9 @@ async function loadSpecialLeaveExtra() {
             const localPreHidden = JSON.parse(localStorage.getItem('hc_pre_leave_hidden') || '[]');
             const cloudPreIds = new Set(cloudPre.map(r => r.id));
             preLeaveExtra = [...cloudPre, ...localPre.filter(r => !cloudPreIds.has(r.id))];
-            preLeaveHidden = [...new Set([...cloudPreHidden, ...localPreHidden])];
+            // 2026-08-15 起预离职明细来自 Excel 在职名单 J 列；隐藏记录以云端为权威，
+            // 不再合并 localStorage 旧残留（旧 17 条隐藏已清空，避免误隐藏新明细）
+            preLeaveHidden = [...cloudPreHidden];
             // 机场办证
             const cloudAir = data.airport_cert_extra || [];
             const cloudAirHidden = data.airport_cert_hidden || [];

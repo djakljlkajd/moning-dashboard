@@ -690,11 +690,11 @@
 
 </div><!-- end container -->
 
-<script src="data.js?v=20260815b"></script>
-<script src="stores.js?v=20260815b"></script>
-<script src="details.js?v=20260815b"></script>
-<script src="staff_lookup.js?v=20260815b"></script>
-<script src="store_base.js?v=20260815b"></script>
+<script src="data.js?v=20260815c"></script>
+<script src="stores.js?v=20260815c"></script>
+<script src="details.js?v=20260815c"></script>
+<script src="staff_lookup.js?v=20260815c"></script>
+<script src="store_base.js?v=20260815c"></script>
 <script>
 const D = window.DASHBOARD_DATA;
 let specialLeaveExtra = [];
@@ -953,7 +953,7 @@ const detailColumnsMap = {
     '预离职': ['大店长', '门店', '工号', '姓名', '备注原因'],
     '撤店': ['大店长', '门店', '工号', '姓名', '备注原因'],
     '单店特殊新增HC': ['大店长', '门店', '新增人员数量', '新增HC原因'],
-    '9月单店缺口': ['大店长', '门店', '全职需求合计', '最终合计招募人数']
+    '9月单店缺口': ['大店长', '门店', '全职需求合计', '架构人数', '标准HC差值', '最终合计招募人数']
 };
 // 单店特殊新增HC 明细的职级列（门店底表 X~AB，按门店名实时查询）
 const STORE_HC_GRADE_COLS = ['全职需求合计', '店长', '中级训练员', '初级训练员', '服务员'];
@@ -989,6 +989,8 @@ function buildStoreGapData() {
             大店长: b.大店长 || '',
             门店: store,
             全职需求合计: b.全职需求合计 || 0,
+            架构人数: b.架构人数 || 0,
+            标准HC差值: b.标准HC差值 || 0,
             最终合计招募人数: ba
         });
     });
@@ -1082,7 +1084,7 @@ function openDetailModal(cardLabel) {
             '<tbody>' + filtered.map(r => {
                 let cells = finalColumns.map(h => {
                     let v = (r[h] === undefined || r[h] === null ? '' : r[h]);
-                    if (key === '9月单店缺口' && h === '最终合计招募人数' && v !== '') v = fmtVal(v);
+                    if (key === '9月单店缺口' && (h === '最终合计招募人数' || h === '标准HC差值') && v !== '') v = fmtVal(v);
                     return '<td>' + v + '</td>';
                 }).join('');
                 if (showActions) {

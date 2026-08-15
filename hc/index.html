@@ -690,11 +690,11 @@
 
 </div><!-- end container -->
 
-<script src="data.js?v=20260815f"></script>
-<script src="stores.js?v=20260815f"></script>
-<script src="details.js?v=20260815f"></script>
-<script src="staff_lookup.js?v=20260815f"></script>
-<script src="store_base.js?v=20260815f"></script>
+<script src="data.js?v=20260815g"></script>
+<script src="stores.js?v=20260815g"></script>
+<script src="details.js?v=20260815g"></script>
+<script src="staff_lookup.js?v=20260815g"></script>
+<script src="store_base.js?v=20260815g"></script>
 <script>
 const D = window.DASHBOARD_DATA;
 let specialLeaveExtra = [];
@@ -973,7 +973,7 @@ function getStoreHcBaseRecords() {
             大店长: b.大店长 || '',
             门店: store,
             新增人员数量: v,
-            新增HC原因: '门店底表AZ列',
+            新增HC原因: b['BC列备注原因'] || '门店底表AZ列',
             _isBase: true
         });
     });

@@ -2,7 +2,7 @@
 window.DASHBOARD_DATA = {
   "meta": {
     "title": "HC 8月最终招募缺口看板",
-    "asOf": "2026-08-12"
+    "asOf": "2026-08-15"
   },
   "cards": [
     {
@@ -22,7 +22,7 @@ window.DASHBOARD_DATA = {
     {
       "label": "花名册在职合计",
       "sub": "(G列/人)",
-      "value": 411,
+      "value": 389,
       "red": false,
       "highlight": false
     },
@@ -43,7 +43,7 @@ window.DASHBOARD_DATA = {
     {
       "label": "9月全职缺口",
       "sub": "(K列/人)",
-      "value": -33,
+      "value": -55,
       "red": true,
       "highlight": true
     },

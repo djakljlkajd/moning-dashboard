@@ -602,7 +602,7 @@
             <button class="modal-close" onclick="closeAddRecordModal()">&times;</button>
         </div>
         <div class="form-body">
-            <form id="add-record-form" onsubmit="submitAddRecord(event)">
+            <form id="add-record-form" onsubmit="submitAddRecord(event)" novalidate>
                 <div class="form-row" id="add-staff-row">
                     <div class="form-group">
                         <label class="form-label">大店长<span class="required">*</span></label>
@@ -690,11 +690,11 @@
 
 </div><!-- end container -->
 
-<script src="data.js?v=20260813a"></script>
-<script src="stores.js?v=20260813a"></script>
-<script src="details.js?v=20260813a"></script>
-<script src="staff_lookup.js?v=20260813a"></script>
-<script src="store_base.js?v=20260813a"></script>
+<script src="data.js?v=20260815a"></script>
+<script src="stores.js?v=20260815a"></script>
+<script src="details.js?v=20260815a"></script>
+<script src="staff_lookup.js?v=20260815a"></script>
+<script src="store_base.js?v=20260815a"></script>
 <script>
 const D = window.DASHBOARD_DATA;
 let specialLeaveExtra = [];
@@ -1577,9 +1577,9 @@ function closeAddRecordModal(event) {
     }
 }
 
-// 预离职/机场办证新增：输入工号后自动回填姓名、门店、大店长
+// 特殊请假/预离职/机场办证新增：输入工号后自动回填姓名、门店、大店长
 function handleGonghaoInput() {
-    if (addRecordType !== 'preleave' && addRecordType !== 'airport') return;
+    if (addRecordType !== 'special' && addRecordType !== 'preleave' && addRecordType !== 'airport') return;
     var gonghao = (document.getElementById('add-gonghao').value || '').trim().toUpperCase();
     if (!gonghao || !window.STAFF_LOOKUP) return;
     var info = window.STAFF_LOOKUP[gonghao];
@@ -1604,7 +1604,7 @@ async function submitAddRecord(e) {
     btn.disabled = true;
     btn.textContent = '提交中...';
 
-    var manager = document.getElementById('add-manager').value.trim();
+  try {    var manager = document.getElementById('add-manager').value.trim();
     var gonghao = document.getElementById('add-gonghao').value.trim();
     var name = document.getElementById('add-name').value.trim();
     var store = document.getElementById('add-store').value.trim();
@@ -1726,6 +1726,13 @@ async function submitAddRecord(e) {
         var t = document.getElementById('modal-title').textContent;
         if (t.indexOf('特殊请假') >= 0) openDetailModal('特殊请假合计');
     }
+  } catch(err) {
+    console.error('submitAddRecord error:', err);
+    alert('提交失败：' + (err && err.message ? err.message : err) + '\n请刷新页面后重试。');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '确认添加';
+  }
 }
 
 function deleteSpecialLeaveRecord(id) {

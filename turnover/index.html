@@ -703,7 +703,7 @@
 
 </div><!-- end container -->
 
-<script src="data.js?v=20260816b"></script>
+<script src="data.js?v=20260816c"></script>
 <script>
 const STORE_DATA={
 dadianchang:["何海云", "刘旺林", "周思凡", "廖灿", "徐宇辉", "旷瑶", "易彪", "李奔", "杜强", "童璐", "赵思洁", "邵宝生", "钟天祥"],
@@ -1792,6 +1792,19 @@ function openReasonEdit(empId){
 
 function closeReasonEdit(event){
     if(!event || event.target.id==='reason-edit-modal' || event.target.className==='modal-close'){
+        // 关闭弹窗前，先把还在排队的自动保存立即刷到云端，避免延迟丢数据
+        if(autoSaveTimer){
+            clearTimeout(autoSaveTimer);
+            autoSaveTimer=null;
+            saveReasonEditNow();
+            if(turnoverSyncTimer){clearTimeout(turnoverSyncTimer);turnoverSyncTimer=null;}
+            syncTurnoverData();
+        }else{
+            // 弹窗开着时也可能已有数据没同步，再保险刷一次
+            if(turnoverRowId && turnoverReasons[currentEditEmpId]){
+                syncTurnoverData();
+            }
+        }
         document.getElementById('reason-edit-modal').classList.remove('active');
         currentEditEmpId=null;
     }

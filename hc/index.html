@@ -396,6 +396,12 @@
             transition: all 0.15s; margin-left: 4px; font-weight: 500;
         }
         .btn-delete-record:hover { background: #c0392b; border-color: #c0392b; }
+        .btn-edit-record {
+            background: #2d6cdf; border: 1px solid #2d6cdf; color: #fff;
+            padding: 2px 8px; border-radius: 4px; font-size: 11px; cursor: pointer;
+            transition: all 0.15s; margin-left: 4px; font-weight: 500;
+        }
+        .btn-edit-record:hover { background: #1e4faf; border-color: #1e4faf; }
 
         /* ===== 同步状态提示 ===== */
         .sync-status {
@@ -690,11 +696,11 @@
 
 </div><!-- end container -->
 
-<script src="data.js?v=20260815j"></script>
-<script src="stores.js?v=20260815j"></script>
-<script src="details.js?v=20260815j"></script>
-<script src="staff_lookup.js?v=20260815j"></script>
-<script src="store_base.js?v=20260815j"></script>
+<script src="data.js?v=20260816a"></script>
+<script src="stores.js?v=20260816a"></script>
+<script src="details.js?v=20260816a"></script>
+<script src="staff_lookup.js?v=20260816a"></script>
+<script src="store_base.js?v=20260816a"></script>
 <script>
 const D = window.DASHBOARD_DATA;
 let specialLeaveExtra = [];
@@ -706,6 +712,7 @@ let airportCertHidden = [];
 let storeHcExtra = [];
 let storeHcHidden = [];
 let addRecordType = 'special';  // 'special' | 'preleave' | 'airport' | 'storehc'
+let editRecordId = null;  // 编辑模式：要修改的记录 id，null 表示新增
 
 // ---------- 标题 / 日期 ----------
 document.getElementById('hdr-title').textContent = '● ' + D.meta.title;
@@ -1118,6 +1125,7 @@ function openDetailModal(cardLabel) {
         body.innerHTML = '<div class="modal-empty">当前筛选条件下暂无数据</div>';
     } else {
         const delFn = (key === '特殊请假') ? 'deleteSpecialLeaveRecord' : (key === '预离职') ? 'deletePreLeaveRecord' : 'deleteStoreHcRecord';
+        const editType = (key === '特殊请假') ? 'special' : (key === '预离职') ? 'preleave' : 'storehc';
         body.innerHTML =
             '<table><thead><tr>' + displayColumns.map(h => '<th>' + h + '</th>').join('') + '</tr></thead>' +
             '<tbody>' + filtered.map(r => {
@@ -1128,7 +1136,10 @@ function openDetailModal(cardLabel) {
                 }).join('');
                 if (showActions) {
                     const rowId = r.id || r.工号 || '';
-                    cells += '<td><button class="btn-delete-record" onclick="event.stopPropagation();' + delFn + '(\'' + rowId + '\')">删除</button></td>';
+                    let actBtns = '';
+                    if (r._isAdded) actBtns += '<button class="btn-edit-record" onclick="event.stopPropagation();openEditRecordModal(\'' + editType + '\',\'' + rowId + '\')">修改</button>';
+                    actBtns += '<button class="btn-delete-record" onclick="event.stopPropagation();' + delFn + '(\'' + rowId + '\')">删除</button>';
+                    cells += '<td>' + actBtns + '</td>';
                 }
                 const rowClass = (r._isAdded ? ' class="record-row-added"' : '');
                 return '<tr' + rowClass + '>' + cells + '</tr>';
@@ -1184,7 +1195,10 @@ function openAirportCertModal(statusKey) {
                     return '<td>' + (r[h] === undefined || r[h] === null ? '' : r[h]) + '</td>';
                 }).join('');
                 var rowId = r.id || r.工号 || '';
-                cells += '<td><button class="btn-delete-record" onclick="event.stopPropagation();deleteAirportCertRecord(\'' + rowId + '\')">删除</button></td>';
+                var actBtns = '';
+                if (r._isAdded) actBtns += '<button class="btn-edit-record" onclick="event.stopPropagation();openEditRecordModal(\'airport\',\'' + rowId + '\')">修改</button>';
+                actBtns += '<button class="btn-delete-record" onclick="event.stopPropagation();deleteAirportCertRecord(\'' + rowId + '\')">删除</button>';
+                cells += '<td>' + actBtns + '</td>';
                 var rowClass = r._isAdded ? ' class="record-row-added"' : '';
                 return '<tr' + rowClass + '>' + cells + '</tr>';
             }).join('') + '</tbody></table>';
@@ -1517,6 +1531,7 @@ function getMergedPreLeave() {
 
 // 新增记录弹窗（type: 'special' 特殊请假 | 'preleave' 预离职 | 'airport' 机场办证 | 'storehc' 单店特殊新增HC）
 function openAddRecordModal(type, statusKey) {
+    editRecordId = null;  // 新增模式
     if (type === 'preleave') addRecordType = 'preleave';
     else if (type === 'airport') addRecordType = 'airport';
     else if (type === 'storehc') addRecordType = 'storehc';
@@ -1568,6 +1583,57 @@ function openAddRecordModal(type, statusKey) {
     document.getElementById('add-reason').placeholder = placeholderMap[addRecordType];
     updateSyncStatus('');
     document.getElementById('add-record-modal').classList.add('active');
+}
+
+// 辅助：设置下拉框选中值，若选项不存在则动态添加
+function setSelectValue(selId, val) {
+    if (!val) return;
+    var sel = document.getElementById(selId);
+    for (var i = 0; i < sel.options.length; i++) {
+        if (sel.options[i].value === val) { sel.selectedIndex = i; return; }
+    }
+    sel.add(new Option(val, val));
+    sel.value = val;
+}
+
+// 编辑模式：打开表单并预填用户新增记录的内容（type: 'special' | 'preleave' | 'airport' | 'storehc'）
+function openEditRecordModal(type, id) {
+    if (!id) return;
+    var rec = null;
+    if (type === 'special') rec = specialLeaveExtra.find(function(r) { return r.id === id; });
+    else if (type === 'preleave') rec = preLeaveExtra.find(function(r) { return r.id === id; });
+    else if (type === 'airport') rec = airportCertExtra.find(function(r) { return r.id === id; });
+    else if (type === 'storehc') rec = storeHcExtra.find(function(r) { return r.id === id; });
+    if (!rec) { alert('未找到该记录，可能已被删除，请刷新后重试'); return; }
+
+    openAddRecordModal(type);  // 会重置 editRecordId，需在之后重新赋值
+    editRecordId = id;
+
+    if (type === 'storehc') {
+        setSelectValue('add-storehc-store', rec.门店);
+        handleStoreHcChange();
+        document.getElementById('add-storehc-qty').value = rec.新增人员数量 === undefined || rec.新增人员数量 === null ? '' : rec.新增人员数量;
+        document.getElementById('add-storehc-reason').value = rec.新增HC原因 || '';
+    } else {
+        setSelectValue('add-manager', rec.大店长);
+        document.getElementById('add-gonghao').value = rec.工号 || '';
+        document.getElementById('add-name').value = rec.姓名 || '';
+        document.getElementById('add-store').value = rec.门店 || '';
+        document.getElementById('add-reason').value = rec.备注原因 || '';
+        if (type === 'special') {
+            document.getElementById('add-start').value = rec.开始时间 || '';
+            document.getElementById('add-end').value = rec.结束时间 || '';
+        }
+        if (type === 'airport' && rec.状态) {
+            document.getElementById('add-airport-status').value = rec.状态;
+        }
+    }
+
+    var titles = { special: '修改特殊请假记录', preleave: '修改预离职记录', airport: '修改机场办证记录', storehc: '修改单店特殊新增HC记录' };
+    document.getElementById('add-record-title').textContent = titles[type];
+    var btn = document.getElementById('btn-submit-record');
+    btn.textContent = '保存修改';
+    btn.disabled = false;
 }
 
 // storehc 模式：选择门店后自动带出大店长（在职名单 C 列）并展示该门店 X~AB 职级人数（门店底表）
@@ -1623,6 +1689,23 @@ function handleGonghaoInput() {
     }
 }
 
+// 新增或更新 extra 记录：editId 为空则新增；否则更新已有记录（保留原 id 与创建时间）
+function upsertExtra(arr, editId, record) {
+    if (editId) {
+        var idx = arr.findIndex(function(r) { return r.id === editId; });
+        if (idx >= 0) {
+            var old = arr[idx];
+            record.id = old.id;
+            record.addedAt = old.addedAt;
+            record.addedBy = 'user';
+            record._isAdded = true;
+            arr[idx] = record;
+            return;
+        }
+    }
+    arr.push(record);
+}
+
 async function submitAddRecord(e) {
     e.preventDefault();
     var btn = document.getElementById('btn-submit-record');
@@ -1656,11 +1739,11 @@ async function submitAddRecord(e) {
             新增人员数量: shcQty, 新增HC原因: shcReason,
             addedBy: 'user', addedAt: new Date().toISOString().slice(0, 19)
         };
-        storeHcExtra.push(shcRecord);
+        upsertExtra(storeHcExtra, editRecordId, shcRecord);
         scheduleSLSync();
         closeAddRecordModal();
         refreshAll();
-        showToast('已新增单店特殊新增HC记录：' + shcStore + ' +' + shcQty + ' 人');
+        showToast((editRecordId ? '已修改' : '已新增') + '单店特殊新增HC记录：' + shcStore + ' +' + shcQty + ' 人');
         // 如果单店特殊新增HC弹窗已打开，刷新弹窗
         if (document.getElementById('detail-modal').classList.contains('active')) {
             var tShc = document.getElementById('modal-title').textContent;
@@ -1682,12 +1765,12 @@ async function submitAddRecord(e) {
             大店长: manager, 门店: store, 工号: gonghao, 姓名: name,
             备注原因: reason, addedBy: 'user', addedAt: new Date().toISOString().slice(0, 19)
         };
-        preLeaveExtra.push(record);
+        upsertExtra(preLeaveExtra, editRecordId, record);
         scheduleSLSync();
         closeAddRecordModal();
         refreshAll();
         // 提示用户回写到 Excel
-        showToast('已新增预离职记录：' + name + '（' + gonghao + '）。<br>如需同步到桌面 Excel，请在 WorkBuddy 运行：<code>python3 sync_back_to_excel.py</code>', 8000);
+        showToast((editRecordId ? '已修改预离职记录：' : '已新增预离职记录：') + name + '（' + gonghao + '）。<br>如需同步到桌面 Excel，请在 WorkBuddy 运行：<code>python3 sync_back_to_excel.py</code>', 8000);
         // 如果预离职弹窗已打开，刷新弹窗
         if (document.getElementById('detail-modal').classList.contains('active')) {
             var t = document.getElementById('modal-title').textContent;
@@ -1710,7 +1793,7 @@ async function submitAddRecord(e) {
             状态: status, 备注原因: reason,
             addedBy: 'user', addedAt: new Date().toISOString().slice(0, 19)
         };
-        airportCertExtra.push(airRecord);
+        upsertExtra(airportCertExtra, editRecordId, airRecord);
         scheduleSLSync();
         closeAddRecordModal();
         refreshAll();
@@ -1742,7 +1825,7 @@ async function submitAddRecord(e) {
         备注原因: reason, addedBy: 'user', addedAt: new Date().toISOString().slice(0, 19)
     };
 
-    specialLeaveExtra.push(record);
+    upsertExtra(specialLeaveExtra, editRecordId, record);
     scheduleSLSync();
     closeAddRecordModal();
     refreshAll();

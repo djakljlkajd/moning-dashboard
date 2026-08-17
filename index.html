@@ -268,6 +268,20 @@ body{font-family:-apple-system,'PingFang SC','Helvetica Neue',sans-serif;backgro
   font-size:12px;line-height:1.5;padding:10px 14px;text-align:center}
 #wxTip b{color:#FFD54F}
 #wxTip .x{float:right;margin-left:10px;color:#9aa0a6;cursor:pointer;font-weight:700}
+
+/* ===== 三看板选项卡 ===== */
+.board-tabs{display:flex;align-items:center;gap:10px;padding:12px 24px;background:#fff;border-bottom:1px solid var(--bor);flex-wrap:wrap}
+.board-tab{font-size:13px;padding:7px 20px;border-radius:20px;border:1px solid var(--bor);background:#fff;color:var(--sec);cursor:pointer;transition:all .15s;outline:none}
+.board-tab:hover:not(.active){background:var(--blueBg);color:var(--blue);border-color:var(--blue)}
+.board-tab.active{background:var(--blue);color:#fff;border-color:var(--blue);font-weight:500}
+.pane{display:none}
+.pane.active{display:block}
+#iframe-hc,#iframe-turnover{width:100%;height:calc(100vh - 110px);border:0;display:block}
+@media (max-width: 768px){
+  .board-tabs{padding:10px 16px;gap:8px}
+  .board-tab{padding:6px 14px;font-size:12px}
+  #iframe-hc,#iframe-turnover{height:calc(100vh - 96px)}
+}
 </style>
 </head>
 <body>
@@ -277,9 +291,9 @@ body{font-family:-apple-system,'PingFang SC','Helvetica Neue',sans-serif;backgro
 
 <!-- 顶部蓝色横幅 -->
 <div class="topbar">
-  <h1><span class="dot"></span> 墨柠工时分析看板 <span id="scopeTag" class="scope-tag"></span></h1>
+  <h1><span class="dot"></span> 墨柠数据看板 <span id="scopeTag" class="scope-tag"></span></h1>
   <div class="meta" id="dateRange"></div>
-  <div class="dash-switch">
+  <div class="dash-switch" style="display:none">
     <span>切换看板：</span>
     <select id="dashSwitch" onchange="switchDashboard(this.value)">
       <option value="./">墨柠工时看板</option>
@@ -289,6 +303,16 @@ body{font-family:-apple-system,'PingFang SC','Helvetica Neue',sans-serif;backgro
     </select>
   </div>
 </div>
+
+<!-- 看板切换选项卡 -->
+<div class="board-tabs">
+  <button class="board-tab active" data-board="hours" onclick="switchBoard('hours',this)">工时</button>
+  <button class="board-tab" data-board="hc" onclick="switchBoard('hc',this)">HC</button>
+  <button class="board-tab" data-board="turnover" onclick="switchBoard('turnover',this)">离职</button>
+</div>
+
+<!-- 工时看板内容区 -->
+<div id="pane-hours" class="pane active">
 
 <!-- 黄色信息条 -->
 <div class="infobar">
@@ -401,6 +425,19 @@ body{font-family:-apple-system,'PingFang SC','Helvetica Neue',sans-serif;backgro
     <div class="tbl-wrap" style="max-height:480px"><table><thead><tr id="dHead"></tr></thead><tbody id="dBody"></tbody></table></div>
   </div>
 
+</div>
+
+</div>
+<!-- /pane-hours -->
+
+<!-- HC 看板内容区（iframe 懒加载） -->
+<div id="pane-hc" class="pane">
+  <iframe id="iframe-hc" title="HC 招募缺口看板" src="about:blank"></iframe>
+</div>
+
+<!-- 离职看板内容区（iframe 懒加载） -->
+<div id="pane-turnover" class="pane">
+  <iframe id="iframe-turnover" title="离职率看板" src="about:blank"></iframe>
 </div>
 
 <script>
@@ -141202,12 +141239,38 @@ try{
 let currentMonth=D.stat_month||M.date_to.substring(0,7);
 let activeData=D; // 当前使用的数据源
 
-/* 看板切换 */
+/* 看板切换（旧下拉框，保留兼容） */
 function switchDashboard(path){
   if(!path)return;
   const base=location.pathname.replace(/\/[^\/]*$/,'/');
   const target=new URL(path,location.origin+base).href;
   if(target!==location.href){ location.href=target; }
+}
+
+/* 顶部选项卡切换：工时 / HC / 离职 */
+function switchBoard(board,btn){
+  // 选项卡高亮
+  document.querySelectorAll('.board-tab').forEach(function(b){ b.classList.remove('active'); });
+  if(btn){ btn.classList.add('active'); }
+  else { var activeBtn=document.querySelector('.board-tab[data-board="'+board+'"]'); if(activeBtn) activeBtn.classList.add('active'); }
+
+  // 面板显隐
+  document.querySelectorAll('.pane').forEach(function(p){ p.classList.remove('active'); });
+  var pane=document.getElementById('pane-'+board);
+  if(pane) pane.classList.add('active');
+
+  // iframe 懒加载
+  if(board==='hc'){
+    var iframeHc=document.getElementById('iframe-hc');
+    if(iframeHc && (!iframeHc.src || iframeHc.src==='about:blank')){
+      iframeHc.src='./hc/index.html?v=20260817a';
+    }
+  } else if(board==='turnover'){
+    var iframeTr=document.getElementById('iframe-turnover');
+    if(iframeTr && (!iframeTr.src || iframeTr.src==='about:blank')){
+      iframeTr.src='./turnover/index.html?v=20260817a';
+    }
+  }
 }
 
 const _dr=`数据周期：${M.date_from} ~ ${M.date_to}（共${M.days}天）`;

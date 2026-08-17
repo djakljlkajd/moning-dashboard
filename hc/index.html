@@ -696,11 +696,11 @@
 
 </div><!-- end container -->
 
-<script src="data.js?v=20260816a"></script>
-<script src="stores.js?v=20260816a"></script>
-<script src="details.js?v=20260816a"></script>
-<script src="staff_lookup.js?v=20260816a"></script>
-<script src="store_base.js?v=20260816a"></script>
+<script src="data.js?v=20260817a"></script>
+<script src="stores.js?v=20260817a"></script>
+<script src="details.js?v=20260817a"></script>
+<script src="staff_lookup.js?v=20260817a"></script>
+<script src="store_base.js?v=20260817a"></script>
 <script>
 const D = window.DASHBOARD_DATA;
 let specialLeaveExtra = [];
@@ -712,7 +712,8 @@ let airportCertHidden = [];
 let storeHcExtra = [];
 let storeHcHidden = [];
 let addRecordType = 'special';  // 'special' | 'preleave' | 'airport' | 'storehc'
-let editRecordId = null;  // 编辑模式：要修改的记录 id，null 表示新增
+let editRecordId = null;  // 编辑模式：要修改的 extra 记录 id，null 表示新增
+let editingRecordOriginalId = null;  // 编辑 Excel 原始记录时，原记录的标识（工号/门店等），保存时隐藏原记录并新增到 extra
 
 // ---------- 标题 / 日期 ----------
 document.getElementById('hdr-title').textContent = '● ' + D.meta.title;
@@ -1136,8 +1137,7 @@ function openDetailModal(cardLabel) {
                 }).join('');
                 if (showActions) {
                     const rowId = r.id || r.工号 || '';
-                    let actBtns = '';
-                    if (r._isAdded) actBtns += '<button class="btn-edit-record" onclick="event.stopPropagation();openEditRecordModal(\'' + editType + '\',\'' + rowId + '\')">修改</button>';
+                    let actBtns = '<button class="btn-edit-record" onclick="event.stopPropagation();openEditRecordModal(\'' + editType + '\',\'' + rowId + '\')">修改</button>';
                     actBtns += '<button class="btn-delete-record" onclick="event.stopPropagation();' + delFn + '(\'' + rowId + '\')">删除</button>';
                     cells += '<td>' + actBtns + '</td>';
                 }
@@ -1532,6 +1532,7 @@ function getMergedPreLeave() {
 // 新增记录弹窗（type: 'special' 特殊请假 | 'preleave' 预离职 | 'airport' 机场办证 | 'storehc' 单店特殊新增HC）
 function openAddRecordModal(type, statusKey) {
     editRecordId = null;  // 新增模式
+    editingRecordOriginalId = null;  // 非编辑原始记录模式
     if (type === 'preleave') addRecordType = 'preleave';
     else if (type === 'airport') addRecordType = 'airport';
     else if (type === 'storehc') addRecordType = 'storehc';
@@ -1596,18 +1597,51 @@ function setSelectValue(selId, val) {
     sel.value = val;
 }
 
-// 编辑模式：打开表单并预填用户新增记录的内容（type: 'special' | 'preleave' | 'airport' | 'storehc'）
+// 编辑模式：打开表单并预填记录内容（type: 'special' | 'preleave' | 'airport' | 'storehc'）
+// 支持编辑 Excel 原始记录：保存时隐藏原记录并在 extra 中新增修改后的记录
 function openEditRecordModal(type, id) {
     if (!id) return;
     var rec = null;
-    if (type === 'special') rec = specialLeaveExtra.find(function(r) { return r.id === id; });
-    else if (type === 'preleave') rec = preLeaveExtra.find(function(r) { return r.id === id; });
-    else if (type === 'airport') rec = airportCertExtra.find(function(r) { return r.id === id; });
-    else if (type === 'storehc') rec = storeHcExtra.find(function(r) { return r.id === id; });
+    var isOriginal = false;
+    if (type === 'special') {
+        rec = specialLeaveExtra.find(function(r) { return r.id === id; });
+        if (!rec) {
+            var slExcel = (window.DETAIL_DATA && window.DETAIL_DATA['特殊请假']) || [];
+            rec = slExcel.find(function(r) { return r.工号 === id; });
+            isOriginal = !!rec;
+        }
+    } else if (type === 'preleave') {
+        rec = preLeaveExtra.find(function(r) { return r.id === id; });
+        if (!rec) {
+            var plExcel = (window.DETAIL_DATA && window.DETAIL_DATA['预离职']) || [];
+            rec = plExcel.find(function(r) { return r.工号 === id; });
+            isOriginal = !!rec;
+        }
+    } else if (type === 'airport') {
+        rec = airportCertExtra.find(function(r) { return r.id === id; });
+        if (!rec) {
+            var airAll = getAirportRecords().filter(function(r) { return !airportCertExtra.some(function(e) { return e.id === r.id; }); });
+            rec = airAll.find(function(r) { return r.id === id; });
+            isOriginal = !!rec;
+        }
+    } else if (type === 'storehc') {
+        rec = storeHcExtra.find(function(r) { return r.id === id; });
+        if (!rec) {
+            var shcBase = getStoreHcBaseRecords();
+            rec = shcBase.find(function(r) { return r.id === id; });
+            isOriginal = !!rec;
+        }
+    }
     if (!rec) { alert('未找到该记录，可能已被删除，请刷新后重试'); return; }
 
-    openAddRecordModal(type);  // 会重置 editRecordId，需在之后重新赋值
-    editRecordId = id;
+    openAddRecordModal(type);  // 会重置 editRecordId / editingRecordOriginalId
+    if (isOriginal) {
+        editingRecordOriginalId = id;
+        editRecordId = null;
+    } else {
+        editingRecordOriginalId = null;
+        editRecordId = id;
+    }
 
     if (type === 'storehc') {
         setSelectValue('add-storehc-store', rec.门店);
@@ -1739,11 +1773,16 @@ async function submitAddRecord(e) {
             新增人员数量: shcQty, 新增HC原因: shcReason,
             addedBy: 'user', addedAt: new Date().toISOString().slice(0, 19)
         };
-        upsertExtra(storeHcExtra, editRecordId, shcRecord);
+        if (editingRecordOriginalId) {
+            if (!storeHcHidden.includes(editingRecordOriginalId)) storeHcHidden.push(editingRecordOriginalId);
+            storeHcExtra.push(shcRecord);
+        } else {
+            upsertExtra(storeHcExtra, editRecordId, shcRecord);
+        }
         scheduleSLSync();
         closeAddRecordModal();
         refreshAll();
-        showToast((editRecordId ? '已修改' : '已新增') + '单店特殊新增HC记录：' + shcStore + ' +' + shcQty + ' 人');
+        showToast((editRecordId || editingRecordOriginalId ? '已修改' : '已新增') + '单店特殊新增HC记录：' + shcStore + ' +' + shcQty + ' 人');
         // 如果单店特殊新增HC弹窗已打开，刷新弹窗
         if (document.getElementById('detail-modal').classList.contains('active')) {
             var tShc = document.getElementById('modal-title').textContent;
@@ -1765,12 +1804,17 @@ async function submitAddRecord(e) {
             大店长: manager, 门店: store, 工号: gonghao, 姓名: name,
             备注原因: reason, addedBy: 'user', addedAt: new Date().toISOString().slice(0, 19)
         };
-        upsertExtra(preLeaveExtra, editRecordId, record);
+        if (editingRecordOriginalId) {
+            if (!preLeaveHidden.includes(editingRecordOriginalId)) preLeaveHidden.push(editingRecordOriginalId);
+            preLeaveExtra.push(record);
+        } else {
+            upsertExtra(preLeaveExtra, editRecordId, record);
+        }
         scheduleSLSync();
         closeAddRecordModal();
         refreshAll();
         // 提示用户回写到 Excel
-        showToast((editRecordId ? '已修改预离职记录：' : '已新增预离职记录：') + name + '（' + gonghao + '）。<br>如需同步到桌面 Excel，请在 WorkBuddy 运行：<code>python3 sync_back_to_excel.py</code>', 8000);
+        showToast((editRecordId || editingRecordOriginalId ? '已修改预离职记录：' : '已新增预离职记录：') + name + '（' + gonghao + '）。<br>如需同步到桌面 Excel，请在 WorkBuddy 运行：<code>python3 sync_back_to_excel.py</code>', 8000);
         // 如果预离职弹窗已打开，刷新弹窗
         if (document.getElementById('detail-modal').classList.contains('active')) {
             var t = document.getElementById('modal-title').textContent;
@@ -1793,7 +1837,12 @@ async function submitAddRecord(e) {
             状态: status, 备注原因: reason,
             addedBy: 'user', addedAt: new Date().toISOString().slice(0, 19)
         };
-        upsertExtra(airportCertExtra, editRecordId, airRecord);
+        if (editingRecordOriginalId) {
+            if (!airportCertHidden.includes(editingRecordOriginalId)) airportCertHidden.push(editingRecordOriginalId);
+            airportCertExtra.push(airRecord);
+        } else {
+            upsertExtra(airportCertExtra, editRecordId, airRecord);
+        }
         scheduleSLSync();
         closeAddRecordModal();
         refreshAll();
@@ -1825,7 +1874,12 @@ async function submitAddRecord(e) {
         备注原因: reason, addedBy: 'user', addedAt: new Date().toISOString().slice(0, 19)
     };
 
-    upsertExtra(specialLeaveExtra, editRecordId, record);
+    if (editingRecordOriginalId) {
+        if (!specialLeaveHidden.includes(editingRecordOriginalId)) specialLeaveHidden.push(editingRecordOriginalId);
+        specialLeaveExtra.push(record);
+    } else {
+        upsertExtra(specialLeaveExtra, editRecordId, record);
+    }
     scheduleSLSync();
     closeAddRecordModal();
     refreshAll();

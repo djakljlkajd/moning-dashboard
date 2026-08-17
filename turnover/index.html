@@ -326,6 +326,12 @@
         .edit-modal-actions .btn-cancel:hover { background: #cfd8dc; }
         .edit-modal-actions .btn-save { background: #1565c0; color: #fff; }
         .edit-modal-actions .btn-save:hover { background: #0d47a1; }
+        .auto-save-indicator {
+            font-size: 11px; color: #4caf50; opacity: 0; transition: opacity 0.3s;
+            margin-left: auto; margin-right: 12px; font-weight: 500;
+            white-space: nowrap;
+        }
+        .auto-save-indicator.visible { opacity: 1; }
         .edit-modal-hint {
             font-size: 11.5px; color: #78909c; margin-top: 8px; line-height: 1.5;
         }
@@ -387,7 +393,7 @@
 <div class="description-bar">
     <div class="description-bar-title">📋 看板说明</div>
     <div class="description-list">
-        <div class="description-item">1、<strong>统计周期：</strong>7月1日 - 7月25日（半月数据，全月预测见趋势区）</div>
+        <div class="description-item">1、<strong>统计周期：</strong>8月1日 - 8月14日（半月数据，全月预测见趋势区）</div>
         <div class="description-item">2、<strong>数据范围：</strong>古德墨柠品牌全职人员，含14位大店长管辖门店</div>
         <div class="description-item">3、<strong>离职类型：</strong>目标主动离职率 ≤ 5%</div>
         <div class="description-item">4、<strong>筛选联动：</strong>顶部「大店区」筛选可联动第一、二、三排数据，点击红色/蓝色卡片可查看对应人员明细</div>
@@ -516,6 +522,7 @@
     <div class="edit-modal-box" onclick="event.stopPropagation()">
         <div class="modal-header">
             <span class="modal-title">填写离职原因</span>
+            <span class="auto-save-indicator" id="reason-edit-saved-indicator">✓ 已保存</span>
             <button class="modal-close" onclick="closeReasonEdit()">×</button>
         </div>
         <div class="edit-modal-body">
@@ -523,31 +530,31 @@
             <div class="edit-modal-grid">
                 <div class="full-width">
                     <div class="edit-modal-label">离职原因 / 详情</div>
-                    <textarea class="edit-modal-textarea" id="reason-edit-text" placeholder="请填写该伙伴的离职原因或详情…" style="min-height:80px;"></textarea>
+                    <textarea class="edit-modal-textarea" id="reason-edit-text" placeholder="请填写该伙伴的离职原因或详情…" style="min-height:80px;" oninput="autoSaveReasonEdit()"></textarea>
                 </div>
                 <div>
                     <div class="edit-modal-label">沟通时间</div>
-                    <input type="text" class="edit-modal-input" id="reason-edit-communication-time" placeholder="如：6月8日" style="margin-bottom:0;">
+                    <input type="text" class="edit-modal-input" id="reason-edit-communication-time" placeholder="如：6月8日" style="margin-bottom:0;" oninput="autoSaveReasonEdit()" onblur="autoSaveReasonEdit()">
                 </div>
                 <div>
                     <div class="edit-modal-label">运营判定离职原因</div>
-                    <input type="text" class="edit-modal-input" id="reason-edit-operation-reason" placeholder="" style="margin-bottom:0;">
+                    <input type="text" class="edit-modal-input" id="reason-edit-operation-reason" placeholder="" style="margin-bottom:0;" oninput="autoSaveReasonEdit()" onblur="autoSaveReasonEdit()">
                 </div>
                 <div class="full-width">
                     <div class="edit-modal-label">BP沟通离职原因填写</div>
-                    <textarea class="edit-modal-textarea" id="reason-edit-bp-reason" placeholder="" style="min-height:70px;"></textarea>
+                    <textarea class="edit-modal-textarea" id="reason-edit-bp-reason" placeholder="" style="min-height:70px;" oninput="autoSaveReasonEdit()"></textarea>
                 </div>
                 <div>
                     <div class="edit-modal-label">BP沟通时间</div>
-                    <input type="text" class="edit-modal-input" id="reason-edit-bp-time" placeholder="如：6月8日" style="margin-bottom:0;">
+                    <input type="text" class="edit-modal-input" id="reason-edit-bp-time" placeholder="如：6月8日" style="margin-bottom:0;" oninput="autoSaveReasonEdit()" onblur="autoSaveReasonEdit()">
                 </div>
                 <div>
                     <div class="edit-modal-label">BP判定离职原因打标</div>
-                    <input type="text" class="edit-modal-input" id="reason-edit-bp-tag" placeholder="" style="margin-bottom:0;">
+                    <input type="text" class="edit-modal-input" id="reason-edit-bp-tag" placeholder="" style="margin-bottom:0;" oninput="autoSaveReasonEdit()" onblur="autoSaveReasonEdit()">
                 </div>
                 <div>
                     <div class="edit-modal-label">和运营是否一致</div>
-                    <select class="edit-modal-input" id="reason-edit-is-consistent" style="margin-bottom:0;">
+                    <select class="edit-modal-input" id="reason-edit-is-consistent" style="margin-bottom:0;" onchange="autoSaveReasonEdit()">
                         <option value="">请选择</option>
                         <option value="一致">一致</option>
                         <option value="不一致">不一致</option>
@@ -555,18 +562,18 @@
                 </div>
                 <div>
                     <div class="edit-modal-label">不一致情况说明</div>
-                    <input type="text" class="edit-modal-input" id="reason-edit-inconsistency" placeholder="" style="margin-bottom:0;">
+                    <input type="text" class="edit-modal-input" id="reason-edit-inconsistency" placeholder="" style="margin-bottom:0;" oninput="autoSaveReasonEdit()" onblur="autoSaveReasonEdit()">
                 </div>
                 <div>
                     <div class="edit-modal-label">填写人（选填）</div>
-                    <input type="text" class="edit-modal-input" id="reason-edit-by" placeholder="例如：张三" style="margin-bottom:0;">
+                    <input type="text" class="edit-modal-input" id="reason-edit-by" placeholder="例如：张三" style="margin-bottom:0;" oninput="autoSaveReasonEdit()" onblur="autoSaveReasonEdit()">
                 </div>
             </div>
-            <div class="edit-modal-hint">填写后自动保存到云端，其他人刷新看板即可看到。</div>
+            <div class="edit-modal-hint">⚡ 字段失焦或停止输入 0.6 秒后自动保存到云端，关闭弹窗也不会丢失。</div>
         </div>
         <div class="edit-modal-actions">
-            <button class="btn-cancel" onclick="closeReasonEdit()">取消</button>
-            <button class="btn-save" onclick="confirmReasonEdit()">保存</button>
+            <button class="btn-cancel" onclick="closeReasonEdit()">关闭</button>
+            <button class="btn-save" onclick="confirmReasonEdit()">立即保存</button>
         </div>
     </div>
 </div>
@@ -696,7 +703,7 @@
 
 </div><!-- end container -->
 
-<script src="data.js?v=20260814a"></script>
+<script src="data.js?v=20260816c"></script>
 <script>
 const STORE_DATA={
 dadianchang:["何海云", "刘旺林", "周思凡", "廖灿", "徐宇辉", "旷瑶", "易彪", "李奔", "杜强", "童璐", "赵思洁", "邵宝生", "钟天祥"],
@@ -1785,35 +1792,59 @@ function openReasonEdit(empId){
 
 function closeReasonEdit(event){
     if(!event || event.target.id==='reason-edit-modal' || event.target.className==='modal-close'){
+        // 关闭弹窗前，先把还在排队的自动保存立即刷到云端，避免延迟丢数据
+        if(autoSaveTimer){
+            clearTimeout(autoSaveTimer);
+            autoSaveTimer=null;
+            saveReasonEditNow();
+            if(turnoverSyncTimer){clearTimeout(turnoverSyncTimer);turnoverSyncTimer=null;}
+            syncTurnoverData();
+        }else{
+            // 弹窗开着时也可能已有数据没同步，再保险刷一次
+            if(turnoverRowId && turnoverReasons[currentEditEmpId]){
+                syncTurnoverData();
+            }
+        }
         document.getElementById('reason-edit-modal').classList.remove('active');
         currentEditEmpId=null;
     }
 }
 
 function confirmReasonEdit(){
+    saveReasonEditNow();
+    closeReasonEdit();
+}
+
+let autoSaveTimer=null;
+let lastAutoSaveAt=0;
+
+function autoSaveReasonEdit(){
     if(!currentEditEmpId)return;
-    const reason=document.getElementById('reason-edit-text').value.trim();
-    const communicationTime=document.getElementById('reason-edit-communication-time').value.trim();
-    const operationReason=document.getElementById('reason-edit-operation-reason').value.trim();
-    const bpReason=document.getElementById('reason-edit-bp-reason').value.trim();
-    const bpCommunicationTime=document.getElementById('reason-edit-bp-time').value.trim();
-    const bpTag=document.getElementById('reason-edit-bp-tag').value.trim();
-    const isConsistent=document.getElementById('reason-edit-is-consistent').value.trim();
-    const inconsistencyNote=document.getElementById('reason-edit-inconsistency').value.trim();
-    const by=document.getElementById('reason-edit-by').value.trim();
-    if(!reason && !communicationTime && !operationReason && !bpReason && !bpCommunicationTime && !bpTag && !isConsistent && !inconsistencyNote){
-        alert('请至少填写一项内容');return;
-    }
+    if(autoSaveTimer)clearTimeout(autoSaveTimer);
+    autoSaveTimer=setTimeout(()=>{saveReasonEditNow();autoSaveTimer=null;},600);
+}
+
+function saveReasonEditNow(){
+    if(!currentEditEmpId)return;
+    const reason=(document.getElementById('reason-edit-text')||{}).value||'';
+    const communicationTime=(document.getElementById('reason-edit-communication-time')||{}).value||'';
+    const operationReason=(document.getElementById('reason-edit-operation-reason')||{}).value||'';
+    const bpReason=(document.getElementById('reason-edit-bp-reason')||{}).value||'';
+    const bpCommunicationTime=(document.getElementById('reason-edit-bp-time')||{}).value||'';
+    const bpTag=(document.getElementById('reason-edit-bp-tag')||{}).value||'';
+    const isConsistent=(document.getElementById('reason-edit-is-consistent')||{}).value||'';
+    const inconsistencyNote=(document.getElementById('reason-edit-inconsistency')||{}).value||'';
+    const by=(document.getElementById('reason-edit-by')||{}).value||'';
     const payload={
-        reason:reason,
-        communicationTime:communicationTime,
-        operationReason:operationReason,
-        bpReason:bpReason,
-        bpCommunicationTime:bpCommunicationTime,
-        bpTag:bpTag,
-        isConsistent:isConsistent,
-        inconsistencyNote:inconsistencyNote,
-        updated_by:by,
+        reason:reason.trim(),
+        communicationTime:communicationTime.trim(),
+        operationReason:operationReason.trim(),
+        bpReason:bpReason.trim(),
+        bpCommunicationTime:bpCommunicationTime.trim(),
+        bpTag:bpTag.trim(),
+        isConsistent:isConsistent.trim(),
+        inconsistencyNote:inconsistencyNote.trim(),
+        updated_by:by.trim(),
         updated_at:new Date().toISOString()
     };
     const pre=findPreTurnoverById(currentEditEmpId);
@@ -1824,7 +1855,13 @@ function confirmReasonEdit(){
         turnoverReasons[currentEditEmpId]=payload;
         scheduleTurnoverSync();
     }
-    closeReasonEdit();
+    lastAutoSaveAt=Date.now();
+    const indicator=document.getElementById('reason-edit-saved-indicator');
+    if(indicator){
+        const time=new Date().toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+        indicator.textContent='✓ 已自动保存 '+time;
+        indicator.classList.add('visible');
+    }
     refreshTurnoverDisplays();
 }
 

@@ -142654,21 +142654,27 @@ function switchBoard(board,btn){
   if(btn){ btn.classList.add('active'); }
   else { var activeBtn=document.querySelector('.board-tab[data-board="'+board+'"]'); if(activeBtn) activeBtn.classList.add('active'); }
 
-  // 面板显隐
-  document.querySelectorAll('.pane').forEach(function(p){ p.classList.remove('active'); });
+  // 面板显隐（同时用 class 和 inline style 双保险，避免 CSS 缓存覆盖）
+  document.querySelectorAll('.pane').forEach(function(p){
+    p.classList.remove('active');
+    p.style.display='none';
+  });
   var pane=document.getElementById('pane-'+board);
-  if(pane) pane.classList.add('active');
+  if(pane){
+    pane.classList.add('active');
+    pane.style.display='block';
+  }
 
-  // iframe 懒加载
+  // iframe 懒加载（每次切换都强制刷新，确保拿到最新版）
   if(board==='hc'){
     var iframeHc=document.getElementById('iframe-hc');
-    if(iframeHc && (!iframeHc.src || iframeHc.src==='about:blank')){
-      iframeHc.src='./hc/index.html?v=20260817a';
+    if(iframeHc){
+      iframeHc.src='./hc/index.html?v='+Date.now();
     }
   } else if(board==='turnover'){
     var iframeTr=document.getElementById('iframe-turnover');
-    if(iframeTr && (!iframeTr.src || iframeTr.src==='about:blank')){
-      iframeTr.src='./turnover/index.html?v=20260817a';
+    if(iframeTr){
+      iframeTr.src='./turnover/index.html?v='+Date.now();
     }
   }
 }

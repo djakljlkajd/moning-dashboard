@@ -696,11 +696,11 @@
 
 </div><!-- end container -->
 
-<script src="data.js?v=20260820a"></script>
-<script src="stores.js?v=20260820a"></script>
-<script src="details.js?v=20260820a"></script>
-<script src="staff_lookup.js?v=20260820a"></script>
-<script src="store_base.js?v=20260820a"></script>
+<script src="data.js?v=20260820b"></script>
+<script src="stores.js?v=20260820b"></script>
+<script src="details.js?v=20260820b"></script>
+<script src="staff_lookup.js?v=20260820b"></script>
+<script src="store_base.js?v=20260820b"></script>
 <script>
 const D = window.DASHBOARD_DATA;
 let specialLeaveExtra = [];
@@ -754,7 +754,7 @@ function renderProgressCard(type, cfg, title, footNote) {
     const p = D.recruitProgress || { fullTime:{recruit:0,arrived:0}, student:{recruit:0,arrived:0} };
     const html =
         renderProgressCard('fulltime', p.fullTime || {}, '👔 全职招募达成（8月招募进度）', '到岗数据按月更新，达成率=到岗/招募') +
-        renderProgressCard('student',  p.student  || {}, '🎓 学生招募达成', '到岗数据按月更新，达成率=到岗/招募');
+        renderProgressCard('student',  p.student  || {}, '🎓 学生招募达成（8月招募进度）', '到岗数据按月更新，达成率=到岗/招募');
     document.getElementById('recruit-progress-row').innerHTML = html;
 })();
 

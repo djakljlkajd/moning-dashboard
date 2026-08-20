@@ -146164,10 +146164,10 @@ function showAlertDetail(type){
     const data=(activeData.over13||[]).filter(filt);
     cnt=data.length;
     count.innerHTML=`当前范围共 <b>${cnt}</b> 人单日工时超过11小时，请点击「单日 >11h 预警」指标卡查看`;
-    hh='<th style="width:82px">大店长</th><th style="width:88px">门店</th>'+
-       '<th style="width:66px">工号</th><th style="width:78px">姓名</th><th style="width:60px">用工类型</th><th style="width:60px">职级</th>'+
+    hh='<th style="width:82px">大店长</th><th style="width:140px">门店</th>'+
+       '<th style="width:66px">工号</th><th style="width:78px">姓名</th>'+
+       '<th style="width:200px">违规原因<div style="font-size:10px;color:rgba(255,255,255,.75);font-weight:400;margin-top:2px">大店长填写</div></th>'+
        '<th style="width:76px">是否扣分<div style="font-size:10px;color:#FFCCCC;font-weight:400;margin-top:2px">BP凭密码填写</div></th>'+
-       '<th style="width:160px">违规原因<div style="font-size:10px;color:rgba(255,255,255,.75);font-weight:400;margin-top:2px">大店长填写</div></th>'+
        '<th style="width:64px">总工时</th><th style="width:48px">日均</th>'+
        M.date_strs.map(d=>`<th style="min-width:48px;width:48px">${d}</th>`).join('');
     data.forEach(p=>{
@@ -146180,8 +146180,9 @@ function showAlertDetail(type){
       const reasonHtml=getViolationReasonHtml('over13',p['工号'],v.reason);
       bb+=`<tr style="background:rgba(234,75,74,.04)">
         <td class="col-name">${p['大店长']}</td><td class="col-name">${p['门店']}</td>
-        <td>${p['工号']}</td><td>${p['姓名']}</td><td>${p['用工类型']||''}</td><td>${p['职级']}</td>
-        <td>${deductHtml}</td><td class="col-name">${reasonHtml}</td>
+        <td>${p['工号']}</td><td>${p['姓名']}</td>
+        <td class="col-name">${reasonHtml}</td>
+        <td>${deductHtml}</td>
         <td>${p['总工时']}</td><td>${p['日均工时']}</td>${dc}</tr>`;
     });
   } else if(type==='consec8'){
@@ -146189,13 +146190,13 @@ function showAlertDetail(type){
     const data=(activeData.warn7||[]).filter(filt).filter(p=>(p['当月最大连续']>=9));
     cnt=data.length;
     count.innerHTML=`当前范围共 <b>${cnt}</b> 人连续出勤超过8天（当月最大连续≥9天），请点击「全月内>8天」指标卡查看`;
-    hh='<th style="width:82px">大店长</th><th style="width:88px">门店</th>'+
-       '<th style="width:66px">工号</th><th style="width:78px">姓名</th><th style="width:60px">用工类型</th><th style="width:60px">职级</th>'+
+    hh='<th style="width:82px">大店长</th><th style="width:140px">门店</th>'+
+       '<th style="width:66px">工号</th><th style="width:78px">姓名</th>'+
+       '<th style="width:200px">违规原因<div style="font-size:10px;color:rgba(255,255,255,.75);font-weight:400;margin-top:2px">大店长填写</div></th>'+
        '<th style="width:76px">是否扣分<div style="font-size:10px;color:#FFCCCC;font-weight:400;margin-top:2px">BP凭密码填写</div></th>'+
-       '<th style="width:160px">违规原因<div style="font-size:10px;color:rgba(255,255,255,.75);font-weight:400;margin-top:2px">大店长填写</div></th>'+
        '<th style="width:50px">出勤/休</th><th style="width:60px">总工时</th><th style="width:48px">日均</th>'+
        '<th style="width:62px" class="c-red">最大连续</th><th style="width:62px" class="c-amber">尾段连续</th>'+
-       '<th style="min-width:280px;text-align:left">超休原因</th>';
+       '<th style="min-width:240px;text-align:left">超休原因</th>';
     data.forEach(p=>{
       const maxC=p['当月最大连续'], tailC=p['尾段连续未休'];
       const isRed=maxC>=9, isTailWarn=tailC>=8;
@@ -146204,8 +146205,9 @@ function showAlertDetail(type){
       const reasonHtml=getViolationReasonHtml('consec8',p['工号'],v.reason);
       bb+=`<tr style="${isRed?'background:rgba(234,75,74,.05)':''}">
         <td class="col-name">${p['大店长']}</td><td class="col-name">${p['门店']}</td>
-        <td>${p['工号']}</td><td>${p['姓名']}</td><td>${p['用工类型']||''}</td><td>${p['职级']}</td>
-        <td>${deductHtml}</td><td class="col-name">${reasonHtml}</td>
+        <td>${p['工号']}</td><td>${p['姓名']}</td>
+        <td class="col-name">${reasonHtml}</td>
+        <td>${deductHtml}</td>
         <td>${p['出勤天数']}d/${p['休息天数']}d</td><td>${p['总工时']}</td><td>${p['日均工时']}</td>
         <td class="${isRed?'c-red':''}" style="font-weight:600">${maxC}天</td>
         <td class="${isTailWarn?'c-amber':''}" style="font-weight:600">${tailC}天</td>
@@ -146310,7 +146312,7 @@ function showAlertDetail(type){
   head.innerHTML=hh;
   body.innerHTML=bb||'<tr><td colspan="20" style="padding:30px;text-align:center;color:var(--hint)">暂无数据</td></tr>';
   modal.style.display='flex';
-  const FW=type==='zeros_full'?[18,66,70,46,62,58]:type==='manager_rank'?[44,86,76,76,64]:[66,70,46,62,58];
+  const FW=type==='zeros_full'?[18,66,70,46,62,58]:type==='manager_rank'?[44,86,76,76,64]:type==='over13'?[66,78,200,76,64,48]:type==='consec8'?[66,78,200,76,50,60,48,62,62,280]:[66,70,46,62,58];
   const freezeCols=type==='zeros_full'?6:0; // 手机端取消基础信息冻结，整体可滑动
   setTimeout(()=>freezeAlertCols(FW,freezeCols),0);
 }

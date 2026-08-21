@@ -621,6 +621,7 @@
                     </div>
                     <div class="form-group">
                         <label class="form-label">工号<span class="required">*</span></label>
+                        <div class="form-hint" style="color:#e74c3c;font-size:12px;margin:-2px 0 5px;">填写工号可自动生成门店信息</div>
                         <input class="form-input" id="add-gonghao" placeholder="如 CY12345" required oninput="handleGonghaoInput()" onblur="handleGonghaoInput()">
                     </div>
                 </div>
@@ -703,7 +704,7 @@
                     </div>
                 </div>
                 <div class="form-group" id="add-reason-row">
-                    <label class="form-label">备注原因<span class="required">*</span></label>
+                    <label class="form-label" id="add-reason-label">备注原因<span class="required">*</span></label>
                     <textarea class="form-textarea" id="add-reason" placeholder="请输入备注原因..." required></textarea>
                 </div>
                 <div class="form-actions">
@@ -718,11 +719,11 @@
 
 </div><!-- end container -->
 
-<script src="data.js?v=20260821b"></script>
-<script src="stores.js?v=20260821b"></script>
-<script src="details.js?v=20260821b"></script>
-<script src="staff_lookup.js?v=20260821b"></script>
-<script src="store_base.js?v=20260821b"></script>
+<script src="data.js?v=20260821c"></script>
+<script src="stores.js?v=20260821c"></script>
+<script src="details.js?v=20260821c"></script>
+<script src="staff_lookup.js?v=20260821c"></script>
+<script src="store_base.js?v=20260821c"></script>
 <script>
 const D = window.DASHBOARD_DATA;
 let specialLeaveExtra = [];
@@ -1723,7 +1724,7 @@ function openAddRecordModal(type, statusKey) {
         document.getElementById('storehc-grade-items').innerHTML = '<span class="store-grade-empty">请先选择门店</span>';
     }
     var placeholderMap = {
-        special: '请输入特殊请假原因...',
+        special: '请按时间、地点、人物、起因、经过、结果逻辑填写...',
         preleave: '请输入预离职原因...',
         airport: '请输入办证进度备注（如办证开始时间、预计取证时间等）...',
         storehc: '请输入新增HC原因...',
@@ -1731,6 +1732,13 @@ function openAddRecordModal(type, statusKey) {
         newhire_student: '请输入备注原因（如招聘渠道、岗位说明等）...'
     };
     document.getElementById('add-reason').placeholder = placeholderMap[addRecordType];
+    // 特殊请假：备注原因标签改为详细描述要求
+    var reasonLabel = document.getElementById('add-reason-label');
+    if (reasonLabel) {
+        reasonLabel.innerHTML = (addRecordType === 'special')
+            ? '详细描述（按照时间、地点、人物、起因、经过、结果逻辑填写，如情况紧急可事后补全）<span class="required">*</span>'
+            : '备注原因<span class="required">*</span>';
+    }
     updateSyncStatus('');
     document.getElementById('add-record-modal').classList.add('active');
 }

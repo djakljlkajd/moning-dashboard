@@ -718,11 +718,11 @@
 
 </div><!-- end container -->
 
-<script src="data.js?v=20260821a"></script>
-<script src="stores.js?v=20260821a"></script>
-<script src="details.js?v=20260821a"></script>
-<script src="staff_lookup.js?v=20260821a"></script>
-<script src="store_base.js?v=20260821a"></script>
+<script src="data.js?v=20260821b"></script>
+<script src="stores.js?v=20260821b"></script>
+<script src="details.js?v=20260821b"></script>
+<script src="staff_lookup.js?v=20260821b"></script>
+<script src="store_base.js?v=20260821b"></script>
 <script>
 const D = window.DASHBOARD_DATA;
 let specialLeaveExtra = [];
@@ -1568,6 +1568,25 @@ async function loadSpecialLeaveExtra() {
         slRestoreFromLocal();
     }
     refreshAll();
+    handleDeepLink();
+}
+
+// URL 直填入口：?add=special / ?add=preleave / ?add=airport / ?add=storehc / ?add=newhire_full / ?add=newhire_student
+function handleDeepLink() {
+    var params = new URLSearchParams(location.search);
+    var add = params.get('add');
+    if (!add) return;
+    var validTypes = ['special','preleave','airport','storehc','newhire_full','newhire_student'];
+    var type = validTypes.indexOf(add) >= 0 ? add : 'special';
+    setTimeout(function() {
+        openAddRecordModal(type);
+        // 移除 URL 参数，避免刷新时重复弹出
+        try {
+            var url = new URL(location.href);
+            url.searchParams.delete('add');
+            history.replaceState({}, '', url.toString());
+        } catch(e) {}
+    }, 50);
 }
 
 async function syncSpecialLeaveExtra() {

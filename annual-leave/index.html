@@ -195,6 +195,40 @@
             border-top: 1px dashed #eef0f3; border-radius: 0 0 8px 8px;
         }
 
+        /* ===== 9月休息天数（多人协作填写） ===== */
+        .sep-rest-cell { cursor: pointer; }
+        .sep-rest-cell:hover { background: #eef6e0; }
+        .sep-rest-val { color: #558b2f; font-weight: bold; font-size: 13.5px; }
+        .sep-rest-empty { color: #b5c4a6; font-size: 11.5px; }
+        .sep-rest-edit {
+            display: inline-flex; align-items: center; gap: 3px; margin-left: 5px;
+            font-size: 10px; color: #fff; background: #8bc34a; border-radius: 3px;
+            padding: 1px 5px; vertical-align: middle; opacity: 0; transition: opacity .15s;
+        }
+        tr:hover .sep-rest-edit, .sep-rest-cell:hover .sep-rest-edit { opacity: 1; }
+        .modal-box.small { max-width: 420px; }
+        .rest-form { padding: 22px 24px 10px; }
+        .rest-form-label { font-size: 13px; color: #666; margin-bottom: 12px; line-height: 1.6; }
+        .rest-form-label b { color: #33691e; }
+        .rest-input-wrap { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+        .rest-input {
+            width: 100%; padding: 9px 12px; font-size: 18px; font-weight: bold; text-align: center;
+            border: 2px solid #cde5b0; border-radius: 6px; outline: none; color: #33691e;
+        }
+        .rest-input:focus { border-color: #8bc34a; box-shadow: 0 0 0 3px rgba(139,195,74,.2); }
+        .rest-input-hint { font-size: 11px; color: #95a5a6; text-align: center; margin-bottom: 14px; }
+        .rest-form-btns { display: flex; gap: 10px; padding-bottom: 18px; }
+        .rest-btn { flex: 1; padding: 9px 0; border: none; border-radius: 6px; font-size: 13.5px; font-weight: 600; cursor: pointer; transition: all .2s; }
+        .rest-btn-ok { background: #8bc34a; color: #fff; }
+        .rest-btn-ok:hover { background: #7cb342; }
+        .rest-btn-cancel { background: #ecf0f1; color: #555; }
+        .rest-btn-cancel:hover { background: #dcdde1; }
+        .rest-sync-status { font-size: 11px; color: #95a5a6; text-align: center; padding: 4px 0 12px; }
+        .rest-sync-status.ok { color: #558b2f; }
+        .rest-sync-status.err { color: #e74c3c; }
+        .rest-col-head { cursor: default; }
+        .rest-col-head .rest-col-sub { display: block; font-size: 10px; font-weight: normal; opacity: .85; }
+
         /* ===== 响应式 ===== */
         @media (max-width: 1100px) {
             .cards-row { grid-template-columns: repeat(4, 1fr); }
@@ -235,6 +269,7 @@
     <div class="description-list">
         <div class="description-item">1、<strong>数据来源：</strong>桌面「墨柠年假.xlsx」，Sheet3为大店区汇总、Sheet2为205名在职员工年假明细</div>
         <div class="description-item">2、<strong>重点关注：</strong>剩余年假天数&gt;3天员工需尽快安排调休</div>
+        <div class="description-item">3、<strong>9月休息天数：</strong>点击表格内对应单元格即可填写，数据实时同步云端，支持多人线上协作</div>
     </div>
 </div>
 
@@ -264,8 +299,8 @@
 <div class="table-wrapper">
     <table>
         <colgroup>
-            <col style="width:18%"><col style="width:14%"><col style="width:14%"><col style="width:18%">
-            <col style="width:18%"><col style="width:18%">
+            <col style="width:15%"><col style="width:12%"><col style="width:12%"><col style="width:14%">
+            <col style="width:15%"><col style="width:16%"><col style="width:16%">
         </colgroup>
         <thead><tr id="region-head"></tr></thead>
         <tbody id="region-tbody"></tbody>
@@ -287,11 +322,34 @@
     </div>
 </div>
 
+<!-- ===== 9月休息天数 编辑弹窗（多人协作） ===== -->
+<div class="modal-overlay" id="rest-modal" onclick="closeRestModal(event)">
+    <div class="modal-box small" onclick="event.stopPropagation()">
+        <div class="modal-header">
+            <span class="modal-title">✏️ 填写 9月休息天数</span>
+            <button class="modal-close" onclick="closeRestModal()">×</button>
+        </div>
+        <div class="rest-form">
+            <div class="rest-form-label">大店区：<b id="rest-region-name"></b><br>请填写该大店区 9月 计划休息总天数，保存后同步到云端，其他伙伴可见。</div>
+            <div class="rest-input-wrap">
+                <input type="number" class="rest-input" id="rest-input" min="0" max="31" step="1" placeholder="0">
+            </div>
+            <div class="rest-input-hint">范围 0 - 31 天</div>
+        </div>
+        <div class="rest-form-btns" style="padding:0 24px 12px;">
+            <button class="rest-btn rest-btn-cancel" onclick="closeRestModal()">取消</button>
+            <button class="rest-btn rest-btn-ok" onclick="confirmRestSave()">✓ 保存并同步</button>
+        </div>
+        <div class="rest-sync-status" id="rest-sync-status">数据实时同步至云端 · 多人协作填写<a href="javascript:void(0)" id="rest-clear-link" onclick="clearRestValue()" style="margin-left:10px;color:#e74c3c;font-weight:600;display:none;">清空该区填写</a></div>
+    </div>
+</div>
+
 </div>
 
 <script src="data.js?v=20260825b"></script>
 <script>
 const D = window.ANNUAL_LEAVE_DATA;
+let sepRestCache = {};   // 大店区 -> 9月休息天数（多人协作云端同步）
 
 // ---------- 标题 / 日期 ----------
 document.getElementById('hdr-title').textContent = '● ' + D.meta.title;
@@ -403,7 +461,13 @@ const regionHead = document.getElementById('region-head');
 const regionTbody = document.getElementById('region-tbody');
 const regionFoot = document.getElementById('region-foot');
 
-regionHead.innerHTML = D.regions.columns.map(h => '<th>' + h + '</th>').join('');
+// 表头：剩余年假合计后插入 9月休息天数
+const REGION_COLS = ['大店长', '门店数', '员工数', '剩余年假合计', '9月休息天数', '人均剩余', '剩余年假>3天'];
+regionHead.innerHTML = REGION_COLS.map((h, i) =>
+    i === 4
+        ? '<th class="rest-col-head">' + h + '<span class="rest-col-sub">✏️ 点击填写 · 多人协作</span></th>'
+        : '<th>' + h + '</th>'
+).join('');
 
 // 大店区筛选下拉
 const regionSel = document.getElementById('region-filter');
@@ -429,16 +493,22 @@ function renderRegions() {
 
     regionTbody.innerHTML = '';
     if (rows.length === 0) {
-        regionTbody.innerHTML = '<tr><td colspan="6" style="padding:30px;color:#999;">无匹配记录</td></tr>';
+        regionTbody.innerHTML = '<tr><td colspan="7" style="padding:30px;color:#999;">无匹配记录</td></tr>';
     }
     rows.forEach(r => {
         const tr = document.createElement('tr');
         tr.onclick = function () { openRegionModal(r.大店区); };
+        const restVal = sepRestCache[r.大店区];
         tr.innerHTML =
             '<td class="text-left"><strong>' + r.name + '</strong></td>' +
             '<td>' + r.门店数 + '</td>' +
             '<td>' + r.员工数 + '</td>' +
             '<td><strong>' + r.剩余年假 + '</strong></td>' +
+            '<td class="sep-rest-cell" onclick="event.stopPropagation();openRestModal(\'' + r.大店区 + '\')">' +
+                (restVal !== undefined
+                    ? '<span class="sep-rest-val">' + restVal + '天</span><span class="sep-rest-edit">✏️改</span>'
+                    : '<span class="sep-rest-empty">— 点击填写</span><span class="sep-rest-edit">✏️填</span>') +
+            '</td>' +
             '<td>' + r.人均 + '</td>' +
             '<td>' + warnCell(r.gt3) + '</td>';
         regionTbody.appendChild(tr);
@@ -450,19 +520,21 @@ function renderRegions() {
         const sum = shown.reduce((a, r) => ({
             门店数: a.门店数 + r.门店数, 员工数: a.员工数 + r.员工数,
             剩余年假: a.剩余年假 + r.剩余年假, 人均: a.人均 + r.人均,
-            gt3: a.gt3 + r.gt3
-        }), { 门店数: 0, 员工数: 0, 剩余年假: 0, 人均: 0, gt3: 0 });
+            gt3: a.gt3 + r.gt3, sepRest: a.sepRest + (sepRestCache[r.大店区] || 0)
+        }), { 门店数: 0, 员工数: 0, 剩余年假: 0, 人均: 0, gt3: 0, sepRest: 0 });
         sum.人均 = Math.round(sum.剩余年假 / sum.员工数 * 10) / 10;
         const isAll = (region === 'all' && status === 'all' && !q);
+        const filledCnt = shown.filter(r => sepRestCache[r.大店区] !== undefined).length;
         regionFoot.innerHTML =
             '<td class="text-left"><strong>' + (isAll ? '合计' : '小计(' + shown.length + '区)') + '</strong></td>' +
             '<td><strong>' + sum.门店数 + '</strong></td>' +
             '<td><strong>' + sum.员工数 + '</strong></td>' +
             '<td><strong>' + sum.剩余年假 + '</strong></td>' +
+            '<td><strong>' + (filledCnt > 0 ? sum.sepRest + '天' : '—') + '</strong></td>' +
             '<td><strong>' + sum.人均 + '</strong></td>' +
             '<td>' + warnCell(sum.gt3) + '</td>';
     } else {
-        regionFoot.innerHTML = '<td colspan="6" style="text-align:center;">—</td>';
+        regionFoot.innerHTML = '<td colspan="7" style="text-align:center;">—</td>';
     }
 }
 renderRegions();
@@ -500,9 +572,134 @@ function exportData() {
     URL.revokeObjectURL(a.href);
 }
 
+// ========== 9月休息天数 · 多人线上协作（Supabase 云端同步，同工时看板机制） ==========
+const SUPA_URL = 'https://tclfmnfvlrlxquiojjya.supabase.co';
+const SUPA_KEY = 'sb_publishable_6sa-Pz6dX0BSlTJX3gNiRA_CbtZkf_b';
+const SUPA_TABLE = 'violation_data';
+const SUPA_ID = 10;   // 年假看板专用行
+
+function sepRestBackup() {
+    try { localStorage.setItem('sepRestBackup', JSON.stringify({ sep_rest: sepRestCache, ts: Date.now() })); } catch (e) {}
+}
+function sepRestRestore() {
+    try {
+        const raw = localStorage.getItem('sepRestBackup');
+        if (!raw) return;
+        const d = JSON.parse(raw);
+        if (d && d.sep_rest) sepRestCache = Object.assign({}, d.sep_rest, sepRestCache);
+    } catch (e) {}
+}
+
+async function loadSepRest() {
+    try {
+        const res = await fetch(SUPA_URL + '/rest/v1/' + SUPA_TABLE + '?id=eq.' + SUPA_ID + '&select=data', {
+            headers: { 'apikey': SUPA_KEY, 'Authorization': 'Bearer ' + SUPA_KEY }
+        });
+        if (!res.ok) throw new Error('supabase ' + res.status);
+        const rows = await res.json();
+        if (rows && rows.length) {
+            const d = rows[0].data || {};
+            sepRestCache = d.sep_rest || {};
+        }
+        sepRestRestore();
+        renderRegions();
+    } catch (e) {
+        console.error('loadSepRest failed', e);
+        sepRestRestore();
+        renderRegions();
+    }
+}
+
+async function saveSepRest() {
+    try {
+        const payload = { sep_rest: sepRestCache };
+        const res = await fetch(SUPA_URL + '/rest/v1/' + SUPA_TABLE + '?id=eq.' + SUPA_ID, {
+            method: 'PATCH',
+            headers: {
+                'apikey': SUPA_KEY,
+                'Authorization': 'Bearer ' + SUPA_KEY,
+                'Content-Type': 'application/json',
+                'Prefer': 'return=minimal'
+            },
+            body: JSON.stringify({ data: payload, updated_at: new Date().toISOString() })
+        });
+        if (!res.ok) throw new Error('sync ' + res.status);
+        return true;
+    } catch (e) {
+        console.error('saveSepRest failed', e);
+        return false;
+    }
+}
+
+// ---------- 9月休息天数 编辑弹窗 ----------
+let currentRestRegion = null;
+
+function openRestModal(region) {
+    currentRestRegion = region;
+    document.getElementById('rest-region-name').textContent = region;
+    const v = sepRestCache[region];
+    document.getElementById('rest-input').value = (v !== undefined ? v : '');
+    document.getElementById('rest-clear-link').style.display = (v !== undefined) ? 'inline' : 'none';
+    const st = document.getElementById('rest-sync-status');
+    st.textContent = '数据实时同步至云端 · 多人协作填写';
+    st.className = 'rest-sync-status';
+    document.getElementById('rest-modal').classList.add('active');
+    setTimeout(() => { document.getElementById('rest-input').focus(); }, 50);
+}
+
+function closeRestModal(e) {
+    if (e && e.target !== document.getElementById('rest-modal')) return;
+    document.getElementById('rest-modal').classList.remove('active');
+    currentRestRegion = null;
+}
+
+function setRestSyncStatus(msg, cls) {
+    const st = document.getElementById('rest-sync-status');
+    st.textContent = msg;
+    st.className = 'rest-sync-status' + (cls ? ' ' + cls : '');
+}
+
+async function confirmRestSave() {
+    if (!currentRestRegion) return;
+    const raw = document.getElementById('rest-input').value.trim();
+    if (raw === '') { alert('请填写 9月休息天数（0-31）'); return; }
+    let v = parseInt(raw, 10);
+    if (isNaN(v) || v < 0 || v > 31) { alert('请输入 0-31 之间的天数'); return; }
+    sepRestCache[currentRestRegion] = v;
+    sepRestBackup();
+    renderRegions();
+    setRestSyncStatus('⏳ 正在同步到云端...');
+    const ok = await saveSepRest();
+    if (ok) {
+        setRestSyncStatus('✓ 已保存并同步到云端，其他伙伴可见', 'ok');
+        setTimeout(() => closeRestModal(), 650);
+    } else {
+        setRestSyncStatus('✗ 同步失败（已保存在本机，刷新页面可恢复）', 'err');
+    }
+}
+
+async function clearRestValue() {
+    if (!currentRestRegion) return;
+    if (!confirm('确定清空「' + currentRestRegion + '」的 9月休息天数填写？')) return;
+    delete sepRestCache[currentRestRegion];
+    sepRestBackup();
+    renderRegions();
+    document.getElementById('rest-clear-link').style.display = 'none';
+    document.getElementById('rest-input').value = '';
+    setRestSyncStatus('⏳ 正在同步到云端...');
+    const ok = await saveSepRest();
+    if (ok) setRestSyncStatus('✓ 已清空并同步', 'ok');
+    else setRestSyncStatus('✗ 同步失败（已保存在本机）', 'err');
+}
+
+loadSepRest();
+
 // 键盘 Esc 关闭弹窗
 document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape') closeModal();
+    if (e.key === 'Escape') {
+        if (document.getElementById('rest-modal').classList.contains('active')) closeRestModal();
+        else closeModal();
+    }
 });
 </script>
 </body>

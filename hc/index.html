@@ -289,7 +289,7 @@
         }
         .modal-overlay.active { display: flex; }
         .modal-box {
-            background: #fff; border-radius: 8px; width: 100%; max-width: 900px; max-height: 80vh;
+            background: #fff; border-radius: 8px; width: 100%; max-width: 1100px; max-height: 80vh;
             display: flex; flex-direction: column; box-shadow: 0 20px 60px rgba(0,0,0,0.25);
             animation: modalIn 0.25s ease;
         }
@@ -318,7 +318,12 @@
         .modal-body { padding: 0; overflow: auto; flex: 1; }
         .modal-body table { font-size: 12.5px; }
         .modal-body thead th { background: linear-gradient(180deg, #2471a3 0%, #1a5276 100%); }
-        .modal-body tbody td { padding: 9px 8px; }
+        .modal-body tbody tr { height: 44px; }
+        .modal-body tbody td {
+            padding: 9px 8px; vertical-align: middle;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+            max-width: 180px;
+        }
         .modal-empty {
             padding: 40px 20px; text-align: center; color: #888; font-size: 14px;
         }
@@ -719,11 +724,11 @@
 
 </div><!-- end container -->
 
-<script src="data.js?v=20260821d"></script>
-<script src="stores.js?v=20260821d"></script>
-<script src="details.js?v=20260821d"></script>
-<script src="staff_lookup.js?v=20260821d"></script>
-<script src="store_base.js?v=20260821d"></script>
+<script src="data.js?v=20260825a"></script>
+<script src="stores.js?v=20260825a"></script>
+<script src="details.js?v=20260825a"></script>
+<script src="staff_lookup.js?v=20260825a"></script>
+<script src="store_base.js?v=20260825a"></script>
 <script>
 const D = window.DASHBOARD_DATA;
 let specialLeaveExtra = [];
@@ -912,7 +917,10 @@ function openNewHiresModal(type) {
                     idx + 1,
                     r.大店长 || '', r.工号 || '', r.姓名 || '', r.门店 || '',
                     r.入职时间 || '', r.新人考核阶段 || ''
-                ].map(function(v) { return '<td>' + (v === undefined || v === null ? '' : v) + '</td>'; }).join('');
+                ].map(function(v) {
+                    var sv = (v === undefined || v === null ? '' : String(v));
+                    return '<td title="' + sv.replace(/"/g, '&quot;') + '">' + sv + '</td>';
+                }).join('');
                 var rowId = r.id || '';
                 var actBtns = '<button class="btn-edit-record" onclick="event.stopPropagation();openEditRecordModal(\'' + (isFull ? 'newhire_full' : 'newhire_student') + '\',\'' + rowId + '\')">修改</button>';
                 actBtns += '<button class="btn-delete-record" onclick="event.stopPropagation();deleteNewHireRecord(\'' + type + '\',\'' + rowId + '\')">删除</button>';
@@ -1231,7 +1239,8 @@ function openDetailModal(cardLabel) {
                 let cells = finalColumns.map(h => {
                     let v = (r[h] === undefined || r[h] === null ? '' : r[h]);
                     if (key === '9月单店缺口' && (h === '最终合计招募人数' || h === '标准HC差值') && v !== '') v = fmtVal(v);
-                    return '<td>' + v + '</td>';
+                    const titleAttr = String(v).replace(/"/g, '&quot;');
+                    return '<td title="' + titleAttr + '">' + v + '</td>';
                 }).join('');
                 if (showActions) {
                     const rowId = r.id || r.工号 || '';

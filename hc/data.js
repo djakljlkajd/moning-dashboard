@@ -62,7 +62,7 @@ window.DASHBOARD_DATA = {
   "recruitProgress": {
     "fullTime": {
       "recruit": 3,
-      "arrived": 2
+      "arrived": 3
     },
     "student": {
       "recruit": 20,

@@ -147,7 +147,7 @@
         .progress-card-fulltime .progress-card-title { background: linear-gradient(90deg, #1a5fb4 0%, #2e86de 100%); }
         .progress-card-student  .progress-card-title { background: linear-gradient(90deg, #16a085 0%, #1abc9c 100%); }
         .progress-card-body {
-            display: grid; grid-template-columns: 1fr 1fr 1fr; padding: 14px 12px; gap: 10px;
+            display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; padding: 14px 12px; gap: 10px;
             background: #fafbfc;
         }
         .progress-stat {
@@ -162,6 +162,9 @@
         .progress-stat.is-rate .stat-value { color: #e74c3c; }
         .progress-card-student .progress-stat.is-rate .stat-value { color: #16a085; }
         .progress-stat.is-rate .stat-value.zero { color: #95a5a6; }
+        .progress-stat.is-detail { cursor: pointer; background: linear-gradient(135deg, #fff9e6 0%, #fff3cc 100%); border-color: #f0d78c; }
+        .progress-stat.is-detail:hover { background: linear-gradient(135deg, #fff3cc 0%, #ffe799 100%); }
+        .progress-stat.is-detail .stat-value { color: #c27c0a; }
         .progress-card-foot {
             padding: 6px 14px; font-size: 11px; color: #95a5a6;
             background: #fff; border-top: 1px dashed #eef0f3;
@@ -286,7 +289,7 @@
         }
         .modal-overlay.active { display: flex; }
         .modal-box {
-            background: #fff; border-radius: 8px; width: 100%; max-width: 900px; max-height: 80vh;
+            background: #fff; border-radius: 8px; width: 100%; max-width: 1100px; max-height: 80vh;
             display: flex; flex-direction: column; box-shadow: 0 20px 60px rgba(0,0,0,0.25);
             animation: modalIn 0.25s ease;
         }
@@ -315,7 +318,12 @@
         .modal-body { padding: 0; overflow: auto; flex: 1; }
         .modal-body table { font-size: 12.5px; }
         .modal-body thead th { background: linear-gradient(180deg, #2471a3 0%, #1a5276 100%); }
-        .modal-body tbody td { padding: 9px 8px; }
+        .modal-body tbody tr { height: 44px; }
+        .modal-body tbody td {
+            padding: 9px 8px; vertical-align: middle;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+            max-width: 180px;
+        }
         .modal-empty {
             padding: 40px 20px; text-align: center; color: #888; font-size: 14px;
         }
@@ -619,6 +627,7 @@
                     </div>
                     <div class="form-group">
                         <label class="form-label">工号<span class="required">*</span></label>
+                        <div class="form-hint" style="color:#e74c3c;font-size:12px;margin:-2px 0 5px;">填写工号可自动生成门店信息</div>
                         <input class="form-input" id="add-gonghao" placeholder="如 CY12345" required oninput="handleGonghaoInput()" onblur="handleGonghaoInput()">
                     </div>
                 </div>
@@ -640,6 +649,25 @@
                     <div class="form-group">
                         <label class="form-label">结束时间</label>
                         <input class="form-input" type="date" id="add-end">
+                    </div>
+                </div>
+                <!-- 新入职人员专属字段 -->
+                <div id="newhire-fields" style="display:none;">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">入职时间<span class="required">*</span></label>
+                            <input class="form-input" type="date" id="add-newhire-date" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">新人考核阶段<span class="required">*</span></label>
+                            <select class="form-select" id="add-newhire-stage" required>
+                                <option value="">请选择阶段</option>
+                                <option value="1阶段：外场学生">1阶段：外场学生</option>
+                                <option value="2阶段：备料、泡茶">2阶段：备料、泡茶</option>
+                                <option value="3阶段：收银出杯">3阶段：收银出杯</option>
+                                <option value="4阶段：通过考核">4阶段：通过考核</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
                 <div class="form-row" id="add-airport-status-row" style="display:none;">
@@ -682,7 +710,7 @@
                     </div>
                 </div>
                 <div class="form-group" id="add-reason-row">
-                    <label class="form-label">备注原因<span class="required">*</span></label>
+                    <label class="form-label" id="add-reason-label">备注原因<span class="required">*</span></label>
                     <textarea class="form-textarea" id="add-reason" placeholder="请输入备注原因..." required></textarea>
                 </div>
                 <div class="form-actions">
@@ -697,11 +725,11 @@
 
 </div><!-- end container -->
 
-<script src="data.js?v=20260820b"></script>
-<script src="stores.js?v=20260820b"></script>
-<script src="details.js?v=20260820b"></script>
-<script src="staff_lookup.js?v=20260820b"></script>
-<script src="store_base.js?v=20260820b"></script>
+<script src="data.js?v=20260825a"></script>
+<script src="stores.js?v=20260825a"></script>
+<script src="details.js?v=20260825a"></script>
+<script src="staff_lookup.js?v=20260825a"></script>
+<script src="store_base.js?v=20260825a"></script>
 <script>
 const D = window.DASHBOARD_DATA;
 let specialLeaveExtra = [];
@@ -712,7 +740,9 @@ let airportCertExtra = [];
 let airportCertHidden = [];
 let storeHcExtra = [];
 let storeHcHidden = [];
-let addRecordType = 'special';  // 'special' | 'preleave' | 'airport' | 'storehc'
+let newHiresFullExtra = [];
+let newHiresStudentExtra = [];
+let addRecordType = 'special';  // 'special' | 'preleave' | 'airport' | 'storehc' | 'newhire_full' | 'newhire_student'
 let editRecordId = null;  // 编辑模式：要修改的 extra 记录 id，null 表示新增
 let editingRecordOriginalId = null;  // 编辑 Excel 原始记录时，原记录的标识（工号/门店等），保存时隐藏原记录并新增到 extra
 
@@ -735,6 +765,10 @@ function renderProgressCard(type, cfg, title, footNote) {
     const rate = recruit > 0 ? Math.round(arrived / recruit * 100) : 0;
     const rateZero = (recruit > 0 && arrived === 0);
     const arrowSvg = '<svg viewBox="0 0 24 24"><path d="M4 2 L4 20 L9 15 L12 21 L15 20 L12 14 L18 14 Z"/></svg>';
+    // 新人明细统计：按类型读取对应线上新增记录数
+    const newHireCount = (type === 'fulltime')
+        ? newHiresFullExtra.length
+        : newHiresStudentExtra.length;
     return '<div class="progress-card progress-card-' + type + '">' +
         '<div class="progress-card-title">' +
             '<span>' + title + '</span>' +
@@ -747,17 +781,21 @@ function renderProgressCard(type, cfg, title, footNote) {
                 '<div class="stat-value">' + arrived + '<span class="stat-unit">人</span></div></div>' +
             '<div class="progress-stat is-rate"><div class="stat-label">达成率</div>' +
                 '<div class="stat-value' + (rateZero ? ' zero' : '') + '">' + rate + '<span class="stat-unit">%</span></div></div>' +
+            '<div class="progress-stat is-detail" onclick="openNewHiresModal(\'' + type + '\')">' +
+                '<div class="stat-label">新人明细</div>' +
+                '<div class="stat-value">' + newHireCount + '<span class="stat-unit">人</span></div></div>' +
         '</div>' +
         '<div class="progress-card-foot">' + footNote + '</div>' +
     '</div>';
 }
-(function renderRecruitProgress() {
+function renderRecruitProgress() {
     const p = D.recruitProgress || { fullTime:{recruit:0,arrived:0}, student:{recruit:0,arrived:0} };
     const html =
         renderProgressCard('fulltime', p.fullTime || {}, '👔 全职招募达成（8月招募进度）', '到岗数据按月更新，达成率=到岗/招募') +
         renderProgressCard('student',  p.student  || {}, '🎓 学生招募达成（8月招募进度）', '到岗数据按月更新，达成率=到岗/招募');
     document.getElementById('recruit-progress-row').innerHTML = html;
-})();
+}
+renderRecruitProgress();
 
 // ---------- 机场区域办证进度三个方块 ----------
 const AIRPORT_STATUS = {
@@ -839,6 +877,74 @@ function openRecruitDetailModal(type) {
             ).join('') + '</tbody></table>';
     }
     modal.classList.add('active');
+}
+
+// ---------- 新入职人员明细弹窗（全职/学生） ----------
+const NEW_HIRE_COLUMNS = ['序号', '大店长', '工号', '姓名', '门店', '入职时间', '新人考核阶段', '操作'];
+
+function openNewHiresModal(type) {
+    var isFull = (type === 'fulltime');
+    var records = isFull ? newHiresFullExtra : newHiresStudentExtra;
+    records.forEach(function(r) { r._isAdded = true; });
+
+    if (currentDimension !== 'all') {
+        records = records.filter(function(r) { return r.大店长 === currentDimension; });
+    }
+
+    var modal = document.getElementById('detail-modal');
+    var title = document.getElementById('modal-title');
+    var body = document.getElementById('modal-body');
+    var addBtn = document.getElementById('modal-add-btn');
+    if (addBtn) {
+        addBtn.style.display = 'inline-block';
+        addBtn.onclick = function(ev) {
+            ev.stopPropagation();
+            openAddRecordModal(isFull ? 'newhire_full' : 'newhire_student');
+        };
+    }
+
+    var titleText = (isFull ? '全职' : '学生') + '新入职人员明细' +
+        (currentDimension !== 'all' ? '（当前：' + currentDimension + '）' : '') +
+        ' - 共 ' + records.length + ' 条（新增 ' + records.length + ' 条）';
+    title.textContent = titleText;
+
+    if (records.length === 0) {
+        body.innerHTML = '<div class="modal-empty">当前筛选条件下暂无数据</div>';
+    } else {
+        body.innerHTML =
+            '<table><thead><tr>' + NEW_HIRE_COLUMNS.map(function(h) { return '<th>' + h + '</th>'; }).join('') + '</tr></thead>' +
+            '<tbody>' + records.map(function(r, idx) {
+                var cells = [
+                    idx + 1,
+                    r.大店长 || '', r.工号 || '', r.姓名 || '', r.门店 || '',
+                    r.入职时间 || '', r.新人考核阶段 || ''
+                ].map(function(v) {
+                    var sv = (v === undefined || v === null ? '' : String(v));
+                    return '<td title="' + sv.replace(/"/g, '&quot;') + '">' + sv + '</td>';
+                }).join('');
+                var rowId = r.id || '';
+                var actBtns = '<button class="btn-edit-record" onclick="event.stopPropagation();openEditRecordModal(\'' + (isFull ? 'newhire_full' : 'newhire_student') + '\',\'' + rowId + '\')">修改</button>';
+                actBtns += '<button class="btn-delete-record" onclick="event.stopPropagation();deleteNewHireRecord(\'' + type + '\',\'' + rowId + '\')">删除</button>';
+                cells += '<td>' + actBtns + '</td>';
+                return '<tr class="record-row-added">' + cells + '</tr>';
+            }).join('') + '</tbody></table>';
+    }
+    modal.classList.add('active');
+}
+
+function deleteNewHireRecord(type, id) {
+    if (!id) return;
+    if (!confirm('确定要删除这条新入职记录吗？')) return;
+    if (type === 'fulltime') {
+        newHiresFullExtra = newHiresFullExtra.filter(function(r) { return r.id !== id; });
+    } else {
+        newHiresStudentExtra = newHiresStudentExtra.filter(function(r) { return r.id !== id; });
+    }
+    scheduleSLSync();
+    refreshAll();
+    if (document.getElementById('detail-modal').classList.contains('active')) {
+        openNewHiresModal(type);
+    }
 }
 
 // ---------- 工具 ----------
@@ -1134,7 +1240,8 @@ function openDetailModal(cardLabel) {
                 let cells = finalColumns.map(h => {
                     let v = (r[h] === undefined || r[h] === null ? '' : r[h]);
                     if (key === '9月单店缺口' && (h === '最终合计招募人数' || h === '标准HC差值') && v !== '') v = fmtVal(v);
-                    return '<td>' + v + '</td>';
+                    const titleAttr = String(v).replace(/"/g, '&quot;');
+                    return '<td title="' + titleAttr + '">' + v + '</td>';
                 }).join('');
                 if (showActions) {
                     const rowId = r.id || r.工号 || '';
@@ -1389,6 +1496,8 @@ function slBackupToLocal() {
         localStorage.setItem('hc_airport_cert_hidden', JSON.stringify(airportCertHidden));
         localStorage.setItem('hc_store_hc_extra', JSON.stringify(storeHcExtra));
         localStorage.setItem('hc_store_hc_hidden', JSON.stringify(storeHcHidden));
+        localStorage.setItem('hc_new_hires_full_extra', JSON.stringify(newHiresFullExtra));
+        localStorage.setItem('hc_new_hires_student_extra', JSON.stringify(newHiresStudentExtra));
     } catch(e) {}
 }
 function slRestoreFromLocal() {
@@ -1408,6 +1517,10 @@ function slRestoreFromLocal() {
         if (rawShc) storeHcExtra = JSON.parse(rawShc);
         const rawShcHidden = localStorage.getItem('hc_store_hc_hidden');
         if (rawShcHidden) storeHcHidden = JSON.parse(rawShcHidden);
+        const rawNhFull = localStorage.getItem('hc_new_hires_full_extra');
+        if (rawNhFull) newHiresFullExtra = JSON.parse(rawNhFull);
+        const rawNhStudent = localStorage.getItem('hc_new_hires_student_extra');
+        if (rawNhStudent) newHiresStudentExtra = JSON.parse(rawNhStudent);
     } catch(e) {}
 }
 
@@ -1450,6 +1563,15 @@ async function loadSpecialLeaveExtra() {
             const cloudShcIds = new Set(cloudShc.map(r => r.id));
             storeHcExtra = [...cloudShc, ...localShc.filter(r => !cloudShcIds.has(r.id))];
             storeHcHidden = [...new Set([...cloudShcHidden, ...localShcHidden])];
+            // 新入职人员（全职/学生）
+            const cloudNhFull = data.new_hires_full_extra || [];
+            const cloudNhStudent = data.new_hires_student_extra || [];
+            const localNhFull = JSON.parse(localStorage.getItem('hc_new_hires_full_extra') || '[]');
+            const localNhStudent = JSON.parse(localStorage.getItem('hc_new_hires_student_extra') || '[]');
+            const cloudNhFullIds = new Set(cloudNhFull.map(r => r.id));
+            const cloudNhStudentIds = new Set(cloudNhStudent.map(r => r.id));
+            newHiresFullExtra = [...cloudNhFull, ...localNhFull.filter(r => !cloudNhFullIds.has(r.id))];
+            newHiresStudentExtra = [...cloudNhStudent, ...localNhStudent.filter(r => !cloudNhStudentIds.has(r.id))];
         }
         slBackupToLocal();
     } catch(e) {
@@ -1457,6 +1579,25 @@ async function loadSpecialLeaveExtra() {
         slRestoreFromLocal();
     }
     refreshAll();
+    handleDeepLink();
+}
+
+// URL 直填入口：?add=special / ?add=preleave / ?add=airport / ?add=storehc / ?add=newhire_full / ?add=newhire_student
+function handleDeepLink() {
+    var params = new URLSearchParams(location.search);
+    var add = params.get('add');
+    if (!add) return;
+    var validTypes = ['special','preleave','airport','storehc','newhire_full','newhire_student'];
+    var type = validTypes.indexOf(add) >= 0 ? add : 'special';
+    setTimeout(function() {
+        openAddRecordModal(type);
+        // 移除 URL 参数，避免刷新时重复弹出
+        try {
+            var url = new URL(location.href);
+            url.searchParams.delete('add');
+            history.replaceState({}, '', url.toString());
+        } catch(e) {}
+    }, 50);
 }
 
 async function syncSpecialLeaveExtra() {
@@ -1479,6 +1620,8 @@ async function syncSpecialLeaveExtra() {
         curData.airport_cert_hidden = airportCertHidden;
         curData.store_hc_extra = storeHcExtra;
         curData.store_hc_hidden = storeHcHidden;
+        curData.new_hires_full_extra = newHiresFullExtra;
+        curData.new_hires_student_extra = newHiresStudentExtra;
         const writeRes = await fetch(SUPA_URL_SL + '/rest/v1/' + SUPA_TABLE_SL + '?id=eq.1', {
             method: 'PATCH',
             headers: {
@@ -1537,6 +1680,8 @@ function openAddRecordModal(type, statusKey) {
     if (type === 'preleave') addRecordType = 'preleave';
     else if (type === 'airport') addRecordType = 'airport';
     else if (type === 'storehc') addRecordType = 'storehc';
+    else if (type === 'newhire_full') addRecordType = 'newhire_full';
+    else if (type === 'newhire_student') addRecordType = 'newhire_student';
     else addRecordType = 'special';
     var sel = document.getElementById('add-manager');
     sel.innerHTML = '<option value="">请选择大店长</option>';
@@ -1549,18 +1694,30 @@ function openAddRecordModal(type, statusKey) {
     document.getElementById('add-start').value = '';
     document.getElementById('add-end').value = '';
     document.getElementById('add-reason').value = '';
+    document.getElementById('add-newhire-date').value = '';
+    document.getElementById('add-newhire-stage').value = '';
     document.getElementById('btn-submit-record').disabled = false;
     document.getElementById('btn-submit-record').textContent = '确认添加';
     // 标题与字段切换
-    var titleMap = { special: '+ 新增特殊请假记录', preleave: '+ 新增预离职记录', airport: '+ 新增机场办证记录', storehc: '+ 新增单店特殊新增HC记录' };
+    var titleMap = {
+        special: '+ 新增特殊请假记录',
+        preleave: '+ 新增预离职记录',
+        airport: '+ 新增机场办证记录',
+        storehc: '+ 新增单店特殊新增HC记录',
+        newhire_full: '+ 新增全职新入职记录',
+        newhire_student: '+ 新增学生新入职记录'
+    };
+    var isNewHire = (addRecordType === 'newhire_full' || addRecordType === 'newhire_student');
     document.getElementById('add-record-title').textContent = titleMap[addRecordType];
     document.getElementById('add-staff-row').style.display = (addRecordType === 'storehc') ? 'none' : '';
     document.getElementById('add-name-store-row').style.display = (addRecordType === 'storehc') ? 'none' : '';
-    document.getElementById('add-date-row').style.display = (addRecordType === 'preleave' || addRecordType === 'airport' || addRecordType === 'storehc') ? 'none' : '';
+    document.getElementById('add-date-row').style.display = (addRecordType === 'preleave' || addRecordType === 'airport' || addRecordType === 'storehc' || isNewHire) ? 'none' : '';
     document.getElementById('add-start').required = (addRecordType === 'special');
     document.getElementById('add-airport-status-row').style.display = (addRecordType === 'airport') ? '' : 'none';
     document.getElementById('add-reason-row').style.display = (addRecordType === 'storehc') ? 'none' : '';
     document.getElementById('storehc-fields').style.display = (addRecordType === 'storehc') ? '' : 'none';
+    document.getElementById('newhire-fields').style.display = isNewHire ? '' : 'none';
+    document.getElementById('add-newhire-date').required = isNewHire;
     var statusSel = document.getElementById('add-airport-status');
     if (addRecordType === 'airport' && statusKey && AIRPORT_STATUS[statusKey]) {
         statusSel.value = AIRPORT_STATUS[statusKey].label;
@@ -1577,12 +1734,21 @@ function openAddRecordModal(type, statusKey) {
         document.getElementById('storehc-grade-items').innerHTML = '<span class="store-grade-empty">请先选择门店</span>';
     }
     var placeholderMap = {
-        special: '请输入特殊请假原因...',
+        special: '请按时间、地点、人物、起因、经过、结果逻辑填写...',
         preleave: '请输入预离职原因...',
         airport: '请输入办证进度备注（如办证开始时间、预计取证时间等）...',
-        storehc: '请输入新增HC原因...'
+        storehc: '请输入新增HC原因...',
+        newhire_full: '请输入备注原因（如招聘渠道、岗位说明等）...',
+        newhire_student: '请输入备注原因（如招聘渠道、岗位说明等）...'
     };
     document.getElementById('add-reason').placeholder = placeholderMap[addRecordType];
+    // 特殊请假：备注原因标签改为详细描述要求
+    var reasonLabel = document.getElementById('add-reason-label');
+    if (reasonLabel) {
+        reasonLabel.innerHTML = (addRecordType === 'special')
+            ? '详细描述（按照时间、地点、人物、起因、经过、结果逻辑填写，如情况紧急可事后补全）<span class="required">*</span>'
+            : '备注原因<span class="required">*</span>';
+    }
     updateSyncStatus('');
     document.getElementById('add-record-modal').classList.add('active');
 }
@@ -1632,6 +1798,10 @@ function openEditRecordModal(type, id) {
             rec = shcBase.find(function(r) { return r.id === id; });
             isOriginal = !!rec;
         }
+    } else if (type === 'newhire_full') {
+        rec = newHiresFullExtra.find(function(r) { return r.id === id; });
+    } else if (type === 'newhire_student') {
+        rec = newHiresStudentExtra.find(function(r) { return r.id === id; });
     }
     if (!rec) { alert('未找到该记录，可能已被删除，请刷新后重试'); return; }
 
@@ -1662,9 +1832,16 @@ function openEditRecordModal(type, id) {
         if (type === 'airport' && rec.状态) {
             document.getElementById('add-airport-status').value = rec.状态;
         }
+        if (type === 'newhire_full' || type === 'newhire_student') {
+            document.getElementById('add-newhire-date').value = rec.入职时间 || '';
+            document.getElementById('add-newhire-stage').value = rec.新人考核阶段 || '';
+        }
     }
 
-    var titles = { special: '修改特殊请假记录', preleave: '修改预离职记录', airport: '修改机场办证记录', storehc: '修改单店特殊新增HC记录' };
+    var titles = {
+        special: '修改特殊请假记录', preleave: '修改预离职记录', airport: '修改机场办证记录',
+        storehc: '修改单店特殊新增HC记录', newhire_full: '修改全职新入职记录', newhire_student: '修改学生新入职记录'
+    };
     document.getElementById('add-record-title').textContent = titles[type];
     var btn = document.getElementById('btn-submit-record');
     btn.textContent = '保存修改';
@@ -1703,9 +1880,10 @@ function closeAddRecordModal(event) {
     }
 }
 
-// 特殊请假/预离职/机场办证新增：输入工号后自动回填姓名、门店、大店长
+// 特殊请假/预离职/机场办证/新入职新增：输入工号后自动回填姓名、门店、大店长
 function handleGonghaoInput() {
-    if (addRecordType !== 'special' && addRecordType !== 'preleave' && addRecordType !== 'airport') return;
+    var isNewHire = (addRecordType === 'newhire_full' || addRecordType === 'newhire_student');
+    if (addRecordType !== 'special' && addRecordType !== 'preleave' && addRecordType !== 'airport' && !isNewHire) return;
     var gonghao = (document.getElementById('add-gonghao').value || '').trim().toUpperCase();
     if (!gonghao || !window.STAFF_LOOKUP) return;
     var info = window.STAFF_LOOKUP[gonghao];
@@ -1860,6 +2038,39 @@ async function submitAddRecord(e) {
         return;
     }
 
+    // 新入职人员（全职/学生）：需要入职时间和考核阶段
+    var isNewHire = (addRecordType === 'newhire_full' || addRecordType === 'newhire_student');
+    if (isNewHire) {
+        var nhDate = document.getElementById('add-newhire-date').value;
+        var nhStage = document.getElementById('add-newhire-stage').value;
+        if (!manager || !gonghao || !name || !store || !nhDate || !nhStage || !reason) {
+            alert('请填写所有必填字段（大店长、工号、姓名、门店、入职时间、新人考核阶段、备注原因）');
+            btn.disabled = false;
+            btn.textContent = '确认添加';
+            return;
+        }
+        var nhRecord = {
+            id: genSLId(),
+            大店长: manager, 门店: store, 工号: gonghao, 姓名: name,
+            入职时间: nhDate, 新人考核阶段: nhStage, 备注原因: reason,
+            addedBy: 'user', addedAt: new Date().toISOString().slice(0, 19)
+        };
+        if (addRecordType === 'newhire_full') {
+            upsertExtra(newHiresFullExtra, editRecordId, nhRecord);
+        } else {
+            upsertExtra(newHiresStudentExtra, editRecordId, nhRecord);
+        }
+        scheduleSLSync();
+        closeAddRecordModal();
+        refreshAll();
+        if (document.getElementById('detail-modal').classList.contains('active')) {
+            var tNh = document.getElementById('modal-title').textContent;
+            if (tNh.indexOf('新入职') >= 0) openNewHiresModal(addRecordType === 'newhire_full' ? 'fulltime' : 'student');
+        }
+        showToast((editRecordId ? '已修改' : '已新增') + (addRecordType === 'newhire_full' ? '全职' : '学生') + '新入职记录：' + name + '（' + gonghao + '）');
+        return;
+    }
+
     // 特殊请假：需要开始时间
     if (!manager || !gonghao || !name || !store || !start || !reason) {
         alert('请填写所有必填字段（大店长、工号、姓名、门店、开始时间、备注原因）');
@@ -1986,6 +2197,7 @@ function showToast(html, duration) {
 }
 
 function refreshAll() {
+    renderRecruitProgress();
     if (currentDimension === 'all') {
         renderCards(D.cards);
     } else {

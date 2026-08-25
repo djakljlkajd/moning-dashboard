@@ -269,7 +269,7 @@
     <div class="description-list">
         <div class="description-item">1、<strong>数据来源：</strong>桌面「墨柠年假.xlsx」，Sheet3为大店区汇总、Sheet2为205名在职员工年假明细</div>
         <div class="description-item">2、<strong>重点关注：</strong>剩余年假天数&gt;3天员工需尽快安排调休</div>
-        <div class="description-item">3、<strong>9月休息天数：</strong>点击表格内对应单元格即可填写，数据实时同步云端，支持多人线上协作</div>
+        <div class="description-item">3、<strong>9月休息天数：</strong>点击大店长行查看员工明细，在明细表中点击员工的「9月休息天数」单元格填写；大店区列自动汇总员工合计，数据实时同步云端，支持多人线上协作</div>
     </div>
 </div>
 
@@ -322,7 +322,7 @@
     </div>
 </div>
 
-<!-- ===== 9月休息天数 编辑弹窗（多人协作） ===== -->
+<!-- ===== 9月休息天数 编辑弹窗（多人协作·按员工） ===== -->
 <div class="modal-overlay" id="rest-modal" onclick="closeRestModal(event)">
     <div class="modal-box small" onclick="event.stopPropagation()">
         <div class="modal-header">
@@ -330,7 +330,7 @@
             <button class="modal-close" onclick="closeRestModal()">×</button>
         </div>
         <div class="rest-form">
-            <div class="rest-form-label">大店区：<b id="rest-region-name"></b><br>请填写该大店区 9月 计划休息总天数，保存后同步到云端，其他伙伴可见。</div>
+            <div class="rest-form-label">员工：<b id="rest-emp-name"></b>（<span id="rest-emp-no"></span>）<br>大店区：<b id="rest-region-name"></b><br>请填写该员工 9月 计划休息天数，保存后同步到云端，其他伙伴可见。</div>
             <div class="rest-input-wrap">
                 <input type="number" class="rest-input" id="rest-input" min="0" max="31" step="1" placeholder="0">
             </div>
@@ -340,7 +340,7 @@
             <button class="rest-btn rest-btn-cancel" onclick="closeRestModal()">取消</button>
             <button class="rest-btn rest-btn-ok" onclick="confirmRestSave()">✓ 保存并同步</button>
         </div>
-        <div class="rest-sync-status" id="rest-sync-status">数据实时同步至云端 · 多人协作填写<a href="javascript:void(0)" id="rest-clear-link" onclick="clearRestValue()" style="margin-left:10px;color:#e74c3c;font-weight:600;display:none;">清空该区填写</a></div>
+        <div class="rest-sync-status" id="rest-sync-status">数据实时同步至云端 · 多人协作填写<a href="javascript:void(0)" id="rest-clear-link" onclick="clearRestValue()" style="margin-left:10px;color:#e74c3c;font-weight:600;display:none;">清空该员工填写</a></div>
     </div>
 </div>
 
@@ -349,7 +349,7 @@
 <script src="data.js?v=20260825b"></script>
 <script>
 const D = window.ANNUAL_LEAVE_DATA;
-let sepRestCache = {};   // 大店区 -> 9月休息天数（多人协作云端同步）
+let sepRestCache = {};   // 员工工号 -> 9月休息天数（多人协作云端同步）；大店区列自动按员工汇总
 
 // ---------- 标题 / 日期 ----------
 document.getElementById('hdr-title').textContent = '● ' + D.meta.title;
@@ -372,6 +372,21 @@ function staffOfRegion(region) {
 }
 function staffGt3(region) {
     return D.staff.filter(s => (region === 'all' || s.大店区 === region) && s.剩余天数 > 3);
+}
+function sepRestFor(empNo) {
+    return sepRestCache[empNo];
+}
+function sepRestRegionTotal(region) {
+    return staffOfRegion(region).reduce(function (sum, s) { return sum + (sepRestCache[s.工号] || 0); }, 0);
+}
+function sepRestRegionFilled(region) {
+    return staffOfRegion(region).filter(function (s) { return sepRestCache[s.工号] !== undefined; }).length;
+}
+function sepRestTotal() {
+    return Object.values(sepRestCache).reduce(function (a, b) { return a + b; }, 0);
+}
+function sepRestFilledCount() {
+    return Object.keys(sepRestCache).length;
 }
 
 // ---------- 第一排卡片 ----------
@@ -405,8 +420,8 @@ function renderCards() {
 renderCards();
 
 function updateSepRestCard() {
-    const filled = Object.keys(sepRestCache).length;
-    const total = Object.values(sepRestCache).reduce(function (a, b) { return a + b; }, 0);
+    const filled = sepRestFilledCount();
+    const total = sepRestTotal();
     const valEl = document.getElementById('sep-rest-card-value');
     const subEl = document.getElementById('sep-rest-card-sub');
     if (!valEl) return;
@@ -415,7 +430,7 @@ function updateSepRestCard() {
         subEl.textContent = '点击表格填写';
     } else {
         valEl.textContent = total;
-        subEl.textContent = '已填 ' + filled + '/' + D.regions.rows.length + ' 区';
+        subEl.textContent = '已填 ' + filled + '/' + D.staff.length + ' 人';
     }
 }
 updateSepRestCard();
@@ -455,9 +470,11 @@ function openRegionModal(region) {
     const body = document.getElementById('modal-body');
     const foot = document.getElementById('modal-foot');
     const list = staffOfRegion(region);
-    const columns = ['工号', '姓名', '门店', '剩余天数'];
+    const columns = ['工号', '姓名', '门店', '9月休息天数', '剩余天数'];
+    const regionTotal = sepRestRegionTotal(region);
+    const regionFilled = sepRestRegionFilled(region);
     title.textContent = region + ' 员工年假明细 - 共 ' + list.length + ' 人';
-    foot.textContent = '剩余年假天数>3天员工需尽快安排调休';
+    foot.textContent = '9月休息天数：本区已填 ' + regionFilled + '/' + list.length + ' 人，合计 ' + regionTotal + ' 天';
     if (list.length === 0) {
         body.innerHTML = '<div class="modal-empty">暂无数据</div>';
     } else {
@@ -465,10 +482,15 @@ function openRegionModal(region) {
             '<table><thead><tr>' + columns.map(h => '<th>' + h + '</th>').join('') + '</tr></thead>' +
             '<tbody>' + list.map(r => {
                 const warn = r.剩余天数 > 3;
+                const restVal = sepRestCache[r.工号];
+                const restCell = restVal !== undefined
+                    ? '<span class="sep-rest-val">' + restVal + '天</span><span class="sep-rest-edit">✏️改</span>'
+                    : '<span class="sep-rest-empty">— 点击填写</span><span class="sep-rest-edit">✏️填</span>';
                 return '<tr>' +
                     '<td>' + r.工号 + '</td>' +
                     '<td><strong>' + r.姓名 + '</strong></td>' +
                     '<td class="text-left">' + r.门店 + '</td>' +
+                    '<td class="sep-rest-cell" onclick="event.stopPropagation();openRestModal(' + JSON.stringify(r.工号).replace(/"/g, '&quot;') + ')">' + restCell + '</td>' +
                     '<td>' + (warn ? '<span class="badge-warn">' + r.剩余天数 + '天</span>' : r.剩余天数 + '天') + '</td>' +
                 '</tr>';
             }).join('') + '</tbody></table>';
@@ -523,15 +545,16 @@ function renderRegions() {
     rows.forEach(r => {
         const tr = document.createElement('tr');
         tr.onclick = function () { openRegionModal(r.大店区); };
-        const restVal = sepRestCache[r.大店区];
+        const restTotal = sepRestRegionTotal(r.大店区);
+        const restFilled = sepRestRegionFilled(r.大店区);
         tr.innerHTML =
             '<td class="text-left"><strong>' + r.name + '</strong></td>' +
             '<td>' + r.门店数 + '</td>' +
             '<td>' + r.员工数 + '</td>' +
             '<td><strong>' + r.剩余年假 + '</strong></td>' +
-            '<td class="sep-rest-cell" onclick="event.stopPropagation();openRestModal(\'' + r.大店区 + '\')">' +
-                (restVal !== undefined
-                    ? '<span class="sep-rest-val">' + restVal + '天</span><span class="sep-rest-edit">✏️改</span>'
+            '<td class="sep-rest-cell">' +
+                (restFilled > 0
+                    ? '<span class="sep-rest-val">' + restTotal + '天</span><span class="sep-rest-edit">✏️改</span>'
                     : '<span class="sep-rest-empty">— 点击填写</span><span class="sep-rest-edit">✏️填</span>') +
             '</td>' +
             '<td>' + r.人均 + '</td>' +
@@ -545,11 +568,11 @@ function renderRegions() {
         const sum = shown.reduce((a, r) => ({
             门店数: a.门店数 + r.门店数, 员工数: a.员工数 + r.员工数,
             剩余年假: a.剩余年假 + r.剩余年假, 人均: a.人均 + r.人均,
-            gt3: a.gt3 + r.gt3, sepRest: a.sepRest + (sepRestCache[r.大店区] || 0)
+            gt3: a.gt3 + r.gt3, sepRest: a.sepRest + sepRestRegionTotal(r.大店区)
         }), { 门店数: 0, 员工数: 0, 剩余年假: 0, 人均: 0, gt3: 0, sepRest: 0 });
         sum.人均 = Math.round(sum.剩余年假 / sum.员工数 * 10) / 10;
         const isAll = (region === 'all' && status === 'all' && !q);
-        const filledCnt = shown.filter(r => sepRestCache[r.大店区] !== undefined).length;
+        const filledCnt = shown.reduce((n, r) => n + sepRestRegionFilled(r.大店区), 0);
         regionFoot.innerHTML =
             '<td class="text-left"><strong>' + (isAll ? '合计' : '小计(' + shown.length + '区)') + '</strong></td>' +
             '<td><strong>' + sum.门店数 + '</strong></td>' +
@@ -604,14 +627,14 @@ const SUPA_TABLE = 'violation_data';
 const SUPA_ID = 10;   // 年假看板专用行
 
 function sepRestBackup() {
-    try { localStorage.setItem('sepRestBackup', JSON.stringify({ sep_rest: sepRestCache, ts: Date.now() })); } catch (e) {}
+    try { localStorage.setItem('sepRestBackupEmp', JSON.stringify({ sep_rest_emp: sepRestCache, ts: Date.now() })); } catch (e) {}
 }
 function sepRestRestore() {
     try {
-        const raw = localStorage.getItem('sepRestBackup');
+        const raw = localStorage.getItem('sepRestBackupEmp');
         if (!raw) return;
         const d = JSON.parse(raw);
-        if (d && d.sep_rest) sepRestCache = Object.assign({}, d.sep_rest, sepRestCache);
+        if (d && d.sep_rest_emp) sepRestCache = Object.assign({}, d.sep_rest_emp, sepRestCache);
     } catch (e) {}
 }
 
@@ -624,7 +647,7 @@ async function loadSepRest() {
         const rows = await res.json();
         if (rows && rows.length) {
             const d = rows[0].data || {};
-            sepRestCache = d.sep_rest || {};
+            sepRestCache = d.sep_rest_emp || {};
         }
         sepRestRestore();
         renderRegions();
@@ -639,7 +662,7 @@ async function loadSepRest() {
 
 async function saveSepRest() {
     try {
-        const payload = { sep_rest: sepRestCache };
+        const payload = { sep_rest_emp: sepRestCache };
         const res = await fetch(SUPA_URL + '/rest/v1/' + SUPA_TABLE + '?id=eq.' + SUPA_ID, {
             method: 'PATCH',
             headers: {
@@ -659,12 +682,16 @@ async function saveSepRest() {
 }
 
 // ---------- 9月休息天数 编辑弹窗 ----------
-let currentRestRegion = null;
+let currentRestEmp = null;
 
-function openRestModal(region) {
-    currentRestRegion = region;
-    document.getElementById('rest-region-name').textContent = region;
-    const v = sepRestCache[region];
+function openRestModal(empNo) {
+    const emp = D.staff.find(s => s.工号 === empNo);
+    if (!emp) return;
+    currentRestEmp = emp;
+    document.getElementById('rest-emp-name').textContent = emp.姓名;
+    document.getElementById('rest-emp-no').textContent = emp.工号;
+    document.getElementById('rest-region-name').textContent = emp.大店区;
+    const v = sepRestCache[emp.工号];
     document.getElementById('rest-input').value = (v !== undefined ? v : '');
     document.getElementById('rest-clear-link').style.display = (v !== undefined) ? 'inline' : 'none';
     const st = document.getElementById('rest-sync-status');
@@ -677,7 +704,7 @@ function openRestModal(region) {
 function closeRestModal(e) {
     if (e && e.target !== document.getElementById('rest-modal')) return;
     document.getElementById('rest-modal').classList.remove('active');
-    currentRestRegion = null;
+    currentRestEmp = null;
 }
 
 function setRestSyncStatus(msg, cls) {
@@ -687,14 +714,18 @@ function setRestSyncStatus(msg, cls) {
 }
 
 async function confirmRestSave() {
-    if (!currentRestRegion) return;
+    if (!currentRestEmp) return;
     const raw = document.getElementById('rest-input').value.trim();
     if (raw === '') { alert('请填写 9月休息天数（0-31）'); return; }
     let v = parseInt(raw, 10);
     if (isNaN(v) || v < 0 || v > 31) { alert('请输入 0-31 之间的天数'); return; }
-    sepRestCache[currentRestRegion] = v;
+    sepRestCache[currentRestEmp.工号] = v;
     sepRestBackup();
     renderRegions();
+    // 如果员工明细弹窗正在打开，同步刷新其中的 9月休息天数 列
+    if (document.getElementById('detail-modal').classList.contains('active')) {
+        openRegionModal(currentRestEmp.大店区);
+    }
     setRestSyncStatus('⏳ 正在同步到云端...');
     const ok = await saveSepRest();
     if (ok) {
@@ -708,11 +739,14 @@ async function confirmRestSave() {
 }
 
 async function clearRestValue() {
-    if (!currentRestRegion) return;
-    if (!confirm('确定清空「' + currentRestRegion + '」的 9月休息天数填写？')) return;
-    delete sepRestCache[currentRestRegion];
+    if (!currentRestEmp) return;
+    if (!confirm('确定清空「' + currentRestEmp.姓名 + '」的 9月休息天数填写？')) return;
+    delete sepRestCache[currentRestEmp.工号];
     sepRestBackup();
     renderRegions();
+    if (document.getElementById('detail-modal').classList.contains('active')) {
+        openRegionModal(currentRestEmp.大店区);
+    }
     document.getElementById('rest-clear-link').style.display = 'none';
     document.getElementById('rest-input').value = '';
     setRestSyncStatus('⏳ 正在同步到云端...');

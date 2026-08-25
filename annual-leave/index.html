@@ -340,7 +340,7 @@
             <button class="rest-btn rest-btn-cancel" onclick="closeRestModal()">取消</button>
             <button class="rest-btn rest-btn-ok" onclick="confirmRestSave()">✓ 保存并同步</button>
         </div>
-        <div class="rest-sync-status" id="rest-sync-status">数据实时同步至云端 · 多人协作填写<a href="javascript:void(0)" id="rest-clear-link" onclick="clearRestValue()" style="margin-left:10px;color:#e74c3c;font-weight:600;display:none;">清空该员工填写</a></div>
+        <div class="rest-sync-status" id="rest-sync-status"><span id="rest-sync-text">数据实时同步至云端 · 多人协作填写</span><a href="javascript:void(0)" id="rest-clear-link" onclick="clearRestValue()" style="margin-left:10px;color:#e74c3c;font-weight:600;display:none;">清空该员工填写</a></div>
     </div>
 </div>
 
@@ -693,10 +693,9 @@ function openRestModal(empNo) {
     document.getElementById('rest-region-name').textContent = emp.大店区;
     const v = sepRestCache[emp.工号];
     document.getElementById('rest-input').value = (v !== undefined ? v : '');
-    document.getElementById('rest-clear-link').style.display = (v !== undefined) ? 'inline' : 'none';
-    const st = document.getElementById('rest-sync-status');
-    st.textContent = '数据实时同步至云端 · 多人协作填写';
-    st.className = 'rest-sync-status';
+    const clearLink = document.getElementById('rest-clear-link');
+    if (clearLink) clearLink.style.display = (v !== undefined) ? 'inline' : 'none';
+    setRestSyncStatus('数据实时同步至云端 · 多人协作填写');
     document.getElementById('rest-modal').classList.add('active');
     setTimeout(() => { document.getElementById('rest-input').focus(); }, 50);
 }
@@ -709,7 +708,8 @@ function closeRestModal(e) {
 
 function setRestSyncStatus(msg, cls) {
     const st = document.getElementById('rest-sync-status');
-    st.textContent = msg;
+    const txt = document.getElementById('rest-sync-text');
+    if (txt) txt.textContent = msg; else st.textContent = msg;   // 只更新文本 span，不覆盖清空链接
     st.className = 'rest-sync-status' + (cls ? ' ' + cls : '');
 }
 
@@ -747,7 +747,8 @@ async function clearRestValue() {
     if (document.getElementById('detail-modal').classList.contains('active')) {
         openRegionModal(currentRestEmp.大店区);
     }
-    document.getElementById('rest-clear-link').style.display = 'none';
+    const clearLink2 = document.getElementById('rest-clear-link');
+    if (clearLink2) clearLink2.style.display = 'none';
     document.getElementById('rest-input').value = '';
     setRestSyncStatus('⏳ 正在同步到云端...');
     const ok = await saveSepRest();

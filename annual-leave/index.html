@@ -68,7 +68,7 @@
 
         /* ===== 指标卡片横排 ===== */
         .cards-row {
-            display: grid; grid-template-columns: repeat(4, 1fr); gap: 0;
+            display: grid; grid-template-columns: repeat(5, 1fr); gap: 0;
             background: #fff; padding: 15px 20px;
         }
         .metric-card {
@@ -231,7 +231,7 @@
 
         /* ===== 响应式 ===== */
         @media (max-width: 1100px) {
-            .cards-row { grid-template-columns: repeat(4, 1fr); }
+            .cards-row { grid-template-columns: repeat(3, 1fr); }
         }
         @media (max-width: 768px) {
             body { padding: 10px; }
@@ -392,8 +392,33 @@ function renderCards() {
         }
         row.appendChild(div);
     });
+
+    // 新增：9月休息天数合计（由第二排协作列自动汇总）
+    const sepCard = document.createElement('div');
+    sepCard.className = 'metric-card';
+    sepCard.id = 'sep-rest-card';
+    sepCard.innerHTML =
+        '<div class="card-label">9月休息天数合计<br><span class="card-label-sub" id="sep-rest-card-sub">点击表格填写</span></div>' +
+        '<div class="card-value" style="color:#558b2f" id="sep-rest-card-value">—</div>';
+    row.appendChild(sepCard);
 }
 renderCards();
+
+function updateSepRestCard() {
+    const filled = Object.keys(sepRestCache).length;
+    const total = Object.values(sepRestCache).reduce(function (a, b) { return a + b; }, 0);
+    const valEl = document.getElementById('sep-rest-card-value');
+    const subEl = document.getElementById('sep-rest-card-sub');
+    if (!valEl) return;
+    if (filled === 0) {
+        valEl.textContent = '—';
+        subEl.textContent = '点击表格填写';
+    } else {
+        valEl.textContent = total;
+        subEl.textContent = '已填 ' + filled + '/' + D.regions.rows.length + ' 区';
+    }
+}
+updateSepRestCard();
 
 // ---------- 明细弹窗 ----------
 function openDetailModal(cardLabel) {
@@ -603,10 +628,12 @@ async function loadSepRest() {
         }
         sepRestRestore();
         renderRegions();
+        updateSepRestCard();
     } catch (e) {
         console.error('loadSepRest failed', e);
         sepRestRestore();
         renderRegions();
+        updateSepRestCard();
     }
 }
 
@@ -672,9 +699,11 @@ async function confirmRestSave() {
     const ok = await saveSepRest();
     if (ok) {
         setRestSyncStatus('✓ 已保存并同步到云端，其他伙伴可见', 'ok');
+        updateSepRestCard();
         setTimeout(() => closeRestModal(), 650);
     } else {
         setRestSyncStatus('✗ 同步失败（已保存在本机，刷新页面可恢复）', 'err');
+        updateSepRestCard();
     }
 }
 
@@ -688,8 +717,13 @@ async function clearRestValue() {
     document.getElementById('rest-input').value = '';
     setRestSyncStatus('⏳ 正在同步到云端...');
     const ok = await saveSepRest();
-    if (ok) setRestSyncStatus('✓ 已清空并同步', 'ok');
-    else setRestSyncStatus('✗ 同步失败（已保存在本机）', 'err');
+    if (ok) {
+        setRestSyncStatus('✓ 已清空并同步', 'ok');
+        updateSepRestCard();
+    } else {
+        setRestSyncStatus('✗ 同步失败（已保存在本机）', 'err');
+        updateSepRestCard();
+    }
 }
 
 loadSepRest();

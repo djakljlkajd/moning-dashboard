@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>墨柠年假看板</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+            background: #f2f5ec;
+            color: #333;
+            padding: 20px;
+        }
+        .container { max-width: 1400px; margin: 0 auto; }
+
+        /* ===== 标题栏 ===== */
+        .header-bar {
+            background: linear-gradient(135deg, #33691e 0%, #7cb342 100%);
+            border-radius: 8px 8px 0 0;
+            padding: 14px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header-title { font-size: 18px; font-weight: bold; color: #fff; }
+        .header-date { font-size: 12px; color: rgba(255,255,255,0.9); font-weight: 500; }
+        .dash-switcher { display: flex; align-items: center; gap: 8px; }
+        .dash-switcher-label { color: rgba(255,255,255,.95); font-size: 13px; white-space: nowrap; }
+        .dash-switcher-select {
+            background: #fff; color: #333; border: none; border-radius: 20px; padding: 6px 28px 6px 12px;
+            font-size: 13px; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,.12);
+            appearance: none; -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23558b2f' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat; background-position: right 10px center; min-width: 150px;
+        }
+        .dash-switcher-select:focus { outline: none; box-shadow: 0 0 0 2px rgba(255,255,255,.4); }
+        @media(max-width: 768px) { .dash-switcher-label { display: none; } .dash-switcher-select { min-width: 130px; } }
+
+        /* ===== 逻辑说明区 ===== */
+        .logic-bar {
+            background: linear-gradient(90deg, #f4f8e3 0%, #f0f7d8 100%);
+            border-bottom: 2px solid #d9e6a5;
+            padding: 12px 24px;
+            font-size: 12.5px;
+            color: #3f5a1f;
+            line-height: 1.6;
+        }
+        .logic-tags { margin-top: 4px; }
+        .logic-tag {
+            display: inline-block; padding: 2px 8px; border-radius: 3px; font-size: 11px; margin-right: 6px; font-weight: 600;
+        }
+        .tag-low { background: #fadbd8; color: #c0392b; }
+        .tag-ok { background: #d5f5e3; color: #27ae60; }
+        .tag-high { background: #d6eaf8; color: #2980b9; }
+        .tag-critical { background: #e8daef; color: #8e44ad; }
+
+        /* ===== 看板相关说明 ===== */
+        .description-bar {
+            background: linear-gradient(90deg, #eef7e3 0%, #e2f1cc 100%);
+            border-bottom: 2px solid #cde5b0;
+            padding: 12px 24px;
+            font-size: 12.5px; color: #2e4d1f; line-height: 1.85;
+            display: flex; gap: 12px; align-items: flex-start;
+        }
+        .description-bar-title { font-weight: bold; color: #558b2f; font-size: 13.5px; white-space: nowrap; padding-top: 1px; }
+        .description-list { flex: 1; }
+        .description-item { margin-bottom: 2px; }
+        .description-item strong { color: #c0392b; font-weight: 600; margin-right: 4px; }
+
+        /* ===== 排标题 ===== */
+        .section-header {
+            background: #fff; padding: 12px 20px 8px;
+            border-bottom: 1px solid #eee; font-weight: bold; font-size: 14px; color: #558b2f;
+        }
+
+        /* ===== 指标卡片横排 ===== */
+        .cards-row {
+            display: grid; grid-template-columns: repeat(7, 1fr); gap: 0;
+            background: #fff; padding: 15px 20px;
+        }
+        .metric-card {
+            background: #fafbf7; border: 1px solid #e8e8e8; border-radius: 6px;
+            padding: 14px 8px; text-align: center;
+            transition: all 0.25s ease; position: relative; overflow: hidden;
+        }
+        .metric-card:hover { transform: translateY(-3px); box-shadow: 0 6px 18px rgba(0,0,0,0.1); border-color: #8bc34a; }
+        .metric-card.clickable { cursor: pointer; }
+        .metric-card.clickable::after {
+            content: '点击查看明细'; position: absolute; bottom: 4px; left: 0; right: 0;
+            font-size: 10px; color: #888; opacity: 0; transition: opacity 0.2s;
+        }
+        .metric-card.clickable:hover::after { opacity: 1; }
+        .metric-card.highlight.clickable:hover::after { color: #c0392b; }
+        .click-hint {
+            position: absolute; bottom: 4px; right: 4px;
+            display: inline-flex; align-items: center; gap: 4px;
+            font-size: 10px; background: rgba(255,255,255,0.9);
+            border: 1px solid #e0b4b0; border-radius: 10px; padding: 1px 7px;
+            pointer-events: none; opacity: 0.95; transition: all 0.2s;
+        }
+        .click-hint svg { width: 12px; height: 12px; fill: #b0b0b0; filter: drop-shadow(1px 1px 1px rgba(0,0,0,0.35)); transition: fill 0.2s; }
+        .click-hint .hint-text { font-weight: bold; color: #e74c3c; letter-spacing: 0.5px; }
+        .metric-card.clickable:hover .click-hint { opacity: 1; border-color: #e74c3c; background: #fff; box-shadow: 0 2px 6px rgba(231,76,60,0.25); }
+        .metric-card.clickable:hover .click-hint svg { fill: #e74c3c; }
+        .metric-card.highlight.clickable .click-hint { border-color: #e74c3c; }
+        .metric-card::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+            background: linear-gradient(90deg, #8bc34a, #4caf50);
+        }
+        .metric-card.highlight::before { background: linear-gradient(90deg, #e74c3c, #c0392b); }
+        .card-label { font-size: 11.5px; color: #7f8c8d; margin-bottom: 6px; line-height: 1.35; }
+        .card-label-sub { font-size: 10px; color: #95a5a6; }
+        .card-value { font-size: 26px; font-weight: bold; color: #2c3e50; line-height: 1.2; }
+        .card-value.red { color: #e74c3c; }
+        .card-unit { font-size: 12px; color: #95a5a6; margin-left: 2px; }
+
+        /* ===== 第二排筛选栏 ===== */
+        .filter-bar {
+            background: #fff; padding: 12px 20px; display: flex; gap: 12px; flex-wrap: wrap; align-items: center;
+            border-bottom: 1px solid #e8e8e8;
+        }
+        .filter-select {
+            padding: 6px 12px; border: 1px solid #ddd; border-radius: 5px; font-size: 13px; outline: none; color: #555;
+        }
+        .search-box { display: flex; align-items: center; border: 1px solid #ddd; border-radius: 5px; padding: 5px 10px; margin-left: auto; }
+        .search-box input { border: none; outline: none; font-size: 13px; width: 160px; }
+        .action-btn { padding: 6px 16px; border: none; border-radius: 5px; font-size: 12.5px; cursor: pointer; font-weight: 500; transition: all 0.2s; }
+        .btn-reset { background: #ecf0f1; color: #555; }
+        .btn-reset:hover { background: #dcdde1; }
+        .btn-export { background: #8bc34a; color: #fff; }
+        .btn-export:hover { background: #7cb342; }
+
+        /* ===== 表格区 ===== */
+        .table-wrapper { background: #fff; overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; table-layout: fixed; min-width: 720px; }
+        thead th {
+            background: linear-gradient(180deg, #7cb342 0%, #558b2f 100%);
+            color: #fff; padding: 11px 10px; text-align: center; font-weight: 600; font-size: 12.5px;
+            white-space: nowrap; letter-spacing: 0.3px;
+        }
+        tbody td { padding: 10px 8px; text-align: center; border-bottom: 1px solid #f0f0f0; color: #333; }
+        tbody tr:nth-child(even) { background: #fbfdf6; }
+        tbody tr:hover { background: #eef6e0; cursor: pointer; }
+        .text-left { text-align: left !important; padding-left: 16px !important; }
+        .val-negative { color: #e74c3c; font-weight: bold; }
+        .val-positive { color: #27ae60; font-weight: bold; }
+        .val-warn { color: #e74c3c; font-weight: bold; }
+        .val-highlight { color: #e74c3c; font-weight: bold; font-size: 14px; background: #fdf2f0; }
+        .badge-warn {
+            display: inline-block; background: #fadbd8; color: #c0392b; border-radius: 10px;
+            padding: 1px 8px; font-size: 11px; font-weight: 600;
+        }
+        .badge-ok {
+            display: inline-block; background: #eaf6e3; color: #558b2f; border-radius: 10px;
+            padding: 1px 8px; font-size: 11px; font-weight: 600;
+        }
+
+        /* 合计行样式 */
+        tfoot td {
+            background: linear-gradient(180deg, #e8f5d3 0%, #cde5b0 100%);
+            font-weight: bold; padding: 12px 8px; color: #2e4d1f; font-size: 13px;
+        }
+        tfoot .total-note { font-size: 11.5px; color: #5d6d7e; font-weight: normal; }
+
+        /* ===== 明细弹窗 ===== */
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5); z-index: 100; justify-content: center; align-items: center;
+            padding: 20px;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal-box {
+            background: #fff; border-radius: 8px; width: 100%; max-width: 1000px; max-height: 80vh;
+            display: flex; flex-direction: column; box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+            animation: modalIn 0.25s ease;
+        }
+        @keyframes modalIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .modal-header {
+            background: linear-gradient(135deg, #33691e 0%, #7cb342 100%);
+            color: #fff; padding: 12px 18px; display: flex; justify-content: space-between; align-items: center;
+            border-radius: 8px 8px 0 0;
+        }
+        .modal-title { font-size: 15px; font-weight: bold; }
+        .modal-close {
+            background: rgba(255,255,255,0.2); border: none; color: #fff; font-size: 20px;
+            width: 30px; height: 30px; border-radius: 50%; cursor: pointer; line-height: 1;
+            transition: all 0.2s;
+        }
+        .modal-close:hover { background: rgba(255,255,255,0.4); }
+        .modal-body { padding: 0; overflow: auto; flex: 1; }
+        .modal-body table { font-size: 12.5px; }
+        .modal-body thead th { background: linear-gradient(180deg, #7cb342 0%, #558b2f 100%); position: sticky; top: 0; z-index: 2; }
+        .modal-body tbody tr { height: 44px; }
+        .modal-body tbody td { padding: 8px 10px; }
+        .modal-body tbody tr:hover { background: #eef6e0; }
+        .modal-empty { padding: 40px; text-align: center; color: #999; font-size: 14px; }
+        .modal-foot {
+            padding: 8px 18px; font-size: 11px; color: #95a5a6; background: #fafbf7;
+            border-top: 1px dashed #eef0f3; border-radius: 0 0 8px 8px;
+        }
+
+        /* ===== 响应式 ===== */
+        @media (max-width: 1100px) {
+            .cards-row { grid-template-columns: repeat(4, 1fr); }
+        }
+        @media (max-width: 768px) {
+            body { padding: 10px; }
+            .cards-row { grid-template-columns: repeat(2, 1fr); gap: 8px; padding: 12px; }
+            .filter-bar { flex-direction: column; align-items: stretch; }
+            .search-box { margin-left: 0; }
+            .search-box input { flex: 1; }
+            .header-bar { flex-direction: column; align-items: flex-start; gap: 8px; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+<!-- ===== 标题栏 ===== -->
+<div class="header-bar">
+    <div class="header-title" id="hdr-title">● 墨柠年假看板</div>
+    <div style="display:flex;align-items:center;gap:16px">
+        <div class="dash-switcher">
+            <span class="dash-switcher-label">切换看板：</span>
+            <select class="dash-switcher-select" onchange="switchDashboard(this)">
+                <option value="current">墨柠年假看板（当前）</option>
+                <option value="hours">墨柠工时分析看板</option>
+                <option value="hc">HC招募缺口看板</option>
+                <option value="turnover">古德墨柠离职数据看板</option>
+            </select>
+        </div>
+        <div class="header-date" id="hdr-date"></div>
+    </div>
+</div>
+
+<!-- ===== 逻辑说明区 ===== -->
+<div class="logic-bar">
+    🎯 <strong>数据逻辑：</strong>墨柠年假.xlsx → Sheet3大店区汇总（剩余年假天数） + Sheet2员工明细（工号/姓名/大店区/门店/剩余天数）
+    <div class="logic-tags">
+        <span class="logic-tag tag-low">⚠️ 剩余≤2天 预警</span>
+        <span class="logic-tag tag-critical">🔴 剩余=1天 即将清零</span>
+        <span class="logic-tag tag-ok">✅ 剩余=5天 未开始休假</span>
+    </div>
+</div>
+
+<!-- ===== 看板相关说明 ===== -->
+<div class="description-bar">
+    <div class="description-bar-title">📋 看板相关说明</div>
+    <div class="description-list">
+        <div class="description-item">1、<strong>数据来源：</strong>桌面「墨柠年假.xlsx」，Sheet3为大店区汇总、Sheet2为205名在职员工年假明细</div>
+        <div class="description-item">2、<strong>重点关注：</strong>剩余≤2天员工需尽快安排调休/年假使用，剩余=1天（即将清零）员工优先跟进</div>
+    </div>
+</div>
+
+<!-- ===== 第一排：核心指标 ===== -->
+<div class="section-header">【第一排】年假总览 - 核心指标</div>
+<div class="cards-row" id="cards-row"></div>
+
+<!-- ===== 第二排：大店区明细 ===== -->
+<div class="section-header" style="margin-top:2px;">【第二排】大店区明细看板 - 剩余年假对比</div>
+
+<div class="filter-bar">
+    <div style="font-size:13px;color:#666;font-weight:bold;">维度：</div>
+    <select class="filter-select" id="region-filter" onchange="filterTable()">
+        <option value="all">大店区：全部</option>
+    </select>
+    <select class="filter-select" id="status-filter" onchange="filterTable()">
+        <option value="all">状态：全部</option>
+        <option value="warn">⚠️ 预警（≤2天）</option>
+        <option value="full">✅ 满额未休（=5天）</option>
+    </select>
+    <div class="search-box">
+        🔍<input type="text" placeholder="搜索大店长..." oninput="filterTable()">
+    </div>
+    <button class="action-btn btn-reset" onclick="resetFilter()">🔄 重置筛选</button>
+    <button class="action-btn btn-export" onclick="exportData()">📥 导出数据</button>
+</div>
+
+<div class="table-wrapper">
+    <table>
+        <colgroup>
+            <col style="width:14%"><col style="width:12%"><col style="width:12%"><col style="width:16%">
+            <col style="width:14%"><col style="width:16%"><col style="width:16%">
+        </colgroup>
+        <thead><tr id="region-head"></tr></thead>
+        <tbody id="region-tbody"></tbody>
+        <tfoot><tr id="region-foot"></tr></tfoot>
+    </table>
+</div>
+
+<!-- ===== 明细弹窗 ===== -->
+<div class="modal-overlay" id="detail-modal" onclick="closeModal(event)">
+    <div class="modal-box" onclick="event.stopPropagation()">
+        <div class="modal-header">
+            <span class="modal-title" id="modal-title">明细</span>
+            <button class="modal-close" onclick="closeModal()">×</button>
+        </div>
+        <div class="modal-body" id="modal-body">
+            <div class="modal-empty">暂无数据</div>
+        </div>
+        <div class="modal-foot" id="modal-foot">点击行可查看该员工所在门店</div>
+    </div>
+</div>
+
+</div>
+
+<script src="data.js?v=20260825a"></script>
+<script>
+const D = window.ANNUAL_LEAVE_DATA;
+
+// ---------- 标题 / 日期 ----------
+document.getElementById('hdr-title').textContent = '● ' + D.meta.title;
+document.getElementById('hdr-date').textContent = '数据截止日期: ' + D.meta.asOf;
+
+// ---------- 看板切换 ----------
+function switchDashboard(sel) {
+    var map = {
+        hours: 'https://djakljlkajd.github.io/moning-dashboard/',
+        hc: 'https://djakljlkajd.github.io/moning-dashboard/hc/',
+        turnover: 'https://djakljlkajd.github.io/moning-dashboard/turnover/',
+        current: location.href
+    };
+    if (sel.value !== 'current' && map[sel.value]) window.location.href = map[sel.value];
+}
+
+// ---------- 员工明细过滤工具 ----------
+function staffOfRegion(region) {
+    return D.staff.filter(s => s.大店区 === region);
+}
+function staffWarn(region) {
+    return D.staff.filter(s => (region === 'all' || s.大店区 === region) && s.剩余天数 <= 2);
+}
+function staffFull(region) {
+    return D.staff.filter(s => (region === 'all' || s.大店区 === region) && s.剩余天数 === 5);
+}
+function staffEq1(region) {
+    return D.staff.filter(s => (region === 'all' || s.大店区 === region) && s.剩余天数 === 1);
+}
+
+// ---------- 第一排卡片 ----------
+function renderCards() {
+    const row = document.getElementById('cards-row');
+    row.innerHTML = '';
+    const arrowSvg = '<svg viewBox="0 0 24 24"><path d="M4 2 L4 20 L9 15 L12 21 L15 20 L12 14 L18 14 Z"/></svg>';
+    const clickableCards = ['剩余≤2天人数', '剩余=1天人数'];
+    D.cards.forEach(c => {
+        const div = document.createElement('div');
+        div.className = 'metric-card' + (c.highlight ? ' highlight' : '') + (clickableCards.includes(c.label) ? ' clickable' : '');
+        div.innerHTML =
+            '<div class="card-label">' + c.label + '<br><span class="card-label-sub">' + c.sub + '</span></div>' +
+            '<div class="card-value' + (c.red ? ' red' : '') + '">' + c.value + '</div>' +
+            (clickableCards.includes(c.label) ? '<div class="click-hint">' + arrowSvg + '<span class="hint-text">详情</span></div>' : '');
+        if (clickableCards.includes(c.label)) {
+            div.onclick = function () { openDetailModal(c.label); };
+        }
+        row.appendChild(div);
+    });
+}
+renderCards();
+
+// ---------- 明细弹窗 ----------
+function openDetailModal(cardLabel) {
+    const modal = document.getElementById('detail-modal');
+    const title = document.getElementById('modal-title');
+    const body = document.getElementById('modal-body');
+    const foot = document.getElementById('modal-foot');
+    let list, columns, t;
+    if (cardLabel === '剩余≤2天人数') {
+        list = staffWarn('all');
+        columns = ['工号', '姓名', '大店区', '门店', '剩余天数'];
+        t = '剩余≤2天员工明细（建议尽快安排调休/年假）';
+        foot.textContent = '共 ' + list.length + ' 人 · 剩余天数≤2天';
+    } else {
+        list = staffEq1('all');
+        columns = ['工号', '姓名', '大店区', '门店', '剩余天数'];
+        t = '剩余=1天员工明细（即将清零，优先跟进）';
+        foot.textContent = '共 ' + list.length + ' 人 · 剩余天数=1天';
+    }
+    title.textContent = t + ' - 共 ' + list.length + ' 人';
+    if (list.length === 0) {
+        body.innerHTML = '<div class="modal-empty">暂无数据</div>';
+    } else {
+        body.innerHTML =
+            '<table><thead><tr>' + columns.map(h => '<th>' + h + '</th>').join('') + '</tr></thead>' +
+            '<tbody>' + list.map(r => {
+                const warn = r.剩余天数 <= 2;
+                return '<tr>' +
+                    '<td>' + r.工号 + '</td>' +
+                    '<td><strong>' + r.姓名 + '</strong></td>' +
+                    '<td>' + r.大店区 + '</td>' +
+                    '<td class="text-left">' + r.门店 + '</td>' +
+                    '<td>' + (warn ? '<span class="badge-warn">' + r.剩余天数 + '天</span>' : r.剩余天数 + '天') + '</td>' +
+                '</tr>';
+            }).join('') + '</tbody></table>';
+    }
+    modal.classList.add('active');
+}
+
+function openRegionModal(region) {
+    const modal = document.getElementById('detail-modal');
+    const title = document.getElementById('modal-title');
+    const body = document.getElementById('modal-body');
+    const foot = document.getElementById('modal-foot');
+    const list = staffOfRegion(region);
+    const columns = ['工号', '姓名', '门店', '剩余天数'];
+    title.textContent = region + ' 员工年假明细 - 共 ' + list.length + ' 人';
+    foot.textContent = '剩余天数≤2天为预警状态，建议尽快安排调休/年假使用';
+    if (list.length === 0) {
+        body.innerHTML = '<div class="modal-empty">暂无数据</div>';
+    } else {
+        body.innerHTML =
+            '<table><thead><tr>' + columns.map(h => '<th>' + h + '</th>').join('') + '</tr></thead>' +
+            '<tbody>' + list.map(r => {
+                const warn = r.剩余天数 <= 2;
+                return '<tr>' +
+                    '<td>' + r.工号 + '</td>' +
+                    '<td><strong>' + r.姓名 + '</strong></td>' +
+                    '<td class="text-left">' + r.门店 + '</td>' +
+                    '<td>' + (warn ? '<span class="badge-warn">' + r.剩余天数 + '天</span>' : r.剩余天数 + '天') + '</td>' +
+                '</tr>';
+            }).join('') + '</tbody></table>';
+    }
+    modal.classList.add('active');
+}
+
+function closeModal(e) {
+    if (e && e.target !== document.getElementById('detail-modal')) return;
+    document.getElementById('detail-modal').classList.remove('active');
+}
+
+// ---------- 第二排：大店区明细表 ----------
+const regionHead = document.getElementById('region-head');
+const regionTbody = document.getElementById('region-tbody');
+const regionFoot = document.getElementById('region-foot');
+
+regionHead.innerHTML = D.regions.columns.map(h => '<th>' + h + '</th>').join('');
+
+// 大店区筛选下拉
+const regionSel = document.getElementById('region-filter');
+D.regions.rows.forEach(r => {
+    const opt = document.createElement('option');
+    opt.value = r.大店区;
+    opt.textContent = r.大店区;
+    regionSel.appendChild(opt);
+});
+
+function warnCell(n) {
+    return n > 0 ? '<span class="val-warn">' + n + '</span>' : '<span class="val-positive">0</span>';
+}
+
+function renderRegions() {
+    const q = (document.querySelector('.search-box input').value || '').trim();
+    const region = regionSel.value;
+    const status = document.getElementById('status-filter').value;
+    let rows = D.regions.rows;
+    if (region !== 'all') rows = rows.filter(r => r.大店区 === region);
+    if (q) rows = rows.filter(r => r.大店区.includes(q) || r.name.includes(q));
+    if (status === 'warn') rows = rows.filter(r => r.le2 > 0);
+    if (status === 'full') rows = rows.filter(r => r.eq5 > 0);
+
+    regionTbody.innerHTML = '';
+    if (rows.length === 0) {
+        regionTbody.innerHTML = '<tr><td colspan="7" style="padding:30px;color:#999;">无匹配记录</td></tr>';
+    }
+    rows.forEach(r => {
+        const tr = document.createElement('tr');
+        tr.onclick = function () { openRegionModal(r.大店区); };
+        tr.innerHTML =
+            '<td class="text-left"><strong>' + r.name + '</strong></td>' +
+            '<td>' + r.门店数 + '</td>' +
+            '<td>' + r.员工数 + '</td>' +
+            '<td><strong>' + r.剩余年假 + '</strong></td>' +
+            '<td>' + r.人均 + '</td>' +
+            '<td>' + warnCell(r.le2) + '</td>' +
+            '<td>' + (r.eq5 > 0 ? '<span class="badge-ok">' + r.eq5 + '人</span>' : '0') + '</td>';
+        regionTbody.appendChild(tr);
+    });
+
+    // 合计行：跟随筛选范围动态汇总
+    const shown = rows;
+    if (shown.length > 0) {
+        const sum = shown.reduce((a, r) => ({
+            门店数: a.门店数 + r.门店数, 员工数: a.员工数 + r.员工数,
+            剩余年假: a.剩余年假 + r.剩余年假, 人均: a.人均 + r.人均,
+            le2: a.le2 + r.le2, eq5: a.eq5 + r.eq5
+        }), { 门店数: 0, 员工数: 0, 剩余年假: 0, 人均: 0, le2: 0, eq5: 0 });
+        sum.人均 = Math.round(sum.剩余年假 / sum.员工数 * 10) / 10;
+        const isAll = (region === 'all' && status === 'all' && !q);
+        regionFoot.innerHTML =
+            '<td class="text-left"><strong>' + (isAll ? '合计' : '小计(' + shown.length + '区)') + '</strong></td>' +
+            '<td><strong>' + sum.门店数 + '</strong></td>' +
+            '<td><strong>' + sum.员工数 + '</strong></td>' +
+            '<td><strong>' + sum.剩余年假 + '</strong></td>' +
+            '<td><strong>' + sum.人均 + '</strong></td>' +
+            '<td>' + warnCell(sum.le2) + '</td>' +
+            '<td>' + (sum.eq5 > 0 ? '<span class="badge-ok">' + sum.eq5 + '人</span>' : '0') + '</td>';
+    } else {
+        regionFoot.innerHTML = '<td colspan="7" style="text-align:center;">—</td>';
+    }
+}
+renderRegions();
+
+function filterTable() { renderRegions(); }
+
+function resetFilter() {
+    regionSel.value = 'all';
+    document.getElementById('status-filter').value = 'all';
+    document.querySelector('.search-box input').value = '';
+    renderRegions();
+}
+
+// ---------- 导出 ----------
+function exportData() {
+    const q = (document.querySelector('.search-box input').value || '').trim();
+    const region = regionSel.value;
+    const status = document.getElementById('status-filter').value;
+    let list = D.staff.slice();
+    if (region !== 'all') list = list.filter(s => s.大店区 === region);
+    if (q) list = list.filter(s => s.大店区.includes(q) || s.姓名.includes(q));
+    if (status === 'warn') list = list.filter(s => s.剩余天数 <= 2);
+    if (status === 'full') list = list.filter(s => s.剩余天数 === 5);
+    const header = ['员工工号', '员工姓名', '大店区', '门店', '本年度剩余年假天数'];
+    const lines = [header.join(',')].concat(list.map(s =>
+        [s.工号, s.姓名, s.大店区, s.门店, s.剩余天数].map(v => {
+            const sv = String(v);
+            return sv.includes(',') || sv.includes('"') ? '"' + sv.replace(/"/g, '""') + '"' : sv;
+        }).join(',')
+    ));
+    const blob = new Blob(['\ufeff' + lines.join('\n')], { type: 'text/csv;charset=utf-8' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = '墨柠年假明细_' + D.meta.asOf + '.csv';
+    a.click();
+    URL.revokeObjectURL(a.href);
+}
+
+// 键盘 Esc 关闭弹窗
+document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') closeModal();
+});
+</script>
+</body>
+</html>

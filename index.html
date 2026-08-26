@@ -171207,7 +171207,20 @@ function updateTotalAlert(){
 }
 
 /* ========== 指标卡弹窗：预警人员名单 ========== */
+let currentAlertType=null;
+let modalFilterManager='';
+
+function onAlertModalMgrChange(mgr){
+  modalFilterManager=mgr||'';
+  const sel=document.getElementById('alertModalManagerSel');
+  if(sel && sel.value!==modalFilterManager) sel.value=modalFilterManager;
+  const reset=document.getElementById('alertModalMgrReset');
+  if(reset) reset.style.display=modalFilterManager?'inline':'none';
+  if(currentAlertType) showAlertDetail(currentAlertType);
+}
+
 function showAlertDetail(type){
+  currentAlertType=type;
   const modal=document.getElementById('alertModal');
   const title=document.getElementById('alertModalTitle');
   const count=document.getElementById('alertModalCount');
@@ -171216,7 +171229,28 @@ function showAlertDetail(type){
   const chartBox=document.getElementById('alertModalChart');
   chartBox.style.display='none';
   chartBox.innerHTML='';
-  const filt=getDetailFilterFn();
+  // 大店长筛选器：仅 over13 / consec8 显示
+  const mgrFilterBox=document.getElementById('alertModalManagerFilter');
+  const mgrSel=document.getElementById('alertModalManagerSel');
+  const mgrHint=document.getElementById('alertModalMgrHint');
+  const mgrReset=document.getElementById('alertModalMgrReset');
+  if(type==='over13' || type==='consec8'){
+    const srcData= type==='over13' ? (activeData.over13||[]) : (activeData.warn7||[]).filter(p=>p['当月最大连续']>=9);
+    const mgrList=[...new Set(srcData.map(p=>p['大店长']).filter(Boolean))].sort();
+    mgrSel.innerHTML='<option value="">全部大店长</option>' +
+      mgrList.map(m=>`<option value="${m}"${m===modalFilterManager?' selected':''}>${m}</option>`).join('');
+    mgrFilterBox.style.display='block';
+    mgrReset.style.display=modalFilterManager?'inline':'none';
+    mgrHint.textContent=modalFilterManager?`当前仅显示：${modalFilterManager}`:'';
+  } else {
+    mgrFilterBox.style.display='none';
+    modalFilterManager='';
+  }
+  const filt=function(p){
+    if(!getDetailFilterFn()(p)) return false;
+    if(modalFilterManager && p['大店长']!==modalFilterManager) return false;
+    return true;
+  };
   let hh='', bb='', cnt=0;
 
   if(type==='over13'){
@@ -171426,6 +171460,8 @@ function freezeAlertCols(widths,freezeCount){
 
 function closeAlertModal(){
   document.getElementById('alertModal').style.display='none';
+  modalFilterManager='';
+  currentAlertType=null;
 }
 
 /* ========== 0工时备注编辑 ========== */
@@ -172116,6 +172152,14 @@ try{
     </div>
     <div class="modal-bd">
       <div id="alertModalCount" class="modal-count"></div>
+      <div id="alertModalManagerFilter" style="display:none;margin:0 0 10px 0">
+        <label style="font-size:12px;color:var(--hint);margin-right:6px">仅看大店长：</label>
+        <select id="alertModalManagerSel" style="font-size:12px;padding:4px 8px;border:1px solid #DDD;border-radius:4px;background:#FFF;color:#333;max-width:180px" onchange="onAlertModalMgrChange(this.value)">
+          <option value="">全部大店长</option>
+        </select>
+        <span id="alertModalMgrReset" style="font-size:12px;color:#4A90E2;cursor:pointer;margin-left:8px;display:none" onclick="onAlertModalMgrChange('')">重置</span>
+        <span id="alertModalMgrHint" style="font-size:12px;color:#999;margin-left:10px"></span>
+      </div>
       <div id="alertModalChart" style="display:none"></div>
       <table><thead><tr id="alertModalHead"></tr></thead><tbody id="alertModalBody"></tbody></table>
     </div>

@@ -746,7 +746,7 @@
 
 </div><!-- end container -->
 
-<script src="data.js?v=20260826d"></script>
+<script src="data.js?v=20260826e"></script>
 <script>
 const STORE_DATA={
 dadianchang:["何海云", "刘旺林", "周思凡", "廖灿", "徐宇辉", "旷瑶", "易彪", "李奔", "杜强", "童璐", "赵思洁", "邵宝生", "钟天祥"],
@@ -1198,7 +1198,15 @@ function renderAnalysisCharts() {
         }
     });
 
-    // 构建大店长区域双轴折线图配置
+    // 大店长离职排名（第三排小卡）
+    const ctx4 = document.getElementById('chart-dadianchang').getContext('2d');
+    if (chartDadianchang) chartDadianchang.destroy();
+    const sortedDc = D.dadianchang.slice().sort((a, b) => b.resignCount - a.resignCount || b.resignRate - a.resignRate);
+    if (sortedDc.every(d => d.resignCount === 0)) sortedDc.reverse();
+    chartDadianchang = buildDcChartConfig(ctx4, sortedDc);
+}
+
+// 构建大店长区域双轴折线图配置
 function buildDcChartConfig(ctx, sorted) {
     return new Chart(ctx, {
         type: 'bar',
@@ -1292,89 +1300,6 @@ function renderDcFocus() {
             : '本期暂无离职记录';
     }
     chartDcFocus = buildDcChartConfig(ctx.getContext('2d'), sorted);
-}
-
-    // ===== 二八分析图表 =====
-function renderAnalysisCharts() {
-    const stats = getFilteredStats();
-
-    // 职级分布
-    const ctx1 = document.getElementById('chart-zhiji').getContext('2d');
-    if (chartZhiJi) chartZhiJi.destroy();
-    const zKeys = Object.keys(stats.zhiJi);
-    chartZhiJi = new Chart(ctx1, {
-        type: 'doughnut',
-        data: {
-            labels: zKeys,
-            datasets: [{
-                data: zKeys.map(k => stats.zhiJi[k]),
-                backgroundColor: ['#c62828', '#1565c0', '#f57f17', '#42a5f5', '#90a4ae'],
-                borderWidth: 2, borderColor: '#fff'
-            }]
-        },
-        options: {
-            responsive: true, maintainAspectRatio: false,
-            plugins: {
-                legend: { position: 'right', labels: { boxWidth: 12, font: { size: 11 }, padding: 8 } },
-                tooltip: { callbacks: { label: ctx => ctx.label + ': ' + ctx.parsed + '人' } }
-            }
-        }
-    });
-
-    // 工龄分布
-    const ctx2 = document.getElementById('chart-gongling').getContext('2d');
-    if (chartGongLing) chartGongLing.destroy();
-    const gKeys = Object.keys(stats.gongLing);
-    chartGongLing = new Chart(ctx2, {
-        type: 'doughnut',
-        data: {
-            labels: gKeys,
-            datasets: [{
-                data: gKeys.map(k => stats.gongLing[k]),
-                backgroundColor: ['#c62828', '#f57f17', '#1565c0', '#2e7d32'],
-                borderWidth: 2, borderColor: '#fff'
-            }]
-        },
-        options: {
-            responsive: true, maintainAspectRatio: false,
-            plugins: {
-                legend: { position: 'right', labels: { boxWidth: 12, font: { size: 11 }, padding: 8 } },
-                tooltip: { callbacks: { label: ctx => ctx.label + ': ' + ctx.parsed + '人' } }
-            }
-        }
-    });
-
-    // 离职原因分布
-    const ctx3 = document.getElementById('chart-reason').getContext('2d');
-    if (chartReason) chartReason.destroy();
-    const rKeys = Object.keys(stats.reasonCount);
-    const rColors = rKeys.map(l => {
-        const map = { '发展原因': '#1565c0', '身体原因': '#e65100', '个人原因': '#7b1fa2', '其他原因': '#c62828', '个人能力': '#2e7d32' };
-        return map[l] || '#757575';
-    });
-    chartReason = new Chart(ctx3, {
-        type: 'bar',
-        data: { labels: rKeys, datasets: [{ data: rKeys.map(k => stats.reasonCount[k]), backgroundColor: rColors, borderRadius: 4 }] },
-        options: {
-            indexAxis: 'y',
-            responsive: true, maintainAspectRatio: false,
-            plugins: {
-                legend: { display: false },
-                tooltip: { callbacks: { label: ctx => ctx.parsed.x + '人' } }
-            },
-            scales: {
-                x: { ticks: { font: { size: 10 }, stepSize: 1 }, grid: { color: 'rgba(0,0,0,0.05)' } },
-                y: { ticks: { font: { size: 11 } } }
-            }
-        }
-    });
-
-    // 大店长离职排名（第三排小卡）
-    const ctx4 = document.getElementById('chart-dadianchang').getContext('2d');
-    if (chartDadianchang) chartDadianchang.destroy();
-    const sorted3 = D.dadianchang.slice().sort((a, b) => b.resignCount - a.resignCount || b.resignRate - a.resignRate);
-    if (sorted3.every(d => d.resignCount === 0)) sorted3.reverse();
-    chartDadianchang = buildDcChartConfig(ctx4, sorted3);
 }
 
 // ===== 大店长表格 =====

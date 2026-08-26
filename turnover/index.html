@@ -703,7 +703,7 @@
 
 </div><!-- end container -->
 
-<script src="data.js?v=20260826a"></script>
+<script src="data.js?v=20260826b"></script>
 <script>
 const STORE_DATA={
 dadianchang:["何海云", "刘旺林", "周思凡", "廖灿", "徐宇辉", "旷瑶", "易彪", "李奔", "杜强", "童璐", "赵思洁", "邵宝生", "钟天祥"],
@@ -1218,8 +1218,7 @@ function renderDadianchangTable() {
 
 // ===== 离职人员明细表 =====
 function renderEmpTable() {
-    const head = ['序号', '大店长', '门店', '姓名', '职位', '入职日期', '离职日期', '在职月数', '工龄区间', '离职原因', '原因标签', '离职详情',
-        '沟通时间', '运营判定离职原因', 'BP沟通离职原因', 'BP沟通时间', 'BP判定原因', '是否一致', '不一致说明'];
+    const head = ['序号', '大店长', '门店', '姓名', '职位', '入职日期', '离职日期', '在职月数', '工龄区间', '离职原因', '原因标签', '离职详情'];
     document.getElementById('emp-head').innerHTML = head.map(h => '<th>' + h + '</th>').join('');
 
     const tb = document.getElementById('emp-tbody');
@@ -1242,14 +1241,7 @@ function renderEmpTable() {
             '<td>' + (e.gongLingQuJian || '') + '</td>' +
             '<td>' + (e.reason1 || '') + '</td>' +
             '<td><span class="reason-badge ' + reasonClass(e.reasonTag || e.reason1) + '">' + (e.reasonTag || e.reason1) + '</span></td>' +
-            '<td class="text-left col-detail">' + getReasonEditHtml(e, 'reason', '离职详情') + '</td>' +
-            '<td class="col-edit col-edit-time">' + getReasonEditHtml(e, 'communicationTime', '沟通时间') + '</td>' +
-            '<td class="col-edit">' + getReasonEditHtml(e, 'operationReason', '运营判定离职原因') + '</td>' +
-            '<td class="col-edit">' + getReasonEditHtml(e, 'bpReason', 'BP沟通离职原因') + '</td>' +
-            '<td class="col-edit col-edit-time">' + getReasonEditHtml(e, 'bpCommunicationTime', 'BP沟通时间') + '</td>' +
-            '<td class="col-edit">' + getReasonEditHtml(e, 'bpTag', 'BP判定原因') + '</td>' +
-            '<td class="col-edit">' + getReasonEditHtml(e, 'isConsistent', '是否一致') + '</td>' +
-            '<td class="col-edit">' + getReasonEditHtml(e, 'inconsistencyNote', '不一致说明') + '</td>';
+            '<td class="text-left col-detail">' + getReasonEditHtml(e, 'reason', '离职详情') + '</td>';
         tb.appendChild(tr);
     });
 
@@ -1341,8 +1333,7 @@ function showEmpModal(title, list) {
     if (list.length === 0) {
         body.innerHTML = toolbar+'<div class="modal-empty">该维度暂无离职人员，可点击上方按钮新增</div>';
     } else {
-        const cols = ['序号', '大店长', '姓名', '职位', '门店', '入职日期', '离职日期', '工龄', '离职原因', '详情',
-            '沟通时间', '运营判定离职原因', 'BP沟通离职原因', 'BP沟通时间', 'BP判定原因', '是否一致', '不一致说明', '操作'];
+        const cols = ['序号', '大店长', '姓名', '职位', '门店', '入职日期', '离职日期', '工龄', '离职原因', '详情', '操作'];
         body.innerHTML = toolbar +
             '<div class="modal-table-wrap"><table><thead><tr>' + cols.map(h => '<th>' + h + '</th>').join('') + '</tr></thead>' +
             '<tbody>' + list.map((e, i) =>
@@ -1357,13 +1348,6 @@ function showEmpModal(title, list) {
                 '<td>' + (e.gongLingQuJian || '') + '</td>' +
                 '<td><span class="reason-badge ' + reasonClass(e.reasonTag || e.reason1) + '">' + (e.reasonTag || e.reason1) + '</span></td>' +
                 '<td class="text-left col-detail">' + getReasonEditHtml(e, 'reason', '离职详情') + '</td>' +
-                '<td class="col-edit col-edit-time">' + getReasonEditHtml(e, 'communicationTime', '沟通时间') + '</td>' +
-                '<td class="col-edit">' + getReasonEditHtml(e, 'operationReason', '运营判定离职原因') + '</td>' +
-                '<td class="col-edit">' + getReasonEditHtml(e, 'bpReason', 'BP沟通离职原因') + '</td>' +
-                '<td class="col-edit col-edit-time">' + getReasonEditHtml(e, 'bpCommunicationTime', 'BP沟通时间') + '</td>' +
-                '<td class="col-edit">' + getReasonEditHtml(e, 'bpTag', 'BP判定原因') + '</td>' +
-                '<td class="col-edit">' + getReasonEditHtml(e, 'isConsistent', '是否一致') + '</td>' +
-                '<td class="col-edit">' + getReasonEditHtml(e, 'inconsistencyNote', '不一致说明') + '</td>' +
                 '<td>'+(e._isOnline?'<button class="action-btn" style="background:#ffcdd2;color:#c62828;padding:3px 8px;font-size:11px;" onclick="event.stopPropagation();deleteOnlineResign(\''+e.empId+'\')">删除</button>':'')+'</td>' +
                 '</tr>'
             ).join('') + '</tbody></table></div>';

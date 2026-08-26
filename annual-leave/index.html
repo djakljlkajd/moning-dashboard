@@ -107,6 +107,20 @@
         .card-value.red { color: #e74c3c; }
         .card-unit { font-size: 12px; color: #95a5a6; margin-left: 2px; }
 
+        /* ===== 提示条 ===== */
+        .tip-bar {
+            background: #fff8e1;
+            border-left: 4px solid #f9a825;
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #5d4037;
+        }
+        .tip-bar-icon { font-size: 16px; }
+        .tip-bar-text strong { color: #e65100; font-weight: 700; }
+
         /* ===== 第二排筛选栏 ===== */
         .filter-bar {
             background: #fff; padding: 12px 20px; display: flex; gap: 12px; flex-wrap: wrap; align-items: center;
@@ -278,6 +292,11 @@
 
 <!-- ===== 第二排：大店区明细 ===== -->
 <div class="section-header" style="margin-top:2px;">【第二排】大店区明细看板 - 剩余年假对比</div>
+
+<div class="tip-bar">
+    <span class="tip-bar-icon">👇</span>
+    <span class="tip-bar-text"><strong>操作提示：</strong>点击此列填写排休目标</span>
+</div>
 
 <div class="filter-bar">
     <div style="font-size:13px;color:#666;font-weight:bold;">维度：</div>

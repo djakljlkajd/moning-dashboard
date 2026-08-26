@@ -10,19 +10,19 @@ window.DASHBOARD_DATA = {
     "city": "古德墨柠运营",
     "beginCount": 416,
     "endCount": 410,
-    "resignCount": 6,
-    "resignRate": 0.014527845036319613,
+    "resignCount": 0,
+    "resignRate": 0.0,
     "zhiJi": {
       "店长": 0,
       "中级训练员": 0,
-      "初级训练员": 1,
-      "服务员": 5,
+      "初级训练员": 0,
+      "服务员": 0,
       "见习生": 0
     },
     "gongLing": {
-      "6个月内": 3,
+      "6个月内": 0,
       "6-12个月": 0,
-      "1-3年": 3,
+      "1-3年": 0,
       "3年以上": 0
     },
     "aDuanRatio": 0.0
@@ -31,18 +31,18 @@ window.DASHBOARD_DATA = {
     {
       "name": "李曦",
       "beginCount": 107,
-      "endCount": 106,
-      "resignCount": 1,
-      "resignRate": 0.009389671361502348,
+      "endCount": 107,
+      "resignCount": 0,
+      "resignRate": 0.0,
       "zhiJi": {
         "店长": 0,
         "中级训练员": 0,
         "初级训练员": 0,
-        "服务员": 1,
+        "服务员": 0,
         "见习生": 0
       },
       "gongLing": {
-        "6个月内": 1,
+        "6个月内": 0,
         "6-12个月": 0,
         "1-3年": 0,
         "3年以上": 0
@@ -52,20 +52,20 @@ window.DASHBOARD_DATA = {
     {
       "name": "徐乾",
       "beginCount": 115,
-      "endCount": 112,
-      "resignCount": 3,
-      "resignRate": 0.02643171806167401,
+      "endCount": 115,
+      "resignCount": 0,
+      "resignRate": 0.0,
       "zhiJi": {
         "店长": 0,
         "中级训练员": 0,
         "初级训练员": 0,
-        "服务员": 3,
+        "服务员": 0,
         "见习生": 0
       },
       "gongLing": {
-        "6个月内": 2,
+        "6个月内": 0,
         "6-12个月": 0,
-        "1-3年": 1,
+        "1-3年": 0,
         "3年以上": 0
       },
       "aDuan": 0
@@ -73,20 +73,20 @@ window.DASHBOARD_DATA = {
     {
       "name": "林阳阳",
       "beginCount": 86,
-      "endCount": 85,
-      "resignCount": 1,
-      "resignRate": 0.011695906432748537,
+      "endCount": 86,
+      "resignCount": 0,
+      "resignRate": 0.0,
       "zhiJi": {
         "店长": 0,
         "中级训练员": 0,
-        "初级训练员": 1,
+        "初级训练员": 0,
         "服务员": 0,
         "见习生": 0
       },
       "gongLing": {
         "6个月内": 0,
         "6-12个月": 0,
-        "1-3年": 1,
+        "1-3年": 0,
         "3年以上": 0
       },
       "aDuan": 0
@@ -94,20 +94,20 @@ window.DASHBOARD_DATA = {
     {
       "name": "张良东",
       "beginCount": 108,
-      "endCount": 107,
-      "resignCount": 1,
-      "resignRate": 0.009302325581395349,
+      "endCount": 108,
+      "resignCount": 0,
+      "resignRate": 0.0,
       "zhiJi": {
         "店长": 0,
         "中级训练员": 0,
         "初级训练员": 0,
-        "服务员": 1,
+        "服务员": 0,
         "见习生": 0
       },
       "gongLing": {
         "6个月内": 0,
         "6-12个月": 0,
-        "1-3年": 1,
+        "1-3年": 0,
         "3年以上": 0
       },
       "aDuan": 0
@@ -119,20 +119,20 @@ window.DASHBOARD_DATA = {
       "qujing": "林阳阳",
       "name": "李奔",
       "beginCount": 29,
-      "endCount": 28,
-      "resignCount": 1,
-      "resignRate": 0.03508771929824561,
+      "endCount": 29,
+      "resignCount": 0,
+      "resignRate": 0.0,
       "zhiJi": {
         "店长": 0,
         "中级训练员": 0,
-        "初级训练员": 1,
+        "初级训练员": 0,
         "服务员": 0,
         "见习生": 0
       },
       "gongLing": {
         "6个月内": 0,
         "6-12个月": 0,
-        "1-3年": 1,
+        "1-3年": 0,
         "3年以上": 0
       }
     },
@@ -141,18 +141,18 @@ window.DASHBOARD_DATA = {
       "qujing": "李曦",
       "name": "童璐",
       "beginCount": 29,
-      "endCount": 28,
-      "resignCount": 1,
-      "resignRate": 0.03508771929824561,
+      "endCount": 29,
+      "resignCount": 0,
+      "resignRate": 0.0,
       "zhiJi": {
         "店长": 0,
         "中级训练员": 0,
         "初级训练员": 0,
-        "服务员": 1,
+        "服务员": 0,
         "见习生": 0
       },
       "gongLing": {
-        "6个月内": 1,
+        "6个月内": 0,
         "6-12个月": 0,
         "1-3年": 0,
         "3年以上": 0
@@ -251,18 +251,18 @@ window.DASHBOARD_DATA = {
       "qujing": "徐乾",
       "name": "旷瑶",
       "beginCount": 30,
-      "endCount": 29,
-      "resignCount": 1,
-      "resignRate": 0.03389830508474576,
+      "endCount": 30,
+      "resignCount": 0,
+      "resignRate": 0.0,
       "zhiJi": {
         "店长": 0,
         "中级训练员": 0,
         "初级训练员": 0,
-        "服务员": 1,
+        "服务员": 0,
         "见习生": 0
       },
       "gongLing": {
-        "6个月内": 1,
+        "6个月内": 0,
         "6-12个月": 0,
         "1-3年": 0,
         "3年以上": 0
@@ -295,20 +295,20 @@ window.DASHBOARD_DATA = {
       "qujing": "徐乾",
       "name": "易彪",
       "beginCount": 34,
-      "endCount": 33,
-      "resignCount": 1,
-      "resignRate": 0.029850746268656716,
+      "endCount": 34,
+      "resignCount": 0,
+      "resignRate": 0.0,
       "zhiJi": {
         "店长": 0,
         "中级训练员": 0,
         "初级训练员": 0,
-        "服务员": 1,
+        "服务员": 0,
         "见习生": 0
       },
       "gongLing": {
         "6个月内": 0,
         "6-12个月": 0,
-        "1-3年": 1,
+        "1-3年": 0,
         "3年以上": 0
       }
     },
@@ -339,20 +339,20 @@ window.DASHBOARD_DATA = {
       "qujing": "张良东",
       "name": "徐宇辉",
       "beginCount": 29,
-      "endCount": 28,
-      "resignCount": 1,
-      "resignRate": 0.03508771929824561,
+      "endCount": 29,
+      "resignCount": 0,
+      "resignRate": 0.0,
       "zhiJi": {
         "店长": 0,
         "中级训练员": 0,
         "初级训练员": 0,
-        "服务员": 1,
+        "服务员": 0,
         "见习生": 0
       },
       "gongLing": {
         "6个月内": 0,
         "6-12个月": 0,
-        "1-3年": 1,
+        "1-3年": 0,
         "3年以上": 0
       }
     },
@@ -383,18 +383,18 @@ window.DASHBOARD_DATA = {
       "qujing": "徐乾",
       "name": "钟天祥",
       "beginCount": 26,
-      "endCount": 25,
-      "resignCount": 1,
-      "resignRate": 0.0392156862745098,
+      "endCount": 26,
+      "resignCount": 0,
+      "resignRate": 0.0,
       "zhiJi": {
         "店长": 0,
         "中级训练员": 0,
         "初级训练员": 0,
-        "服务员": 1,
+        "服务员": 0,
         "见习生": 0
       },
       "gongLing": {
-        "6个月内": 1,
+        "6个月内": 0,
         "6-12个月": 0,
         "1-3年": 0,
         "3年以上": 0
@@ -437,7 +437,7 @@ window.DASHBOARD_DATA = {
         0.0213,
         0.03,
         0.028,
-        0.014527845036319613
+        0.0
       ]
     },
     "resignCounts": [
@@ -445,7 +445,7 @@ window.DASHBOARD_DATA = {
       9,
       13,
       11,
-      6
+      0
     ]
   },
   "weekly": {
@@ -505,230 +505,6 @@ window.DASHBOARD_DATA = {
       "diff": 0.00567528156226572
     }
   },
-  "employees": [
-    {
-      "week": "2025-W4",
-      "seq": 1,
-      "city": "古德墨柠运营",
-      "qujing": "李曦",
-      "dadianchang": "童璐",
-      "store": "古德墨柠登隆街内街店",
-      "empId": "CY64922",
-      "name": "刘妍",
-      "position": "服务员",
-      "hireDate": "2026-04",
-      "resignDate": "2026-08",
-      "resignType": "主动离职",
-      "reason1": "个人发展",
-      "reason2": "",
-      "reasonDetail": "个人原因，伙伴家里人安排了家附近的工作，想让伙伴回去工作，离家近一些，原本计划国庆后离职，但长沙的房子8/8号到期，所以决定在8/8号离职回家。",
-      "reasonTag": "个人发展",
-      "hireMonth": 4,
-      "gongLingQuJian": "6个月内",
-      "zhiJi": "服务员",
-      "dadianchangRaw": "童璐大店区"
-    },
-    {
-      "week": "2025-W6",
-      "seq": 2,
-      "city": "古德墨柠运营",
-      "qujing": "张良东",
-      "dadianchang": "徐宇辉",
-      "store": "古德墨柠突兀店",
-      "empId": "CY50091",
-      "name": "刘涵博",
-      "position": "服务员",
-      "hireDate": "2025-06",
-      "resignDate": "2026-08",
-      "resignType": "主动离职",
-      "reason1": "个人发展",
-      "reason2": "",
-      "reasonDetail": "1、伙伴之前就有离职意向，因为家里不支持伙伴这份工作，并且一直有催促回家考教师，在6月份中间有过一次沟通，伙伴说暂时还没决定好，并且门店状态正常，所以没有规划离职情况\n2、本次离职是前天提出，伙伴表示家里做了9月份自己的工作安排，想在上班之前出去玩一段时间，并且朋友帮自己买好了去玩的票，所以不想再干了，选择急辞",
-      "reasonTag": "个人发展",
-      "hireMonth": 14,
-      "gongLingQuJian": "1-3年",
-      "zhiJi": "服务员",
-      "dadianchangRaw": "徐宇辉大店区"
-    },
-    {
-      "week": "2025-W9",
-      "seq": 3,
-      "city": "古德墨柠运营",
-      "qujing": "林阳阳",
-      "dadianchang": "李奔",
-      "store": "古德墨柠步行街B区店",
-      "empId": "CY48094",
-      "name": "刘淑文",
-      "position": "初级训练员",
-      "hireDate": "2025-04",
-      "resignDate": "2026-08",
-      "resignType": "主动离职",
-      "reason1": "个人发展",
-      "reason2": "",
-      "reasonDetail": "1、伙伴今日上班突然和店长提出，工作到周日下周一就不来了\n2、了解到伙伴下周一要去她表哥在长沙开的一家寿司店“寿司郎”面试入职\n3、此伙伴5月从新大陆银座店因周佳毅从B区调入新大陆银座带店的做得对调。在整个到B区工作的这段时间和门店整体相处是融洽的，前期未和店长有任何表达过可能会要离职的意向。\n4、今日到店沟通后，伙伴自身表示事发突然，表哥这几天在问她要不要过去上班，在考虑后决定过去。和伙伴沟通是否可供完8月，伙伴表示由于入职时间有限，故必须周一就过去。\n5、已沟通此举离职是属于急辞，以及后续再想入职会比较困难。伙伴表示不会改变决定。\n6、已和BP杨梦琳互动此情况，杨梦琳会在明天前完成伙伴的线上互动。\n7、下周将在步行街E区和谢子龙抽调伙伴支援B区",
-      "reasonTag": "个人发展",
-      "hireMonth": 15,
-      "gongLingQuJian": "1-3年",
-      "zhiJi": "初级训练员",
-      "dadianchangRaw": "李奔大店区"
-    },
-    {
-      "week": "2025-W10",
-      "seq": 4,
-      "city": "古德墨柠运营",
-      "qujing": "徐乾",
-      "dadianchang": "旷瑶",
-      "store": "古德墨柠高铁南站A8二楼店",
-      "empId": "CY69338",
-      "name": "张鑫琳",
-      "position": "服务员",
-      "hireDate": "2026-07",
-      "resignDate": "2026-08",
-      "resignType": "主动离职",
-      "reason1": "身体原因",
-      "reason2": "",
-      "reasonDetail": "伙伴入职后在门店学习进度比较慢，难以胜任告业绩门店的工作，伙伴自己觉得也很难适应门店的基础工作",
-      "reasonTag": "身体原因",
-      "hireMonth": 1,
-      "gongLingQuJian": "6个月内",
-      "zhiJi": "服务员",
-      "dadianchangRaw": "旷瑶大店区"
-    },
-    {
-      "week": "",
-      "seq": 5,
-      "city": "古德墨柠运营",
-      "qujing": "徐乾",
-      "dadianchang": "易彪",
-      "store": "古德墨柠机场T2A安检店",
-      "empId": "CY46636",
-      "name": "朱忞翾",
-      "position": "服务员",
-      "hireDate": "2025-03",
-      "resignDate": "2026-08",
-      "resignType": "主动离职",
-      "reason1": "身体原因",
-      "reason2": null,
-      "reasonDetail": "伙伴是之前茶颜返岗的伙伴，因为家里装修，在机场上班工资比较可观。现在家里装修已经完成了，加上伙伴自己身体不是很好，姨妈总是推迟。所以想要离职。",
-      "reasonTag": "身体原因",
-      "hireMonth": 16,
-      "gongLingQuJian": "1-3年",
-      "zhiJi": "服务员",
-      "dadianchangRaw": "易彪大店区"
-    },
-    {
-      "week": "",
-      "seq": 6,
-      "city": "古德墨柠运营",
-      "qujing": "徐乾",
-      "dadianchang": "钟天祥",
-      "store": "古德墨柠科佳电脑城店",
-      "empId": "CY64417",
-      "name": "莫雪琪",
-      "position": "服务员",
-      "hireDate": "2026-03",
-      "resignDate": "2026-08",
-      "resignType": "主动离职",
-      "reason1": "个人发展",
-      "reason2": null,
-      "reasonDetail": "伙伴是3月份从学生转的全职，当初转全职是当时刚毕业，没有找到合适的工作，所以选择了转全职。家里父母也一直希望她找一份与自己学习专业相关的工作，今天去到了门店与伙伴进行了线下沟通，还是决定离职，想多出去尝试下",
-      "reasonTag": "个人发展",
-      "hireMonth": 4,
-      "gongLingQuJian": "6个月内",
-      "zhiJi": "服务员",
-      "dadianchangRaw": "钟天祥大店区"
-    }
-  ],
-  "reasonsDetail": [
-    {
-      "seq": 1,
-      "city": "古德墨柠运营",
-      "qujing": "李曦",
-      "dadianchang": "童璐",
-      "store": "古德墨柠登隆街内街店",
-      "empId": "CY64922",
-      "name": "刘妍",
-      "position": "服务员",
-      "reason1": "个人发展",
-      "reasonDetail": "个人原因，伙伴家里人安排了家附近的工作，想让伙伴回去工作，离家近一些，原本计划国庆后离职，但长沙的房子8/8号到期，所以决定在8/8号离职回家。",
-      "reasonTag": "个人发展",
-      "gongLing": "6个月内",
-      "zhiJi": "服务员"
-    },
-    {
-      "seq": 2,
-      "city": "古德墨柠运营",
-      "qujing": "张良东",
-      "dadianchang": "徐宇辉",
-      "store": "古德墨柠突兀店",
-      "empId": "CY50091",
-      "name": "刘涵博",
-      "position": "服务员",
-      "reason1": "个人发展",
-      "reasonDetail": "1、伙伴之前就有离职意向，因为家里不支持伙伴这份工作，并且一直有催促回家考教师，在6月份中间有过一次沟通，伙伴说暂时还没决定好，并且门店状态正常，所以没有规划离职情况\n2、本次离职是前天提出，伙伴表示家里做了9月份自己的工作安排，想在上班之前出去玩一段时间，并且朋友帮自己买好了去玩的票，所以不想再干了，选择急辞",
-      "reasonTag": "个人发展",
-      "gongLing": "1-3年",
-      "zhiJi": "服务员"
-    },
-    {
-      "seq": 3,
-      "city": "古德墨柠运营",
-      "qujing": "林阳阳",
-      "dadianchang": "李奔",
-      "store": "古德墨柠步行街B区店",
-      "empId": "CY48094",
-      "name": "刘淑文",
-      "position": "初级训练员",
-      "reason1": "个人发展",
-      "reasonDetail": "1、伙伴今日上班突然和店长提出，工作到周日下周一就不来了\n2、了解到伙伴下周一要去她表哥在长沙开的一家寿司店“寿司郎”面试入职\n3、此伙伴5月从新大陆银座店因周佳毅从B区调入新大陆银座带店的做得对调。在整个到B区工作的这段时间和门店整体相处是融洽的，前期未和店长有任何表达过可能会要离职的意向。\n4、今日到店沟通后，伙伴自身表示事发突然，表哥这几天在问她要不要过去上班，在考虑后决定过去。和伙伴沟通是否可供完8月，伙伴表示由于入职时间有限，故必须周一就过去。\n5、已沟通此举离职是属于急辞，以及后续再想入职会比较困难。伙伴表示不会改变决定。\n6、已和BP杨梦琳互动此情况，杨梦琳会在明天前完成伙伴的线上互动。\n7、下周将在步行街E区和谢子龙抽调伙伴支援B区",
-      "reasonTag": "个人发展",
-      "gongLing": "1-3年",
-      "zhiJi": "初级训练员"
-    },
-    {
-      "seq": 4,
-      "city": "古德墨柠运营",
-      "qujing": "徐乾",
-      "dadianchang": "旷瑶",
-      "store": "古德墨柠高铁南站A8二楼店",
-      "empId": "CY69338",
-      "name": "张鑫琳",
-      "position": "服务员",
-      "reason1": "身体原因",
-      "reasonDetail": "伙伴入职后在门店学习进度比较慢，难以胜任告业绩门店的工作，伙伴自己觉得也很难适应门店的基础工作",
-      "reasonTag": "身体原因",
-      "gongLing": "6个月内",
-      "zhiJi": "服务员"
-    },
-    {
-      "seq": 5,
-      "city": "古德墨柠运营",
-      "qujing": "徐乾",
-      "dadianchang": "易彪",
-      "store": "古德墨柠机场T2A安检店",
-      "empId": "CY46636",
-      "name": "朱忞翾",
-      "position": "服务员",
-      "reason1": "身体原因",
-      "reasonDetail": "伙伴是之前茶颜返岗的伙伴，因为家里装修，在机场上班工资比较可观。现在家里装修已经完成了，加上伙伴自己身体不是很好，姨妈总是推迟。所以想要离职。",
-      "reasonTag": "身体原因",
-      "gongLing": "1-3年",
-      "zhiJi": "服务员"
-    },
-    {
-      "seq": 6,
-      "city": "古德墨柠运营",
-      "qujing": "徐乾",
-      "dadianchang": "钟天祥",
-      "store": "古德墨柠科佳电脑城店",
-      "empId": "CY64417",
-      "name": "莫雪琪",
-      "position": "服务员",
-      "reason1": "个人发展",
-      "reasonDetail": "伙伴是3月份从学生转的全职，当初转全职是当时刚毕业，没有找到合适的工作，所以选择了转全职。家里父母也一直希望她找一份与自己学习专业相关的工作，今天去到了门店与伙伴进行了线下沟通，还是决定离职，想多出去尝试下",
-      "reasonTag": "个人发展",
-      "gongLing": "6个月内",
-      "zhiJi": "服务员"
-    }
-  ]
+  "employees": [],
+  "reasonsDetail": []
 };

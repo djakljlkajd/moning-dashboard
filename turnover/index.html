@@ -92,6 +92,37 @@
         .btn-reset-global:hover { background: #bbdefb; }
         .filter-info { font-size: 12px; color: #888; margin-left: auto; }
 
+        /* ===== 重点关注模块 ===== */
+        .focus-block {
+            background: linear-gradient(135deg, #fff8e1 0%, #fff 100%);
+            border-left: 4px solid #e65100;
+            padding: 16px 20px 18px;
+            margin-top: 2px;
+        }
+        .focus-title {
+            font-size: 16px; font-weight: bold;
+            background: linear-gradient(90deg, #c62828, #e65100);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: flex; align-items: center; gap: 8px;
+            margin-bottom: 6px;
+        }
+        .focus-title .badge {
+            background: #c62828; color: #fff; font-size: 11px;
+            padding: 2px 8px; border-radius: 10px; font-weight: 500;
+            -webkit-text-fill-color: #fff;
+        }
+        .focus-meta { font-size: 12px; color: #666; margin-bottom: 12px; }
+        .focus-meta strong { color: #c62828; }
+        .focus-canvas-wrap { position: relative; height: 320px; background: #fff; border-radius: 6px; padding: 12px; }
+        .focus-legend {
+            display: flex; gap: 22px; flex-wrap: wrap;
+            font-size: 13px; color: #333; padding: 0 4px;
+            margin-bottom: 4px;
+        }
+        .focus-legend-item { display: flex; align-items: center; gap: 6px; }
+        .focus-legend-dot { width: 14px; height: 14px; border-radius: 3px; }
+
         /* ===== Section 标题 ===== */
         .section-header {
             background: #fff; padding: 12px 20px 8px;
@@ -402,6 +433,18 @@
     </div>
 </div>
 
+<!-- ===== 【重点关注】大店长区域离职分析（双轴折线图） ===== -->
+<div class="focus-block">
+    <div class="focus-title">🔥 重点关注：大店长区域离职分析 <span class="badge">首要</span></div>
+    <div class="focus-meta" id="focus-meta"></div>
+    <div class="focus-legend">
+        <div class="focus-legend-item"><span class="focus-legend-dot" style="background:#c62828;"></span>离职人数（左轴，单位：人）</div>
+        <div class="focus-legend-item"><span class="focus-legend-dot" style="background:#1565c0;"></span>离职率（右轴，单位：%）</div>
+        <div class="focus-legend-item" style="margin-left:auto;color:#888;font-size:12px;">点击折线节点可查看大店长区域下属人员明细</div>
+    </div>
+    <div class="focus-canvas-wrap"><canvas id="chart-dc-focus"></canvas></div>
+</div>
+
 <!-- ===== 全局筛选栏 ===== -->
 <div class="global-filter-bar">
     <label>🔍 数据筛选：</label>
@@ -703,7 +746,7 @@
 
 </div><!-- end container -->
 
-<script src="data.js?v=20260826b"></script>
+<script src="data.js?v=20260826c"></script>
 <script>
 const STORE_DATA={
 dadianchang:["何海云", "刘旺林", "周思凡", "廖灿", "徐宇辉", "旷瑶", "易彪", "李奔", "杜强", "童璐", "赵思洁", "邵宝生", "钟天祥"],
@@ -961,7 +1004,7 @@ function updateFilterInfo() {
 }
 
 // ===== 刷新所有数据 =====
-let chartMonthly = null, chartMonthlyCount = null, chartZhiJi = null, chartGongLing = null, chartReason = null, chartDadianchang = null;
+let chartMonthly = null, chartMonthlyCount = null, chartZhiJi = null, chartGongLing = null, chartReason = null, chartDadianchang = null, chartDcFocus = null;
 
 function refreshAll() {
     updateFilterInfo();
@@ -1155,28 +1198,108 @@ function renderAnalysisCharts() {
         }
     });
 
-    // 大店长离职排名
-    const ctx4 = document.getElementById('chart-dadianchang').getContext('2d');
-    if (chartDadianchang) chartDadianchang.destroy();
-    let sorted = D.dadianchang;
-    sorted = sorted.filter(d => d.resignCount > 0).sort((a, b) => b.resignCount - a.resignCount);
-    const dcColors = sorted.map(d => d.resignCount >= 3 ? '#c62828' : d.resignCount >= 2 ? '#f57f17' : '#42a5f5');
-    chartDadianchang = new Chart(ctx4, {
+    // 构建大店长区域双轴折线图配置
+function buildDcChartConfig(ctx, sorted) {
+    return new Chart(ctx, {
         type: 'bar',
-        data: { labels: sorted.map(d => d.name), datasets: [{ data: sorted.map(d => d.resignCount), backgroundColor: dcColors, borderRadius: 4 }] },
+        data: {
+            labels: sorted.map(d => d.name),
+            datasets: [
+                {
+                    type: 'bar',
+                    label: '离职人数',
+                    data: sorted.map(d => d.resignCount),
+                    backgroundColor: sorted.map(d => d.resignCount >= 3 ? '#c62828' : d.resignCount >= 2 ? '#f57f17' : '#42a5f5'),
+                    borderRadius: 4,
+                    yAxisID: 'yCount',
+                    order: 2
+                },
+                {
+                    type: 'line',
+                    label: '离职率',
+                    data: sorted.map(d => +(d.resignRate * 100).toFixed(2)),
+                    borderColor: '#1565c0',
+                    backgroundColor: '#1565c0',
+                    pointBackgroundColor: '#1565c0',
+                    pointRadius: 5,
+                    pointHoverRadius: 7,
+                    tension: 0.3,
+                    borderWidth: 2.5,
+                    fill: false,
+                    yAxisID: 'yRate',
+                    order: 1
+                }
+            ]
+        },
         options: {
-            indexAxis: 'y',
             responsive: true, maintainAspectRatio: false,
+            interaction: { mode: 'index', intersect: false },
             plugins: {
                 legend: { display: false },
-                tooltip: { callbacks: { label: ctx => ctx.parsed.x + '人 (' + (sorted[ctx.dataIndex].resignRate * 100).toFixed(1) + '%)' } }
+                tooltip: {
+                    callbacks: {
+                        label: ctx => {
+                            const d = sorted[ctx.dataIndex];
+                            if (ctx.dataset.label === '离职人数') return '离职人数：' + d.resignCount + '人';
+                            return '离职率：' + (d.resignRate * 100).toFixed(1) + '%（期初' + d.beginCount + '人 / 期末' + d.endCount + '人）';
+                        }
+                    }
+                }
             },
             scales: {
-                x: { ticks: { font: { size: 10 }, stepSize: 1 }, grid: { color: 'rgba(0,0,0,0.05)' } },
-                y: { ticks: { font: { size: 11 } } }
+                yCount: {
+                    type: 'linear', position: 'left',
+                    beginAtZero: true, ticks: { font: { size: 11 }, stepSize: 1, precision: 0 },
+                    grid: { color: 'rgba(0,0,0,0.05)' },
+                    title: { display: true, text: '离职人数(人)', color: '#c62828', font: { size: 12, weight: 'bold' } }
+                },
+                yRate: {
+                    type: 'linear', position: 'right',
+                    beginAtZero: true, ticks: { font: { size: 11 }, callback: v => v + '%' },
+                    grid: { drawOnChartArea: false },
+                    title: { display: true, text: '离职率(%)', color: '#1565c0', font: { size: 12, weight: 'bold' } }
+                },
+                x: { ticks: { font: { size: 11 } }, grid: { color: 'rgba(0,0,0,0.05)' } }
+            },
+            onClick: (evt, items) => {
+                if (!items || !items.length) return;
+                const idx = items[0].index;
+                const dc = sorted[idx];
+                if (dc && globalDadianchang !== dc.name) {
+                    globalDadianchang = dc.name;
+                    onGlobalFilterChange();
+                }
             }
         }
     });
+}
+
+// 重点关注区大店长折线图
+function renderDcFocus() {
+    const ctx = document.getElementById('chart-dc-focus');
+    if (!ctx) return;
+    if (chartDcFocus) chartDcFocus.destroy();
+    const sorted = D.dadianchang.slice().sort((a, b) => b.resignCount - a.resignCount || b.resignRate - a.resignRate);
+    if (sorted.every(d => d.resignCount === 0)) sorted.reverse(); // 全0时保持原顺序展示
+
+    // 摘要
+    const total = sorted.reduce((s, d) => s + d.resignCount, 0);
+    const maxDc = sorted[0];
+    const meta = document.getElementById('focus-meta');
+    if (meta) {
+        meta.innerHTML = (total > 0 && maxDc && maxDc.resignCount > 0)
+            ? '本期共离职 <strong>' + total + '</strong> 人 · 最高：<strong>' + maxDc.name + '</strong>（' + maxDc.resignCount + '人 / ' + (maxDc.resignRate * 100).toFixed(1) + '%）· 点击折线节点可联动下方【第四排】大店长数据明细'
+            : '本期暂无离职记录';
+    }
+    chartDcFocus = buildDcChartConfig(ctx.getContext('2d'), sorted);
+}
+
+    // 大店长离职排名（第三排小卡）
+    const ctx4 = document.getElementById('chart-dadianchang').getContext('2d');
+    if (chartDadianchang) chartDadianchang.destroy();
+    const sorted3 = D.dadianchang.slice().sort((a, b) => b.resignCount - a.resignCount || b.resignRate - a.resignRate);
+    if (sorted3.every(d => d.resignCount === 0)) sorted3.reverse();
+    chartDadianchang = buildDcChartConfig(ctx4, sorted3);
 }
 
 // ===== 大店长表格 =====
@@ -2084,6 +2207,7 @@ function refreshPreTurnoverDisplays(){
 // ===== 初始化 =====
 initGlobalFilters();
 renderCards();
+renderDcFocus();
 renderMonthlyChart();
 renderMonthlyCountChart();
 renderAnalysisCharts();

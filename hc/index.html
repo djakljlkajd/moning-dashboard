@@ -725,11 +725,11 @@
 
 </div><!-- end container -->
 
-<script src="data.js?v=20260827a"></script>
-<script src="stores.js?v=20260827a"></script>
-<script src="details.js?v=20260827a"></script>
-<script src="staff_lookup.js?v=20260827a"></script>
-<script src="store_base.js?v=20260827a"></script>
+<script src="data.js?v=20260828a"></script>
+<script src="stores.js?v=20260828a"></script>
+<script src="details.js?v=20260828a"></script>
+<script src="staff_lookup.js?v=20260828a"></script>
+<script src="store_base.js?v=20260828a"></script>
 <script>
 const D = window.DASHBOARD_DATA;
 let specialLeaveExtra = [];
@@ -827,6 +827,9 @@ function renderAirportCert() {
     Object.keys(AIRPORT_STATUS).forEach(function(k) {
         var s = AIRPORT_STATUS[k];
         var pct = total > 0 ? Math.round(counts[k] / total * 100) : 0;
+        var demandHtml = (k === 'has')
+            ? '<div class="airport-cert-sub" style="color:#27ae60;font-weight:600">需求16人，现有' + counts[k] + '人</div>'
+            : '';
         html +=
             '<div class="airport-cert-card ' + s.cls + '" onclick="openAirportCertModal(\'' + k + '\')">' +
                 '<div class="airport-cert-title">' +
@@ -836,6 +839,7 @@ function renderAirportCert() {
                 '<div class="airport-cert-body">' +
                     '<div class="airport-cert-value">' + counts[k] + '<span class="stat-unit">人</span></div>' +
                     '<div class="airport-cert-sub">占比 ' + pct + '%</div>' +
+                    demandHtml +
                 '</div>' +
                 '<div class="airport-cert-foot">点击方块查看明细 / 新增 / 删除</div>' +
             '</div>';

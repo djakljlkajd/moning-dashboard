@@ -188453,46 +188453,42 @@ function buildManagerOptions(){
 }
 
 function buildMonthOptions(){
-  const opts=['当前月份'];
-  const keys=Object.keys(HIST).sort().reverse();
-  // 计算每个月的显示标签
-  function labelFor(k){
+  // [label, key] 对同步构建，保证 option 的 text 与 value 一一对应
+  const pairs=[['当前月份','']];
+  const histKeys=Object.keys(HIST).sort().reverse();
+  histKeys.forEach(k=>{
     const d=HIST[k];
-    if(d&&d.meta) return `${k} (${d.meta.date_from}~${d.meta.date_to})`;
-    if(d&&d.placeholder) return `${k} （数据采集中）`;
-    return k;
-  }
-  keys.forEach(k=>{
-    const d=HIST[k];
-    if(d&&(d.meta||d.placeholder)) opts.push(labelFor(k));
+    if(!d) return;
+    if(d.placeholder){
+      pairs.push([`${k} （数据采集中）`,k]);
+    } else if(d.meta){
+      pairs.push([`${k} (${d.meta.date_from}~${d.meta.date_to})`,k]);
+    }
   });
   // 自动补"最新历史月份 + 1 个月"作为占位（如 8月已落库 → 自动加 9月占位）
-  const latest = keys[0];
-  if(latest){
+  if(pairs.length>1){
+    const latest=pairs[1][1]; // 第一个历史月份
     const [ly,lm]=latest.split('-').map(Number);
-    const next=new Date(ly, lm, 1); // lm 为 1-12，Date 用 1-12 构造 OK
+    const next=new Date(ly, lm, 1);
     const nk=`${next.getFullYear()}-${String(next.getMonth()+1).padStart(2,'0')}`;
-    if(!HIST[nk]){
-      // 占位月：注入到全局 HIST（运行时本地写入不写盘，等下次跑数会覆盖）
-      HIST[nk]={ placeholder:true, meta:{ date_from:`${nk}-01`, date_to:`${nk}-01`, days:0, date_strs:[], consec_from:`${nk}-01`, consec_to:`${nk}-01`, consec_date_strs:[], has_preperiod:false }, summary:{}, rows:[], store_list:[], warn7:[], over13:[], full_detail:[], student_detail:[], zeros_full:[], zeros_student:[] };
-      opts.push(labelFor(nk));
-      keys.unshift(nk);
+    const exists=pairs.find(p=>p[1]===nk);
+    if(!exists){
+      // 占位月：写入 HIST（运行时，不落盘）
+      HIST[nk]=HIST[nk]||{ placeholder:true, meta:{ date_from:`${nk}-01`, date_to:`${nk}-01`, days:0, date_strs:[], consec_from:`${nk}-01`, consec_to:`${nk}-01`, consec_date_strs:[], has_preperiod:false }, summary:{}, rows:[], store_list:[], warn7:[], over13:[], full_detail:[], student_detail:[], zeros_full:[], zeros_student:[] };
+      pairs.unshift([`${nk} （数据采集中）`,nk]);
     } else if(HIST[nk]&&HIST[nk].placeholder){
-      // 已是占位，重新加进下拉（避免重复加）
-      opts.push(labelFor(nk));
-      keys.unshift(nk);
+      // 已存在占位：把占位项提到最前
+      pairs.sort((a,b)=>{
+        if(a[1]===nk) return -1;
+        if(b[1]===nk) return 1;
+        return 0;
+      });
     }
   }
-  // 用唯一 keys 重建下拉（避免重复）
-  const seen=new Set();
-  const uniqKeys=[];
-  for(const k of keys){ if(!seen.has(k)){ seen.add(k); uniqKeys.push(k); } }
-  const seen2=new Set();
-  const uniqOpts=opts.filter(o=>{ if(seen2.has(o)) return false; seen2.add(o); return true; });
+  // 渲染
   document.querySelectorAll('.month-filter').forEach(sel=>{
     sel.innerHTML='';
-    uniqOpts.forEach((o,i)=>{
-      const v=i===0?'':uniqKeys[i-1];
+    pairs.forEach(([o,v])=>{
       const isPlaceholder=HIST[v]&&HIST[v].placeholder;
       sel.innerHTML+=`<option value="${v}"${isPlaceholder?' data-placeholder="1"':''}>${o}</option>`;
     });
@@ -188525,6 +188521,17 @@ function switchMonth(key){
     activeData=HIST[key];
     currentMonth=key;
   }
+  // 占位月：整张看板置空（标题/汇总/明细/弹窗数据源都不切过去）
+  if(activeData&&activeData.placeholder){
+    currentMonth=key; // 2026-09
+    placeholderActive=key;
+    scope={manager:'',store:''};
+    syncManagerSelects('');
+    syncStoreInputs('');
+    renderPlaceholderDashboard();
+    return;
+  }
+  placeholderActive=null;
   // 重建大店长索引（数据源变了）
   allManagers.length=0;
   managerRows.length=0;
@@ -188543,13 +188550,40 @@ function switchMonth(key){
   syncStoreInputs('');
   buildManagerOptions();
   refreshAll();
-  // 占位月提示
-  if(activeData&&activeData.placeholder){
-    const empty=document.getElementById('metricsGrid');
-    if(empty){
-      const tag=`${currentMonth} 数据采集中 — 请先把当月工时数据追加到桌面 Excel 的「${currentMonth.replace('-','年')}月工时数据」sheet，再跑一次「跑数」即可。`;
-      empty.innerHTML=`<div style="grid-column:1/-1;padding:40px;text-align:center;background:var(--panel);border:1px dashed var(--hint);border-radius:8px;color:var(--sec)"><div style="font-size:32px;margin-bottom:12px">📅</div><div style="font-size:16px;font-weight:600;color:var(--text);margin-bottom:8px">${tag}</div><div style="font-size:13px">本日（9/1）尚无考勤记录，需等钉钉中台夜维（次日 ~07:00）输出 9/1 数据后跑数生成快照。</div></div>`;
-    }
+}
+
+// 占位月：把整张看板的所有数据槽位全部清零/空白
+let placeholderActive=null;
+function renderPlaceholderDashboard(){
+  const tip=`${placeholderActive} 数据采集中`;
+  // 第一排 5 个指标卡片全部置 0
+  for(let i=1;i<=5;i++){
+    const el=document.getElementById('kpi'+i);
+    if(el) el.innerHTML='0<span class="unit"></span>';
+  }
+  // 大盘分隔：标题动态写当前占位月份 + 数字清零
+  const divider=document.getElementById('summaryDividerLabel');
+  if(divider){
+    const monthCN = String(placeholderActive||'').split('-')[1] ? `${String(placeholderActive).split('-')[0]}年${String(placeholderActive).split('-')[1]}月` : placeholderActive;
+    divider.innerHTML=`⭐ ${monthCN}工时预警重点关注（单日出勤 &gt;11小时 + 连续出勤 &gt;8天）`;
+  }
+  const totalAlert=document.getElementById('totalAlert');
+  if(totalAlert) totalAlert.innerHTML='0<span class="unit">人</span>';
+  // 汇总表
+  const tHead=document.getElementById('tHead');
+  const tBody=document.getElementById('tBody');
+  if(tHead) tHead.innerHTML='<th style="width:130px">大店长</th><th style="width:46px">店数</th><th style="width:82px">总工时(h)</th>'+
+    '<th style="width:58px">全职人数</th><th style="width:68px">全职总工时</th><th style="width:42px">0工时</th>'+
+    '<th style="width:44px">&gt;11h</th><th style="width:58px">&gt;8天连勤</th><th style="width:56px">学生人数</th>'+
+    '<th style="width:54px">出勤学生</th><th style="width:72px">学生总工时</th><th style="width:60px">学生占比</th>';
+  if(tBody) tBody.innerHTML='<tr><td colspan="12" style="padding:30px;text-align:center;color:var(--sec)">暂无数据</td></tr>';
+  // 明细
+  const warnTbody=document.getElementById('warnTbody');
+  if(warnTbody) warnTbody.innerHTML='<tr><td colspan="9" style="padding:30px;text-align:center;color:var(--sec)">暂无数据</td></tr>';
+  // 顶部 KPI 整排用全宽提示框覆盖
+  const grid=document.getElementById('metricsGrid');
+  if(grid){
+    grid.innerHTML=`<div style="grid-column:1/-1;padding:40px;text-align:center;background:var(--panel);border:1px dashed var(--hint);border-radius:8px;color:var(--sec)"><div style="font-size:32px;margin-bottom:12px">📅</div><div style="font-size:16px;font-weight:600;color:var(--text);margin-bottom:8px">${tip} — 9月工时底稿待生成</div><div style="font-size:13px">本日（9/1）尚无考勤记录，需等钉钉中台夜维（次日 ~07:00）输出 9/1 数据；后台将「工时底稿」改名为「9月工时数据」后跑数即可生成快照。</div></div>`;
   }
 }
 

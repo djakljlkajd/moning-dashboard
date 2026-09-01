@@ -360,7 +360,7 @@ body{font-family:-apple-system,'PingFang SC','Helvetica Neue',sans-serif;backgro
 
   <!-- 大盘分隔 -->
   <div class="summary-divider">
-    <div class="label">⭐ 7月工时预警重点关注（单日出勤 &gt;11小时 + 连续出勤 &gt;8天）</div>
+    <div class="label" id="summaryDividerLabel">⭐ 工时预警重点关注（单日出勤 &gt;11小时 + 连续出勤 &gt;8天）</div>
     <div class="big-num" id="totalAlert">--<span class="unit">人</span></div>
   </div>
 
@@ -188673,6 +188673,14 @@ function updateTotalAlert(){
     total += (r['>11h']||0) + (r['>8天连勤']||0);
   });
   document.getElementById('totalAlert').innerHTML=total+'<span class="unit">人</span>';
+  // 同步更新大盘分隔标题月份
+  const lblEl=document.getElementById('summaryDividerLabel');
+  if(lblEl){
+    const m=currentMonth||(D.stat_month||M.date_to.substring(0,7));
+    const parts=m.split('-');
+    const monthCN=parts[1]?parts[1].replace(/^0/,'')+'月':'';
+    lblEl.textContent=`⭐ ${monthCN}工时预警重点关注（单日出勤 >11小时 + 连续出勤 >8天）`;
+  }
 }
 
 /* ========== 指标卡弹窗：预警人员名单 ========== */

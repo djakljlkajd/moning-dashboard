@@ -411,6 +411,47 @@
         }
         .btn-edit-record:hover { background: #1e4faf; border-color: #1e4faf; }
 
+        /* ===== 凭证图片上传 ===== */
+        .upload-wrap { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+        .btn-upload {
+            background: #fff; border: 1px dashed #27ae60; color: #27ae60;
+            padding: 6px 14px; border-radius: 6px; font-size: 12.5px; cursor: pointer; transition: all 0.15s;
+        }
+        .btn-upload:hover { background: #eafaf1; }
+        .btn-upload-remove {
+            background: #fff; border: 1px solid #e74c3c; color: #e74c3c;
+            padding: 6px 12px; border-radius: 6px; font-size: 12.5px; cursor: pointer; transition: all 0.15s;
+        }
+        .btn-upload-remove:hover { background: #fdecea; }
+        .upload-tip { color: #95a5a6; font-size: 11.5px; }
+        .upload-preview { margin-top: 8px; }
+        .upload-preview img {
+            max-height: 120px; max-width: 280px; border: 1px solid #ddd; border-radius: 6px; box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+        }
+        .form-label-sub { font-weight: normal; color: #888; font-size: 12px; }
+
+        /* ===== 明细表格内凭证缩略图 / 大图预览 ===== */
+        .td-center { text-align: center !important; }
+        .cell-img {
+            width: 36px; height: 36px; object-fit: cover; border-radius: 5px;
+            cursor: zoom-in; vertical-align: middle; border: 1px solid #e3e8ec; display: block; margin: 0 auto;
+        }
+        .no-img { color: #bdc3c7; }
+        .img-viewer {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.88); z-index: 3000;
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0; pointer-events: none; transition: opacity 0.2s;
+        }
+        .img-viewer.show { opacity: 1; pointer-events: auto; }
+        .img-viewer img {
+            max-width: 92vw; max-height: 92vh; border-radius: 6px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5); background: #fff;
+        }
+        .img-viewer .viewer-close-hint {
+            position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%);
+            color: rgba(255,255,255,0.75); font-size: 12px; letter-spacing: 1px;
+        }
+
         /* ===== 同步状态提示 ===== */
         .sync-status {
             font-size: 11px; color: #27ae60; margin-left: 10px; opacity: 0;
@@ -713,6 +754,19 @@
                     <label class="form-label" id="add-reason-label">备注原因<span class="required">*</span></label>
                     <textarea class="form-textarea" id="add-reason" placeholder="请输入备注原因..." required></textarea>
                 </div>
+                <!-- 凭证图片上传（选填） -->
+                <div class="form-group" id="add-image-row">
+                    <label class="form-label">凭证图片<span class="form-label-sub">（选填，支持请假单/诊断证明等截图，自动压缩保存）</span></label>
+                    <div class="upload-wrap">
+                        <input type="file" id="add-image-file" accept="image/*" style="display:none" onchange="handleImagePick(this)">
+                        <button type="button" class="btn-upload" onclick="document.getElementById('add-image-file').click()">📷 选择图片</button>
+                        <button type="button" class="btn-upload-remove" id="btn-image-remove" style="display:none" onclick="removePickedImage()">移除图片</button>
+                        <span class="upload-tip">jpg/png 均可，每条约 1 张，传后可在明细中点击放大查看</span>
+                    </div>
+                    <div class="upload-preview" id="add-image-preview" style="display:none">
+                        <img id="add-image-preview-img" alt="凭证预览">
+                    </div>
+                </div>
                 <div class="form-actions">
                     <span class="sync-status" id="sync-status">✓ 已同步</span>
                     <button type="button" class="btn-cancel" onclick="closeAddRecordModal()">取消</button>
@@ -725,11 +779,11 @@
 
 </div><!-- end container -->
 
-<script src="data.js?v=20260828a"></script>
-<script src="stores.js?v=20260828a"></script>
-<script src="details.js?v=20260828a"></script>
-<script src="staff_lookup.js?v=20260828a"></script>
-<script src="store_base.js?v=20260828a"></script>
+<script src="data.js?v=20260903a"></script>
+<script src="stores.js?v=20260903a"></script>
+<script src="details.js?v=20260903a"></script>
+<script src="staff_lookup.js?v=20260903a"></script>
+<script src="store_base.js?v=20260903a"></script>
 <script>
 const D = window.DASHBOARD_DATA;
 let specialLeaveExtra = [];
@@ -745,6 +799,80 @@ let newHiresStudentExtra = [];
 let addRecordType = 'special';  // 'special' | 'preleave' | 'airport' | 'storehc' | 'newhire_full' | 'newhire_student'
 let editRecordId = null;  // 编辑模式：要修改的 extra 记录 id，null 表示新增
 let editingRecordOriginalId = null;  // 编辑 Excel 原始记录时，原记录的标识（工号/门店等），保存时隐藏原记录并新增到 extra
+let addImageDataUrl = '';  // 当前表单已选中的凭证图片（压缩后 base64 dataURL）
+
+// 选中图片：读取并压缩为 JPEG dataURL（最长边 900px，质量 0.72）
+function handleImagePick(input) {
+    var f = input.files && input.files[0];
+    if (!f) return;
+    if (f.size > 10 * 1024 * 1024) { alert('图片超过 10MB，请压缩后再上传'); input.value = ''; return; }
+    var reader = new FileReader();
+    reader.onload = function(ev) {
+        var img = new Image();
+        img.onload = function() {
+            var MAX = 900;
+            var w = img.width, h = img.height;
+            if (w > MAX || h > MAX) {
+                var ratio = Math.min(MAX / w, MAX / h);
+                w = Math.round(w * ratio); h = Math.round(h * ratio);
+            }
+            var c = document.createElement('canvas');
+            c.width = w; c.height = h;
+            var ctx = c.getContext('2d');
+            ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, w, h);
+            ctx.drawImage(img, 0, 0, w, h);
+            var dataUrl = '';
+            try { dataUrl = c.toDataURL('image/jpeg', 0.72); }
+            catch(e) { try { dataUrl = c.toDataURL('image/jpeg', 0.8); } catch(e2) {} }
+            if (!dataUrl) { alert('图片压缩失败，请换一张重试'); input.value = ''; return; }
+            addImageDataUrl = dataUrl;
+            showImagePreview();
+        };
+        img.onerror = function() { alert('图片解析失败，请换一张重试'); input.value = ''; };
+        img.src = ev.target.result;
+    };
+    reader.readAsDataURL(f);
+}
+function showImagePreview() {
+    var preview = document.getElementById('add-image-preview');
+    var img = document.getElementById('add-image-preview-img');
+    var rmBtn = document.getElementById('btn-image-remove');
+    if (addImageDataUrl && img && preview) {
+        img.src = addImageDataUrl;
+        preview.style.display = 'block';
+    }
+    if (rmBtn) rmBtn.style.display = addImageDataUrl ? 'inline-block' : 'none';
+}
+function removePickedImage() {
+    addImageDataUrl = '';
+    var fileInput = document.getElementById('add-image-file');
+    if (fileInput) fileInput.value = '';
+    var preview = document.getElementById('add-image-preview');
+    if (preview) preview.style.display = 'none';
+    var rmBtn = document.getElementById('btn-image-remove');
+    if (rmBtn) rmBtn.style.display = 'none';
+}
+// 明细表格中渲染凭证缩略图
+function imgCellHtml(r) {
+    var v = (r && r.图片) ? r.图片 : '';
+    if (!v) return '<td class="td-center"><span class="no-img">—</span></td>';
+    return '<td class="td-center"><img class="cell-img" src="' + v + '" onclick="event.stopPropagation();viewImage(this.src)" alt="凭证"></td>';
+}
+// 全屏大图预览
+function viewImage(src) {
+    var ov = document.getElementById('img-viewer');
+    if (!ov) {
+        ov = document.createElement('div');
+        ov.id = 'img-viewer';
+        ov.className = 'img-viewer';
+        ov.innerHTML = '<img id="img-viewer-src" alt="图片预览"><div class="viewer-close-hint">✕ 点击任意位置关闭</div>';
+        ov.addEventListener('click', function() { ov.classList.remove('show'); });
+        document.body.appendChild(ov);
+    }
+    var vi = ov.querySelector('#img-viewer-src');
+    if (vi) vi.src = src;
+    ov.classList.add('show');
+}
 
 // ---------- 标题 / 日期 ----------
 document.getElementById('hdr-title').textContent = '● ' + D.meta.title;
@@ -884,7 +1012,7 @@ function openRecruitDetailModal(type) {
 }
 
 // ---------- 新入职人员明细弹窗（全职/学生） ----------
-const NEW_HIRE_COLUMNS = ['序号', '大店长', '工号', '姓名', '门店', '入职时间', '新人考核阶段', '操作'];
+const NEW_HIRE_COLUMNS = ['序号', '大店长', '工号', '姓名', '门店', '入职时间', '新人考核阶段', '凭证', '操作'];
 
 function openNewHiresModal(type) {
     var isFull = (type === 'fulltime');
@@ -926,6 +1054,7 @@ function openNewHiresModal(type) {
                     var sv = (v === undefined || v === null ? '' : String(v));
                     return '<td title="' + sv.replace(/"/g, '&quot;') + '">' + sv + '</td>';
                 }).join('');
+                cells += imgCellHtml(r);
                 var rowId = r.id || '';
                 var actBtns = '<button class="btn-edit-record" onclick="event.stopPropagation();openEditRecordModal(\'' + (isFull ? 'newhire_full' : 'newhire_student') + '\',\'' + rowId + '\')">修改</button>';
                 actBtns += '<button class="btn-delete-record" onclick="event.stopPropagation();deleteNewHireRecord(\'' + type + '\',\'' + rowId + '\')">删除</button>';
@@ -1218,7 +1347,11 @@ function openDetailModal(cardLabel) {
     if (key === '单店特殊新增HC') {
         finalColumns = detailColumns.slice(0, 2).concat(STORE_HC_GRADE_COLS, detailColumns.slice(2));
     }
-    const displayColumns = showActions ? [...finalColumns, '操作'] : finalColumns;
+    // 特殊请假/预离职：追加「凭证」列（单店特殊新增HC 不支持图片）
+    const withImg = showActions && key !== '单店特殊新增HC';
+    const displayColumns = withImg
+        ? [...finalColumns, '凭证', '操作']
+        : (showActions ? [...finalColumns, '操作'] : finalColumns);
 
     const slExtraInfo = (key === '特殊请假')
         ? '（新增 ' + specialLeaveExtra.length + ' 条' + (specialLeaveHidden.length > 0 ? '，已隐藏 ' + specialLeaveHidden.length + ' 条' : '') + '）'
@@ -1249,6 +1382,7 @@ function openDetailModal(cardLabel) {
                 }).join('');
                 if (showActions) {
                     const rowId = r.id || r.工号 || '';
+                    if (withImg) cells += imgCellHtml(r);
                     let actBtns = '<button class="btn-edit-record" onclick="event.stopPropagation();openEditRecordModal(\'' + editType + '\',\'' + rowId + '\')">修改</button>';
                     actBtns += '<button class="btn-delete-record" onclick="event.stopPropagation();' + delFn + '(\'' + rowId + '\')">删除</button>';
                     cells += '<td>' + actBtns + '</td>';
@@ -1301,11 +1435,12 @@ function openAirportCertModal(statusKey) {
         body.innerHTML = '<div class="modal-empty">当前筛选条件下暂无数据</div>';
     } else {
         body.innerHTML =
-            '<table><thead><tr>' + AIRPORT_DETAIL_COLUMNS.map(function(h) { return '<th>' + h + '</th>'; }).join('') + '<th>操作</th></tr></thead>' +
+            '<table><thead><tr>' + AIRPORT_DETAIL_COLUMNS.map(function(h) { return '<th>' + h + '</th>'; }).join('') + '<th>凭证</th><th>操作</th></tr></thead>' +
             '<tbody>' + all.map(function(r) {
                 var cells = AIRPORT_DETAIL_COLUMNS.map(function(h) {
                     return '<td>' + (r[h] === undefined || r[h] === null ? '' : r[h]) + '</td>';
                 }).join('');
+                cells += imgCellHtml(r);
                 var rowId = r.id || r.工号 || '';
                 var actBtns = '';
                 if (r._isAdded) actBtns += '<button class="btn-edit-record" onclick="event.stopPropagation();openEditRecordModal(\'airport\',\'' + rowId + '\')">修改</button>';
@@ -1700,6 +1835,7 @@ function openAddRecordModal(type, statusKey) {
     document.getElementById('add-reason').value = '';
     document.getElementById('add-newhire-date').value = '';
     document.getElementById('add-newhire-stage').value = '';
+    removePickedImage();  // 清空凭证图片
     document.getElementById('btn-submit-record').disabled = false;
     document.getElementById('btn-submit-record').textContent = '确认添加';
     // 标题与字段切换
@@ -1722,6 +1858,8 @@ function openAddRecordModal(type, statusKey) {
     document.getElementById('storehc-fields').style.display = (addRecordType === 'storehc') ? '' : 'none';
     document.getElementById('newhire-fields').style.display = isNewHire ? '' : 'none';
     document.getElementById('add-newhire-date').required = isNewHire;
+    // 凭证图片：单店特殊新增HC 不显示（无对应明细列）
+    document.getElementById('add-image-row').style.display = (addRecordType === 'storehc') ? 'none' : '';
     var statusSel = document.getElementById('add-airport-status');
     if (addRecordType === 'airport' && statusKey && AIRPORT_STATUS[statusKey]) {
         statusSel.value = AIRPORT_STATUS[statusKey].label;
@@ -1841,6 +1979,9 @@ function openEditRecordModal(type, id) {
             document.getElementById('add-newhire-stage').value = rec.新人考核阶段 || '';
         }
     }
+
+    // 回填已保存的凭证图片
+    if (rec.图片) { addImageDataUrl = rec.图片; showImagePreview(); }
 
     var titles = {
         special: '修改特殊请假记录', preleave: '修改预离职记录', airport: '修改机场办证记录',
@@ -1987,6 +2128,7 @@ async function submitAddRecord(e) {
             大店长: manager, 门店: store, 工号: gonghao, 姓名: name,
             备注原因: reason, addedBy: 'user', addedAt: new Date().toISOString().slice(0, 19)
         };
+        if (addImageDataUrl) record.图片 = addImageDataUrl;
         if (editingRecordOriginalId) {
             if (!preLeaveHidden.includes(editingRecordOriginalId)) preLeaveHidden.push(editingRecordOriginalId);
             preLeaveExtra.push(record);
@@ -2020,6 +2162,7 @@ async function submitAddRecord(e) {
             状态: status, 备注原因: reason,
             addedBy: 'user', addedAt: new Date().toISOString().slice(0, 19)
         };
+        if (addImageDataUrl) airRecord.图片 = addImageDataUrl;
         if (editingRecordOriginalId) {
             if (!airportCertHidden.includes(editingRecordOriginalId)) airportCertHidden.push(editingRecordOriginalId);
             airportCertExtra.push(airRecord);
@@ -2059,6 +2202,7 @@ async function submitAddRecord(e) {
             入职时间: nhDate, 新人考核阶段: nhStage, 备注原因: reason,
             addedBy: 'user', addedAt: new Date().toISOString().slice(0, 19)
         };
+        if (addImageDataUrl) nhRecord.图片 = addImageDataUrl;
         if (addRecordType === 'newhire_full') {
             upsertExtra(newHiresFullExtra, editRecordId, nhRecord);
         } else {
@@ -2089,6 +2233,7 @@ async function submitAddRecord(e) {
         开始时间: start, 结束时间: end || '', 休息天数: restDays,
         备注原因: reason, addedBy: 'user', addedAt: new Date().toISOString().slice(0, 19)
     };
+    if (addImageDataUrl) record.图片 = addImageDataUrl;
 
     if (editingRecordOriginalId) {
         if (!specialLeaveHidden.includes(editingRecordOriginalId)) specialLeaveHidden.push(editingRecordOriginalId);

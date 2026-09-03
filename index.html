@@ -173842,6 +173842,7 @@ function buildManagerOptions(){
 
 function buildMonthOptions(){
   // [label, key] 对同步构建，保证 option 的 text 与 value 一一对应
+  // 下拉只显示已落库的月份，不再自动补"下个月占位"
   const pairs=[['当前月份','']];
   const histKeys=Object.keys(HIST).sort().reverse();
   histKeys.forEach(k=>{
@@ -173853,26 +173854,6 @@ function buildMonthOptions(){
       pairs.push([`${k} (${d.meta.date_from}~${d.meta.date_to})`,k]);
     }
   });
-  // 自动补"最新历史月份 + 1 个月"作为占位（如 8月已落库 → 自动加 9月占位）
-  if(pairs.length>1){
-    const latest=pairs[1][1]; // 第一个历史月份
-    const [ly,lm]=latest.split('-').map(Number);
-    const next=new Date(ly, lm, 1);
-    const nk=`${next.getFullYear()}-${String(next.getMonth()+1).padStart(2,'0')}`;
-    const exists=pairs.find(p=>p[1]===nk);
-    if(!exists){
-      // 占位月：写入 HIST（运行时，不落盘）
-      HIST[nk]=HIST[nk]||{ placeholder:true, meta:{ date_from:`${nk}-01`, date_to:`${nk}-01`, days:0, date_strs:[], consec_from:`${nk}-01`, consec_to:`${nk}-01`, consec_date_strs:[], has_preperiod:false }, summary:{}, rows:[], store_list:[], warn7:[], over13:[], full_detail:[], student_detail:[], zeros_full:[], zeros_student:[] };
-      pairs.unshift([`${nk} （数据采集中）`,nk]);
-    } else if(HIST[nk]&&HIST[nk].placeholder){
-      // 已存在占位：把占位项提到最前
-      pairs.sort((a,b)=>{
-        if(a[1]===nk) return -1;
-        if(b[1]===nk) return 1;
-        return 0;
-      });
-    }
-  }
   // 渲染
   document.querySelectorAll('.month-filter').forEach(sel=>{
     sel.innerHTML='';

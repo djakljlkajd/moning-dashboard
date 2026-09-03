@@ -61,12 +61,12 @@ window.DASHBOARD_DATA = {
   },
   "recruitProgress": {
     "fullTime": {
-      "recruit": 4,
-      "arrived": 4
+      "recruit": 0,
+      "arrived": 0
     },
     "student": {
-      "recruit": 33,
-      "arrived": 33
+      "recruit": 178,
+      "arrived": 10
     }
   },
   "region": {

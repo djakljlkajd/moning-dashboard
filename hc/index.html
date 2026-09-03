@@ -779,11 +779,11 @@
 
 </div><!-- end container -->
 
-<script src="data.js?v=20260903a"></script>
-<script src="stores.js?v=20260903a"></script>
-<script src="details.js?v=20260903a"></script>
-<script src="staff_lookup.js?v=20260903a"></script>
-<script src="store_base.js?v=20260903a"></script>
+<script src="data.js?v=20260903b"></script>
+<script src="stores.js?v=20260903b"></script>
+<script src="details.js?v=20260903b"></script>
+<script src="staff_lookup.js?v=20260903b"></script>
+<script src="store_base.js?v=20260903b"></script>
 <script>
 const D = window.DASHBOARD_DATA;
 let specialLeaveExtra = [];
@@ -1293,7 +1293,7 @@ function openDetailModal(cardLabel) {
     // 合并数据：Excel 数据 + 用户新增数据
     let all = [];
     if (key === '特殊请假') {
-        all = getMergedSpecialLeave();
+        all = sortByFillTimeDesc(getMergedSpecialLeave());
         // 标记每条记录的来源
         const extraIds = new Set(specialLeaveExtra.map(r => r.id));
         all.forEach(r => { r._isAdded = extraIds.has(r.id); });
@@ -1800,6 +1800,18 @@ function getMergedSpecialLeave() {
         return Object.assign({}, r, { id: r.工号 });
     });
     return visibleExcel.concat(specialLeaveExtra);
+}
+
+// 按填写时间倒序（最新填写的排最上方）；无填写时间(addedAt)的 Excel 原始记录排最后，保持原顺序
+function sortByFillTimeDesc(arr) {
+    return arr.slice().sort(function(a, b) {
+        var ta = a.addedAt || '';
+        var tb = b.addedAt || '';
+        if (!ta && !tb) return 0;
+        if (!ta) return 1;   // a 无填写时间 → 排后面
+        if (!tb) return -1;  // b 无填写时间 → 排后面
+        return ta < tb ? 1 : (ta > tb ? -1 : 0);
+    });
 }
 
 function getMergedPreLeave() {

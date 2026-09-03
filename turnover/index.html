@@ -2222,10 +2222,14 @@ loadPreTurnoverData().then(()=>{
     autoTransferPreTurnover();
     autoTransferTimer=setInterval(autoTransferPreTurnover,600000);
     // ===== URL参数快捷入口 =====
-    // ?preTurnoverAdd=1  自动打开新增预离职人员弹窗
+    // ?preTurnoverAdd=1  打开「预离职人员填写」列表 + 新增预离职人员弹窗
     const params=new URLSearchParams(window.location.search);
     if(params.get('preTurnoverAdd')==='1'){
-        setTimeout(()=>openPreTurnoverEditModal(),300);
+        setTimeout(()=>{
+            openPreTurnoverModal();
+            // 列表modal渲染完成后，再叠加新增表单modal
+            setTimeout(()=>openPreTurnoverEditModal(),120);
+        },300);
     }
 });
 </script>

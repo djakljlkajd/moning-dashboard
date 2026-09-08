@@ -2113,8 +2113,9 @@ function confirmPreTurnoverEdit(){
     const dadianchang=document.getElementById('pre-edit-dadianchang').value.trim();
     const store=document.getElementById('pre-edit-store').value.trim();
     const position=document.getElementById('pre-edit-position').value.trim();
-    if(!name||!qujing||!dadianchang||!store||!position){
-        alert('请填写必填项：姓名、区经、大店长、门店、职位');return;
+    // 不限制必填：所有字段均可自由提交（仅做软提示，不阻塞）
+    if(!name){
+        if(!confirm('姓名为空，仍要保存吗？')){return;}
     }
     const empIdInput=document.getElementById('pre-edit-emp-id').value.trim();
     const isNew=!currentEditPreId;

@@ -437,6 +437,14 @@
             cursor: zoom-in; vertical-align: middle; border: 1px solid #e3e8ec; display: block; margin: 0 auto;
         }
         .no-img { color: #bdc3c7; }
+        .visit-cell { padding: 0 !important; min-width: 160px; }
+        .visit-input {
+            width: 100%; box-sizing: border-box; border: none; background: transparent;
+            height: 44px; line-height: 44px; padding: 0 10px; font-size: 12.5px;
+            color: inherit; outline: none; border-radius: 6px;
+        }
+        .visit-input:focus { background: #fff; border: 1px solid #2f8a5b; }
+        .visit-input::placeholder { color: #b8c0c8; }
         .img-viewer {
             position: fixed; inset: 0; background: rgba(0,0,0,0.88); z-index: 3000;
             display: flex; align-items: center; justify-content: center;
@@ -779,15 +787,16 @@
 
 </div><!-- end container -->
 
-<script src="data.js?v=20260903c"></script>
-<script src="stores.js?v=20260903c"></script>
-<script src="details.js?v=20260903c"></script>
-<script src="staff_lookup.js?v=20260903c"></script>
-<script src="store_base.js?v=20260903c"></script>
+<script src="data.js?v=20260908a"></script>
+<script src="stores.js?v=20260908a"></script>
+<script src="details.js?v=20260908a"></script>
+<script src="staff_lookup.js?v=20260908a"></script>
+<script src="store_base.js?v=20260908a"></script>
 <script>
 const D = window.DASHBOARD_DATA;
 let specialLeaveExtra = [];
 let specialLeaveHidden = [];
+let specialLeaveVisit = {};  // 每周一回访：key=工号/记录ID, value=回访文字
 let preLeaveExtra = [];
 let preLeaveHidden = [];
 let airportCertExtra = [];
@@ -870,8 +879,18 @@ function viewImage(src) {
         document.body.appendChild(ov);
     }
     var vi = ov.querySelector('#img-viewer-src');
-    if (vi) vi.src = src;
+    if (vi)     vi.src = src;
     ov.classList.add('show');
+}
+
+// 每周一回访：保存回访文字并同步（特殊请假弹窗内联输入框失焦触发）
+function saveVisit(input) {
+    var key = input.getAttribute('data-key');
+    var val = input.value.trim();
+    if (!key) return;
+    specialLeaveVisit[key] = val;
+    slBackupToLocal();
+    syncSpecialLeaveExtra();
 }
 
 // ---------- 标题 / 日期 ----------
@@ -1349,9 +1368,16 @@ function openDetailModal(cardLabel) {
     }
     // 特殊请假/预离职：追加「凭证」列（单店特殊新增HC 不支持图片）
     const withImg = showActions && key !== '单店特殊新增HC';
-    const displayColumns = withImg
-        ? [...finalColumns, '凭证', '操作']
-        : (showActions ? [...finalColumns, '操作'] : finalColumns);
+    // 特殊请假：追加「每周一回访」可编辑列（用于登记回访原因）
+    const hasVisit = (key === '特殊请假');
+    let displayColumns;
+    if (withImg) {
+        displayColumns = hasVisit ? [...finalColumns, '每周一回访', '凭证', '操作'] : [...finalColumns, '凭证', '操作'];
+    } else if (showActions) {
+        displayColumns = hasVisit ? [...finalColumns, '每周一回访', '操作'] : [...finalColumns, '操作'];
+    } else {
+        displayColumns = finalColumns;
+    }
 
     const slExtraInfo = (key === '特殊请假')
         ? '（新增 ' + specialLeaveExtra.length + ' 条' + (specialLeaveHidden.length > 0 ? '，已隐藏 ' + specialLeaveHidden.length + ' 条' : '') + '）'
@@ -1382,6 +1408,14 @@ function openDetailModal(cardLabel) {
                 }).join('');
                 if (showActions) {
                     const rowId = r.id || r.工号 || '';
+                    // 每周一回访：内联输入框，失焦保存并同步
+                    if (hasVisit) {
+                        const visitKey = r.工号 || r.id || rowId;
+                        const visitVal = (specialLeaveVisit[visitKey] || '');
+                        const vk = visitKey.replace(/"/g, '&quot;');
+                        const vv = visitVal.replace(/"/g, '&quot;');
+                        cells += '<td class="visit-cell"><input class="visit-input" data-key="' + vk + '" value="' + vv + '" placeholder="点击登记回访原因" onblur="saveVisit(this)"></td>';
+                    }
                     if (withImg) cells += imgCellHtml(r);
                     let actBtns = '<button class="btn-edit-record" onclick="event.stopPropagation();openEditRecordModal(\'' + editType + '\',\'' + rowId + '\')">修改</button>';
                     actBtns += '<button class="btn-delete-record" onclick="event.stopPropagation();' + delFn + '(\'' + rowId + '\')">删除</button>';
@@ -1629,6 +1663,7 @@ function slBackupToLocal() {
     try {
         localStorage.setItem('hc_special_leave_extra', JSON.stringify(specialLeaveExtra));
         localStorage.setItem('hc_special_leave_hidden', JSON.stringify(specialLeaveHidden));
+        localStorage.setItem('hc_special_leave_visit', JSON.stringify(specialLeaveVisit));
         localStorage.setItem('hc_pre_leave_extra', JSON.stringify(preLeaveExtra));
         localStorage.setItem('hc_pre_leave_hidden', JSON.stringify(preLeaveHidden));
         localStorage.setItem('hc_airport_cert_extra', JSON.stringify(airportCertExtra));
@@ -1645,6 +1680,8 @@ function slRestoreFromLocal() {
         if (raw) specialLeaveExtra = JSON.parse(raw);
         const rawHidden = localStorage.getItem('hc_special_leave_hidden');
         if (rawHidden) specialLeaveHidden = JSON.parse(rawHidden);
+        const rawVisit = localStorage.getItem('hc_special_leave_visit');
+        if (rawVisit) specialLeaveVisit = JSON.parse(rawVisit);
         // 预离职 extra/hidden 不从 localStorage 初始化，统一由云端同步决定
         localStorage.removeItem('hc_pre_leave_extra');
         localStorage.removeItem('hc_pre_leave_hidden');
@@ -1679,6 +1716,10 @@ async function loadSpecialLeaveExtra() {
             const cloudIds = new Set(cloudData.map(r => r.id));
             specialLeaveExtra = [...cloudData, ...localData.filter(r => !cloudIds.has(r.id))];
             specialLeaveHidden = [...new Set([...cloudHidden, ...localHidden])];
+            // 每周一回访（云端优先，补充本地独有 key）
+            const cloudVisit = data.special_leave_visit || {};
+            const localVisit = JSON.parse(localStorage.getItem('hc_special_leave_visit') || '{}');
+            specialLeaveVisit = Object.assign({}, localVisit, cloudVisit);
             // 预离职
             const cloudPre = data.pre_leave_extra || [];
             const cloudPreHidden = data.pre_leave_hidden || [];
@@ -1753,6 +1794,7 @@ async function syncSpecialLeaveExtra() {
         const curData = (rows && rows.length) ? (rows[0].data || {}) : {};
         curData.special_leave_extra = specialLeaveExtra;
         curData.special_leave_hidden = specialLeaveHidden;
+        curData.special_leave_visit = specialLeaveVisit;
         curData.pre_leave_extra = preLeaveExtra;
         curData.pre_leave_hidden = preLeaveHidden;
         curData.airport_cert_extra = airportCertExtra;

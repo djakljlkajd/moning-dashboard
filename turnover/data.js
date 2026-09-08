@@ -1,7 +1,7 @@
 // 古德墨柠离职数据看板 - 数据源（由 extract_data.py 自动生成）
 window.DASHBOARD_DATA = {
   "meta": {
-    "title": "古德墨柠 8月离职数据看板",
+    "title": "古德墨柠 9月离职数据看板",
     "asOf": "2026-08-26",
     "period": "8月1-26日",
     "target": "5%"

@@ -623,7 +623,7 @@
 
 <!-- ===== 预离职人员新增/编辑弹窗 ===== -->
 <div class="edit-modal-overlay" id="pre-turnover-edit-modal" onclick="closePreTurnoverEdit(event)">
-    <div class="edit-modal-box" style="max-width:900px;" onclick="event.stopPropagation()">
+    <div class="edit-modal-box" style="max-width:780px;" onclick="event.stopPropagation()">
         <div class="modal-header">
             <span class="modal-title" id="pre-turnover-edit-title">新增预离职人员</span>
             <button class="modal-close" onclick="closePreTurnoverEdit()">×</button>
@@ -631,37 +631,38 @@
         <div class="edit-modal-body">
             <input type="hidden" id="pre-edit-qujing" value="">
             <div class="edit-modal-grid">
-                <div>
-                    <div class="edit-modal-label">姓名 *</div>
-                    <input type="text" class="edit-modal-input" id="pre-edit-name" placeholder="例如：张三" style="margin-bottom:0;">
+                <div style="position:relative;">
+                    <div class="edit-modal-label">姓名 <span style="color:#c62828;">*</span> <span style="color:#888;font-size:11px;font-weight:normal;">（输入 2 字自动检索期初人员）</span></div>
+                    <input type="text" class="edit-modal-input" id="pre-edit-name" placeholder="例如：张三" style="margin-bottom:0;" autocomplete="off" oninput="onPreNameInput()" onfocus="onPreNameInput()">
+                    <div id="pre-name-suggest" style="display:none;position:absolute;top:62px;left:0;right:0;background:#fff;border:1px solid #ccc;border-radius:4px;max-height:180px;overflow-y:auto;z-index:1000;box-shadow:0 4px 8px rgba(0,0,0,0.1);"></div>
                 </div>
                 <div>
-                    <div class="edit-modal-label">工号 / ID（选填）</div>
-                    <input type="text" class="edit-modal-input" id="pre-edit-emp-id" placeholder="不填则自动生成" style="margin-bottom:0;">
+                    <div class="edit-modal-label">工号</div>
+                    <input type="text" class="edit-modal-input" id="pre-edit-emp-id" placeholder="自动填充" style="margin-bottom:0;background:#f5f5f5;" readonly>
                 </div>
                 <div>
-                    <div class="edit-modal-label">大店长 *</div>
+                    <div class="edit-modal-label">大店长 <span style="color:#c62828;">*</span></div>
                     <select class="edit-modal-input" id="pre-edit-dadianchang" style="margin-bottom:0;">
                         <option value="">请选择大店长</option>
                         <option value="何海云">何海云</option><option value="刘旺林">刘旺林</option><option value="周思凡">周思凡</option><option value="廖灿">廖灿</option><option value="徐宇辉">徐宇辉</option><option value="旷瑶">旷瑶</option><option value="易彪">易彪</option><option value="李奔">李奔</option><option value="杜强">杜强</option><option value="童璐">童璐</option><option value="赵思洁">赵思洁</option><option value="邵宝生">邵宝生</option><option value="钟天祥">钟天祥</option>
                     </select>
                 </div>
                 <div>
-                    <div class="edit-modal-label">门店 *（输入关键词搜索，如"蝴蝶"）</div>
-                    <input type="text" class="edit-modal-input" id="pre-edit-store" list="store-options" placeholder="输入门店名关键词…" style="margin-bottom:0;" oninput="onPreStoreInput()">
+                    <div class="edit-modal-label">门店 <span style="color:#c62828;">*</span></div>
+                    <input type="text" class="edit-modal-input" id="pre-edit-store" list="store-options" placeholder="自动填充" style="margin-bottom:0;" oninput="onPreStoreInput()">
                     <datalist id="store-options"></datalist>
                 </div>
                 <div>
-                    <div class="edit-modal-label">职位 *</div>
-                    <input type="text" class="edit-modal-input" id="pre-edit-position" placeholder="例如：服务员" style="margin-bottom:0;">
+                    <div class="edit-modal-label">职位</div>
+                    <input type="text" class="edit-modal-input" id="pre-edit-position" placeholder="自动填充" style="margin-bottom:0;background:#f5f5f5;" readonly>
                 </div>
                 <div>
                     <div class="edit-modal-label">入职日期</div>
-                    <input type="text" class="edit-modal-input" id="pre-edit-hire-date" placeholder="如：2024-03-01" style="margin-bottom:0;">
+                    <input type="text" class="edit-modal-input" id="pre-edit-hire-date" placeholder="自动填充" style="margin-bottom:0;background:#f5f5f5;" readonly>
                 </div>
                 <div>
                     <div class="edit-modal-label">预计离职日期</div>
-                    <input type="text" class="edit-modal-input" id="pre-edit-resign-date" placeholder="如：2026-08-15" style="margin-bottom:0;">
+                    <input type="text" class="edit-modal-input" id="pre-edit-resign-date" placeholder="如：2026-09-15" style="margin-bottom:0;">
                 </div>
                 <div>
                     <div class="edit-modal-label">工龄区间</div>
@@ -695,48 +696,8 @@
                         <option value="个人原因">个人原因</option>
                     </select>
                 </div>
-                <div class="full-width">
-                    <div class="edit-modal-label">离职详情 / 备注</div>
-                    <textarea class="edit-modal-textarea" id="pre-edit-reason-detail" placeholder="请填写该伙伴的离职详情或备注…" style="min-height:70px;"></textarea>
-                </div>
-                <div>
-                    <div class="edit-modal-label">沟通时间</div>
-                    <input type="text" class="edit-modal-input" id="pre-edit-communication-time" placeholder="如：8月3日" style="margin-bottom:0;">
-                </div>
-                <div>
-                    <div class="edit-modal-label">运营判定离职原因</div>
-                    <input type="text" class="edit-modal-input" id="pre-edit-operation-reason" style="margin-bottom:0;">
-                </div>
-                <div class="full-width">
-                    <div class="edit-modal-label">BP沟通离职原因</div>
-                    <textarea class="edit-modal-textarea" id="pre-edit-bp-reason" style="min-height:60px;"></textarea>
-                </div>
-                <div>
-                    <div class="edit-modal-label">BP沟通时间</div>
-                    <input type="text" class="edit-modal-input" id="pre-edit-bp-time" placeholder="如：8月3日" style="margin-bottom:0;">
-                </div>
-                <div>
-                    <div class="edit-modal-label">BP判定离职原因打标</div>
-                    <input type="text" class="edit-modal-input" id="pre-edit-bp-tag" style="margin-bottom:0;">
-                </div>
-                <div>
-                    <div class="edit-modal-label">和运营是否一致</div>
-                    <select class="edit-modal-input" id="pre-edit-is-consistent" style="margin-bottom:0;">
-                        <option value="">请选择</option>
-                        <option value="一致">一致</option>
-                        <option value="不一致">不一致</option>
-                    </select>
-                </div>
-                <div>
-                    <div class="edit-modal-label">不一致情况说明</div>
-                    <input type="text" class="edit-modal-input" id="pre-edit-inconsistency" style="margin-bottom:0;">
-                </div>
-                <div>
-                    <div class="edit-modal-label">填写人（选填）</div>
-                    <input type="text" class="edit-modal-input" id="pre-edit-by" placeholder="例如：张三" style="margin-bottom:0;">
-                </div>
             </div>
-            <div class="edit-modal-hint">新增后自动保存到云端，其他人刷新看板即可看到。</div>
+            <div class="edit-modal-hint">输入姓名后自动从期初人员表中检索填充，保存后自动同步云端。</div>
         </div>
         <div class="edit-modal-actions">
             <button class="btn-cancel" onclick="closePreTurnoverEdit()">取消</button>
@@ -747,7 +708,8 @@
 
 </div><!-- end container -->
 
-<script src="data.js?v=20260907a"></script>
+<script src="data.js?v=20260908a"></script>
+<script src="roster.js?v=20260908a"></script>
 <script>
 const STORE_DATA={
 dadianchang:["何海云", "刘旺林", "周思凡", "廖灿", "徐宇辉", "旷瑶", "易彪", "李奔", "杜强", "童璐", "赵思洁", "邵宝生", "钟天祥"],
@@ -866,6 +828,88 @@ mapping:{
 "古德墨柠龙湖长沙芙蓉天街店":{dadianchang:"易彪"},
 }
 };
+
+// ===== 期初人员花名册（用于姓名自动检索填充） =====
+let ROSTER_DATA=[];
+function loadRosterData(){
+    if(window.ROSTER && Array.isArray(window.ROSTER)){
+        ROSTER_DATA=window.ROSTER;
+        console.log('花名册已加载:', ROSTER_DATA.length, '人');
+    }else{
+        console.warn('roster.js 未加载或 ROSTER 数据为空');
+    }
+}
+
+// ===== 姓名输入自动检索 =====
+function onPreNameInput(){
+    const input=document.getElementById('pre-edit-name');
+    const sugBox=document.getElementById('pre-name-suggest');
+    const val=(input.value||'').trim();
+    if(!ROSTER_DATA.length || val.length<1){
+        sugBox.style.display='none';
+        return;
+    }
+    const matches=ROSTER_DATA.filter(r=>r.name && r.name.indexOf(val)>=0).slice(0,12);
+    if(!matches.length){
+        sugBox.style.display='none';
+        return;
+    }
+    sugBox.innerHTML=matches.map((r,idx)=>{
+        const safeName=(r.name||'').replace(/'/g,"\\'").replace(/"/g,"&quot;");
+        return `<div data-idx="${idx}" style="padding:8px 12px;cursor:pointer;border-bottom:1px solid #f0f0f0;font-size:13px;display:flex;justify-content:space-between;align-items:center;" 
+                     onmouseover="this.style.background='#f0f7ff'" onmouseout="this.style.background='#fff'"
+                     onclick="onPreNamePick('${safeName}')">
+            <div><span style="color:#0d47a1;font-weight:600;">${r.name}</span> <span style="color:#888;font-size:11px;margin-left:4px;">${r.empId||''}</span></div>
+            <div style="color:#666;font-size:12px;">${r.store||''} · ${r.position||''}</div>
+        </div>`;
+    }).join('');
+    sugBox.style.display='block';
+    // 同时挂全局点击事件，点击弹窗其他位置时关闭
+    setTimeout(()=>{
+        const handler=(e)=>{
+            if(!sugBox.contains(e.target) && e.target!==input){
+                sugBox.style.display='none';
+                document.removeEventListener('click',handler);
+            }
+        };
+        document.addEventListener('click',handler);
+    },50);
+}
+
+function onPreNamePick(name){
+    const input=document.getElementById('pre-edit-name');
+    const sugBox=document.getElementById('pre-name-suggest');
+    input.value=name;
+    sugBox.style.display='none';
+    // 检索匹配的员工
+    const matches=ROSTER_DATA.filter(r=>r.name===name);
+    if(matches.length===1){
+        applyRosterPick(matches[0]);
+    }else if(matches.length>1){
+        // 重名：在下拉框里也展示，但已经选择第一个，弹个提示
+        applyRosterPick(matches[0]);
+        const tip=`检测到 ${matches.length} 位重名"${name}"，已自动填入第一位，如需更换请手动调整门店/大店长`;
+        showTip(tip);
+    }
+}
+
+function applyRosterPick(r){
+    if(!r)return;
+    document.getElementById('pre-edit-emp-id').value=r.empId||'';
+    document.getElementById('pre-edit-dadianchang').value=r.dadianchang||'';
+    document.getElementById('pre-edit-store').value=r.store||'';
+    document.getElementById('pre-edit-position').value=r.position||'';
+    document.getElementById('pre-edit-hire-date').value=r.hireDate||'';
+    onPreStoreInput();
+}
+
+function showTip(msg){
+    const t=document.createElement('div');
+    t.textContent=msg;
+    t.style.cssText='position:fixed;top:80px;left:50%;transform:translateX(-50%);background:#fff3cd;border:1px solid #ffe69c;padding:8px 16px;border-radius:4px;font-size:13px;color:#856404;z-index:9999;box-shadow:0 2px 8px rgba(0,0,0,0.1);';
+    document.body.appendChild(t);
+    setTimeout(()=>t.remove(),3500);
+}
 
 const D = window.DASHBOARD_DATA;
 
@@ -2057,15 +2101,6 @@ function openPreTurnoverEditModal(empId){
     document.getElementById('pre-edit-gongling').value=emp.gongLingQuJian||'';
     document.getElementById('pre-edit-reason-tag').value=emp.reasonTag||'';
     document.getElementById('pre-edit-reason1').value=emp.reason1||'';
-    document.getElementById('pre-edit-reason-detail').value=emp.reasonDetail||'';
-    document.getElementById('pre-edit-communication-time').value=emp.communicationTime||'';
-    document.getElementById('pre-edit-operation-reason').value=emp.operationReason||'';
-    document.getElementById('pre-edit-bp-reason').value=emp.bpReason||'';
-    document.getElementById('pre-edit-bp-time').value=emp.bpCommunicationTime||'';
-    document.getElementById('pre-edit-bp-tag').value=emp.bpTag||'';
-    document.getElementById('pre-edit-is-consistent').value=emp.isConsistent||'';
-    document.getElementById('pre-edit-inconsistency').value=emp.inconsistencyNote||'';
-    document.getElementById('pre-edit-by').value=emp.updated_by||'';
     onPreStoreInput();
     document.getElementById('pre-turnover-edit-modal').classList.add('active');
 }
@@ -2094,15 +2129,6 @@ function openResignEditModal(empId){
     document.getElementById('pre-edit-gongling').value=emp.gongLingQuJian||'';
     document.getElementById('pre-edit-reason-tag').value=emp.reasonTag||'';
     document.getElementById('pre-edit-reason1').value=emp.reason1||'';
-    document.getElementById('pre-edit-reason-detail').value=emp.reasonDetail||'';
-    document.getElementById('pre-edit-communication-time').value=emp.communicationTime||'';
-    document.getElementById('pre-edit-operation-reason').value=emp.operationReason||'';
-    document.getElementById('pre-edit-bp-reason').value=emp.bpReason||'';
-    document.getElementById('pre-edit-bp-time').value=emp.bpCommunicationTime||'';
-    document.getElementById('pre-edit-bp-tag').value=emp.bpTag||'';
-    document.getElementById('pre-edit-is-consistent').value=emp.isConsistent||'';
-    document.getElementById('pre-edit-inconsistency').value=emp.inconsistencyNote||'';
-    document.getElementById('pre-edit-by').value=emp.updated_by||'';
     onPreStoreInput();
     document.getElementById('pre-turnover-edit-modal').classList.add('active');
 }
@@ -2144,15 +2170,6 @@ function confirmPreTurnoverEdit(){
         gongLingQuJian:document.getElementById('pre-edit-gongling').value.trim(),
         reasonTag:document.getElementById('pre-edit-reason-tag').value.trim(),
         reason1:document.getElementById('pre-edit-reason1').value.trim(),
-        reasonDetail:document.getElementById('pre-edit-reason-detail').value.trim(),
-        communicationTime:document.getElementById('pre-edit-communication-time').value.trim(),
-        operationReason:document.getElementById('pre-edit-operation-reason').value.trim(),
-        bpReason:document.getElementById('pre-edit-bp-reason').value.trim(),
-        bpCommunicationTime:document.getElementById('pre-edit-bp-time').value.trim(),
-        bpTag:document.getElementById('pre-edit-bp-tag').value.trim(),
-        isConsistent:document.getElementById('pre-edit-is-consistent').value.trim(),
-        inconsistencyNote:document.getElementById('pre-edit-inconsistency').value.trim(),
-        updated_by:document.getElementById('pre-edit-by').value.trim(),
         updated_at:new Date().toISOString()
     };
     if(editModalMode==='resign'){
@@ -2220,6 +2237,7 @@ loadTurnoverData();
 loadPreTurnoverData().then(()=>{
     return loadOnlineResignData();
 }).then(()=>{
+    loadRosterData();
     autoTransferPreTurnover();
     autoTransferTimer=setInterval(autoTransferPreTurnover,600000);
     // ===== URL参数快捷入口 =====

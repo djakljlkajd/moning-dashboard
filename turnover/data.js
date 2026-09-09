@@ -2,8 +2,8 @@
 window.DASHBOARD_DATA = {
   "meta": {
     "title": "古德墨柠 9月离职数据看板",
-    "asOf": "2026-08-26",
-    "period": "8月1-26日",
+    "asOf": "2026-09-08",
+    "period": "9月1-8日",
     "target": "5%"
   },
   "overview": {

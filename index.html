@@ -179983,7 +179983,7 @@ function renderMetrics(){
     {l:'全职人数',v:agg.full_total,s:`含0工时${agg.full_zero}人`,c:'teal'},
     {l:'0工时人数',v:agg.full_zero,s:'需核实原因',c:agg.full_zero>0?'amber':'teal',type:'zeros_full'},
     {l:'>11h 单日预警',v:agg.over11h,s:'红线预警',c:agg.over11h>0?'red':'teal',type:'over13'},
-    {l:'全月内>8天',v:agg.consec_gt8,s:'需面谈对应大店长',s2:'（包含机场等异常情况在内）',c:agg.consec_gt8>0?'red':'teal',type:'consec8'},
+    {l:'全月内>8天',v:agg.consec_gt8,c:agg.consec_gt8>0?'red':'teal',type:'consec8'},
     {l:'连续出勤7天预警',v:consec7Count,s:'需排休',c:consec7Count>0?'amber':'teal',type:'consec7'},
     {l:'学生用工人数',v:agg.student_total,s:`出勤${agg.student_active}人`,c:'purple'},
     {l:'学生总工时(h)',v:agg.student_hours.toLocaleString(undefined,{maximumFractionDigits:1}),s:`占比 ${studentRatio}%`,c:'purple'},

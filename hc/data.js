@@ -1,7 +1,7 @@
 // HC 招募缺口看板 - 数据源（由 sync_dashboard.py 自动生成，请勿手改）
 window.DASHBOARD_DATA = {
   "meta": {
-    "title": "HC 8月最终招募缺口看板",
+    "title": "HC 9月最终招募缺口看板",
     "asOf": "2026-08-15"
   },
   "cards": [
@@ -78,7 +78,7 @@ window.DASHBOARD_DATA = {
       "特殊请假<br>(H列)",
       "预离职<br>(I列)",
       "出勤人数",
-      "8月缺口<br>(K列)",
+      "9月缺口<br>(K列)",
       "撤店数<br>(L列)",
       "最终核对<br>(N列)",
       "备注原因"
@@ -153,7 +153,7 @@ window.DASHBOARD_DATA = {
       "特殊请假<br>(H列)",
       "预离职<br>(I列)",
       "出勤人数",
-      "8月缺口<br>(K列)",
+      "9月缺口<br>(K列)",
       "最终核对<br>(N列)",
       "备注"
     ],

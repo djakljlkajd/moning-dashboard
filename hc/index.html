@@ -322,8 +322,19 @@
         .modal-body tbody td {
             padding: 9px 8px; vertical-align: middle;
             white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-            max-width: 180px;
+            max-width: 150px;
         }
+        /* 操作列：不参与压缩，两个按钮必须完整显示（否则会被挤成省略号） */
+        .modal-body thead th.action-cell,
+        .modal-body tbody td.action-cell {
+            max-width: none; width: 128px; min-width: 128px;
+            overflow: visible; text-overflow: clip;
+            white-space: nowrap; text-align: center;
+        }
+        /* 操作列按钮容器：紧凑排布，保证「修改 / 删除」并排完整显示 */
+        .action-btn-group { display: flex; align-items: center; justify-content: center; gap: 6px; }
+        .action-btn-group .btn-edit-record,
+        .action-btn-group .btn-delete-record { margin-left: 0; }
         .modal-empty {
             padding: 40px 20px; text-align: center; color: #888; font-size: 14px;
         }
@@ -437,7 +448,7 @@
             cursor: zoom-in; vertical-align: middle; border: 1px solid #e3e8ec; display: block; margin: 0 auto;
         }
         .no-img { color: #bdc3c7; }
-        .visit-cell { padding: 0 !important; min-width: 160px; }
+        .visit-cell { padding: 0 !important; min-width: 150px; max-width: 150px; }
         .visit-input {
             width: 100%; box-sizing: border-box; border: none; background: transparent;
             height: 44px; line-height: 44px; padding: 0 10px; font-size: 12.5px;
@@ -762,6 +773,11 @@
                     <label class="form-label" id="add-reason-label">备注原因<span class="required">*</span></label>
                     <textarea class="form-textarea" id="add-reason" placeholder="请输入备注原因..." required></textarea>
                 </div>
+                <!-- 每周一回访（仅特殊请假，选填） -->
+                <div class="form-group" id="add-visit-row" style="display:none;">
+                    <label class="form-label">每周一回访<span class="form-label-sub">（选填，登记回访原因，会同步到明细表的「每周一回访」列）</span></label>
+                    <textarea class="form-textarea" id="add-visit" placeholder="如：9/14 已电话回访，伙伴在家休养，预计 9/20 复岗..."></textarea>
+                </div>
                 <!-- 凭证图片上传（选填） -->
                 <div class="form-group" id="add-image-row">
                     <label class="form-label">凭证图片<span class="form-label-sub">（选填，支持请假单/诊断证明等截图，自动压缩保存）</span></label>
@@ -787,11 +803,11 @@
 
 </div><!-- end container -->
 
-<script src="data.js?v=20260909a"></script>
-<script src="stores.js?v=20260909a"></script>
-<script src="details.js?v=20260909a"></script>
-<script src="staff_lookup.js?v=20260909a"></script>
-<script src="store_base.js?v=20260909a"></script>
+<script src="data.js?v=20260914a"></script>
+<script src="stores.js?v=20260914a"></script>
+<script src="details.js?v=20260914a"></script>
+<script src="staff_lookup.js?v=20260914a"></script>
+<script src="store_base.js?v=20260914a"></script>
 <script>
 const D = window.DASHBOARD_DATA;
 let specialLeaveExtra = [];
@@ -1063,7 +1079,9 @@ function openNewHiresModal(type) {
         body.innerHTML = '<div class="modal-empty">当前筛选条件下暂无数据</div>';
     } else {
         body.innerHTML =
-            '<table><thead><tr>' + NEW_HIRE_COLUMNS.map(function(h) { return '<th>' + h + '</th>'; }).join('') + '</tr></thead>' +
+            '<table><thead><tr>' + NEW_HIRE_COLUMNS.map(function(h, i) {
+                return '<th' + (i === NEW_HIRE_COLUMNS.length - 1 ? ' class="action-cell"' : '') + '>' + h + '</th>';
+            }).join('') + '</tr></thead>' +
             '<tbody>' + records.map(function(r, idx) {
                 var cells = [
                     idx + 1,
@@ -1077,7 +1095,7 @@ function openNewHiresModal(type) {
                 var rowId = r.id || '';
                 var actBtns = '<button class="btn-edit-record" onclick="event.stopPropagation();openEditRecordModal(\'' + (isFull ? 'newhire_full' : 'newhire_student') + '\',\'' + rowId + '\')">修改</button>';
                 actBtns += '<button class="btn-delete-record" onclick="event.stopPropagation();deleteNewHireRecord(\'' + type + '\',\'' + rowId + '\')">删除</button>';
-                cells += '<td>' + actBtns + '</td>';
+                cells += '<td class="action-cell"><div class="action-btn-group">' + actBtns + '</div></td>';
                 return '<tr class="record-row-added">' + cells + '</tr>';
             }).join('') + '</tbody></table>';
     }
@@ -1398,7 +1416,10 @@ function openDetailModal(cardLabel) {
         const delFn = (key === '特殊请假') ? 'deleteSpecialLeaveRecord' : (key === '预离职') ? 'deletePreLeaveRecord' : 'deleteStoreHcRecord';
         const editType = (key === '特殊请假') ? 'special' : (key === '预离职') ? 'preleave' : 'storehc';
         body.innerHTML =
-            '<table><thead><tr>' + displayColumns.map(h => '<th>' + h + '</th>').join('') + '</tr></thead>' +
+            '<table><thead><tr>' + displayColumns.map(function(h, i) {
+                var isLast = (i === displayColumns.length - 1);
+                return '<th' + (showActions && isLast ? ' class="action-cell"' : '') + '>' + h + '</th>';
+            }).join('') + '</tr></thead>' +
             '<tbody>' + filtered.map(r => {
                 let cells = finalColumns.map(h => {
                     let v = (r[h] === undefined || r[h] === null ? '' : r[h]);
@@ -1419,7 +1440,7 @@ function openDetailModal(cardLabel) {
                     if (withImg) cells += imgCellHtml(r);
                     let actBtns = '<button class="btn-edit-record" onclick="event.stopPropagation();openEditRecordModal(\'' + editType + '\',\'' + rowId + '\')">修改</button>';
                     actBtns += '<button class="btn-delete-record" onclick="event.stopPropagation();' + delFn + '(\'' + rowId + '\')">删除</button>';
-                    cells += '<td>' + actBtns + '</td>';
+                    cells += '<td class="action-cell"><div class="action-btn-group">' + actBtns + '</div></td>';
                 }
                 const rowClass = (r._isAdded ? ' class="record-row-added"' : '');
                 return '<tr' + rowClass + '>' + cells + '</tr>';
@@ -1469,7 +1490,7 @@ function openAirportCertModal(statusKey) {
         body.innerHTML = '<div class="modal-empty">当前筛选条件下暂无数据</div>';
     } else {
         body.innerHTML =
-            '<table><thead><tr>' + AIRPORT_DETAIL_COLUMNS.map(function(h) { return '<th>' + h + '</th>'; }).join('') + '<th>凭证</th><th>操作</th></tr></thead>' +
+            '<table><thead><tr>' + AIRPORT_DETAIL_COLUMNS.map(function(h) { return '<th>' + h + '</th>'; }).join('') + '<th>凭证</th><th class="action-cell">操作</th></tr></thead>' +
             '<tbody>' + all.map(function(r) {
                 var cells = AIRPORT_DETAIL_COLUMNS.map(function(h) {
                     return '<td>' + (r[h] === undefined || r[h] === null ? '' : r[h]) + '</td>';
@@ -1479,7 +1500,7 @@ function openAirportCertModal(statusKey) {
                 var actBtns = '';
                 if (r._isAdded) actBtns += '<button class="btn-edit-record" onclick="event.stopPropagation();openEditRecordModal(\'airport\',\'' + rowId + '\')">修改</button>';
                 actBtns += '<button class="btn-delete-record" onclick="event.stopPropagation();deleteAirportCertRecord(\'' + rowId + '\')">删除</button>';
-                cells += '<td>' + actBtns + '</td>';
+                cells += '<td class="action-cell"><div class="action-btn-group">' + actBtns + '</div></td>';
                 var rowClass = r._isAdded ? ' class="record-row-added"' : '';
                 return '<tr' + rowClass + '>' + cells + '</tr>';
             }).join('') + '</tbody></table>';
@@ -1887,6 +1908,7 @@ function openAddRecordModal(type, statusKey) {
     document.getElementById('add-start').value = '';
     document.getElementById('add-end').value = '';
     document.getElementById('add-reason').value = '';
+    document.getElementById('add-visit').value = '';
     document.getElementById('add-newhire-date').value = '';
     document.getElementById('add-newhire-stage').value = '';
     removePickedImage();  // 清空凭证图片
@@ -1909,6 +1931,8 @@ function openAddRecordModal(type, statusKey) {
     document.getElementById('add-start').required = (addRecordType === 'special');
     document.getElementById('add-airport-status-row').style.display = (addRecordType === 'airport') ? '' : 'none';
     document.getElementById('add-reason-row').style.display = (addRecordType === 'storehc') ? 'none' : '';
+    // 每周一回访：仅特殊请假显示
+    document.getElementById('add-visit-row').style.display = (addRecordType === 'special') ? '' : 'none';
     document.getElementById('storehc-fields').style.display = (addRecordType === 'storehc') ? '' : 'none';
     document.getElementById('newhire-fields').style.display = isNewHire ? '' : 'none';
     document.getElementById('add-newhire-date').required = isNewHire;
@@ -2024,6 +2048,9 @@ function openEditRecordModal(type, id) {
         if (type === 'special') {
             document.getElementById('add-start').value = rec.开始时间 || '';
             document.getElementById('add-end').value = rec.结束时间 || '';
+            // 回填已登记的「每周一回访」内容（key 与明细表一致：工号优先）
+            var visitKey = rec.工号 || rec.id || id;
+            document.getElementById('add-visit').value = specialLeaveVisit[visitKey] || '';
         }
         if (type === 'airport' && rec.状态) {
             document.getElementById('add-airport-status').value = rec.状态;
@@ -2294,6 +2321,13 @@ async function submitAddRecord(e) {
         specialLeaveExtra.push(record);
     } else {
         upsertExtra(specialLeaveExtra, editRecordId, record);
+    }
+    // 每周一回访：与明细表内联输入共用同一份数据（key=工号），修改弹窗里填的内容同步保存
+    var visitEl = document.getElementById('add-visit');
+    var visitKeyFinal = gonghao || record.id;
+    if (visitEl && visitKeyFinal) {
+        specialLeaveVisit[visitKeyFinal] = visitEl.value.trim();
+        slBackupToLocal();
     }
     scheduleSLSync();
     closeAddRecordModal();

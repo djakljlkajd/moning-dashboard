@@ -834,11 +834,11 @@
 
 </div><!-- end container -->
 
-<script src="data.js?v=20260915b"></script>
-<script src="stores.js?v=20260915b"></script>
-<script src="details.js?v=20260915b"></script>
-<script src="staff_lookup.js?v=20260915b"></script>
-<script src="store_base.js?v=20260915b"></script>
+<script src="data.js?v=20260915c"></script>
+<script src="stores.js?v=20260915c"></script>
+<script src="details.js?v=20260915c"></script>
+<script src="staff_lookup.js?v=20260915c"></script>
+<script src="store_base.js?v=20260915c"></script>
 <script>
 const D = window.DASHBOARD_DATA;
 let specialLeaveExtra = [];
@@ -1745,6 +1745,8 @@ const SUPA_KEY_SL = 'sb_publishable_6sa-Pz6dX0BSlTJX3gNiRA_CbtZkf_b';
 const SUPA_TABLE_SL = 'violation_data';
 let slSyncTimer = null;
 let slWriteLock = false;
+// 同步进行中又产生的新变更：不丢弃，标记 pending，等本轮写完立刻补推一次
+let slSyncPending = false;
 
 function genSLId() { return 'sl_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8); }
 
@@ -1890,7 +1892,9 @@ function handleDeepLink() {
 }
 
 async function syncSpecialLeaveExtra() {
-    if (slWriteLock) return;
+    // 锁被占用时不能直接 return（否则这次变更会被静默丢弃，表现为"改了/删了没用，刷新又回来"）
+    // 改为标记 pending，本轮同步结束后立即补推一次
+    if (slWriteLock) { slSyncPending = true; return; }
     slWriteLock = true;
     updateSyncStatus('syncing');
     try {
@@ -1923,12 +1927,31 @@ async function syncSpecialLeaveExtra() {
             body: JSON.stringify({ data: curData, updated_at: new Date().toISOString() })
         });
         if (!writeRes.ok) { const t = await writeRes.text(); throw new Error('write ' + writeRes.status + ' ' + t); }
+        // 回读校验：确认云端条数与本地一致，防止 RLS/网络导致"假成功"
+        try {
+            const verifyRes = await fetch(SUPA_URL_SL + '/rest/v1/' + SUPA_TABLE_SL + '?id=eq.1&select=data', {
+                headers: { 'apikey': SUPA_KEY_SL, 'Authorization': 'Bearer ' + SUPA_KEY_SL }
+            });
+            if (verifyRes.ok) {
+                const vrows = await verifyRes.json();
+                const cloudExtra = (vrows && vrows.length) ? ((vrows[0].data || {}).special_leave_extra || []) : null;
+                if (cloudExtra && cloudExtra.length !== specialLeaveExtra.length) {
+                    // 云端没写进去（或被其他端覆盖）→ 补推一次
+                    slSyncPending = true;
+                }
+            }
+        } catch(e2) { /* 校验失败不阻断主流程 */ }
         updateSyncStatus('saved');
     } catch(e) {
         console.error('syncSpecialLeaveExtra failed', e);
         updateSyncStatus('error');
+    } finally {
+        slWriteLock = false;
+        if (slSyncPending) {
+            slSyncPending = false;
+            setTimeout(function() { syncSpecialLeaveExtra(); }, 60);
+        }
     }
-    slWriteLock = false;
 }
 
 function scheduleSLSync() {
@@ -2468,13 +2491,28 @@ async function submitAddRecord(e) {
 
 function deleteSpecialLeaveRecord(id) {
     if (!id) return;
-    var isExtra = specialLeaveExtra.some(function(r) { return r.id === id; });
-    if (isExtra) {
+    // 优先按 id 精确匹配线上新增记录
+    var idx = specialLeaveExtra.findIndex(function(r) { return r.id === id; });
+    // 兜底：历史数据可能缺 id，按「工号+开始时间+姓名」再匹配一次，避免"点了删除没反应"
+    if (idx < 0) {
+        var rec = getMergedSpecialLeave().filter(function(r) { return r.id === id; })[0];
+        if (rec && rec.addedBy === 'user') {
+            idx = specialLeaveExtra.findIndex(function(r) {
+                return (r.工号 || '') === (rec.工号 || '') &&
+                       (r.开始时间 || '') === (rec.开始时间 || '') &&
+                       (r.姓名 || '') === (rec.姓名 || '');
+            });
+        }
+    }
+    if (idx >= 0) {
         if (!confirm('确定要删除这条新增记录吗？')) return;
-        specialLeaveExtra = specialLeaveExtra.filter(function(r) { return r.id !== id; });
+        var delName = specialLeaveExtra[idx].姓名 || '';
+        specialLeaveExtra.splice(idx, 1);
+        showToast('已删除「' + delName + '」，正在同步…');
     } else {
         if (!confirm('确定要隐藏这条原始记录吗？隐藏后将从合计中扣除。')) return;
         if (!specialLeaveHidden.includes(id)) specialLeaveHidden.push(id);
+        showToast('已隐藏该记录，正在同步…');
     }
     scheduleSLSync();
     refreshAll();

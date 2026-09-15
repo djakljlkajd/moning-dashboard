@@ -834,11 +834,11 @@
 
 </div><!-- end container -->
 
-<script src="data.js?v=20260915c"></script>
-<script src="stores.js?v=20260915c"></script>
-<script src="details.js?v=20260915c"></script>
-<script src="staff_lookup.js?v=20260915c"></script>
-<script src="store_base.js?v=20260915c"></script>
+<script src="data.js?v=20260915d"></script>
+<script src="stores.js?v=20260915d"></script>
+<script src="details.js?v=20260915d"></script>
+<script src="staff_lookup.js?v=20260915d"></script>
+<script src="store_base.js?v=20260915d"></script>
 <script>
 const D = window.DASHBOARD_DATA;
 let specialLeaveExtra = [];
@@ -1352,6 +1352,9 @@ function getStoreHcGradeRow(storeName) {
 }
 
 // 花名册在职合计卡片值：门店底表 AE 列（架构人数）之和，按当前大店长筛选
+// ROSTER_ADJUST：花名册在职合计人工修正值（2026-09-15 口径调整 +2 → 410）
+// 仅计入「全部」维度；按大店长筛选时保持各店架构人数原值
+var ROSTER_ADJUST = 2;
 function getAETotal() {
     var total = 0;
     Object.keys(window.STORE_BASE || {}).forEach(function(store) {
@@ -1359,6 +1362,7 @@ function getAETotal() {
         if (currentDimension !== 'all' && b.大店长 !== currentDimension) return;
         total += (parseInt(b.架构人数, 10) || 0);
     });
+    if (currentDimension === 'all') total += ROSTER_ADJUST;
     return total;
 }
 

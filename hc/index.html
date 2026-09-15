@@ -289,7 +289,7 @@
         }
         .modal-overlay.active { display: flex; }
         .modal-box {
-            background: #fff; border-radius: 8px; width: 100%; max-width: 1100px; max-height: 80vh;
+            background: #fff; border-radius: 8px; width: 100%; max-width: 1260px; max-height: 80vh;
             display: flex; flex-direction: column; box-shadow: 0 20px 60px rgba(0,0,0,0.25);
             animation: modalIn 0.25s ease;
         }
@@ -456,6 +456,20 @@
         }
         .visit-input:focus { background: #fff; border: 1px solid #2f8a5b; }
         .visit-input::placeholder { color: #b8c0c8; }
+
+        /* ===== 明细表格内联下拉列（假期类型 / 是否完结） ===== */
+        .attr-cell { padding: 0 !important; width: 104px; min-width: 104px; max-width: 104px; overflow: visible; }
+        .cell-select {
+            width: 100%; box-sizing: border-box; border: none; background: transparent;
+            height: 44px; padding: 0 6px; font-size: 12.5px; color: inherit;
+            outline: none; border-radius: 6px; cursor: pointer; font-family: inherit;
+            -webkit-appearance: none; appearance: none;
+            text-align-last: center; text-align: center;
+        }
+        .cell-select:focus { background: #fff; border: 1px solid #2f8a5b; }
+        .cell-select.is-empty { color: #b8c0c8; }
+        .cell-select.is-done { color: #1e8449; font-weight: 600; }
+        .cell-select.is-undone { color: #c0392b; font-weight: 600; }
         .img-viewer {
             position: fixed; inset: 0; background: rgba(0,0,0,0.88); z-index: 3000;
             display: flex; align-items: center; justify-content: center;
@@ -773,6 +787,23 @@
                     <label class="form-label" id="add-reason-label">备注原因<span class="required">*</span></label>
                     <textarea class="form-textarea" id="add-reason" placeholder="请输入备注原因..." required></textarea>
                 </div>
+                <!-- 假期类型 / 是否完结（仅特殊请假） -->
+                <div class="form-row" id="add-sl-attr-row" style="display:none;">
+                    <div class="form-group">
+                        <label class="form-label">假期类型</label>
+                        <select class="form-select" id="add-leave-type">
+                            <option value="">请选择</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">是否完结</label>
+                        <select class="form-select" id="add-leave-finish">
+                            <option value="">请选择</option>
+                            <option value="未完结">未完结</option>
+                            <option value="已完结">已完结</option>
+                        </select>
+                    </div>
+                </div>
                 <!-- 每周一回访（仅特殊请假，选填） -->
                 <div class="form-group" id="add-visit-row" style="display:none;">
                     <label class="form-label">每周一回访<span class="form-label-sub">（选填，登记回访原因，会同步到明细表的「每周一回访」列）</span></label>
@@ -803,16 +834,21 @@
 
 </div><!-- end container -->
 
-<script src="data.js?v=20260914b"></script>
-<script src="stores.js?v=20260914b"></script>
-<script src="details.js?v=20260914b"></script>
-<script src="staff_lookup.js?v=20260914b"></script>
-<script src="store_base.js?v=20260914b"></script>
+<script src="data.js?v=20260915a"></script>
+<script src="stores.js?v=20260915a"></script>
+<script src="details.js?v=20260915a"></script>
+<script src="staff_lookup.js?v=20260915a"></script>
+<script src="store_base.js?v=20260915a"></script>
 <script>
 const D = window.DASHBOARD_DATA;
 let specialLeaveExtra = [];
 let specialLeaveHidden = [];
 let specialLeaveVisit = {};  // 每周一回访：key=工号/记录ID, value=回访文字
+let specialLeaveType = {};    // 假期类型：key=工号/记录ID, value=假期类型
+let specialLeaveFinish = {};  // 是否完结：key=工号/记录ID, value='已完结' | '未完结'
+// 假期类型可选值（空串=未填写）
+const SL_TYPE_OPTIONS = ['', '事假', '病假', '工伤', '年假', '婚假', '产假', '陪产假', '丧假', '调休', '其他'];
+const SL_FINISH_OPTIONS = ['', '未完结', '已完结'];
 let preLeaveExtra = [];
 let preLeaveHidden = [];
 let airportCertExtra = [];
@@ -825,6 +861,7 @@ let addRecordType = 'special';  // 'special' | 'preleave' | 'airport' | 'storehc
 let editRecordId = null;  // 编辑模式：要修改的 extra 记录 id，null 表示新增
 let editingRecordOriginalId = null;  // 编辑 Excel 原始记录时，原记录的标识（工号/门店等），保存时隐藏原记录并新增到 extra
 let addImageDataUrl = '';  // 当前表单已选中的凭证图片（压缩后 base64 dataURL）
+let editingSLAttrKey = null;  // 编辑特殊请假时的原 key（工号），用于工号变更时迁移假期类型/是否完结/回访
 
 // 选中图片：读取并压缩为 JPEG dataURL（最长边 900px，质量 0.72）
 function handleImagePick(input) {
@@ -907,6 +944,40 @@ function saveVisit(input) {
     specialLeaveVisit[key] = val;
     slBackupToLocal();
     syncSpecialLeaveExtra();
+}
+
+// 假期类型 / 是否完结：内联下拉，change 即保存并同步
+function saveLeaveAttr(sel) {
+    var key = sel.getAttribute('data-key');
+    var kind = sel.getAttribute('data-kind');
+    if (!key || !kind) return;
+    var val = sel.value;
+    if (kind === 'type') {
+        specialLeaveType[key] = val;
+        sel.classList.toggle('is-empty', !val);
+    } else {
+        specialLeaveFinish[key] = val;
+        sel.classList.toggle('is-done', val === '已完结');
+        sel.classList.toggle('is-undone', val === '未完结');
+        sel.classList.toggle('is-empty', !val);
+    }
+    slBackupToLocal();
+    syncSpecialLeaveExtra();
+}
+
+// 生成内联下拉单元格（kind: 'type' 假期类型 | 'finish' 是否完结）
+function slSelectHtml(kind, key, val) {
+    var opts = (kind === 'type') ? SL_TYPE_OPTIONS : SL_FINISH_OPTIONS;
+    var cur = val || '';
+    var k = String(key).replace(/"/g, '&quot;');
+    var cls = 'cell-select';
+    if (!cur) cls += ' is-empty';
+    else if (kind === 'finish') cls += (cur === '已完结') ? ' is-done' : ' is-undone';
+    var html = '<select class="' + cls + '" data-key="' + k + '" data-kind="' + kind + '" onchange="saveLeaveAttr(this)">';
+    opts.forEach(function(o) {
+        html += '<option value="' + o + '"' + (o === cur ? ' selected' : '') + '>' + (o || '未填写') + '</option>';
+    });
+    return html + '</select>';
 }
 
 // ---------- 标题 / 日期 ----------
@@ -1390,9 +1461,9 @@ function openDetailModal(cardLabel) {
     const hasVisit = (key === '特殊请假');
     let displayColumns;
     if (withImg) {
-        displayColumns = hasVisit ? [...finalColumns, '每周一回访', '凭证', '操作'] : [...finalColumns, '凭证', '操作'];
+        displayColumns = hasVisit ? [...finalColumns, '假期类型', '是否完结', '每周一回访', '凭证', '操作'] : [...finalColumns, '凭证', '操作'];
     } else if (showActions) {
-        displayColumns = hasVisit ? [...finalColumns, '每周一回访', '操作'] : [...finalColumns, '操作'];
+        displayColumns = hasVisit ? [...finalColumns, '假期类型', '是否完结', '每周一回访', '操作'] : [...finalColumns, '操作'];
     } else {
         displayColumns = finalColumns;
     }
@@ -1429,6 +1500,10 @@ function openDetailModal(cardLabel) {
                 }).join('');
                 if (showActions) {
                     const rowId = r.id || r.工号 || '';
+                    // 假期类型 / 是否完结：内联下拉，变更即保存并同步
+                    const attrKey = r.工号 || r.id || rowId;
+                    cells += '<td class="attr-cell">' + slSelectHtml('type', attrKey, specialLeaveType[attrKey]) + '</td>';
+                    cells += '<td class="attr-cell">' + slSelectHtml('finish', attrKey, specialLeaveFinish[attrKey]) + '</td>';
                     // 每周一回访：内联输入框，失焦保存并同步
                     if (hasVisit) {
                         const visitKey = r.工号 || r.id || rowId;
@@ -1685,6 +1760,8 @@ function slBackupToLocal() {
         localStorage.setItem('hc_special_leave_extra', JSON.stringify(specialLeaveExtra));
         localStorage.setItem('hc_special_leave_hidden', JSON.stringify(specialLeaveHidden));
         localStorage.setItem('hc_special_leave_visit', JSON.stringify(specialLeaveVisit));
+        localStorage.setItem('hc_special_leave_type', JSON.stringify(specialLeaveType));
+        localStorage.setItem('hc_special_leave_finish', JSON.stringify(specialLeaveFinish));
         localStorage.setItem('hc_pre_leave_extra', JSON.stringify(preLeaveExtra));
         localStorage.setItem('hc_pre_leave_hidden', JSON.stringify(preLeaveHidden));
         localStorage.setItem('hc_airport_cert_extra', JSON.stringify(airportCertExtra));
@@ -1703,6 +1780,10 @@ function slRestoreFromLocal() {
         if (rawHidden) specialLeaveHidden = JSON.parse(rawHidden);
         const rawVisit = localStorage.getItem('hc_special_leave_visit');
         if (rawVisit) specialLeaveVisit = JSON.parse(rawVisit);
+        const rawType = localStorage.getItem('hc_special_leave_type');
+        if (rawType) specialLeaveType = JSON.parse(rawType);
+        const rawFinish = localStorage.getItem('hc_special_leave_finish');
+        if (rawFinish) specialLeaveFinish = JSON.parse(rawFinish);
         // 预离职 extra/hidden 不从 localStorage 初始化，统一由云端同步决定
         localStorage.removeItem('hc_pre_leave_extra');
         localStorage.removeItem('hc_pre_leave_hidden');
@@ -1741,6 +1822,13 @@ async function loadSpecialLeaveExtra() {
             const cloudVisit = data.special_leave_visit || {};
             const localVisit = JSON.parse(localStorage.getItem('hc_special_leave_visit') || '{}');
             specialLeaveVisit = Object.assign({}, localVisit, cloudVisit);
+            // 假期类型 / 是否完结（同样云端优先）
+            const cloudType = data.special_leave_type || {};
+            const localType = JSON.parse(localStorage.getItem('hc_special_leave_type') || '{}');
+            specialLeaveType = Object.assign({}, localType, cloudType);
+            const cloudFinish = data.special_leave_finish || {};
+            const localFinish = JSON.parse(localStorage.getItem('hc_special_leave_finish') || '{}');
+            specialLeaveFinish = Object.assign({}, localFinish, cloudFinish);
             // 预离职
             const cloudPre = data.pre_leave_extra || [];
             const cloudPreHidden = data.pre_leave_hidden || [];
@@ -1816,6 +1904,8 @@ async function syncSpecialLeaveExtra() {
         curData.special_leave_extra = specialLeaveExtra;
         curData.special_leave_hidden = specialLeaveHidden;
         curData.special_leave_visit = specialLeaveVisit;
+        curData.special_leave_type = specialLeaveType;
+        curData.special_leave_finish = specialLeaveFinish;
         curData.pre_leave_extra = preLeaveExtra;
         curData.pre_leave_hidden = preLeaveHidden;
         curData.airport_cert_extra = airportCertExtra;
@@ -1891,6 +1981,7 @@ function getMergedPreLeave() {
 function openAddRecordModal(type, statusKey) {
     editRecordId = null;  // 新增模式
     editingRecordOriginalId = null;  // 非编辑原始记录模式
+    editingSLAttrKey = null;  // 重置假期类型/是否完结的原始 key
     if (type === 'preleave') addRecordType = 'preleave';
     else if (type === 'airport') addRecordType = 'airport';
     else if (type === 'storehc') addRecordType = 'storehc';
@@ -1909,6 +2000,15 @@ function openAddRecordModal(type, statusKey) {
     document.getElementById('add-end').value = '';
     document.getElementById('add-reason').value = '';
     document.getElementById('add-visit').value = '';
+    // 假期类型 / 是否完结：填充选项并重置
+    var typeSelReset = document.getElementById('add-leave-type');
+    if (typeSelReset) {
+        typeSelReset.innerHTML = SL_TYPE_OPTIONS.map(function(o) {
+            return '<option value="' + o + '">' + (o || '请选择') + '</option>';
+        }).join('');
+        typeSelReset.value = '';
+    }
+    document.getElementById('add-leave-finish').value = '';
     document.getElementById('add-newhire-date').value = '';
     document.getElementById('add-newhire-stage').value = '';
     removePickedImage();  // 清空凭证图片
@@ -1933,6 +2033,8 @@ function openAddRecordModal(type, statusKey) {
     document.getElementById('add-reason-row').style.display = (addRecordType === 'storehc') ? 'none' : '';
     // 每周一回访：仅特殊请假显示
     document.getElementById('add-visit-row').style.display = (addRecordType === 'special') ? '' : 'none';
+    // 假期类型 / 是否完结：仅特殊请假显示
+    document.getElementById('add-sl-attr-row').style.display = (addRecordType === 'special') ? '' : 'none';
     document.getElementById('storehc-fields').style.display = (addRecordType === 'storehc') ? '' : 'none';
     document.getElementById('newhire-fields').style.display = isNewHire ? '' : 'none';
     document.getElementById('add-newhire-date').required = isNewHire;
@@ -2051,6 +2153,10 @@ function openEditRecordModal(type, id) {
             // 回填已登记的「每周一回访」内容（key 与明细表一致：工号优先）
             var visitKey = rec.工号 || rec.id || id;
             document.getElementById('add-visit').value = specialLeaveVisit[visitKey] || '';
+            // 回填「假期类型」「是否完结」（与明细表内联下拉共用同一份数据）
+            editingSLAttrKey = visitKey;
+            document.getElementById('add-leave-type').value = specialLeaveType[visitKey] || '';
+            document.getElementById('add-leave-finish').value = specialLeaveFinish[visitKey] || '';
         }
         if (type === 'airport' && rec.状态) {
             document.getElementById('add-airport-status').value = rec.状态;
@@ -2327,6 +2433,20 @@ async function submitAddRecord(e) {
     var visitKeyFinal = gonghao || record.id;
     if (visitEl && visitKeyFinal) {
         specialLeaveVisit[visitKeyFinal] = visitEl.value.trim();
+        slBackupToLocal();
+    }
+    // 假期类型 / 是否完结：同样与明细表内联下拉共用一份数据
+    if (visitKeyFinal) {
+        // 工号被修改时，把旧 key 上的登记内容迁移到新 key
+        if (editingSLAttrKey && editingSLAttrKey !== visitKeyFinal) {
+            delete specialLeaveType[editingSLAttrKey];
+            delete specialLeaveFinish[editingSLAttrKey];
+            delete specialLeaveVisit[editingSLAttrKey];
+        }
+        var typeEl = document.getElementById('add-leave-type');
+        var finEl = document.getElementById('add-leave-finish');
+        specialLeaveType[visitKeyFinal] = typeEl ? typeEl.value : '';
+        specialLeaveFinish[visitKeyFinal] = finEl ? finEl.value : '';
         slBackupToLocal();
     }
     scheduleSLSync();

@@ -220,7 +220,7 @@
             padding: 1px 5px; vertical-align: middle; opacity: 0; transition: opacity .15s;
         }
         tr:hover .sep-rest-edit, .sep-rest-cell:hover .sep-rest-edit { opacity: 1; }
-        .modal-box.small { max-width: 420px; }
+        .modal-box.small { max-width: 460px; }
         .rest-form { padding: 22px 24px 10px; }
         .rest-form-label { font-size: 13px; color: #666; margin-bottom: 12px; line-height: 1.6; }
         .rest-form-label b { color: #33691e; }
@@ -231,6 +231,32 @@
         }
         .rest-input:focus { border-color: #8bc34a; box-shadow: 0 0 0 3px rgba(139,195,74,.2); }
         .rest-input-hint { font-size: 11px; color: #95a5a6; text-align: center; margin-bottom: 14px; }
+        .rest-dates-label { font-size: 12px; color: #666; margin-bottom: 6px; display: block; }
+        .rest-range-row { display: flex; align-items: center; gap: 6px; margin-bottom: 6px; }
+        .rest-range-row input[type="date"] {
+            flex: 1; min-width: 0; padding: 7px 8px; font-size: 13px;
+            border: 2px solid #cde5b0; border-radius: 6px; outline: none; color: #33691e;
+            background: #fff; font-family: inherit;
+        }
+        .rest-range-row input[type="date"]:focus { border-color: #8bc34a; box-shadow: 0 0 0 3px rgba(139,195,74,.2); }
+        .rest-range-sep { font-size: 12px; color: #95a5a6; white-space: nowrap; }
+        .rest-range-del {
+            border: none; background: #fadbd8; color: #c0392b; width: 26px; height: 26px;
+            border-radius: 50%; font-size: 14px; cursor: pointer; line-height: 1; flex-shrink: 0;
+            transition: all .15s;
+        }
+        .rest-range-del:hover { background: #e74c3c; color: #fff; }
+        .rest-range-add {
+            width: 100%; padding: 7px 0; border: 1.5px dashed #8bc34a; background: #f4f9e8;
+            color: #558b2f; border-radius: 6px; font-size: 12.5px; cursor: pointer; font-weight: 600;
+            transition: all .15s; margin-bottom: 6px;
+        }
+        .rest-range-add:hover { background: #e8f3d2; border-color: #558b2f; }
+        .rest-dates-hint { font-size: 11px; color: #95a5a6; text-align: center; margin-bottom: 14px; }
+        .rest-dates-display {
+            display: inline-block; margin-left: 5px; font-size: 11px; color: #7f8c8d; font-weight: normal;
+            max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; vertical-align: middle;
+        }
         .rest-form-btns { display: flex; gap: 10px; padding-bottom: 18px; }
         .rest-btn { flex: 1; padding: 9px 0; border: none; border-radius: 6px; font-size: 13.5px; font-weight: 600; cursor: pointer; transition: all .2s; }
         .rest-btn-ok { background: #8bc34a; color: #fff; }
@@ -282,7 +308,7 @@
     <div class="description-bar-title">📋 看板相关说明</div>
     <div class="description-list">
         <div class="description-item">1、<strong>重点关注：</strong>剩余年假天数&gt;3天员工需尽快安排调休</div>
-        <div class="description-item">2、<strong>9月休息天数：</strong>点击大店长行查看员工明细，在明细表中点击员工的「9月休息天数」单元格填写；大店区列自动汇总员工合计，数据实时同步云端，支持多人线上协作</div>
+        <div class="description-item">2、<strong>9月休息天数：</strong>点击大店长行查看员工明细，点击员工的「9月休息天数」单元格，填写天数及<strong>具体休息日期区间（必填）</strong>，支持分多段；大店区列自动汇总员工合计，数据实时同步云端，支持多人线上协作</div>
     </div>
 </div>
 
@@ -348,11 +374,15 @@
             <button class="modal-close" onclick="closeRestModal()">×</button>
         </div>
         <div class="rest-form">
-            <div class="rest-form-label">员工：<b id="rest-emp-name"></b>（<span id="rest-emp-no"></span>）<br>大店区：<b id="rest-region-name"></b><br>请填写该员工 9月 计划休息天数，保存后同步到云端，其他伙伴可见。</div>
+            <div class="rest-form-label">员工：<b id="rest-emp-name"></b>（<span id="rest-emp-no"></span>）<br>大店区：<b id="rest-region-name"></b><br>请填写该员工 9月 计划休息天数及具体休息日期区间，保存后同步到云端，其他伙伴可见。</div>
             <div class="rest-input-wrap">
                 <input type="number" class="rest-input" id="rest-input" min="0" max="31" step="1" placeholder="0">
             </div>
             <div class="rest-input-hint">范围 0 - 31 天</div>
+            <div class="rest-dates-label" style="font-weight:600;color:#33691e;">📅 休息日期区间（必填，当天数&gt;0 时）</div>
+            <div id="rest-ranges-box"></div>
+            <button type="button" class="rest-range-add" onclick="addRestRange()">＋ 添加一段区间</button>
+            <div class="rest-dates-hint">选择每段休息的起止日期（限 9/1 - 9/30），可分多段；区间总天数应与上方填写天数一致</div>
         </div>
         <div class="rest-form-btns" style="padding:0 24px 12px;">
             <button class="rest-btn rest-btn-cancel" onclick="closeRestModal()">取消</button>
@@ -365,9 +395,11 @@
 </div>
 
 <script src="data.js?v=20260825b"></script>
+<!-- v=20260916a: 新增休息日期区间（起止日期多段填写+校验+明细显示） -->
 <script>
 const D = window.ANNUAL_LEAVE_DATA;
-let sepRestCache = {};   // 员工工号 -> 9月休息天数（多人协作云端同步）；大店区列自动按员工汇总
+let sepRestCache = {};       // 员工工号 -> 9月休息天数（多人协作云端同步）
+let sepRestDatesCache = {};  // 员工工号 -> 具体休息日期字符串（如 "9/3、9/5-9/6"），选填
 
 // ---------- 标题 / 日期 ----------
 document.getElementById('hdr-title').textContent = '● ' + D.meta.title;
@@ -405,6 +437,41 @@ function sepRestTotal() {
 }
 function sepRestFilledCount() {
     return Object.keys(sepRestCache).length;
+}
+
+// ---------- 休息日期区间工具 ----------
+const REST_MONTH_MIN = '2026-09-01', REST_MONTH_MAX = '2026-09-30';
+function daysInclusive(s, e) {
+    return Math.round((new Date(e) - new Date(s)) / 86400000) + 1;
+}
+// 统一解析：兼容新格式 [{s,e}] 与旧自由文本 "9/3、9/5-9/6"
+function parseRestDates(v) {
+    if (!v) return [];
+    if (Array.isArray(v)) {
+        return v.filter(function (r) { return r && r.s && r.e; }).map(function (r) { return { s: r.s, e: r.e }; });
+    }
+    if (typeof v === 'string') {
+        const out = [];
+        v.split(/[、,，;；\s]+/).forEach(function (part) {
+            if (!part) return;
+            const m = part.match(/^(\d{1,2})\/(\d{1,2})(?:\s*[-~～]\s*(\d{1,2})\/(\d{1,2}))?$/);
+            if (m && m[1] === '9') {
+                const s = '2026-09-' + String(m[2]).padStart(2, '0');
+                const e = m[3] ? '2026-09-' + String(m[4]).padStart(2, '0') : s;
+                out.push({ s: s, e: e });
+            }
+        });
+        return out;
+    }
+    return [];
+}
+function formatRestDates(v) {
+    if (!v) return '';
+    if (typeof v === 'string') return v;   // 旧文本原样显示
+    const arr = parseRestDates(v);
+    return arr.map(function (r) {
+        return r.s === r.e ? '9/' + parseInt(r.s.slice(-2), 10) : '9/' + parseInt(r.s.slice(-2), 10) + '~9/' + parseInt(r.e.slice(-2), 10);
+    }).join('、');
 }
 
 // ---------- 第一排卡片 ----------
@@ -501,8 +568,10 @@ function openRegionModal(region) {
             '<tbody>' + list.map(r => {
                 const warn = r.剩余天数 > 3;
                 const restVal = sepRestCache[r.工号];
+                const datesStr = formatRestDates(sepRestDatesCache[r.工号]);
+                const datesHtml = datesStr ? '<span class="rest-dates-display" style="display:block;max-width:100%;white-space:normal;margin-top:2px;">📅 ' + datesStr + '</span>' : '';
                 const restCell = restVal !== undefined
-                    ? '<span class="sep-rest-val">' + restVal + '天</span><span class="sep-rest-edit">✏️改</span>'
+                    ? '<span class="sep-rest-val">' + restVal + '天</span><span class="sep-rest-edit">✏️改</span>' + datesHtml
                     : '<span class="sep-rest-empty">— 点击填写</span><span class="sep-rest-edit">✏️填</span>';
                 return '<tr>' +
                     '<td>' + r.工号 + '</td>' +
@@ -645,7 +714,7 @@ const SUPA_TABLE = 'violation_data';
 const SUPA_ID = 10;   // 年假看板专用行
 
 function sepRestBackup() {
-    try { localStorage.setItem('sepRestBackupEmp', JSON.stringify({ sep_rest_emp: sepRestCache, ts: Date.now() })); } catch (e) {}
+    try { localStorage.setItem('sepRestBackupEmp', JSON.stringify({ sep_rest_emp: sepRestCache, sep_rest_dates: sepRestDatesCache, ts: Date.now() })); } catch (e) {}
 }
 function sepRestRestore() {
     try {
@@ -653,6 +722,7 @@ function sepRestRestore() {
         if (!raw) return;
         const d = JSON.parse(raw);
         if (d && d.sep_rest_emp) sepRestCache = Object.assign({}, d.sep_rest_emp, sepRestCache);
+        if (d && d.sep_rest_dates) sepRestDatesCache = Object.assign({}, d.sep_rest_dates, sepRestDatesCache);
     } catch (e) {}
 }
 
@@ -666,6 +736,7 @@ async function loadSepRest() {
         if (rows && rows.length) {
             const d = rows[0].data || {};
             sepRestCache = d.sep_rest_emp || {};
+            sepRestDatesCache = d.sep_rest_dates || {};
         }
         sepRestRestore();
         renderRegions();
@@ -680,7 +751,7 @@ async function loadSepRest() {
 
 async function saveSepRest() {
     try {
-        const payload = { sep_rest_emp: sepRestCache };
+        const payload = { sep_rest_emp: sepRestCache, sep_rest_dates: sepRestDatesCache };
         const res = await fetch(SUPA_URL + '/rest/v1/' + SUPA_TABLE + '?id=eq.' + SUPA_ID, {
             method: 'PATCH',
             headers: {
@@ -711,6 +782,7 @@ function openRestModal(empNo) {
     document.getElementById('rest-region-name').textContent = emp.大店区;
     const v = sepRestCache[emp.工号];
     document.getElementById('rest-input').value = (v !== undefined ? v : '');
+    renderRestRanges(parseRestDates(sepRestDatesCache[emp.工号]));
     const clearLink = document.getElementById('rest-clear-link');
     if (clearLink) clearLink.style.display = (v !== undefined) ? 'inline' : 'none';
     setRestSyncStatus('数据实时同步至云端 · 多人协作填写');
@@ -731,13 +803,67 @@ function setRestSyncStatus(msg, cls) {
     st.className = 'rest-sync-status' + (cls ? ' ' + cls : '');
 }
 
+// ---------- 休息日期区间 编辑器 ----------
+function rangeRowHtml(s, e) {
+    return '<div class="rest-range-row">' +
+        '<input type="date" class="rest-range-start" min="' + REST_MONTH_MIN + '" max="' + REST_MONTH_MAX + '" value="' + (s || '') + '">' +
+        '<span class="rest-range-sep">至</span>' +
+        '<input type="date" class="rest-range-end" min="' + REST_MONTH_MIN + '" max="' + REST_MONTH_MAX + '" value="' + (e || '') + '">' +
+        '<button type="button" class="rest-range-del" onclick="delRestRange(this)" title="删除该段">×</button>' +
+    '</div>';
+}
+function addRestRange(s, e) {
+    const box = document.getElementById('rest-ranges-box');
+    box.insertAdjacentHTML('beforeend', rangeRowHtml(s, e));
+}
+function delRestRange(btn) { btn.closest('.rest-range-row').remove(); }
+function renderRestRanges(ranges) {
+    const box = document.getElementById('rest-ranges-box');
+    box.innerHTML = '';
+    (ranges || []).forEach(function (r) { addRestRange(r.s, r.e); });
+}
+function collectRestRanges() {
+    const out = [];
+    document.querySelectorAll('#rest-ranges-box .rest-range-row').forEach(function (row) {
+        const s = row.querySelector('.rest-range-start').value;
+        const e = row.querySelector('.rest-range-end').value;
+        if (s || e) out.push({ s: s, e: e });
+    });
+    return out;
+}
+
 async function confirmRestSave() {
     if (!currentRestEmp) return;
     const raw = document.getElementById('rest-input').value.trim();
     if (raw === '') { alert('请填写 9月休息天数（0-31）'); return; }
     let v = parseInt(raw, 10);
     if (isNaN(v) || v < 0 || v > 31) { alert('请输入 0-31 之间的天数'); return; }
+    // 日期区间校验
+    let rangesToSave = [];
+    if (v > 0) {
+        const ranges = collectRestRanges();
+        if (ranges.some(function (r) { return !r.s || !r.e; })) { alert('有区间未选完整起止日期，请补全或删除该段'); return; }
+        if (ranges.length === 0) { alert('请至少填写一段休息日期区间（开始 ~ 结束日期）'); return; }
+        for (let i = 0; i < ranges.length; i++) {
+            if (ranges[i].s > ranges[i].e) { alert('区间开始日期不能晚于结束日期'); return; }
+        }
+        // 检查区间重叠
+        const sorted = ranges.slice().sort(function (a, b) { return a.s < b.s ? -1 : 1; });
+        for (let i = 1; i < sorted.length; i++) {
+            if (sorted[i].s <= sorted[i - 1].e) { alert('区间日期存在重叠，请合并或调整区间'); return; }
+        }
+        const totalDays = ranges.reduce(function (sum, r) { return sum + daysInclusive(r.s, r.e); }, 0);
+        if (totalDays !== v) {
+            if (!confirm('日期区间合计 ' + totalDays + ' 天，与填写的休息天数 ' + v + ' 天不一致。\n是否仍按当前内容保存？')) return;
+        }
+        rangesToSave = ranges;
+    }
     sepRestCache[currentRestEmp.工号] = v;
+    if (rangesToSave.length > 0) {
+        sepRestDatesCache[currentRestEmp.工号] = rangesToSave;
+    } else {
+        delete sepRestDatesCache[currentRestEmp.工号];
+    }
     sepRestBackup();
     renderRegions();
     // 如果员工明细弹窗正在打开，同步刷新其中的 9月休息天数 列
@@ -760,6 +886,7 @@ async function clearRestValue() {
     if (!currentRestEmp) return;
     if (!confirm('确定清空「' + currentRestEmp.姓名 + '」的 9月休息天数填写？')) return;
     delete sepRestCache[currentRestEmp.工号];
+    delete sepRestDatesCache[currentRestEmp.工号];
     sepRestBackup();
     renderRegions();
     if (document.getElementById('detail-modal').classList.contains('active')) {
@@ -767,6 +894,7 @@ async function clearRestValue() {
     }
     const clearLink2 = document.getElementById('rest-clear-link');
     if (clearLink2) clearLink2.style.display = 'none';
+    renderRestRanges([]);
     document.getElementById('rest-input').value = '';
     setRestSyncStatus('⏳ 正在同步到云端...');
     const ok = await saveSepRest();

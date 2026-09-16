@@ -326,8 +326,8 @@
 <div class="description-bar">
     <div class="description-bar-title">📋 看板相关说明</div>
     <div class="description-list">
-        <div class="description-item">1、<strong>进度口径：</strong>期初剩余（8/25）- 9/15剩余 = 9月已完成年假天数；已完成 ÷ 期初 = 本月完成进度（整体目标 25%，即 199 天）</div>
-        <div class="description-item">2、<strong>督办重点：</strong>「达标差额」为 <strong>9月目标 - 本月已休</strong>，差额 &gt; 0 即未达标（红色标记行），可直接筛选「🔻 未达目标」定位需催办的大店长</div>
+        <div class="description-item">1、<strong>进度口径：</strong>期初剩余（8/25）- 9/15剩余 = 9月已完成年假天数；已完成 ÷ 期初 = 本月完成进度</div>
+        <div class="description-item">2、<strong>目标口径：</strong>「9月目标」为各大店长在员工明细弹窗中<strong>自行填写的计划合计</strong>（非固定值），「达标差额」= 目标 - 本月已休，差额 &gt; 0 即未达标（红色标记行）；未填写目标的大店区不计入未达标</div>
         <div class="description-item">3、<strong>明细填报：</strong>点击大店长行查看员工明细，点击员工「计划填写」单元格可登记天数及<strong>具体休息日期区间（必填）</strong>，支持分多段，数据实时同步云端</div>
     </div>
 </div>
@@ -460,6 +460,12 @@ function sepRestTotal() {
 function sepRestFilledCount() {
     return Object.keys(sepRestCache).length;
 }
+// 动态目标：9月目标 = 该区大店长在弹窗中自行填写的计划合计（非固定25%计划）
+function deriveRegion(r) {
+    const t = sepRestRegionTotal(r.大店区);
+    return Object.assign({}, r, { 目标: t, 计划已填: sepRestRegionFilled(r.大店区), 差额: t - r.已休 });
+}
+function isFailRow(r) { return r.目标 > 0 && r.差额 > 0; }
 function updateSepRestCard() { /* 卡片改为静态进度口径，此处保留空实现以兼容旧调用 */ }
 
 // ---------- 休息日期区间工具 ----------
@@ -507,6 +513,7 @@ function renderCards() {
         const div = document.createElement('div');
         const clickable = clickableCards.includes(c.label);
         div.className = 'metric-card' + (c.highlight ? ' highlight' : '') + (clickable ? ' clickable' : '');
+        div.dataset.label = c.label;
         div.innerHTML =
             '<div class="card-label">' + c.label + '<br><span class="card-label-sub">' + c.sub + '</span></div>' +
             '<div class="card-value' + (c.red ? ' red' : '') + '">' + c.value + '</div>' +
@@ -519,6 +526,23 @@ function renderCards() {
 }
 renderCards();
 
+// 动态卡片：未达标大店区数量 / 9月完成进度目标，随大店长填写计划实时更新
+function updateDynamicCards() {
+    const failRows = D.regions.rows.map(deriveRegion).filter(isFailRow);
+    document.querySelectorAll('.metric-card').forEach(function (card) {
+        const label = card.dataset.label;
+        const valEl = card.querySelector('.card-value');
+        const subEl = card.querySelector('.card-label-sub');
+        if (!valEl) return;
+        if (label === '未达标大店区') {
+            valEl.textContent = failRows.length;
+            if (subEl) subEl.textContent = '(个 · 点详情 · 按自填目标)';
+        } else if (label === '9月完成进度') {
+            if (subEl) subEl.textContent = '(大店长目标 ' + sepRestTotal() + ' 天)';
+        }
+    });
+}
+
 // ---------- 明细弹窗 ----------
 function fullRowNo(s) { return (s.期初剩余 === null || s.期初剩余 === undefined) ? '—' : s.期初剩余; }
 
@@ -529,10 +553,10 @@ function openDetailModal(cardLabel) {
     const foot = document.getElementById('modal-foot');
 
     if (cardLabel === '未达标大店区') {
-        const list = D.regions.rows.filter(r => r.差额 > 0).sort((a, b) => b.差额 - a.差额);
-        const columns = ['大店长', '员工数', '期初剩余', '9/15剩余', '本月已休', '9月目标', '还差', '完成率'];
-        title.textContent = '9月未达标大店区（已休 < 目标） - 共 ' + list.length + ' 个';
-        foot.textContent = '还差合计 ' + list.reduce((a, r) => a + r.差额, 0) + ' 天 · 点击行可直接打开该区员工明细';
+        const list = D.regions.rows.map(deriveRegion).filter(isFailRow).sort((a, b) => b.差额 - a.差额);
+        const columns = ['大店长', '员工数', '期初剩余', '9/15剩余', '本月已休', '9月目标(自填)', '还差', '完成率'];
+        title.textContent = '9月未达标大店区（已休 < 自填目标） - 共 ' + list.length + ' 个';
+        foot.textContent = '还差合计 ' + list.reduce((a, r) => a + r.差额, 0) + ' 天 · 点击行可直接打开该区员工明细 · 未填写目标的大店区不计入';
         body.innerHTML = list.length === 0
             ? '<div class="modal-empty">全部大店区均已达标 🎉</div>'
             : '<table><thead><tr>' + columns.map(h => '<th>' + h + '</th>').join('') + '</tr></thead><tbody>' +
@@ -583,14 +607,14 @@ function openRegionModal(region) {
     const body = document.getElementById('modal-body');
     const foot = document.getElementById('modal-foot');
     const list = staffOfRegion(region).slice().sort((a, b) => b.剩余915 - a.剩余915);
-    const row = D.regions.rows.find(r => r.大店区 === region) || {};
+    const row = deriveRegion(D.regions.rows.find(r => r.大店区 === region) || { 已休: 0 });
     const columns = ['工号', '姓名', '门店', '期初剩余', '9/15剩余', '本月已休', '计划填写（天数/日期）', '剩余>3天'];
-    const regionTotal = sepRestRegionTotal(region);
-    const regionFilled = sepRestRegionFilled(region);
+    const regionTotal = row.目标;
+    const regionFilled = row.计划已填;
     title.textContent = region + ' 员工年假明细 - 共 ' + list.length + ' 人';
     foot.textContent = '本区：期初 ' + (row.期初剩余 || 0) + ' → 9/15 剩余 ' + (row.剩余915 || 0) +
         '，已休 ' + (row.已休 || 0) + ' 天 / 目标 ' + (row.目标 || 0) + ' 天（' +
-        ((row.差额 || 0) > 0 ? '还差 ' + row.差额 + ' 天' : '✅ 已达标') + '）· 计划已填 ' + regionFilled + '/' + list.length + ' 人合计 ' + regionTotal + ' 天';
+        ((row.目标 || 0) > 0 ? ((row.差额 > 0) ? '还差 ' + row.差额 + ' 天' : '✅ 已达标') : '目标待填写') + '）· 计划已填 ' + regionFilled + '/' + list.length + ' 人合计 ' + regionTotal + ' 天';
     if (list.length === 0) {
         body.innerHTML = '<div class="modal-empty">暂无数据</div>';
     } else {
@@ -637,7 +661,7 @@ const REGION_COLS = [
 ];
 const REGION_SUBS = {
     3: '（8/25）', 4: '（截至9/15）', 5: '（期初-9/15）', 6: '（已休/期初）',
-    7: '（排休计划）', 8: '（目标-已休）', 9: '（9/15口径）'
+    7: '（大店长自填）', 8: '（目标-已休）', 9: '（9/15口径）'
 };
 regionHead.innerHTML = REGION_COLS.map((h, i) =>
     '<th>' + h + (REGION_SUBS[i] ? '<span class="col-sub">' + REGION_SUBS[i] + '</span>' : '') + '</th>'
@@ -662,7 +686,8 @@ function rateBar(rate) {
         '<div class="rate-bar"><i class="' + (rate >= 100 ? 'over' : '') + '" style="width:' + w + '%"></i></div>' +
         '<span class="rate-txt">' + rate + '%</span></div>';
 }
-function diffCell(d) {
+function diffCell(d, t) {
+    if (!t) return '<span style="color:#bbb;">— 待填写</span>';
     return d > 0
         ? '<span class="badge-fail">🔻 还差 ' + d + ' 天</span>'
         : '<span class="badge-pass">✓ 达标' + (d < 0 ? '（超 ' + (-d) + ' 天）' : '') + '</span>';
@@ -672,11 +697,11 @@ function renderRegions() {
     const q = (document.querySelector('.search-box input').value || '').trim();
     const region = regionSel.value;
     const status = document.getElementById('status-filter').value;
-    let rows = D.regions.rows;
+    let rows = D.regions.rows.map(deriveRegion);
     if (region !== 'all') rows = rows.filter(r => r.大店区 === region);
     if (q) rows = rows.filter(r => r.大店区.includes(q) || r.name.includes(q));
     if (status === 'gt3') rows = rows.filter(r => r.gt3 > 0);
-    if (status === 'fail') rows = rows.filter(r => r.差额 > 0);
+    if (status === 'fail') rows = rows.filter(isFailRow);
 
     regionTbody.innerHTML = '';
     if (rows.length === 0) {
@@ -684,7 +709,7 @@ function renderRegions() {
     }
     rows.forEach(r => {
         const tr = document.createElement('tr');
-        if (r.差额 > 0) tr.className = 'row-fail';
+        if (isFailRow(r)) tr.className = 'row-fail';
         tr.onclick = function () { openRegionModal(r.大店区); };
         tr.innerHTML =
             '<td class="text-left"><strong>' + r.name + '</strong></td>' +
@@ -694,8 +719,8 @@ function renderRegions() {
             '<td class="val-915">' + r.剩余915 + '</td>' +
             '<td class="val-done">' + r.已休 + '</td>' +
             '<td>' + rateBar(r.完成率) + '</td>' +
-            '<td>' + r.目标 + '</td>' +
-            '<td>' + diffCell(r.差额) + '</td>' +
+            '<td>' + (r.目标 > 0 ? '<strong>' + r.目标 + '</strong> 天' : '<span style="color:#bbb;">— 点击填写</span>') + '</td>' +
+            '<td>' + diffCell(r.差额, r.目标) + '</td>' +
             '<td>' + warnCell(r.gt3) + '</td>';
         regionTbody.appendChild(tr);
     });
@@ -718,12 +743,13 @@ function renderRegions() {
             '<td><strong class="val-915">' + sum.剩余915 + '</strong></td>' +
             '<td><strong class="val-done">' + sum.已休 + '</strong></td>' +
             '<td><strong>' + rate + '%</strong></td>' +
-            '<td><strong>' + sum.目标 + '</strong></td>' +
-            '<td>' + diffCell(sum.差额) + '</td>' +
+            '<td><strong>' + (sum.目标 > 0 ? sum.目标 + ' 天' : '—') + '</strong></td>' +
+            '<td>' + diffCell(sum.差额, sum.目标) + '</td>' +
             '<td>' + warnCell(sum.gt3) + '</td>';
     } else {
         regionFoot.innerHTML = '<td colspan="10" style="text-align:center;">—</td>';
     }
+    updateDynamicCards();
 }
 renderRegions();
 
@@ -746,7 +772,7 @@ function exportData() {
     if (q) list = list.filter(s => s.大店区.includes(q) || s.姓名.includes(q));
     if (status === 'gt3') list = list.filter(s => s.剩余915 > 3);
     if (status === 'fail') {
-        const failRegions = D.regions.rows.filter(r => r.差额 > 0).map(r => r.大店区);
+        const failRegions = D.regions.rows.map(deriveRegion).filter(isFailRow).map(r => r.大店区);
         list = list.filter(s => failRegions.includes(s.大店区));
     }
     list = list.slice().sort((a, b) => b.剩余915 - a.剩余915);

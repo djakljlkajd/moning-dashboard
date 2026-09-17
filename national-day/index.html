@@ -151,6 +151,8 @@ td.col-hl{background:#f7fcf0;}
 
 .sync-tip{font-size:11.5px;padding:6px 20px;background:#fffdf5;color:#a04000;border-bottom:1px solid #f5e6c8;}
 .sync-tip.ok{background:#f4faf0;color:#1e7a45;border-bottom-color:#d5e8c8;}
+.sync-bar{display:flex;align-items:center;gap:10px;background:#fffdf5;border-bottom:1px solid #f5e6c8;padding-right:14px;flex-wrap:wrap;}
+.sync-bar .sync-tip{border-bottom:none;flex:1;min-width:180px;background:transparent;}
 
 @media(max-width:1100px){.cards-row{grid-template-columns:repeat(4,1fr);}}
 @media(max-width:768px){
@@ -184,16 +186,19 @@ td.col-hl{background:#f7fcf0;}
   <div class="logic-bar">
     <div><strong>测算逻辑：</strong>全职为长期固定用工，学生为灵活兼职用工。国庆短期高峰先投放可供班全职，缺口部分在 9/30 前招募可供班学生补齐。可供班人数 = 架构人数 − 休长假 − 预离职。人力差值 = 可供班全职 + 可供班学生 − 需求人数。</div>
     <div class="logic-tags">
-      <span class="logic-tag tag-info">大店长 13 人</span>
-      <span class="logic-tag tag-info">门店 109 家</span>
-      <span class="logic-tag tag-info">覆盖 9.30-10.7 共 8 天</span>
+      <span class="logic-tag tag-info" id="tagMgrs">大店长 —</span>
+      <span class="logic-tag tag-info" id="tagStores">门店 —</span>
+      <span class="logic-tag tag-info" id="tagDays">覆盖 —</span>
       <span class="logic-tag tag-bad" id="tagPeak"></span>
       <span class="logic-tag tag-warn" id="tagGap"></span>
       <span class="logic-tag tag-ok">学生缺口 9/30 前补齐</span>
     </div>
   </div>
 
-  <div id="syncTip" class="sync-tip">协作数据加载中…</div>
+  <div class="sync-bar">
+    <div id="syncTip" class="sync-tip">协作数据加载中…</div>
+    <button class="btn btn-ghost" onclick="syncNow()">🔄 拉取最新</button>
+  </div>
 
   <!-- 页签 -->
   <div class="tab-bar" id="tabBar">
@@ -593,69 +598,140 @@ function diffCell(v){ if(v==null) return '<td class="num cell-zero">-</td>'; con
 function n(v){ return v==null?'-':v; }
 function shortStore(s){ return s.replace(/^古德墨柠/,''); }
 
-/* ============ Supabase 协作 ============ */
+/* ============ Supabase 协作 ============
+   多人协作安全策略：所有填写动作先记入「操作队列 PENDING」并在本地立即生效，
+   推送时先拉取云端最新数据，再把未确认操作重放到云端快照上整体提交。
+   避免「各自持有旧快照 → 后写者覆盖先写者」造成的数据丢失。 */
 const SUPA_URL='https://tclfmnfvlrlxquiojjya.supabase.co';
 const SUPA_KEY='sb_publishable_6sa-Pz6dX0BSlTJX3gNiRA_CbtZkf_b';
 const SUPA_TABLE='violation_data';
 const SUPA_ID=11;                          // 国庆推进看板专用行
-const LS_KEY='gq_dashboard_backup';
+const LS_KEY='gq_dashboard_backup';        // 最近一次成功同步的快照（仅离线降级用）
+const LS_PENDING='gq_pending_ops';         // 尚未确认写入云端的操作队列
 
 let CLOUD = { loans:[], plan:{}, promo:[], supplies:{}, cal:{} };
-let cloudOK=false;
+let PENDING = [];
+let cloudOK=false, syncing=false;
 
+function loanKey(l){ return [l&&l.from,l&&l.to,l&&l.name,l&&l.date,l&&l.ts].join('|'); }
+function normalizeCloud(d){
+  d=(d&&typeof d==='object')?d:{};
+  return {
+    loans:Array.isArray(d.loans)?d.loans:[],
+    plan:(d.plan&&typeof d.plan==='object')?d.plan:{},
+    promo:Array.isArray(d.promo)?d.promo:[],
+    supplies:(d.supplies&&typeof d.supplies==='object')?d.supplies:{},
+    cal:(d.cal&&typeof d.cal==='object')?d.cal:{}
+  };
+}
+function applyOp(c,op){
+  // 幂等应用单个操作：网络超时重推不会产生重复记录
+  if(!op||!op.t) return c;
+  if(op.t==='loan.add'){
+    const k=loanKey(op.v);
+    if(!(c.loans||[]).some(l=>loanKey(l)===k)) c.loans=[op.v].concat(c.loans||[]);
+  }else if(op.t==='loan.del'){
+    c.loans=(c.loans||[]).filter(l=>loanKey(l)!==op.k);
+  }else if(op.t==='plan.set'){
+    c.plan=c.plan||{}; c.plan[op.k]=op.v;
+  }else if(op.t==='promo.add'){
+    const sig=JSON.stringify(op.v);
+    if(!(c.promo||[]).some(r=>JSON.stringify(r)===sig)) c.promo=[op.v].concat(c.promo||[]);
+  }else if(op.t==='sup.set'){
+    c.supplies=c.supplies||{}; c.supplies[op.k]=Object.assign({},c.supplies[op.k]||{},op.v);
+  }else if(op.t==='cal.set'){
+    c.cal=c.cal||{}; c.cal[op.k]=op.v;
+  }else if(op.t==='cal.del'){
+    c.cal=c.cal||{}; delete c.cal[op.k];
+  }
+  return c;
+}
 function backupLocal(){ try{ localStorage.setItem(LS_KEY,JSON.stringify(CLOUD)); }catch(e){} }
 function restoreLocal(){
-  try{ const raw=localStorage.getItem(LS_KEY); if(!raw) return;
-    const d=JSON.parse(raw);
-    CLOUD.loans = (CLOUD.loans&&CLOUD.loans.length)?CLOUD.loans:(d.loans||[]);
-    CLOUD.plan = Object.assign({}, d.plan||{}, CLOUD.plan||{});
-    CLOUD.promo = (CLOUD.promo&&CLOUD.promo.length)?CLOUD.promo:(d.promo||[]);
-    CLOUD.supplies = Object.assign({}, d.supplies||{}, CLOUD.supplies||{});
-    CLOUD.cal = Object.assign({}, d.cal||{}, CLOUD.cal||{});
+  // 仅当云端不可用时，降级读取本机缓存（不再覆盖云端较新的数据）
+  try{
+    const raw=localStorage.getItem(LS_KEY); if(!raw) return;
+    CLOUD=normalizeCloud(JSON.parse(raw));
   }catch(e){}
+}
+function loadPending(){ try{ const p=JSON.parse(localStorage.getItem(LS_PENDING)||'[]'); PENDING=Array.isArray(p)?p:[]; }catch(e){ PENDING=[]; } }
+function savePending(){ try{ localStorage.setItem(LS_PENDING,JSON.stringify(PENDING)); }catch(e){} }
+function pendingTip(){
+  if(!PENDING.length) return '';
+  return ` · 本机有 ${PENDING.length} 条改动待同步`;
 }
 function setSync(msg,ok){
   const el=document.getElementById('syncTip');
   el.textContent=msg; el.className='sync-tip'+(ok?' ok':'');
 }
+async function fetchCloud(){
+  const res=await fetch(SUPA_URL+'/rest/v1/'+SUPA_TABLE+'?id=eq.'+SUPA_ID+'&select=data',{
+    headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY}
+  });
+  if(!res.ok) throw new Error('supabase '+res.status);
+  const rows=await res.json();
+  return normalizeCloud(rows&&rows.length?rows[0].data:null);
+}
 async function loadCloud(){
+  loadPending();
   try{
-    const res=await fetch(SUPA_URL+'/rest/v1/'+SUPA_TABLE+'?id=eq.'+SUPA_ID+'&select=data',{
-      headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY}
-    });
-    if(!res.ok) throw new Error('supabase '+res.status);
-    const rows=await res.json();
-    if(rows&&rows.length&&rows[0].data){
-      const d=rows[0].data;
-      CLOUD.loans=Array.isArray(d.loans)?d.loans:[];
-      CLOUD.plan=d.plan&&typeof d.plan==='object'?d.plan:{};
-      CLOUD.promo=Array.isArray(d.promo)?d.promo:[];
-      CLOUD.supplies=d.supplies&&typeof d.supplies==='object'?d.supplies:{};
-      CLOUD.cal=d.cal&&typeof d.cal==='object'?d.cal:{};
-    }
-    cloudOK=true;
-    setSync('云端协作已连接 · 借调台账与进度状态全员实时同步',true);
+    let c=await fetchCloud();
+    PENDING.forEach(op=>applyOp(c,op));       // 本机未同步的改动重放到云端快照之上
+    CLOUD=c; cloudOK=true;
+    backupLocal();
+    setSync('云端协作已连接 · 借调台账与进度状态全员实时同步'+pendingTip(),true);
+    if(PENDING.length) flushPending();        // 有积压改动，立刻补推
   }catch(e){
     cloudOK=false;
-    setSync('云端暂不可用，已切换本地缓存模式（数据仍保存在本机，恢复后自动同步）',false);
+    restoreLocal();                           // 仅在离线时使用本机缓存
+    setSync('云端暂不可用，已切换本地缓存模式（改动会留在本机，联网后自动补推）'+pendingTip(),false);
+    savePending();
   }
-  restoreLocal(); backupLocal();
 }
-async function saveCloud(){
+async function flushPending(){
+  if(syncing) return false;
+  if(!PENDING.length){
+    cloudOK?setSync('云端协作已连接 · 借调台账与进度状态全员实时同步',true):0;
+    return true;
+  }
+  syncing=true;
   try{
+    const remote=await fetchCloud();          // 先取云端最新，再重放本机改动
+    const ops=PENDING.slice();
+    ops.forEach(op=>applyOp(remote,op));
     const res=await fetch(SUPA_URL+'/rest/v1/'+SUPA_TABLE+'?id=eq.'+SUPA_ID,{
       method:'PATCH',
       headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
-      body:JSON.stringify({data:CLOUD,updated_at:new Date().toISOString()})
+      body:JSON.stringify({data:remote,updated_at:new Date().toISOString()})
     });
     if(!res.ok) throw new Error('sync '+res.status);
-    cloudOK=true; setSync('云端协作已连接 · 借调台账与进度状态全员实时同步',true);
+    PENDING=PENDING.slice(ops.length);        // 仅移除已确认的那批（期间新增的保留）
+    savePending();
+    CLOUD=remote; backupLocal();
+    cloudOK=true; syncing=false;
+    setSync('云端协作已连接 · 借调台账与进度状态全员实时同步'+pendingTip(),true);
+    if(PENDING.length) return flushPending();
     return true;
   }catch(e){
-    cloudOK=false; setSync('云端写入失败，已保存到本机缓存，稍后重试',false);
+    syncing=false; cloudOK=false;
+    setSync('云端写入失败，改动已留在本机（联网后自动补推）'+pendingTip(),false);
     return false;
   }
 }
+/* 提交一个填写动作：本地立即生效 → 排队 → 推送（写前合并，不覆盖他人数据） */
+async function commit(op){
+  if(op){ PENDING.push(op); applyOp(CLOUD,op); backupLocal(); savePending(); }
+  return flushPending();
+}
+function syncNow(){
+  return loadCloud().then(()=>{ rerenderCurrent(); });
+}
+function rerenderCurrent(){
+  const b=document.querySelector('.tab-btn.active');
+  if(b) switchTab(b.getAttribute('data-tab'));
+}
+/* 兼容旧调用（已无独立全量覆盖逻辑，统一走队列推送） */
+function saveCloud(){ return flushPending(); }
 
 /* ============ 页签 ============ */
 function switchTab(name){
@@ -744,6 +820,9 @@ function exportGapCsv(){
 /* ============ 总览 ============ */
 function renderOverview(){
   const m=D.meta, dl=D.daily;
+  document.getElementById('tagMgrs').textContent='大店长 '+MGRS.length+' 人';
+  document.getElementById('tagStores').textContent='门店 '+D.transferStores.length+' 家';
+  document.getElementById('tagDays').textContent='覆盖 '+DAYLABEL[DAYKEYS[0]]+'-'+DAYLABEL[DAYKEYS[DAYKEYS.length-1]]+' 共 '+DAYKEYS.length+' 天';
   document.getElementById('tagPeak').textContent='峰值日 '+m.peakDay+' 差值 '+m.peakDiff;
   document.getElementById('tagGap').textContent='8 天累计缺口 '+m.totalStaffGap+' 人次';
   document.getElementById('ovSub').textContent='数据截至 '+m.asOf;
@@ -756,7 +835,7 @@ function renderOverview(){
     {l:'峰值日缺口',v:m.peakDiff,u:'人',s:m.peakDay+' 为人力最紧日',hl:true},
     {l:'缺口门店数',v:dl[worst].shortStores,u:'家',s:m.peakDay+' 当天有缺口门店',hl:true},
     {l:'需补学生人力',v:dl[worst].lackTotal,u:'人',s:'按 '+DAYLABEL[worst]+' 峰值日单日测算 · 点击看明细',hl:true,click:'openGapModal()'},
-    {l:'9.30 差值',v:dl.d0930.diff,u:'人',s:'需求450 / 全职378 / 学生192',hl:false}
+    {l:'9.30 差值',v:dl.d0930.diff,u:'人',s:'需求'+dl.d0930.need+' / 全职'+dl.d0930.ft+' / 学生'+dl.d0930.pt,hl:false}
   ];
   document.getElementById('ovCards').innerHTML=cards.map(c=>`
     <div class="metric-card${c.hl?' highlight':''}"${c.click?` style="cursor:pointer" onclick="${c.click}" title="查看单店缺口明细"`:''}>
@@ -805,7 +884,8 @@ function renderOverview(){
   });
   h+='</tbody>';
   document.getElementById('ovTopTable').innerHTML=h;
-  document.getElementById('ovFoot').innerHTML=`峰值日 <strong>${m.peakDay}</strong> 全品牌缺口 ${Math.abs(m.peakDiff)} 人，当天 ${dl[worst].shortStores} 家门店需要支援。9.30 与 10.7 整体人力富余，可作为内部借调的资源池。`;
+  const rich=DAYKEYS.filter(k=>dl[k].diff>0).map(k=>dl[k].label).join('、');
+  document.getElementById('ovFoot').innerHTML=`峰值日 <strong>${m.peakDay}</strong> 全品牌缺口 ${Math.abs(m.peakDiff)} 人，当天 ${dl[worst].shortStores} 家门店需要支援。${rich?rich+' 整体人力富余，可作为内部借调的资源池。':''}`;
 }
 
 /* ============ 计划推进 ============ */
@@ -845,7 +925,8 @@ function renderPlan(){
     `<strong style="color:#2e8b57">已完成 ${done}</strong> / 进行中 ${cnt['进行中']} / 未开始 ${cnt['未开始']}，共 ${total} 项，完成率 ${Math.round(done/total*100)}%`;
 }
 function setPlanStatus(i,s){
-  CLOUD.plan['p'+i]=s; backupLocal(); renderPlan(); saveCloud();
+  commit({t:'plan.set',k:'p'+i,v:s});   // 本地即时生效，后台推送（写前合并，不影响他人填写）
+  renderPlan();
 }
 function exportPlanCsv(){
   const rows=[['阶段','项目内容','开始时间','如何做','交付结果','完成时间','执行人','负责人','完成进度']];
@@ -1186,14 +1267,14 @@ async function submitLoan(){
   if(!name){ alert('请填写转入伙伴姓名'); return; }
   const btn=document.getElementById('loanSubmit');
   btn.disabled=true; btn.textContent='提交中…';
-  CLOUD.loans.unshift({from:from,to:to,name:name,date:date,note:note,owner:owner,ts:new Date().toISOString(),by:(owner||'')});
-  backupLocal();
+  const rec={from:from,to:to,name:name,date:date,note:note,owner:owner,ts:new Date().toISOString(),by:(owner||'')};
+  const p=commit({t:'loan.add',v:rec});
   renderTransfer(); renderLoanTable();
-  const ok=await saveCloud();
+  const ok=await p;
   btn.disabled=false; btn.textContent='提交借调申请';
   closeLoanModal();
   if(ok) alert('借调申请已提交，已同步至云端，全体大店长可见。');
-  else alert('借调申请已保存到本机缓存，云端同步失败，请稍后重试。');
+  else alert('借调申请已登记在本机，云端暂不可用，联网后会自动补推，请稍后在「🔄 拉取最新」确认。');
 }
 function renderLoanTable(){
   const el=document.getElementById('loanTable');
@@ -1207,15 +1288,18 @@ function renderLoanTable(){
     CLOUD.loans.forEach((l,i)=>{
       const d=l.ts?new Date(l.ts):null;
       const ts=d?`${d.getMonth()+1}.${d.getDate()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`:'-';
-      h+=`<tr><td>${ts}</td><td>${esc(shortStore(l.from))}</td><td><span class="badge badge-red">${esc(shortStore(l.to))}</span></td><td style="font-weight:600">${esc(l.name)}</td><td>${esc(l.date)}</td><td>${esc(l.owner||'-')}</td><td style="white-space:normal;max-width:200px">${esc(l.note||'-')}</td><td><button class="mini-btn danger" onclick="delLoan(${i})">删除</button></td></tr>`;
+      h+=`<tr><td>${ts}</td><td>${esc(shortStore(l.from))}</td><td><span class="badge badge-red">${esc(shortStore(l.to))}</span></td><td style="font-weight:600">${esc(l.name)}</td><td>${esc(l.date)}</td><td>${esc(l.owner||'-')}</td><td style="white-space:normal;max-width:200px">${esc(l.note||'-')}</td><td><button class="mini-btn danger" data-lk="${esc(loanKey(l))}" onclick="delLoan(this)">删除</button></td></tr>`;
     });
   }
   h+='</tbody>';
   el.innerHTML=h;
 }
-async function delLoan(i){
+async function delLoan(btn){
   if(!confirm('确认删除这条借调记录？')) return;
-  CLOUD.loans.splice(i,1); backupLocal(); renderLoanTable(); renderTransfer(); await saveCloud();
+  const k=btn.getAttribute('data-lk');
+  if(!k) return;
+  commit({t:'loan.del',k:k});   // 按记录唯一键删除，避免并发下索引错位删错行
+  renderLoanTable(); renderTransfer();
 }
 
 function renderTransfer(){
@@ -1400,11 +1484,11 @@ async function submitPromo(){
   const g=id=>document.getElementById(id).value.trim();
   const row=[g('pmDate'),g('pmRegion'),g('pmStore')||'-',g('pmKind'),g('pmForm'),g('pmTopic'),g('pmTime'),g('pmExec'),g('pmData'),g('pmOwner'),g('pmNote')];
   if(!row[0]||!row[5]){ alert('请至少填写日期与素材主题'); return; }
-  CLOUD.promo.unshift(row); backupLocal();
+  commit({t:'promo.add',v:row});
   document.getElementById('promoMask').classList.remove('show');
   ['pmDate','pmRegion','pmStore','pmKind','pmForm','pmTopic','pmTime','pmExec','pmData','pmOwner','pmNote'].forEach(x=>document.getElementById(x).value='');
   document.getElementById('pmType').innerHTML='<option value="all">全部</option>';
-  renderPromo(); await saveCloud();
+  renderPromo();
 }
 function exportPromoCsv(){
   const rows=[D.promoHead];
@@ -1431,10 +1515,10 @@ function spState(store){
 function renderSupplies(){
   const only=document.getElementById('spOnly').value;
   let done=0;
+  SUP_STORES.forEach(x=>{ const st=spState(x.store); if(st.box&&st.tea) done++; });  // 进度按全量统计，不受筛选影响
   const rows=SUP_STORES.filter(x=>{
     const st=spState(x.store);
     const ok=st.box&&st.tea;
-    if(ok) done++;
     if(only==='done') return ok;
     if(only==='todo') return !ok;
     return true;
@@ -1465,8 +1549,9 @@ function renderSupplies(){
      </div>`;
 }
 async function toggleSup(store,kind,val){
-  const st=spState(store); st[kind]=val;
-  CLOUD.supplies[store]=st; backupLocal(); renderSupplies(); await saveCloud();
+  const st=Object.assign({},spState(store)); st[kind]=val;
+  commit({t:'sup.set',k:store,v:st});
+  renderSupplies();
 }
 function exportSupCsv(){
   const rows=[['大店长','门店','小药箱到位','茶歇到位','整改完成','检查人','检查日期']];
@@ -1491,7 +1576,7 @@ function renderCal(){
   document.getElementById('calProgress').innerHTML=
     `行事历已安排 <strong class="cell-pos">${filled}</strong> / ${CAL_TOTAL} 格`+
     `${filled<CAL_TOTAL?`，待安排 <strong class="cell-neg">${CAL_TOTAL-filled}</strong> 格`:''}`+
-    ` · 13 位大店长 × 9.30-10.7 共 8 天`;
+    ` · ${MGRS.length} 位大店长 × ${DAYKEYS.length} 天`;
 
   let h='';
   if(view==='matrix'){
@@ -1550,14 +1635,12 @@ async function submitCalCell(){
   const store=document.getElementById('calStore').value;
   const note=document.getElementById('calNote').value.trim();
   if(!store){ alert('请选择卡岗门店'); return; }
-  CLOUD.cal[CAL_EDIT.mgr+'::'+CAL_EDIT.dk]={store:store,note:note,by:CAL_EDIT.mgr,at:new Date().toISOString()};
-  backupLocal(); await saveCloud();
+  commit({t:'cal.set',k:calKey(CAL_EDIT.mgr,CAL_EDIT.dk),v:{store:store,note:note,by:CAL_EDIT.mgr,at:new Date().toISOString()}});
   closeCalModal(); renderCal();
 }
 async function clearCalCell(){
   if(!CAL_EDIT) return;
-  delete CLOUD.cal[CAL_EDIT.mgr+'::'+CAL_EDIT.dk];
-  backupLocal(); await saveCloud();
+  commit({t:'cal.del',k:calKey(CAL_EDIT.mgr,CAL_EDIT.dk)});
   closeCalModal(); renderCal();
 }
 function exportCalCsv(){
@@ -1591,6 +1674,14 @@ function downloadCsv(name,rows){
   document.getElementById('storeMask').addEventListener('click',function(e){ if(e.target===this) this.classList.remove('show'); });
   document.getElementById('promoMask').addEventListener('click',function(e){ if(e.target===this) this.classList.remove('show'); });
   document.getElementById('calMask').addEventListener('click',function(e){ if(e.target===this) closeCalModal(); });
+  document.getElementById('gapMask').addEventListener('click',function(e){ if(e.target===this) closeGapModal(); });
+  // 多人协作保护：每 60 秒自动补推未同步改动；联网 / 切回标签页时拉取云端最新
+  setInterval(function(){ if(PENDING.length&&!syncing) flushPending(); },60000);
+  window.addEventListener('online',function(){ flushPending(); loadCloud().then(rerenderCurrent); });
+  document.addEventListener('visibilitychange',function(){
+    if(document.hidden) return;
+    loadCloud().then(function(){ if(!document.querySelector('.modal-mask.show')) rerenderCurrent(); });
+  });
 })();
 </script>
 </body>

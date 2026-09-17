@@ -385,6 +385,7 @@ tbody td.num{text-align:right;font-variant-numeric:tabular-nums;}
       <div class="description-bar-title">人员借调</div>
       <div class="description-list">
         <div class="description-item">人员借调统一在本栏办理：人力富足门店可向缺口门店临时借调支援，点门店行「申请借调」或右上角「＋ 新增借调申请」登记</div>
+        <div class="description-item"><strong>冗余人员登记</strong>：大店长先在下方登记各店单日冗余伙伴姓名，借调申请即可精确到具体个人，不再只有人数</div>
         <div class="description-item">系统按所选日期对齐缺口与冗余，按商圈就近推荐冗余门店，缺口门店可直接看到可借人来源</div>
         <div class="description-item">提交后写入云端，13 位大店长实时互见；每条借调需人工「确认」后生效 —— 确认即锁定 1 人调动，转出店当日冗余 -1、转入店当日缺口 -1，扣完冗余的门店不会再被推荐，防止一店多借</div>
       </div>
@@ -406,6 +407,14 @@ tbody td.num{text-align:right;font-variant-numeric:tabular-nums;}
       <div class="spacer"></div>
       <button class="btn" onclick="openLoanModal(null)">＋ 新增借调申请</button>
     </div>
+    <div class="section-header">冗余人员登记<span class="sub" id="poolSub"></span></div>
+    <div class="filter-bar" style="border-top:none">
+      <label>大店长：</label>
+      <select id="poolMgr" onchange="renderPool()"><option value="all">全部大店长</option></select>
+      <label>日期：</label>
+      <select id="poolDay" onchange="renderPool()"></select>
+    </div>
+    <div class="table-wrap"><table id="poolTable"></table></div>
     <div class="section-header">借调申请台账<span class="sub" id="loanCount"></span></div>
     <div class="table-wrap"><table id="loanTable"></table></div>
     <div class="section-header">按大店长汇总<span class="sub" id="trSumSub"></span></div>
@@ -525,7 +534,9 @@ tbody td.num{text-align:right;font-variant-numeric:tabular-nums;}
         </div>
         <div class="form-item">
           <label>转入伙伴姓名</label>
+          <select id="loanNameSel" style="display:none" onchange="onLoanNameSel()"></select>
           <input type="text" id="loanName" placeholder="如：谭雅琪">
+          <div class="form-hint" id="loanNameHint"></div>
         </div>
       </div>
       <div class="form-row">
@@ -727,7 +738,7 @@ const SUPA_ID=11;                          // 国庆推进看板专用行
 const LS_KEY='gq_dashboard_backup';        // 最近一次成功同步的快照（仅离线降级用）
 const LS_PENDING='gq_pending_ops';         // 尚未确认写入云端的操作队列
 
-let CLOUD = { loans:[], plan:{}, promo:[], supplies:{}, cal:{} };
+let CLOUD = { loans:[], plan:{}, promo:[], supplies:{}, cal:{}, pool:{} };
 let PENDING = [];
 let cloudOK=false, syncing=false;
 
@@ -739,7 +750,8 @@ function normalizeCloud(d){
     plan:(d.plan&&typeof d.plan==='object')?d.plan:{},
     promo:Array.isArray(d.promo)?d.promo:[],
     supplies:(d.supplies&&typeof d.supplies==='object')?d.supplies:{},
-    cal:(d.cal&&typeof d.cal==='object')?d.cal:{}
+    cal:(d.cal&&typeof d.cal==='object')?d.cal:{},
+    pool:(d.pool&&typeof d.pool==='object')?d.pool:{}
   };
 }
 function applyOp(c,op){
@@ -764,6 +776,10 @@ function applyOp(c,op){
     c.cal=c.cal||{}; c.cal[op.k]=op.v;
   }else if(op.t==='cal.del'){
     c.cal=c.cal||{}; delete c.cal[op.k];
+  }else if(op.t==='pool.set'){
+    c.pool=c.pool||{}; c.pool[op.k]=op.v;
+  }else if(op.t==='pool.del'){
+    c.pool=c.pool||{}; delete c.pool[op.k];
   }
   return c;
 }
@@ -1448,6 +1464,18 @@ function onLoanFromChange(){
   const target=t||f;
   const me=TRANSFER_INFO[target];
   const ft=TRANSFER_INFO[f], tt=TRANSFER_INFO[t];
+  // 转入伙伴姓名：转出门店已登记冗余名单 → 下拉选择；未登记 → 手输并提示补登
+  const names=poolList(f,date);
+  const nameSel=document.getElementById('loanNameSel');
+  const nameInp=document.getElementById('loanName');
+  if(names.length){
+    nameSel.innerHTML=names.map(x=>`<option value="${esc(x)}">${esc(x)}</option>`).join('')+'<option value="__manual__">＋ 手动填写其他伙伴</option>';
+    nameSel.style.display=''; nameInp.style.display='none'; nameInp.value='';
+    document.getElementById('loanNameHint').textContent=`${scopeName(date)} 已登记冗余伙伴 ${names.length} 人，可直接选择`;
+  }else{
+    nameSel.style.display='none'; nameInp.style.display='';
+    document.getElementById('loanNameHint').textContent=f?`${shortStore(f)} ${scopeName(date)} 暂未登记冗余人员，可先手动填写，并提醒该店大店长在下方「冗余人员登记」补登`:'';
+  }
   const fa=ft?String(ft.area).replace(/大店区/,''):'-';
   const ta=tt?String(tt.area).replace(/大店区/,''):'-';
   const can=loanableOnAdj(f,date);
@@ -1473,10 +1501,16 @@ function pickFrom(store){
   document.getElementById('loanFrom').value=store;
   onLoanFromChange();
 }
+function onLoanNameSel(){
+  const sel=document.getElementById('loanNameSel');
+  const inp=document.getElementById('loanName');
+  if(sel.value==='__manual__'){ sel.style.display='none'; inp.style.display=''; inp.focus(); }
+}
 async function submitLoan(){
   const from=document.getElementById('loanFrom').value;
   const to=document.getElementById('loanTo').value;
-  const name=document.getElementById('loanName').value.trim();
+  const nameSel=document.getElementById('loanNameSel');
+  const name=(nameSel.style.display!=='none'&&nameSel.value&&nameSel.value!=='__manual__')?nameSel.value:document.getElementById('loanName').value.trim();
   const date=document.getElementById('loanDate').value;
   const note=document.getElementById('loanNote').value.trim();
   const owner=document.getElementById('loanOwner').value.trim();
@@ -1517,6 +1551,62 @@ function renderLoanTable(){
   h+='</tbody>';
   el.innerHTML=h;
 }
+/* ============ 冗余人员登记（大店长确认各店单日冗余伙伴姓名） ============ */
+function poolList(store,label){
+  // 某店某日已登记的冗余伙伴名单
+  if(label===SPAN){
+    // 全段口径：取 8 天名单并集
+    const set=[];
+    DAYKEYS.forEach(k=>{
+      const v=(CLOUD.pool||{})[store+'::'+k];
+      if(Array.isArray(v)) v.forEach(x=>{ if(set.indexOf(x)<0) set.push(x); });
+    });
+    return set;
+  }
+  const i=dayIdx(label);
+  if(i<0) return [];
+  const v=(CLOUD.pool||{})[store+'::'+DAYKEYS[i]];
+  return Array.isArray(v)?v:[];
+}
+let POOL_ROWS=[];
+function renderPool(){
+  const mgr=document.getElementById('poolMgr').value;
+  const dk=document.getElementById('poolDay').value;
+  const label=DAYLABEL[dk];
+  POOL_ROWS=D.transferStores.filter(t=>{
+    if(mgr!=='all'&&String(t.area).replace(/大店区/,'')!==mgr) return false;
+    return loanableOnAdj(t.store,label)>0;
+  }).sort((a,b)=>loanableOnAdj(b.store,label)-loanableOnAdj(a.store,label));
+  let h=`<thead><tr><th>大店长</th><th>门店</th><th class="num">${label}可借</th><th>冗余伙伴姓名（顿号分隔，与可借人数对应）</th><th>操作</th></tr></thead><tbody>`;
+  if(!POOL_ROWS.length) h+=`<tr><td colspan="5" style="text-align:center;color:#95a5a6;padding:22px">当前筛选下 ${label} 暂无冗余门店</td></tr>`;
+  let filled=0;
+  POOL_ROWS.forEach((t,i)=>{
+    const key=t.store+'::'+dk;
+    const names=Array.isArray((CLOUD.pool||{})[key])?CLOUD.pool[key]:[];
+    if(names.length) filled++;
+    const can=loanableOnAdj(t.store,label);
+    const tip=names.length===0?'<span class="badge badge-gray">未登记</span>'
+      :(names.length<can?`<span class="badge badge-orange">已登记 ${names.length}/${can}</span>`
+      :`<span class="badge badge-green">已登记 ${names.length}/${can}</span>`);
+    h+=`<tr><td>${esc(String(t.area).replace(/大店区/,''))}</td><td>${esc(shortStore(t.store))}</td><td class="num cell-pos">${can}</td>`+
+       `<td><input type="text" id="poolName_${i}" value="${esc(names.join('、'))}" placeholder="如：张三、李四" style="width:100%;min-width:220px;font-size:12.5px;padding:6px 9px;border:1px solid #e6d8cc;border-radius:4px;font-family:inherit"></td>`+
+       `<td style="white-space:nowrap">${tip} <button class="mini-btn" onclick="savePoolRow(${i})">保存</button></td></tr>`;
+  });
+  h+='</tbody>';
+  document.getElementById('poolTable').innerHTML=h;
+  document.getElementById('poolSub').textContent=`${label} · 已登记 ${filled} / ${POOL_ROWS.length} 家冗余门店 · 大店长确认后，借调申请可精确到具体伙伴`;
+}
+function savePoolRow(i){
+  const t=POOL_ROWS[i]; if(!t) return;
+  const dk=document.getElementById('poolDay').value;
+  const key=t.store+'::'+dk;
+  const raw=document.getElementById('poolName_'+i).value;
+  const names=Array.from(new Set(raw.split(/[、,，;；\s]+/).map(s=>s.trim()).filter(Boolean)));
+  if(names.length) commit({t:'pool.set',k:key,v:names});
+  else commit({t:'pool.del',k:key});
+  renderPool();
+}
+
 function confirmLoan(btn){
   const k=btn.getAttribute('data-lk');
   if(!k) return;
@@ -1616,6 +1706,7 @@ function renderTransfer(){
   renderTransferSummary(all,day,dayName);
   renderLoanTable();
   document.getElementById('trDaySub').textContent=`口径：${dayName}${day==='tight'?'（8 天中缺口最大的一天）':'（单日）'}，红为缺口、绿为冗余`;
+  renderPool();
   document.getElementById('trFoot').innerHTML=
     `当前筛选 ${all.length} 家门店（明细表展示 ${rows.length} 家）。按 <strong>${dayName}</strong> 口径：缺口门店 <strong class="cell-neg">${gapN}</strong> 家、缺口合计 <strong class="cell-neg">${gapSum}</strong> 人次；可外借门店 <strong class="cell-pos">${surN}</strong> 家、可借出合计 <strong class="cell-pos">${surSum}</strong> 人次。同商圈门店优先互相支援，可减少跨区调动成本。`;
 }
@@ -2052,7 +2143,9 @@ function downloadCsv(name,rows){
 /* ============ 初始化 ============ */
 (async function init(){
   fillDaySelect('regDay'); fillDaySelect('stDay'); fillDaySelect('dtDay'); fillDaySelect('calDay');
-  fillMgrSelect('regMgr'); fillMgrSelect('stMgr'); fillMgrSelect('dtMgr'); fillMgrSelect('spMgr');
+  fillMgrSelect('regMgr'); fillMgrSelect('stMgr'); fillMgrSelect('dtMgr'); fillMgrSelect('spMgr'); fillMgrSelect('poolMgr');
+  fillDaySelect('poolDay');
+  document.getElementById('poolDay').value='d1004';
   await loadCloud();
   renderOverview();
   switchTab('overview');

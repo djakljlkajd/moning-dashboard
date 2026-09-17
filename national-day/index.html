@@ -547,7 +547,8 @@ tbody td.num{text-align:right;font-variant-numeric:tabular-nums;}
         </div>
         <div class="form-item">
           <label>对接大店长</label>
-          <input type="text" id="loanOwner" placeholder="如：童璐">
+          <input type="text" id="loanOwner" placeholder="自动匹配转出门店大店长" oninput="OWNER_MANUAL=true">
+          <div class="form-hint">默认自动匹配转出门店的大店长（借调多由转入门店大店长发起），可手动调整</div>
         </div>
       </div>
       <div class="reco-title" id="recoTitle">就近可调动资源推荐</div>
@@ -1394,6 +1395,7 @@ function openLoanModal(store,prefDay){
   document.getElementById('loanName').value='';
   document.getElementById('loanNote').value='';
   document.getElementById('loanOwner').value='';
+  OWNER_MANUAL=false;
   refreshLoanOptions();
   document.getElementById('loanMask').classList.add('show');
 }
@@ -1432,11 +1434,15 @@ function refreshLoanOptions(){
 }
 function closeLoanModal(){ document.getElementById('loanMask').classList.remove('show'); }
 function onLoanModalDateChange(){ refreshLoanOptions(); }
+let OWNER_MANUAL=false;
 function onLoanFromChange(){
   const date=document.getElementById('loanDate').value;
   const f=document.getElementById('loanFrom').value;
   const t=document.getElementById('loanTo').value;
   const tv=storeDiffByAdj(t,date);
+  // 对接大店长自动匹配转出门店的大店长（用户手动改过则不再覆盖）
+  const ft0=TRANSFER_INFO[f];
+  if(ft0&&!OWNER_MANUAL) document.getElementById('loanOwner').value=String(ft0.area).replace(/大店区/,'');
   document.getElementById('loanFromHint').textContent=f?diffText(f,date):'';
   document.getElementById('loanToHint').textContent=t?diffText(t,date):'';
   const target=t||f;

@@ -6,152 +6,163 @@
 <title>墨柠国庆高峰准备落地推进看板</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
-body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;background:#f2f5ec;color:#333;padding:16px;}
+:root{
+  --red:#c62828;--red-d:#8e0000;--red-l:#ef5350;--red-x:#ff7043;
+  --gold:#f2b544;--gold-d:#dd9b1f;--gold-l:#fdf3d7;
+  --bg:#faf5f1;--ink:#3d3a38;--ink-2:#8f8780;--line:#f1e7de;
+  --neg:#c62828;--pos:#2e8b57;
+}
+body{font-family:"Microsoft YaHei","微软雅黑","PingFang SC","Hiragino Sans GB",sans-serif;background:var(--bg);color:var(--ink);padding:16px;}
 .container{max-width:1400px;margin:0 auto;}
 
-/* 标题栏 */
-.header-bar{background:linear-gradient(135deg,#33691e 0%,#7cb342 100%);border-radius:8px 8px 0 0;padding:14px 22px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;}
-.header-title{font-size:18px;font-weight:bold;color:#fff;}
-.header-date{font-size:12px;color:rgba(255,255,255,.9);font-weight:500;white-space:nowrap;}
+/* 标题栏（国庆红渐变 + 中秋装饰剪影） */
+.header-bar{position:relative;background:linear-gradient(118deg,var(--red-d) 0%,var(--red) 48%,var(--red-l) 82%,var(--red-x) 100%);border-radius:10px 10px 0 0;padding:16px 24px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;overflow:hidden;}
+.header-title{font-size:19px;font-weight:bold;color:#fff;letter-spacing:1px;text-shadow:0 1px 3px rgba(80,0,0,.35);}
+.header-date{font-size:12px;color:rgba(255,255,255,.88);font-weight:500;white-space:nowrap;margin-top:3px;}
+.header-art{position:absolute;top:0;right:0;bottom:0;width:min(430px,46vw);pointer-events:none;}
+.header-art svg{width:100%;height:100%;display:block;}
 
 /* 逻辑条 */
-.logic-bar{background:linear-gradient(90deg,#f4f8e3 0%,#f0f7d8 100%);border-bottom:2px solid #d9e6a5;padding:11px 22px;font-size:12.5px;color:#3f5a1f;line-height:1.65;}
+.logic-bar{background:linear-gradient(90deg,#fdf3d7 0%,#fceecd 100%);border-bottom:2px solid #f3dfa8;padding:11px 22px;font-size:12.5px;color:#7a5410;line-height:1.65;}
 .logic-tags{margin-top:5px;}
 .logic-tag{display:inline-block;padding:2px 8px;border-radius:3px;font-size:11px;margin:0 6px 3px 0;font-weight:600;}
 .tag-ok{background:#d5f5e3;color:#1e7a45;}
 .tag-warn{background:#fdebd0;color:#a04000;}
-.tag-bad{background:#fadbd8;color:#c0392b;}
-.tag-info{background:#d6eaf8;color:#21618c;}
+.tag-bad{background:#fadbd8;color:#b71c1c;}
+.tag-info{background:#fde4e2;color:#a4231f;}
 
 /* 页签 */
-.tab-bar{background:#fff;display:flex;gap:2px;padding:0 14px;overflow-x:auto;border-bottom:2px solid #e0ebc8;scrollbar-width:thin;}
+.tab-bar{background:#fff;display:flex;gap:2px;padding:0 14px;overflow-x:auto;border-bottom:2px solid var(--line);scrollbar-width:thin;}
 .tab-bar::-webkit-scrollbar{height:4px;}
-.tab-bar::-webkit-scrollbar-thumb{background:#cde5b0;border-radius:2px;}
-.tab-btn{background:none;border:none;padding:12px 15px;font-size:13.5px;font-weight:600;color:#7f8c8d;cursor:pointer;white-space:nowrap;border-bottom:3px solid transparent;font-family:inherit;}
-.tab-btn:hover{color:#558b2f;background:#f7fbf0;}
-.tab-btn.active{color:#558b2f;border-bottom-color:#7cb342;background:#f7fbf0;}
-.tab-btn .tab-badge{display:inline-block;background:#e74c3c;color:#fff;font-size:10px;border-radius:9px;padding:0 6px;margin-left:5px;vertical-align:1px;line-height:15px;}
+.tab-bar::-webkit-scrollbar-thumb{background:#f0d8c8;border-radius:2px;}
+.tab-btn{background:none;border:none;padding:12px 15px;font-size:13.5px;font-weight:600;color:var(--ink-2);cursor:pointer;white-space:nowrap;border-bottom:3px solid transparent;font-family:inherit;}
+.tab-btn:hover{color:var(--red);background:#fdf5f2;}
+.tab-btn.active{color:var(--red);border-bottom-color:var(--red);background:#fdf5f2;}
+.tab-btn .tab-badge{display:inline-block;background:var(--neg);color:#fff;font-size:10px;border-radius:9px;padding:0 6px;margin-left:5px;vertical-align:1px;line-height:15px;}
 
-.panel{display:none;}
-.panel.active{display:block;}
+/* 模块说明条 */
+.description-bar{background:linear-gradient(90deg,#fdf3d7 0%,#fae9c8 100%);border-bottom:2px solid #f3dfa8;padding:11px 20px;font-size:12.5px;color:#7a5410;line-height:1.8;display:flex;gap:12px;align-items:flex-start;}
+.description-bar-title{font-weight:bold;color:#9a6a14;font-size:13px;white-space:nowrap;padding-top:1px;}
+.description-list{line-height:1.8;}
+.description-item strong{color:#b71c1c;font-weight:600;margin-right:4px;}
 
-/* 说明区 */
-.description-bar{background:linear-gradient(90deg,#eef7e3 0%,#e2f1cc 100%);border-bottom:2px solid #cde5b0;padding:11px 20px;font-size:12.5px;color:#2e4d1f;line-height:1.8;display:flex;gap:12px;align-items:flex-start;}
-.description-bar-title{font-weight:bold;color:#558b2f;font-size:13px;white-space:nowrap;padding-top:1px;}
-.description-item{margin-bottom:2px;}
-.description-item strong{color:#c0392b;font-weight:600;margin-right:4px;}
+.section-header{background:#fff;padding:12px 20px 8px;border-bottom:1px solid var(--line);font-weight:bold;font-size:14px;color:var(--red);}
+.section-header .sub{font-weight:400;font-size:11.5px;color:var(--ink-2);margin-left:8px;}
 
-.section-header{background:#fff;padding:12px 20px 8px;border-bottom:1px solid #eee;font-weight:bold;font-size:14px;color:#558b2f;}
-.section-header .sub{font-weight:400;font-size:11.5px;color:#95a5a6;margin-left:8px;}
-
-/* 卡片 */
+/* 指标卡片 */
 .cards-row{display:grid;grid-template-columns:repeat(7,1fr);gap:10px;background:#fff;padding:15px 20px;}
-.metric-card{position:relative;background:#fafcf6;border:1px solid #e6eede;border-radius:6px;padding:12px 12px 10px;overflow:hidden;transition:.15s;}
-.metric-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#8bc34a,#4caf50);}
-.metric-card.highlight::before{background:linear-gradient(90deg,#e74c3c,#c0392b);}
-.metric-card.clickable{cursor:pointer;}
-.metric-card.clickable:hover{box-shadow:0 3px 10px rgba(85,139,47,.18);transform:translateY(-1px);}
-.card-label{font-size:11.5px;color:#7f8c8d;margin-bottom:5px;line-height:1.35;}
-.card-value{font-size:25px;font-weight:bold;color:#2c3e50;line-height:1.15;}
-.card-value.red{color:#e74c3c;}
-.card-value.green{color:#2e8b57;}
-.card-unit{font-size:12px;color:#95a5a6;margin-left:2px;font-weight:400;}
-.card-sub{font-size:10.5px;color:#95a5a6;margin-top:4px;line-height:1.4;}
+.metric-card{position:relative;background:#fdfaf7;border:1px solid var(--line);border-radius:8px;padding:12px 12px 10px;overflow:hidden;transition:.15s;}
+.metric-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--gold),var(--gold-d));}
+.metric-card.highlight::before{background:linear-gradient(90deg,var(--red-l),var(--red));}
+.metric-card[style*="cursor:pointer"]:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(198,40,40,.14);}
+.card-label{font-size:11.5px;color:var(--ink-2);margin-bottom:5px;line-height:1.35;}
+.card-value{font-size:25px;font-weight:bold;color:#3d3a38;line-height:1.15;}
+.card-value.red{color:var(--neg);}
+.card-value.green{color:var(--pos);}
+.card-unit{font-size:12px;color:var(--ink-2);margin-left:2px;font-weight:400;}
+.card-sub{font-size:10.5px;color:var(--ink-2);margin-top:4px;line-height:1.4;}
 
 /* 筛选栏 */
-.filter-bar{background:#fff;padding:11px 20px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;border-top:1px solid #f0f4e8;}
+.filter-bar{background:#fff;padding:11px 20px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;border-top:1px solid var(--line);}
 .filter-bar label{font-size:12.5px;color:#666;}
-.filter-bar select,.filter-bar input{font-size:12.5px;padding:6px 9px;border:1px solid #d5e3c0;border-radius:4px;background:#fff;color:#333;font-family:inherit;max-width:100%;}
-.filter-bar input[type=text]{min-width:150px;}
-.btn{font-size:12.5px;padding:6px 13px;border:1px solid #7cb342;background:#7cb342;color:#fff;border-radius:4px;cursor:pointer;font-family:inherit;font-weight:600;}
-.btn:hover{background:#558b2f;border-color:#558b2f;}
-.btn-ghost{background:#fff;color:#558b2f;}
-.btn-ghost:hover{background:#f1f8e9;color:#33691e;}
+.filter-bar select,.filter-bar input{font-size:12.5px;padding:6px 9px;border:1px solid #e6d8cc;border-radius:5px;background:#fff;color:var(--ink);font-family:inherit;max-width:100%;}
 .spacer{flex:1;}
+
+.btn{font-size:12.5px;padding:6px 13px;border:1px solid var(--red);background:var(--red);color:#fff;border-radius:5px;cursor:pointer;font-family:inherit;font-weight:600;transition:.15s;}
+.btn:hover{background:var(--red-d);border-color:var(--red-d);}
+.btn-ghost{background:#fff;color:var(--red);}
+.btn-ghost:hover{background:#fdeceb;color:var(--red-d);}
 
 /* 表格 */
 .table-wrap{background:#fff;overflow-x:auto;}
 table{width:100%;border-collapse:collapse;font-size:12.5px;white-space:nowrap;}
-thead th{background:linear-gradient(180deg,#7cb342,#558b2f);color:#fff;padding:9px 9px;text-align:left;font-weight:600;font-size:12px;position:sticky;top:0;z-index:2;}
-thead th.num{text-align:right;}
-tbody td{padding:8px 9px;border-bottom:1px solid #f0f4e8;color:#444;}
-tbody td.num{text-align:right;font-variant-numeric:tabular-nums;}
-tbody tr:hover{background:#f9fcf4;}
-tbody tr.total-row{background:linear-gradient(90deg,#e8f5d3,#cde5b0);font-weight:bold;}
-tbody tr.total-row td{color:#33691e;border-top:2px solid #9ccc65;}
-.cell-neg{color:#e74c3c;font-weight:700;}
-.cell-pos{color:#2e8b57;font-weight:600;}
-.cell-zero{color:#b0b8b0;}
+thead th{background:linear-gradient(180deg,var(--red-l),var(--red));color:#fff;padding:9px 9px;text-align:left;font-weight:600;font-size:12px;position:sticky;top:0;z-index:2;}
+tbody td{padding:8px 9px;border-bottom:1px solid var(--line);color:#4a4644;}
+tbody tr:hover{background:#fdf8f4;}
+tbody tr.total-row{background:linear-gradient(90deg,#fdf3d7,#fbe7c0);font-weight:bold;}
+tbody tr.total-row td{color:#8a5f0e;border-top:2px solid var(--gold-d);}
+.cell-neg{color:var(--neg);font-weight:700;}
+.cell-pos{color:var(--pos);font-weight:600;}
+.cell-zero{color:#c8beb6;}
 .badge{display:inline-block;padding:1px 7px;border-radius:3px;font-size:11px;font-weight:600;}
-.badge-red{background:#fadbd8;color:#c0392b;}
+.badge-red{background:#fadbd8;color:#b71c1c;}
 .badge-green{background:#d5f5e3;color:#1e7a45;}
-.badge-gray{background:#ecf0f1;color:#7f8c8d;}
-.badge-blue{background:#d6eaf8;color:#21618c;}
+.badge-gray{background:#f0ece8;color:#8f8780;}
+.badge-blue{background:#fde4e2;color:#a4231f;}
 .badge-orange{background:#fdebd0;color:#a04000;}
-.store-link{color:#21618c;cursor:pointer;text-decoration:underline dotted;font-weight:600;}
-.store-link:hover{color:#c0392b;}
+
+/* 热力色块（大店区供班 8 天总览） */
+.heat{border-radius:5px;text-align:center;font-weight:700;font-size:12px;padding:7px 4px!important;border-bottom:2px solid #fff!important;min-width:44px;}
+.h-neg4{background:#8e0000;color:#fff;}
+.h-neg3{background:#c62828;color:#fff;}
+.h-neg2{background:#ef8a84;color:#7a1616;}
+.h-neg1{background:#fbe3e1;color:#b71c1c;}
+.h-pos{background:#d5f5e3;color:#1e7a45;}
+.h-zero{background:#f7f3f0;color:#cfc6bf;}
+.heat-legend{display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:11.5px;color:var(--ink-2);margin-top:8px;}
+.heat-legend i{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-2px;margin-right:4px;}
 
 /* 行事历卡岗 */
-.cal-cell{min-width:96px;max-width:150px;cursor:pointer;vertical-align:top;background:#fbfdf7;}
-.cal-cell:hover{background:#f2f8e6;}
-.cal-cell.filled{background:#f4faf0;}
-.cal-store{display:block;font-weight:700;color:#2e8b57;font-size:12px;}
+.cal-cell{cursor:pointer;border-radius:4px;padding:6px 8px;min-width:88px;}
+.cal-cell:hover{background:#fdf0ea;}
+.cal-cell.filled{background:#fdf7ee;}
+.cal-store{display:block;font-weight:700;color:var(--pos);font-size:12px;}
 .cal-note{display:block;color:#666;font-size:11px;margin-top:2px;line-height:1.4;}
-.cal-empty{display:block;color:#b8c4b0;font-size:11px;}
+.cal-empty{display:block;color:#c8beb6;font-size:11px;}
 
 /* 日期口径高亮列 */
-th.col-hl{background:#eef7d9;color:#4a7a1f;}
-td.col-hl{background:#f7fcf0;}
+th.col-hl{background:#fdf3d7;color:#8a5f0e;}
+td.col-hl{background:#fdf9ef;}
 
-.empty-tip{padding:34px 20px;text-align:center;color:#95a5a6;font-size:13px;background:#fff;}
+.empty-tip{padding:34px 20px;text-align:center;color:var(--ink-2);font-size:13px;background:#fff;}
 
-/* 图表 */
-.chart-box{background:#fff;padding:18px 20px 8px;border-bottom:1px solid #f0f4e8;}
-.chart-legend{display:flex;gap:16px;font-size:11.5px;color:#7f8c8d;margin-top:6px;flex-wrap:wrap;}
+.chart-box{background:#fff;padding:18px 20px 8px;border-bottom:1px solid var(--line);}
+.chart-legend{display:flex;gap:16px;font-size:11.5px;color:var(--ink-2);margin-top:6px;flex-wrap:wrap;}
 .legend-dot{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px;}
 
 /* 弹窗 */
-.modal-mask{display:none;position:fixed;inset:0;background:rgba(30,42,18,.5);z-index:100;align-items:flex-start;justify-content:center;overflow-y:auto;padding:24px 12px;}
+.modal-mask{display:none;position:fixed;inset:0;background:rgba(60,16,10,.5);z-index:100;align-items:flex-start;justify-content:center;overflow-y:auto;padding:24px 12px;}
 .modal-mask.show{display:flex;}
-.modal{background:#fff;border-radius:8px;max-width:820px;width:100%;box-shadow:0 12px 40px rgba(0,0,0,.25);overflow:hidden;}
-.modal-head{background:linear-gradient(135deg,#33691e,#7cb342);color:#fff;padding:13px 18px;font-weight:bold;font-size:15px;display:flex;justify-content:space-between;align-items:center;}
+.modal{background:#fff;border-radius:10px;max-width:820px;width:100%;box-shadow:0 12px 40px rgba(0,0,0,.25);overflow:hidden;}
+.modal-head{background:linear-gradient(135deg,var(--red-d),var(--red-l));color:#fff;padding:13px 18px;font-weight:bold;font-size:15px;display:flex;justify-content:space-between;align-items:center;}
 .modal-close{background:none;border:none;color:#fff;font-size:22px;cursor:pointer;line-height:1;padding:0 4px;}
-.modal-body{padding:16px 18px;max-height:66vh;overflow-y:auto;}
-.modal-foot{padding:12px 18px;background:#f7fbf0;border-top:1px solid #e6eede;display:flex;gap:10px;justify-content:flex-end;}
-.form-row{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px;}
-.form-item{flex:1;min-width:190px;}
-.form-item label{display:block;font-size:12px;color:#558b2f;font-weight:600;margin-bottom:5px;}
-.form-item input,.form-item select,.form-item textarea{width:100%;font-size:13px;padding:8px 10px;border:1px solid #d5e3c0;border-radius:4px;font-family:inherit;background:#fff;}
-.form-item input:focus,.form-item select:focus{outline:none;border-color:#7cb342;box-shadow:0 0 0 2px rgba(124,179,66,.18);}
-.form-hint{font-size:11px;color:#95a5a6;margin-top:4px;line-height:1.5;}
-.modal-sub{font-size:12.5px;color:#2e4d1f;background:#f2f8e8;border-left:3px solid #7cb342;padding:9px 12px;border-radius:0 4px 4px 0;margin-bottom:14px;line-height:1.7;}
-.reco-title{font-size:12.5px;font-weight:bold;color:#33691e;margin:14px 0 7px;}
-.reco-item{display:flex;align-items:center;gap:10px;padding:8px 11px;background:#f7fbf0;border:1px solid #e6eede;border-radius:5px;margin-bottom:6px;font-size:12.5px;flex-wrap:wrap;}
-.reco-item.best{background:#eef9e4;border-color:#9ccc65;}
+.modal-body{padding:16px 18px;}
+.modal-foot{padding:12px 18px;background:#fdf8f3;border-top:1px solid var(--line);display:flex;gap:10px;justify-content:flex-end;}
+
+.form-row{display:flex;gap:14px;flex-wrap:wrap;}
+.form-item{flex:1;min-width:220px;margin-bottom:12px;}
+.form-item label{display:block;font-size:12px;color:var(--red);font-weight:600;margin-bottom:5px;}
+.form-item input,.form-item select,.form-item textarea{width:100%;font-size:13px;padding:8px 10px;border:1px solid #e6d8cc;border-radius:5px;font-family:inherit;background:#fff;}
+.form-item input:focus,.form-item select:focus{outline:none;border-color:var(--red-l);box-shadow:0 0 0 2px rgba(198,40,40,.14);}
+.form-hint{font-size:11px;color:var(--ink-2);margin-top:4px;line-height:1.5;}
+.modal-sub{font-size:12.5px;color:#7a5410;background:#fdf6e3;border-left:3px solid var(--gold);padding:9px 12px;border-radius:0 5px 5px 0;margin-bottom:14px;line-height:1.7;}
+.reco-title{font-size:12.5px;font-weight:bold;color:var(--red-d);margin:14px 0 7px;}
+.reco-item{display:flex;align-items:center;gap:10px;padding:8px 11px;background:#fdf8f3;border:1px solid var(--line);border-radius:5px;margin-bottom:6px;font-size:12.5px;flex-wrap:wrap;}
+.reco-item.best{background:#fdf1e7;border-color:var(--gold);}
 .reco-item .rn{flex:1;min-width:180px;color:#333;font-weight:600;}
-.reco-item .rb{font-size:11px;color:#7f8c8d;background:#eef2e8;padding:1px 7px;border-radius:3px;}
-.reco-item .rv{font-weight:bold;color:#2e8b57;}
-.mini-btn{font-size:11.5px;padding:4px 10px;border-radius:4px;border:1px solid #7cb342;background:#fff;color:#558b2f;cursor:pointer;font-family:inherit;font-weight:600;}
-.mini-btn:hover{background:#7cb342;color:#fff;}
-.mini-btn.danger{border-color:#e74c3c;color:#c0392b;}
-.mini-btn.danger:hover{background:#e74c3c;color:#fff;}
-.footnote{padding:12px 20px 22px;font-size:11.5px;color:#95a5a6;line-height:1.75;background:#f2f5ec;}
+.reco-item .rb{font-size:11px;color:var(--ink-2);background:#f5efe9;padding:1px 7px;border-radius:3px;}
+.reco-item .rv{font-weight:bold;color:var(--pos);}
+.mini-btn{font-size:11.5px;padding:4px 10px;border-radius:4px;border:1px solid var(--red-l);background:#fff;color:var(--red);cursor:pointer;font-family:inherit;font-weight:600;}
+.mini-btn:hover{background:var(--red-l);color:#fff;}
+.mini-btn.danger{border-color:#c62828;color:#8e0000;}
+.mini-btn.danger:hover{background:#c62828;color:#fff;}
+.footnote{padding:12px 20px 22px;font-size:11.5px;color:var(--ink-2);line-height:1.75;background:var(--bg);}
 
 /* 进度条 */
-.bar-track{background:#eef2e8;border-radius:3px;height:7px;overflow:hidden;min-width:70px;}
-.bar-fill{height:100%;background:linear-gradient(90deg,#8bc34a,#4caf50);border-radius:3px;}
+.bar-track{background:#f2e9e0;border-radius:3px;height:7px;overflow:hidden;min-width:70px;}
+.bar-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--red-l));border-radius:3px;}
 
 /* 状态标签按钮组 */
-.status-group{display:inline-flex;border:1px solid #d5e3c0;border-radius:4px;overflow:hidden;}
-.status-btn{font-size:11.5px;padding:4px 10px;border:none;background:#fff;color:#7f8c8d;cursor:pointer;font-family:inherit;border-right:1px solid #e6eede;}
+.status-group{display:inline-flex;border:1px solid #e6d8cc;border-radius:4px;overflow:hidden;}
+.status-btn{font-size:11.5px;padding:4px 10px;border:none;background:#fff;color:var(--ink-2);cursor:pointer;font-family:inherit;border-right:1px solid var(--line);}
 .status-btn:last-child{border-right:none;}
-.status-btn.on-todo{background:#ecf0f1;color:#7f8c8d;font-weight:700;}
+.status-btn.on-todo{background:#f0ece8;color:#8f8780;font-weight:700;}
 .status-btn.on-doing{background:#fdebd0;color:#a04000;font-weight:700;}
 .status-btn.on-done{background:#d5f5e3;color:#1e7a45;font-weight:700;}
 
-.sync-tip{font-size:11.5px;padding:6px 20px;background:#fffdf5;color:#a04000;border-bottom:1px solid #f5e6c8;}
+.sync-tip{font-size:11.5px;padding:6px 20px;background:#fffaf0;color:#a04000;border-bottom:1px solid #f5e6c8;}
 .sync-tip.ok{background:#f4faf0;color:#1e7a45;border-bottom-color:#d5e8c8;}
-.sync-bar{display:flex;align-items:center;gap:10px;background:#fffdf5;border-bottom:1px solid #f5e6c8;padding-right:14px;flex-wrap:wrap;}
+.sync-bar{display:flex;align-items:center;gap:10px;background:#fffaf0;border-bottom:1px solid #f5e6c8;padding-right:14px;flex-wrap:wrap;}
 .sync-bar .sync-tip{border-bottom:none;flex:1;min-width:180px;background:transparent;}
 
 @media(max-width:1100px){.cards-row{grid-template-columns:repeat(4,1fr);}}
@@ -160,6 +171,7 @@ td.col-hl{background:#f7fcf0;}
   .cards-row{grid-template-columns:repeat(2,1fr);padding:12px;}
   .card-value{font-size:21px;}
   .header-title{font-size:15px;}
+  .header-art{opacity:.55;}
   .filter-bar{gap:8px;padding:10px 12px;}
   .filter-bar select,.filter-bar input[type=text]{width:100%;min-width:0;}
   .filter-bar .btn{flex:1;}
@@ -179,6 +191,36 @@ td.col-hl{background:#f7fcf0;}
     <div>
       <div class="header-title">墨柠国庆高峰准备落地推进看板</div>
       <div class="header-date">数据源：墨柠国庆高峰准备落地推进计划.xlsx · 更新 2026-09-17</div>
+    </div>
+    <div class="header-art" aria-hidden="true">
+      <svg viewBox="0 0 430 92" preserveAspectRatio="xMaxYMax meet">
+        <!-- 中秋圆月 -->
+        <circle cx="388" cy="20" r="14" fill="#ffe9b0" opacity=".92"/>
+        <circle cx="388" cy="20" r="22" fill="none" stroke="#ffe9b0" stroke-width="5" opacity=".22"/>
+        <circle cx="383" cy="16" r="3" fill="#f7d98a" opacity=".6"/>
+        <circle cx="392" cy="25" r="2.2" fill="#f7d98a" opacity=".5"/>
+        <!-- 祥云 -->
+        <path d="M296 24 q8 -10 18 -6 q6 -8 16 -5 q10 3 8 12 q10 2 6 10 h-46 q-8 -3 -2 -11 z" fill="#fff" opacity=".15"/>
+        <path d="M56 30 q7 -9 15 -5 q5 -7 14 -4 q9 3 7 10 q9 2 5 9 h-40 q-7 -3 -1 -10 z" fill="#fff" opacity=".12"/>
+        <!-- 天安门建筑剪影 -->
+        <g fill="#fff" opacity=".24">
+          <rect x="150" y="58" width="132" height="34"/><!-- 城台 -->
+          <rect x="140" y="86" width="152" height="6"/><!-- 台基 -->
+          <rect x="170" y="44" width="92" height="16"/><!-- 上层楼身 -->
+          <polygon points="136,58 296,58 282,46 150,46"/><!-- 大檐 -->
+          <polygon points="160,44 272,44 260,32 172,32"/><!-- 小檐 -->
+          <rect x="206" y="16" width="20" height="16"/><!-- 宝顶楼 -->
+          <polygon points="200,32 232,32 226,16 206,16"/><!-- 顶檐 -->
+          <rect x="212" y="8" width="8" height="8"/><!-- 宝顶 -->
+        </g>
+        <!-- 五星红旗剪影 -->
+        <g fill="#ffe9b0" opacity=".8">
+          <rect x="118" y="34" width="1.6" height="58"/>
+          <polygon points="119.6,34 136,39.5 119.6,45"/>
+          <rect x="312" y="30" width="1.6" height="62"/>
+          <polygon points="313.6,30 330,35.5 313.6,41"/>
+        </g>
+      </svg>
     </div>
   </div>
 
@@ -254,19 +296,19 @@ td.col-hl{background:#f7fcf0;}
     <div class="description-bar">
       <div class="description-bar-title">大店区供班汇总</div>
       <div class="description-list">
-        <div class="description-item">B-J 列为理论数值：门店数、架构人数、可供班人数、异常汇总（休长假/预离职）、四个职级人数</div>
-        <div class="description-item">K 列起为 9.30-10.7 逐日测算，每天 4 列：需求人数 / 可供班全职 / 可供班学生 / 人力差值</div>
-        <div class="description-item"><strong>差值</strong>红色为缺口，绿色为冗余</div>
+        <div class="description-item">默认「热力总览」：一眼看清 13 位大店长 8 天谁缺人、谁富余，红色越深缺口越重，绿色为冗余</div>
+        <div class="description-item">需要完整明细（架构人数 / 职级 / 需求 / 可供班）时，切换「单日明细」逐日查看</div>
+        <div class="description-item"><strong>差值</strong> = 可供班全职 + 可供班学生 − 需求人数，红色为缺口，绿色为冗余</div>
       </div>
     </div>
     <div class="filter-bar">
       <label>查看维度：</label>
       <select id="regView" onchange="renderRegions()">
-        <option value="day">单日视图</option>
-        <option value="matrix">8 天矩阵视图</option>
+        <option value="heat">8 天热力总览</option>
+        <option value="day">单日明细</option>
       </select>
-      <label id="regDayLabel">日期：</label>
-      <select id="regDay" onchange="renderRegions()"></select>
+      <label id="regDayLabel" style="display:none">日期：</label>
+      <select id="regDay" onchange="renderRegions()" style="display:none"></select>
       <label>大店长：</label>
       <select id="regMgr" onchange="renderRegions()"><option value="all">全部</option></select>
       <div class="spacer"></div>
@@ -946,15 +988,53 @@ function fillMgrSelect(id){
   const el=document.getElementById(id);
   el.innerHTML='<option value="all">全部</option>'+MGRS.map(m=>`<option value="${esc(m)}">${esc(m)}</option>`).join('');
 }
+function heatCls(v){
+  if(v<=-10) return 'h-neg4';
+  if(v<=-5) return 'h-neg3';
+  if(v<=-2) return 'h-neg2';
+  if(v<0) return 'h-neg1';
+  if(v>0) return 'h-pos';
+  return 'h-zero';
+}
+function goRegionDay(k){
+  // 热力视图点日期表头 → 切到该日明细视图
+  document.getElementById('regView').value='day';
+  document.getElementById('regDay').value=k;
+  renderRegions();
+}
 function renderRegions(){
   const view=document.getElementById('regView').value;
   const day=document.getElementById('regDay').value;
   const mgr=document.getElementById('regMgr').value;
-  document.getElementById('regDayLabel').style.display=view==='day'?'':'none';
-  document.getElementById('regDay').style.display=view==='day'?'':'none';
+  const showDay=(view==='day');
+  document.getElementById('regDayLabel').style.display=showDay?'':'none';
+  document.getElementById('regDay').style.display=showDay?'':'none';
   const rows=D.regions.filter(r=>mgr==='all'||r.mgr===mgr);
   let h='';
-  if(view==='day'){
+  if(view==='heat'){
+    /* —— 8 天热力总览：只显示差值色块，突出缺口分布 —— */
+    h+=`<thead><tr><th>大店长</th>${DAYKEYS.map(k=>`<th class="num" style="cursor:pointer" title="查看 ${DAYLABEL[k]} 明细" onclick="goRegionDay('${k}')">${DAYLABEL[k]}</th>`).join('')}<th class="num">8 天合计缺口</th><th class="num">最紧日</th></tr></thead><tbody>`;
+    rows.forEach(r=>{
+      let neg=0, worst=0, worstK=DAYKEYS[0];
+      h+=`<tr><td style="font-weight:600">${esc(r.mgr)}</td>`;
+      DAYKEYS.forEach(k=>{
+        const v=r.days[k].diff||0;
+        if(v<0) neg+=v;
+        if(v<worst){worst=v;worstK=k;}
+        h+=`<td class="heat ${heatCls(v)}" title="${esc(r.mgr)} · ${DAYLABEL[k]}：${v>0?'冗余 '+v:(v<0?'缺口 '+(-v):'平衡')}">${v===0?'·':(v>0?'+'+v:v)}</td>`;
+      });
+      h+=`<td class="num ${neg<0?'cell-neg':'cell-zero'}">${neg}</td><td class="num">${worst<0?DAYLABEL[worstK]+'（'+worst+'）':'-'}</td></tr>`;
+    });
+    h+=`<tr class="total-row"><td>全品牌</td>`;
+    let tot=0;
+    DAYKEYS.forEach(k=>{ const v=D.daily[k].diff; if(v<0) tot+=v; h+=`<td class="heat ${heatCls(v)}">${v===0?'·':(v>0?'+'+v:v)}</td>`; });
+    const wk=DAYKEYS.reduce((a,k)=>D.daily[k].diff<D.daily[a].diff?k:a,DAYKEYS[0]);
+    h+=`<td class="num cell-neg">${tot}</td><td class="num">${DAYLABEL[wk]}（${D.daily[wk].diff}）</td></tr>`;
+    document.getElementById('regFoot').innerHTML=
+      `8 天累计缺口 <strong class="cell-neg">${tot}</strong> 人次，集中在 ${DAYS.slice(3,6).map(d=>d.label).join(' / ')}。`+
+      `<div class="heat-legend">色块说明：<i style="background:#8e0000"></i>缺口 ≥10　<i style="background:#c62828"></i>缺口 5-9　<i style="background:#ef8a84"></i>缺口 2-4　<i style="background:#fbe3e1"></i>缺口 1　<i style="background:#f7f3f0"></i>平衡　<i style="background:#d5f5e3"></i>有冗余　<span style="margin-left:6px">点日期表头可切到该日完整明细</span></div>`;
+  }else{
+    /* —— 单日明细：保留完整 14 列 —— */
     h+=`<thead><tr><th>大店区</th><th class="num">门店数</th><th class="num">架构人数</th><th class="num">可供班</th><th class="num">休长假</th><th class="num">预离职</th><th class="num">店长</th><th class="num">中级训</th><th class="num">初级训</th><th class="num">服务员</th><th class="num">需求人数</th><th class="num">可供班全职</th><th class="num">可供班学生</th><th class="num">人力差值</th></tr></thead><tbody>`;
     let T={stores:0,hcHead:0,hcAvail:0,longLeave:0,preQuit:0,lv1:0,lv2:0,lv3:0,lv4:0,need:0,ft:0,pt:0,diff:0};
     rows.forEach(r=>{
@@ -967,21 +1047,6 @@ function renderRegions(){
     const dd=D.daily[day];
     document.getElementById('regFoot').innerHTML=
       `${DAYLABEL[day]}：全品牌需求 <strong>${dd.need}</strong> 人，可供班全职 ${dd.ft} 人 + 学生 ${dd.pt} 人，人力差值 <strong class="${dd.diff<0?'cell-neg':'cell-pos'}">${dd.diff>0?'+':''}${dd.diff}</strong> 人${dd.diff<0?`，需在 9.30 前补足学生 ${dd.lackTotal} 人次（涉及 ${dd.shortStores} 家门店）`:`，整体富余，可支援其他门店`}。`;
-  }else{
-    h+=`<thead><tr><th>大店区</th>${DAYKEYS.map(k=>`<th class="num">${DAYLABEL[k]}</th>`).join('')}<th class="num">合计缺口</th></tr></thead><tbody>`;
-    const sum={};
-    rows.forEach(r=>{
-      let neg=0;
-      h+=`<tr><td style="font-weight:600">${esc(r.mgr)}</td>`;
-      DAYKEYS.forEach(k=>{ const v=r.days[k].diff||0; if(v<0) neg+=v; h+=diffCell(v); });
-      h+=`<td class="num ${neg<0?'cell-neg':'cell-zero'}">${neg}</td></tr>`;
-      sum[r.mgr]=neg;
-    });
-    h+=`<tr class="total-row"><td>汇总</td>`;
-    let tot=0;
-    DAYKEYS.forEach(k=>{ const v=D.daily[k].diff; if(v<0) tot+=v; h+=diffCell(v); });
-    h+=`<td class="num">${tot}</td></tr>`;
-    document.getElementById('regFoot').innerHTML=`8 天累计缺口 <strong class="cell-neg">${tot}</strong> 人次，集中在 10.3-10.5 三天。红色为缺口，绿色为冗余。`;
   }
   h+='</tbody>';
   document.getElementById('regTable').innerHTML=h;

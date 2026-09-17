@@ -197,6 +197,17 @@ tbody td.num{text-align:right;font-variant-numeric:tabular-nums;}
 .metric-card.clickable{cursor:pointer;}
 .metric-card.clickable:hover{box-shadow:0 3px 10px rgba(198,40,40,.14);transform:translateY(-1px);}
 
+/* 物资跟进弹窗 */
+.sup-item{border:1px solid var(--line);border-radius:8px;padding:12px 14px;margin-bottom:12px;background:#fdfaf7;}
+.sup-item-head{margin-bottom:8px;}
+.sup-check{display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13.5px;color:var(--ink);}
+.sup-img-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.sup-thumb{width:86px;height:86px;object-fit:cover;border-radius:6px;border:1px solid var(--line);cursor:pointer;transition:.15s;}
+.sup-thumb:hover{transform:scale(1.04);}
+.sup-thumb-wrap{position:relative;display:inline-block;}
+.sup-thumb-del{position:absolute;top:-7px;right:-7px;background:#c62828;color:#fff;border:none;border-radius:50%;width:20px;height:20px;font-size:12px;cursor:pointer;line-height:1;}
+.sup-img-loading{font-size:12px;color:var(--ink-2);}
+
 </style>
 </head>
 <body>
@@ -564,6 +575,48 @@ tbody td.num{text-align:right;font-variant-numeric:tabular-nums;}
     <div class="modal-foot">
       <button class="btn btn-ghost" onclick="closeGapModal()">关闭</button>
     </div>
+  </div>
+</div>
+
+<!-- 物资跟进弹窗 -->
+<div class="modal-mask" id="spMask">
+  <div class="modal">
+    <div class="modal-head"><span id="spTitle">物资跟进</span><button class="modal-close" onclick="closeSupModal()">×</button></div>
+    <div class="modal-body">
+      <div class="modal-sub" id="spSub"></div>
+      <div class="sup-item">
+        <div class="sup-item-head"><label class="sup-check"><input type="checkbox" id="spBox" style="width:18px;height:18px;accent-color:var(--red)"> <strong>小药箱已到位</strong></label></div>
+        <div class="sup-img-row">
+          <button class="btn btn-ghost" type="button" onclick="document.getElementById('spBoxFile').click()">📷 上传照片</button>
+          <input type="file" id="spBoxFile" accept="image/*" style="display:none" onchange="onSupImg(this,'box')">
+          <span id="spBoxImgBox"></span>
+        </div>
+      </div>
+      <div class="sup-item">
+        <div class="sup-item-head"><label class="sup-check"><input type="checkbox" id="spTea" style="width:18px;height:18px;accent-color:var(--red)"> <strong>茶歇已到位</strong></label></div>
+        <div class="sup-img-row">
+          <button class="btn btn-ghost" type="button" onclick="document.getElementById('spTeaFile').click()">📷 上传照片</button>
+          <input type="file" id="spTeaFile" accept="image/*" style="display:none" onchange="onSupImg(this,'tea')">
+          <span id="spTeaImgBox"></span>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-item"><label>检查日期</label><input type="date" id="spDate"></div>
+        <div class="form-item"><label>整改完成（可选）</label><input type="text" id="spFix" placeholder="如：小药箱已补齐 / 茶歇已到货"></div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeSupModal()">取消</button>
+      <button class="btn" id="spSubmit" onclick="submitSup()">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- 图片大图预览 -->
+<div class="modal-mask" id="imgMask" style="z-index:210">
+  <div style="position:relative;margin:auto;max-width:94vw">
+    <img id="imgBig" style="display:block;max-width:94vw;max-height:84vh;border-radius:10px;box-shadow:0 10px 40px rgba(0,0,0,.45)" alt="">
+    <button class="modal-close" style="position:absolute;top:-10px;right:-10px;background:#fff;color:#333;border-radius:50%;width:32px;height:32px;box-shadow:0 2px 8px rgba(0,0,0,.3)" onclick="document.getElementById('imgMask').classList.remove('show')">×</button>
   </div>
 </div>
 
@@ -1579,11 +1632,22 @@ const SUP_STORES=(function(){
     return {store:x.store,area:x.area,box:r[1]||'',boxImg:r[2]||'',tea:r[3]||'',teaImg:r[4]||'',fix:r[5]||'',checker:r[6]||'',date:r[7]||''};
   });
 })();
+/* —— 检查人按大店长固定映射：周思凡/何海云/童璐/钟天祥/旷瑶/易彪 → 周丽；其余 7 位 → 杨梦琳 —— */
+const CHECKER_ZHOULI=['周思凡','何海云','童璐','钟天祥','旷瑶','易彪'];
+function checkerOf(mgr){ return CHECKER_ZHOULI.indexOf(mgr)>=0?'周丽':'杨梦琳'; }
+
 function spState(store){
-  if(CLOUD.supplies&&CLOUD.supplies[store]) return CLOUD.supplies[store];
+  if(CLOUD.supplies&&CLOUD.supplies[store]){
+    const c=CLOUD.supplies[store];
+    return {box:!!c.box,tea:!!c.tea,boxImg:!!c.boxImg,teaImg:!!c.teaImg,date:c.date||'',fix:c.fix||''};
+  }
   const r=SUP_STORES.find(x=>x.store===store);
-  if(r&&(r.box==='已到位'||r.tea==='已到位')) return {box:r.box==='已到位',tea:r.tea==='已到位'};
-  return {box:false,tea:false};
+  if(r) return {box:r.box==='已到位',tea:r.tea==='已到位',boxImg:false,teaImg:false,date:'',fix:r.fix||''};
+  return {box:false,tea:false,boxImg:false,teaImg:false,date:'',fix:''};
+}
+function supBadge(done,hasImg){
+  return (done?'<span class="badge badge-green">✓ 已到位</span>':'<span class="badge badge-gray">待到位</span>')
+       +(hasImg?' <span class="badge badge-blue" title="已上传照片">📷</span>':'');
 }
 function renderSupplies(){
   const only=document.getElementById('spOnly').value;
@@ -1600,18 +1664,19 @@ function renderSupplies(){
     if(only==='todo') return !ok;
     return true;
   });
-  let h=`<thead><tr><th>大店长</th><th>门店</th><th style="text-align:center">小药箱到位</th><th style="text-align:center">茶歇到位</th><th>整改完成</th><th>检查人</th><th>检查日期</th><th>状态</th></tr></thead><tbody>`;
-  if(!rows.length) h+=`<tr><td colspan="8" style="text-align:center;color:#95a5a6;padding:24px">无匹配门店</td></tr>`;
+  let h=`<thead><tr><th>大店长</th><th>门店</th><th style="text-align:center">小药箱</th><th style="text-align:center">茶歇</th><th>整改完成</th><th>检查人</th><th>检查日期</th><th>状态</th><th>操作</th></tr></thead><tbody>`;
+  if(!rows.length) h+=`<tr><td colspan="9" style="text-align:center;color:#95a5a6;padding:24px">无匹配门店</td></tr>`;
   const total=scope.length;
   rows.forEach(x=>{
     const st=spState(x.store);
     const ok=st.box&&st.tea;
     h+=`<tr>
       <td>${esc(x.area)}</td><td>${esc(shortStore(x.store))}</td>
-      <td style="text-align:center"><input type="checkbox" ${st.box?'checked':''} onchange="toggleSup('${esc(x.store)}','box',this.checked)" style="width:17px;height:17px;cursor:pointer;accent-color:#7cb342"></td>
-      <td style="text-align:center"><input type="checkbox" ${st.tea?'checked':''} onchange="toggleSup('${esc(x.store)}','tea',this.checked)" style="width:17px;height:17px;cursor:pointer;accent-color:#7cb342"></td>
-      <td>${esc(x.fix||'-')}</td><td>${esc(x.checker||'-')}</td><td>${esc(x.date||'-')}</td>
+      <td style="text-align:center">${supBadge(st.box,st.boxImg)}</td>
+      <td style="text-align:center">${supBadge(st.tea,st.teaImg)}</td>
+      <td>${esc(st.fix||x.fix||'-')}</td><td>${esc(checkerOf(x.area))}</td><td>${esc(st.date||'-')}</td>
       <td>${ok?'<span class="badge badge-green">已齐备</span>':'<span class="badge badge-orange">待跟进</span>'}</td>
+      <td><button class="mini-btn" onclick="openSupModal('${esc(x.store)}')">跟进填写</button></td>
     </tr>`;
   });
   h+='</tbody>';
@@ -1626,14 +1691,148 @@ function renderSupplies(){
        ${mgr==='all'?'':`<span style="font-size:11.5px;color:var(--ink-2)">全品牌 ${doneAll} / ${SUP_STORES.length} 家（${Math.round(doneAll/SUP_STORES.length*100)}%）</span>`}
      </div>`;
 }
-async function toggleSup(store,kind,val){
-  const st=Object.assign({},spState(store)); st[kind]=val;
-  commit({t:'sup.set',k:store,v:st});
+
+/* ============ 物资跟进弹窗 + 图片上传 ============
+   图片经 canvas 压缩为 base64，按大店长分行存 violation_data id=100+n
+   （Supabase Storage 无可用 bucket，anonymous 无法创建；分行存储避免单行过大）。 */
+const IMG_ROW_BASE=100;
+function imgRowId(mgr){ const i=MGRS.indexOf(mgr); return IMG_ROW_BASE+(i>=0?i:0); }
+let SP_EDIT=null;
+let SP_IMGS={box:null,tea:null};
+let SP_IMG_PENDING={box:false,tea:false};
+
+function todayStr(){ const d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+
+async function openSupModal(store){
+  const rec=SUP_STORES.find(x=>x.store===store)||{store:store,area:''};
+  const mgr=rec.area||'';
+  SP_EDIT={store:store,mgr:mgr};
+  const st=spState(store);
+  document.getElementById('spTitle').textContent='物资跟进 · '+shortStore(store);
+  document.getElementById('spSub').innerHTML=
+    `<strong>${esc(store)}</strong> · 大店长 ${esc(mgr)} · 检查人 <strong>${esc(checkerOf(mgr))}</strong>（按大店长自动匹配，无需填写）`;
+  document.getElementById('spBox').checked=st.box;
+  document.getElementById('spTea').checked=st.tea;
+  document.getElementById('spDate').value=st.date||todayStr();
+  document.getElementById('spFix').value=st.fix||'';
+  document.getElementById('spBoxFile').value='';
+  document.getElementById('spTeaFile').value='';
+  SP_IMGS={box:null,tea:null};
+  SP_IMG_PENDING={box:false,tea:false};
+  renderSupImgBox('box','');
+  renderSupImgBox('tea','');
+  document.getElementById('spMask').classList.add('show');
+  if(st.boxImg||st.teaImg){
+    renderSupImgBox('box','加载中…'); renderSupImgBox('tea','加载中…');
+    try{
+      const imgs=await fetchImgs(mgr);
+      SP_IMGS.box=imgs[store+'::box']||null;
+      SP_IMGS.tea=imgs[store+'::tea']||null;
+    }catch(e){}
+    renderSupImgBox('box'); renderSupImgBox('tea');
+  }
+}
+function closeSupModal(){ document.getElementById('spMask').classList.remove('show'); SP_EDIT=null; }
+
+function renderSupImgBox(kind,tip){
+  const el=document.getElementById(kind==='box'?'spBoxImgBox':'spTeaImgBox');
+  if(SP_IMG_PENDING[kind]){ el.innerHTML='<span class="sup-img-loading">上传中…</span>'; return; }
+  const data=SP_IMGS[kind];
+  if(data){
+    el.innerHTML=`<span class="sup-thumb-wrap"><img class="sup-thumb" src="${data}" onclick="showBigImg('${kind}')" title="点击放大"><button class="sup-thumb-del" onclick="delSupImg('${kind}')" title="删除照片">×</button></span>`;
+  }else{
+    el.innerHTML=tip?`<span class="sup-img-loading">${tip}</span>`:'<span class="sup-img-loading">暂无照片</span>';
+  }
+}
+function showBigImg(kind){
+  if(!SP_IMGS[kind]) return;
+  document.getElementById('imgBig').src=SP_IMGS[kind];
+  document.getElementById('imgMask').classList.add('show');
+}
+
+async function fetchImgs(mgr){
+  const res=await fetch(SUPA_URL+'/rest/v1/'+SUPA_TABLE+'?id=eq.'+imgRowId(mgr)+'&select=data',{
+    headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY}
+  });
+  if(!res.ok) throw new Error('img '+res.status);
+  const rows=await res.json();
+  const d=rows&&rows.length?rows[0].data:null;
+  return (d&&d.imgs&&typeof d.imgs==='object')?d.imgs:{};
+}
+async function saveImgs(mgr,mutate){
+  const cur=await fetchImgs(mgr);          // 先取最新再合并，避免覆盖他人刚传的图
+  mutate(cur);
+  const res=await fetch(SUPA_URL+'/rest/v1/'+SUPA_TABLE,{
+    method:'POST',
+    headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY,'Content-Type':'application/json','Prefer':'resolution=merge-duplicates,return=minimal'},
+    body:JSON.stringify({id:imgRowId(mgr),data:{imgs:cur},updated_at:new Date().toISOString()})
+  });
+  if(!res.ok) throw new Error('img save '+res.status);
+}
+function compressImg(file,maxDim,quality){
+  return new Promise((resolve,reject)=>{
+    const img=new Image();
+    img.onload=function(){
+      let w=img.width,h=img.height;
+      const sc=Math.min(1,maxDim/Math.max(w,h));
+      w=Math.round(w*sc); h=Math.round(h*sc);
+      const cv=document.createElement('canvas'); cv.width=w; cv.height=h;
+      cv.getContext('2d').drawImage(img,0,0,w,h);
+      resolve(cv.toDataURL('image/jpeg',quality));
+      URL.revokeObjectURL(img.src);
+    };
+    img.onerror=reject;
+    img.src=URL.createObjectURL(file);
+  });
+}
+async function onSupImg(input,kind){
+  const file=input.files&&input.files[0];
+  if(!file||!SP_EDIT){ input.value=''; return; }
+  if(!/^image\//.test(file.type)){ alert('请选择图片文件'); input.value=''; return; }
+  SP_IMG_PENDING[kind]=true; renderSupImgBox(kind);
+  try{
+    let data=await compressImg(file,1000,0.62);
+    if(data.length>240*1024) data=await compressImg(file,760,0.55);
+    const key=SP_EDIT.store+'::'+kind;
+    await saveImgs(SP_EDIT.mgr,imgs=>{ imgs[key]=data; });
+    SP_IMGS[kind]=data;
+    const st=Object.assign({},spState(SP_EDIT.store));
+    st[kind==='box'?'boxImg':'teaImg']=true;
+    commit({t:'sup.set',k:SP_EDIT.store,v:st});
+    renderSupplies();
+  }catch(e){
+    alert('照片上传失败，请检查网络后重试');
+  }
+  SP_IMG_PENDING[kind]=false; renderSupImgBox(kind);
+  input.value='';
+}
+async function delSupImg(kind){
+  if(!SP_EDIT||!SP_IMGS[kind]) return;
+  if(!confirm('删除这张照片？')) return;
+  const key=SP_EDIT.store+'::'+kind;
+  try{ await saveImgs(SP_EDIT.mgr,imgs=>{ delete imgs[key]; }); }catch(e){}
+  SP_IMGS[kind]=null;
+  const st=Object.assign({},spState(SP_EDIT.store));
+  st[kind==='box'?'boxImg':'teaImg']=false;
+  commit({t:'sup.set',k:SP_EDIT.store,v:st});
+  renderSupImgBox(kind);
+  renderSupplies();
+}
+function submitSup(){
+  if(!SP_EDIT) return;
+  if(SP_IMG_PENDING.box||SP_IMG_PENDING.tea){ alert('照片上传中，请稍候'); return; }
+  const st=Object.assign({},spState(SP_EDIT.store));
+  st.box=document.getElementById('spBox').checked;
+  st.tea=document.getElementById('spTea').checked;
+  st.date=document.getElementById('spDate').value||todayStr();
+  st.fix=document.getElementById('spFix').value.trim();
+  commit({t:'sup.set',k:SP_EDIT.store,v:st});
+  closeSupModal();
   renderSupplies();
 }
 function exportSupCsv(){
-  const rows=[['大店长','门店','小药箱到位','茶歇到位','整改完成','检查人','检查日期']];
-  SUP_STORES.forEach(x=>{const st=spState(x.store);rows.push([x.area,x.store,st.box?'已到位':'未到位',st.tea?'已到位':'未到位',x.fix,x.checker,x.date]);});
+  const rows=[['大店长','门店','小药箱到位','小药箱照片','茶歇到位','茶歇照片','整改完成','检查人','检查日期']];
+  SUP_STORES.forEach(x=>{const st=spState(x.store);rows.push([x.area,x.store,st.box?'已到位':'未到位',st.boxImg?'有':'',st.tea?'已到位':'未到位',st.teaImg?'有':'',st.fix||x.fix,checkerOf(x.area),st.date]);});
   downloadCsv('暖心物资跟进',rows);
 }
 
@@ -1753,6 +1952,8 @@ function downloadCsv(name,rows){
   document.getElementById('promoMask').addEventListener('click',function(e){ if(e.target===this) this.classList.remove('show'); });
   document.getElementById('calMask').addEventListener('click',function(e){ if(e.target===this) closeCalModal(); });
   document.getElementById('gapMask').addEventListener('click',function(e){ if(e.target===this) closeGapModal(); });
+  document.getElementById('spMask').addEventListener('click',function(e){ if(e.target===this) closeSupModal(); });
+  document.getElementById('imgMask').addEventListener('click',function(e){ if(e.target===this) this.classList.remove('show'); });
   // 多人协作保护：每 60 秒自动补推未同步改动；联网 / 切回标签页时拉取云端最新
   setInterval(function(){ if(PENDING.length&&!syncing) flushPending(); },60000);
   window.addEventListener('online',function(){ flushPending(); loadCloud().then(rerenderCurrent); });

@@ -102,6 +102,10 @@ tbody tr.total-row td{color:#33691e;border-top:2px solid #9ccc65;}
 .cal-note{display:block;color:#666;font-size:11px;margin-top:2px;line-height:1.4;}
 .cal-empty{display:block;color:#b8c4b0;font-size:11px;}
 
+/* 日期口径高亮列 */
+th.col-hl{background:#eef7d9;color:#4a7a1f;}
+td.col-hl{background:#f7fcf0;}
+
 .empty-tip{padding:34px 20px;text-align:center;color:#95a5a6;font-size:13px;background:#fff;}
 
 /* 图表 */
@@ -320,13 +324,17 @@ tbody tr.total-row td{color:#33691e;border-top:2px solid #9ccc65;}
       </div>
     </div>
     <div class="filter-bar">
+      <label>日期口径：</label>
+      <select id="trDay" onchange="renderTransfer()"><option value="tight">8 天最紧</option></select>
+      <label>大店长：</label>
+      <select id="trMgr" onchange="renderTransfer()"><option value="all">全部大店长</option></select>
       <label>商圈：</label>
       <select id="trBiz" onchange="renderTransfer()"><option value="all">全部商圈</option></select>
       <label>类型：</label>
       <select id="trType" onchange="renderTransfer()">
         <option value="all">全部门店</option>
         <option value="gap">缺口门店</option>
-        <option value="surplus">冗余门店</option>
+        <option value="surplus">可外借门店</option>
       </select>
       <input type="text" id="trSearch" placeholder="搜索门店" oninput="renderTransfer()">
       <div class="spacer"></div>
@@ -334,7 +342,9 @@ tbody tr.total-row td{color:#33691e;border-top:2px solid #9ccc65;}
     </div>
     <div class="section-header">借调申请台账<span class="sub" id="loanCount"></span></div>
     <div class="table-wrap"><table id="loanTable"></table></div>
-    <div class="section-header">单店缺口核算与就近可调动资源<span class="sub">峰值缺口为 8 天中最严重的缺口</span></div>
+    <div class="section-header">按大店长汇总<span class="sub" id="trSumSub"></span></div>
+    <div class="table-wrap"><table id="trSumTable"></table></div>
+    <div class="section-header">单店缺口核算与就近可调动资源<span class="sub" id="trDaySub"></span></div>
     <div class="table-wrap"><table id="trTable"></table></div>
     <div class="footnote" id="trFoot"></div>
   </div>
@@ -441,25 +451,25 @@ tbody tr.total-row td{color:#33691e;border-top:2px solid #9ccc65;}
       <div class="modal-sub" id="loanSub"></div>
       <div class="form-row">
         <div class="form-item">
-          <label>转出门店（人力冗余方）</label>
-          <select id="loanFrom" onchange="onLoanFromChange()"></select>
-          <div class="form-hint" id="loanFromHint"></div>
+          <label>支援日期（切换后门店缺口/冗余同步重算）</label>
+          <select id="loanDate" onchange="onLoanModalDateChange()"></select>
+          <div class="form-hint">可选择单日或整段 9.30-10.7；门店下拉与推荐均按此日期口径核算</div>
         </div>
-        <div class="form-item">
-          <label>转入门店（人力缺口方）</label>
-          <select id="loanTo"></select>
-          <div class="form-hint" id="loanToHint"></div>
-        </div>
-      </div>
-      <div class="form-row">
         <div class="form-item">
           <label>转入伙伴姓名</label>
           <input type="text" id="loanName" placeholder="如：谭雅琪">
         </div>
+      </div>
+      <div class="form-row">
         <div class="form-item">
-          <label>支援日期</label>
-          <select id="loanDate"></select>
-          <div class="form-hint">可选择单日或整段 9.30-10.7，也可另行填写</div>
+          <label>转出门店（当日人力冗余方）</label>
+          <select id="loanFrom" onchange="onLoanFromChange()"></select>
+          <div class="form-hint" id="loanFromHint"></div>
+        </div>
+        <div class="form-item">
+          <label>转入门店（当日人力缺口方）</label>
+          <select id="loanTo"></select>
+          <div class="form-hint" id="loanToHint"></div>
         </div>
       </div>
       <div class="form-row">
@@ -868,7 +878,7 @@ function renderStores(){
       <td class="num">${n(d.need)}</td><td class="num">${n(d.ft)}</td><td class="num">${n(d.pt)}</td>
       ${diffCell(v)}
       <td>${v<0?'<span class="badge badge-red">需补人</span>':(v>0?'<span class="badge badge-green">可外借</span>':'<span class="badge badge-gray">平衡</span>')}</td>
-      <td><button class="mini-btn" onclick="openLoanModal('${esc(s.store)}')">${v<0?'申请支援':'借出支援'}</button></td>
+      <td><button class="mini-btn" onclick="openLoanModal('${esc(s.store)}','${DAYLABEL[day]}')">${v<0?'申请支援':'借出支援'}</button></td>
     </tr>`;
     ['need','ft','pt','diff'].forEach(k=>T[k]+=Number(d[k]||0));
   });
@@ -924,140 +934,172 @@ function openStoreModal(store){
     });
     h+='</tbody></table>';
   }
-  const reco=recoStores(store,'');
+  const refDay=(D.meta.peakDay&&dayIdx(D.meta.peakDay)>=0)?D.meta.peakDay:DAYS[0].label;
+  const reco=recoStores(store,refDay,'');
   if(reco.length){
-    h+=`<div class="reco-title">就近可调动资源（同商圈冗余门店）</div>`;
+    h+=`<div class="reco-title">就近可调动资源（${esc(refDay)} 当天有冗余的门店）</div>`;
     reco.slice(0,6).forEach((r,i)=>{
-      h+=`<div class="reco-item${i===0?' best':''}"><span class="rn">${esc(shortStore(r.store))}</span><span class="rb">${esc(r.biz)}</span><span class="rv">可借 ${r.surplus} 人</span>${r.clean?'':'<span class="badge badge-orange">峰值缺'+(-r.peak)+'</span>'}<span class="rb">${esc(r.mgr)}</span></div>`;
+      h+=`<div class="reco-item${i===0?' best':''}"><span class="rn">${esc(shortStore(r.store))}</span><span class="rb">${esc(r.biz)}</span><span class="rv">${esc(refDay)} 可借 ${r.can} 人</span><span class="rb">${esc(r.mgr)}</span></div>`;
     });
   }
   document.getElementById('storeBody').innerHTML=h;
-  document.getElementById('storeLoanBtn').onclick=function(){ document.getElementById('storeMask').classList.remove('show'); openLoanModal(store); };
+  document.getElementById('storeLoanBtn').onclick=function(){ document.getElementById('storeMask').classList.remove('show'); openLoanModal(store,refDay); };
   document.getElementById('storeMask').classList.add('show');
 }
 
-/* ============ 借调 ============ */
-function storeSurplus(store){
-  // 返回 8 天中最紧的差值（负数=缺口），正数表示全程冗余
+/* ============ 借调（所有差值一律按所选日期口径核算） ============ */
+const SPAN='9.30-10.7 全段';
+function dayIdx(label){ return DAYS.findIndex(d=>d.label===label); }
+function storeDiffOn(store,label){
+  // 指定单日的差值（负数=缺口）
   const t=TRANSFER_INFO[store];
   if(!t) return null;
-  const arr=t.days.filter(v=>typeof v==='number');
-  if(!arr.length) return null;
-  return Math.min.apply(null,arr);
+  const i=dayIdx(label);
+  if(i<0) return null;
+  const v=t.days[i];
+  return typeof v==='number'?v:null;
 }
-function storeBest(store){
-  // 返回 8 天中最富余的差值
+function storeTight(store){
+  // 8 天中最紧日的差值
   const t=TRANSFER_INFO[store];
   if(!t) return null;
-  const arr=t.days.filter(v=>typeof v==='number');
-  if(!arr.length) return null;
-  return Math.max.apply(null,arr);
+  const a=t.days.filter(v=>typeof v==='number');
+  return a.length?Math.min.apply(null,a):null;
 }
-function pairText(peak,best){
-  // 门店可调动能力描述
-  if(peak==null) return {short:'-',long:'数据缺失'};
-  if(peak>0) return {short:'冗余 '+peak,long:`全程冗余，最紧日仍有 ${peak} 人，可用 ${best} 人`};
-  if(peak===0) return {short:'最紧持平',long:`最紧日持平，最富余可借 ${best} 人`};
-  return {short:'缺口 '+(-peak),long:`峰值缺口 ${-peak} 人，可用日最富余 ${best} 人`};
-}
-function storeSurplusDays(store){
+function storeDiffBy(store,label){ return label===SPAN?storeTight(store):storeDiffOn(store,label); }
+function loanableOn(store,label){
+  // 该日期口径下可借出人数，<=0 表示不可借
   const t=TRANSFER_INFO[store];
-  if(!t) return [];
-  return t.days.map(v=>typeof v==='number'?v:null);
+  if(!t) return 0;
+  const nums=t.days.filter(v=>typeof v==='number');
+  if(!nums.length) return 0;
+  if(label===SPAN){
+    // 全段借出要求 8 天每天都有冗余，可借量取最紧日
+    if(nums.length<DAYKEYS.length) return 0;
+    const mn=Math.min.apply(null,nums);
+    return mn>0?mn:0;
+  }
+  const v=storeDiffOn(store,label);
+  return (typeof v==='number'&&v>0)?v:0;
 }
-function recoStores(store,q){
+function scopeName(label){ return label===SPAN?SPAN:label; }
+function diffText(store,label){
+  const v=storeDiffBy(store,label);
+  if(v==null) return '数据缺失';
+  if(v>0) return `${scopeName(label)} 冗余 ${v} 人，可外借`;
+  if(v===0) return `${scopeName(label)} 刚好持平，无可借人力`;
+  return `${scopeName(label)} 缺口 ${-v} 人`;
+}
+function recoStores(store,label,q){
+  // 只推荐「所支援日期当天确实有冗余」的门店，避免跨日期错配
   const me=TRANSFER_INFO[store];
   const myBiz=me?me.biz:'';
   const list=[];
   D.transferStores.forEach(t=>{
     if(t.store===store) return;
-    const nums=t.days.filter(v=>typeof v==='number');
-    if(!nums.length) return;
-    const surplus=Math.max.apply(null,nums);          // 最富余的一天
-    const peak=Math.min.apply(null,nums);             // 最紧的一天
-    if(surplus<=0) return;
     if(q&&t.store.indexOf(q)<0) return;
-    list.push({
-      store:t.store,biz:t.biz,mgr:String(t.area).replace(/大店区/,''),
-      surplus:surplus,peak:peak,sameBiz:t.biz===myBiz,clean:peak>=0
-    });
+    const can=loanableOn(t.store,label);
+    if(can<=0) return;
+    list.push({store:t.store,biz:t.biz,mgr:String(t.area).replace(/大店区/,''),can:can,sameBiz:t.biz===myBiz});
   });
-  // 优先：全程无缺口 > 同商圈 > 可借人数多
-  list.sort((a,b)=>(b.clean-a.clean)||(b.sameBiz-a.sameBiz)||(b.surplus-a.surplus));
+  list.sort((a,b)=>(b.sameBiz-a.sameBiz)||(b.can-a.can));
   return list;
 }
 
 let curStore=null;
-function openLoanModal(store){
+function openLoanModal(store,prefDay){
+  // prefDay：调用方当前查看的日期口径（单日 label）；'tight' 表示 8 天最紧口径
   curStore=store;
-  const fromSel=document.getElementById('loanFrom');
-  const toSel=document.getElementById('loanTo');
-  const surplusList=[], gapList=[];
-  D.transferStores.forEach(t=>{
-    const nums=t.days.filter(v=>typeof v==='number');
-    if(!nums.length) return;
-    const mx=Math.max.apply(null,nums), mn=Math.min.apply(null,nums);
-    if(mx>0) surplusList.push({store:t.store,mx:mx,biz:t.biz});
-    if(mn<0) gapList.push({store:t.store,mn:mn,biz:t.biz});
-  });
-  surplusList.sort((a,b)=>b.mx-a.mx);
-  gapList.sort((a,b)=>a.mn-b.mn);
-  const optSur=surplusList.map(x=>`<option value="${esc(x.store)}">${esc(shortStore(x.store))}（冗余${x.mx}）</option>`).join('');
-  const optGap=gapList.map(x=>`<option value="${esc(x.store)}">${esc(shortStore(x.store))}（缺口${-x.mn}）</option>`).join('');
-  fromSel.innerHTML=optSur;
-  toSel.innerHTML=optGap;
-
-  const isGap=store&&storeSurplus(store)!==null&&storeSurplus(store)<0;
-  if(store){
-    if(isGap){
-      toSel.value=store;
-      const reco=recoStores(store,'');
-      if(reco.length) fromSel.value=reco[0].store;
-    }else{
-      fromSel.value=store;
-      const g=D.transferStores.filter(t=>{const ns=t.days.filter(v=>typeof v==='number');return ns.length&&Math.min.apply(null,ns)<0;}).sort((a,b)=>Math.min.apply(null,a.days.filter(v=>typeof v==='number'))-Math.min.apply(null,b.days.filter(v=>typeof v==='number')));
-      if(g.length) toSel.value=g[0].store;
+  const dateSel=document.getElementById('loanDate');
+  dateSel.innerHTML=DAYS.map(d=>`<option value="${d.label}">${d.label}</option>`).join('')+`<option value="${SPAN}">${SPAN}</option>`;
+  // 默认日期优先级：调用方当前口径为单日 → 直接沿用该日（保证缺口/冗余与所见一致）；
+  //                 否则取该店缺口最大的一天；再否则取全品牌峰值日
+  let defDay=(D.meta.peakDay&&dayIdx(D.meta.peakDay)>=0)?D.meta.peakDay:DAYS[0].label;
+  const hasPref=(prefDay&&prefDay!=='tight'&&dayIdx(prefDay)>=0);
+  if(hasPref) defDay=prefDay;
+  else if(store){
+    const t=TRANSFER_INFO[store];
+    if(t){
+      let worst=null,wi=-1;
+      t.days.forEach((v,i)=>{ if(typeof v==='number'&&(worst==null||v<worst)){worst=v;wi=i;} });
+      if(worst!=null&&worst<0&&wi>=0) defDay=DAYS[wi].label;
     }
-    document.getElementById('loanTitle').textContent='借调申请 · '+shortStore(store);
-  }else{
-    document.getElementById('loanTitle').textContent='新增借调申请';
   }
-  document.getElementById('loanDate').innerHTML=
-    DAYS.map(d=>`<option value="${d.label}">${d.label}</option>`).join('')+
-    `<option value="9.30-10.7 全段">9.30-10.7 全段</option>`;
+  dateSel.value=defDay;
+
+  if(!store) document.getElementById('loanTitle').textContent='新增借调申请';
+  else{
+    const v=storeDiffOn(store,defDay);
+    document.getElementById('loanTitle').textContent=(v!=null&&v<0?'借调申请 · ':'借出支援 · ')+shortStore(store);
+  }
   document.getElementById('loanName').value='';
   document.getElementById('loanNote').value='';
   document.getElementById('loanOwner').value='';
-  onLoanFromChange();
+  refreshLoanOptions();
   document.getElementById('loanMask').classList.add('show');
 }
+function refreshLoanOptions(){
+  // 按当前支援日期重建两个门店下拉，并做合理预设
+  const date=document.getElementById('loanDate').value;
+  const fromSel=document.getElementById('loanFrom');
+  const toSel=document.getElementById('loanTo');
+  const sur=[],gap=[];
+  D.transferStores.forEach(t=>{
+    const can=loanableOn(t.store,date);
+    const d=storeDiffBy(t.store,date);
+    if(can>0) sur.push({store:t.store,can:can});
+    if(d!=null&&d<0) gap.push({store:t.store,d:d});
+  });
+  sur.sort((a,b)=>b.can-a.can);
+  gap.sort((a,b)=>a.d-b.d);
+  fromSel.innerHTML=sur.length?sur.map(x=>`<option value="${esc(x.store)}">${esc(shortStore(x.store))}（可借${x.can}）</option>`).join(''):'<option value="">该日期无冗余门店</option>';
+  toSel.innerHTML=gap.length?gap.map(x=>`<option value="${esc(x.store)}">${esc(shortStore(x.store))}（缺口${-x.d}）</option>`).join(''):'<option value="">该日期无缺口门店</option>';
+
+  if(curStore){
+    const d=storeDiffBy(curStore,date);
+    if(d!=null&&d<0){
+      toSel.value=curStore;
+      const r=recoStores(curStore,date,'');
+      if(r.length) fromSel.value=r[0].store;
+    }else if(loanableOn(curStore,date)>0){
+      fromSel.value=curStore;
+      if(gap.length) toSel.value=gap[0].store;
+    }
+  }else{
+    if(sur.length) fromSel.value=sur[0].store;
+    if(gap.length) toSel.value=gap[0].store;
+  }
+  onLoanFromChange();
+}
 function closeLoanModal(){ document.getElementById('loanMask').classList.remove('show'); }
+function onLoanModalDateChange(){ refreshLoanOptions(); }
 function onLoanFromChange(){
+  const date=document.getElementById('loanDate').value;
   const f=document.getElementById('loanFrom').value;
   const t=document.getElementById('loanTo').value;
-  const fs=storeSurplus(f), fb=storeBest(f), ts=storeSurplus(t), tb=storeBest(t);
-  document.getElementById('loanFromHint').textContent=fs!=null?pairText(fs,fb).long:'';
-  document.getElementById('loanToHint').textContent=ts!=null&&ts<0?`该店峰值缺口 ${-ts} 人，急需支援`:'该店全程人力充足';
-  const reco=recoStores(t==null?f:t,'');
-  const box=document.getElementById('recoBox');
+  const tv=storeDiffBy(t,date);
+  document.getElementById('loanFromHint').textContent=f?diffText(f,date):'';
+  document.getElementById('loanToHint').textContent=t?diffText(t,date):'';
   const target=t||f;
   const me=TRANSFER_INFO[target];
   const ft=TRANSFER_INFO[f], tt=TRANSFER_INFO[t];
   const fa=ft?String(ft.area).replace(/大店区/,''):'-';
   const ta=tt?String(tt.area).replace(/大店区/,''):'-';
+  const can=loanableOn(f,date);
   document.getElementById('loanSub').innerHTML=
-    `<strong>${esc(shortStore(t||f))}</strong> 需要支援，从 <strong>${esc(shortStore(f))}</strong> 临时借调（${esc(fa)} → ${esc(ta)}）`+
-    `<br>转出门店：${fs==null?'数据缺失':pairText(fs,fb).long}；转入门店：${ts==null?'数据缺失':pairText(ts,tb).short}。`+
-    `借调属临时内部支援，支援人员当日工时仍计入原门店排班，节后归位。`;
-  document.getElementById('recoTitle').textContent=me?`就近可调动资源：${shortStore(target)}（${me.biz||'未知商圈'}）`:'就近可调动资源推荐';
-  if(!reco.length){ box.innerHTML='<div class="empty-tip" style="padding:16px">暂无其他冗余门店</div>'; return; }
+    `支援日期 <strong>${esc(scopeName(date))}</strong>：<strong>${esc(shortStore(t||f))}</strong> 需要支援，从 <strong>${esc(shortStore(f))}</strong> 临时借调（${esc(fa)} → ${esc(ta)}）`+
+    `<br>同一日期口径核算：转出门店 ${f?diffText(f,date):'-'}${can>0?`，当日最多可借 <strong>${can}</strong> 人`:''}；转入门店 ${t?diffText(t,date):'-'}。`+
+    `<br>红字为缺口、绿字为冗余，均取该日期数值，不会把其他日期的冗余算到本日。借调属临时内部支援，支援人员当日工时仍计入原门店排班，节后归位。`;
+  document.getElementById('recoTitle').textContent=me?`${scopeName(date)} 可就近调动：${shortStore(target)}（${me.biz||'未知商圈'}）`:'就近可调动资源推荐';
+  const reco=recoStores(target,date,'');
+  const box=document.getElementById('recoBox');
+  if(!reco.length){ box.innerHTML='<div class="empty-tip" style="padding:16px">该日期内暂无其他门店有人力冗余可借出</div>'; return; }
   box.innerHTML=reco.slice(0,8).map(r=>`
     <div class="reco-item${r.sameBiz?' best':''}">
       <span class="rn">${esc(shortStore(r.store))}</span>
       ${r.sameBiz?'<span class="badge badge-green">同商圈</span>':''}
-      ${r.clean?'<span class="badge badge-blue">全程无缺口</span>':'<span class="badge badge-orange">峰值缺'+(-r.peak)+'</span>'}
       <span class="rb">${esc(r.biz)}</span>
-      <span class="rv">可借 ${r.surplus} 人</span>
+      <span class="rv">${esc(scopeName(date))} 可借 ${r.can} 人</span>
       <span class="rb">${esc(r.mgr)}</span>
       <button class="mini-btn" onclick="pickFrom('${esc(r.store)}')">选为转出</button>
     </div>`).join('');
@@ -1111,52 +1153,114 @@ async function delLoan(i){
 }
 
 function renderTransfer(){
-  const biz=document.getElementById('trBiz').value;
+  const db=document.getElementById('trBiz');
+  const dm=document.getElementById('trMgr');
+  const dd=document.getElementById('trDay');
+  if(db.options.length<=1){
+    const bs=Array.from(new Set(D.transferStores.map(t=>t.biz).filter(Boolean))).sort();
+    const keep=db.value;
+    db.innerHTML='<option value="all">全部商圈</option>'+bs.map(b=>`<option value="${esc(b)}">${esc(b)}</option>`).join('');
+    db.value=keep||'all';
+  }
+  if(dm.options.length<=1){
+    const keep=dm.value;
+    dm.innerHTML='<option value="all">全部大店长</option>'+MGRS.map(m=>`<option value="${esc(m)}">${esc(m)}</option>`).join('');
+    dm.value=keep||'all';
+  }
+  if(dd.options.length<=1){
+    const keep=dd.value||'tight';
+    dd.innerHTML='<option value="tight">8 天最紧</option>'+DAYS.map(d=>`<option value="${d.label}">${d.label}</option>`).join('');
+    dd.value=keep;
+  }
+  const biz=db.value, mgr=dm.value, day=dd.value;
   const type=document.getElementById('trType').value;
   const q=document.getElementById('trSearch').value.trim();
-  if(document.getElementById('trBiz').options.length<=1){
-    const bs=Array.from(new Set(D.transferStores.map(t=>t.biz).filter(Boolean))).sort();
-    document.getElementById('trBiz').innerHTML='<option value="all">全部商圈</option>'+bs.map(b=>`<option value="${esc(b)}">${esc(b)}</option>`).join('');
-    document.getElementById('trBiz').value=biz;
-  }
-  let rows=D.transferStores.filter(t=>{
+  const val=t=>day==='tight'?storeTight(t.store):storeDiffOn(t.store,day);
+  const canOf=t=>loanableOn(t.store,day==='tight'?SPAN:day);
+
+  const all=D.transferStores.filter(t=>{
+    if(mgr!=='all'&&String(t.area).replace(/大店区/,'')!==mgr) return false;
     if(biz!=='all'&&t.biz!==biz) return false;
     if(q&&t.store.indexOf(q)<0) return false;
-    const nums=t.days.filter(v=>typeof v==='number');
-    if(!nums.length) return type==='all';
-    const mx=Math.max.apply(null,nums), mn=Math.min.apply(null,nums);
-    if(type==='gap'&&mn>=0) return false;
-    if(type==='surplus'&&mx<=0) return false;
     return true;
   });
-  rows=rows.slice().sort((a,b)=>{
-    const ma=Math.min.apply(null,a.days.filter(v=>typeof v==='number').concat([0]));
-    const mb=Math.min.apply(null,b.days.filter(v=>typeof v==='number').concat([0]));
-    return ma-mb;
+  const rows=all.filter(t=>{
+    const v=val(t);
+    if(v==null) return type==='all';
+    if(type==='gap'&&v>=0) return false;
+    if(type==='surplus'&&v<=0) return false;
+    return true;
   });
-  let h=`<thead><tr><th>大店长</th><th>门店</th><th>商圈</th>${DAYKEYS.map(k=>`<th class="num">${DAYLABEL[k]}</th>`).join('')}<th class="num">峰值缺口</th><th>类型</th><th>操作</th></tr></thead><tbody>`;
+  rows.sort((a,b)=>{
+    const va=val(a), vb=val(b);
+    if(va==null&&vb==null) return 0;
+    if(va==null) return 1;
+    if(vb==null) return -1;
+    return va-vb;
+  });
+
+  const dayName=day==='tight'?'8 天最紧日':day;
+  const di=day==='tight'?-1:dayIdx(day);
+  let h=`<thead><tr><th>大店长</th><th>门店</th><th>商圈</th>${DAYKEYS.map((k,i)=>`<th class="num${i===di?' col-hl':''}">${DAYLABEL[k]}</th>`).join('')}<th class="num">${dayName}差值</th><th>类型</th><th>操作</th></tr></thead><tbody>`;
   if(!rows.length) h+=`<tr><td colspan="${DAYKEYS.length+6}" style="text-align:center;color:#95a5a6;padding:24px">无匹配门店</td></tr>`;
-  let gapN=0,surN=0;
+  let gapN=0,surN=0,gapSum=0,surSum=0;
   rows.forEach(t=>{
-    const nums=t.days.filter(v=>typeof v==='number');
-    const has=nums.length>0;
-    const mx=has?Math.max.apply(null,nums):0, mn=has?Math.min.apply(null,nums):0;
-    if(!has){
+    const v=val(t), can=canOf(t);
+    if(v==null){
       h+=`<tr><td>${esc(String(t.area).replace(/大店区/,''))}</td><td>${esc(shortStore(t.store))}</td><td>${esc(t.biz)}</td>${t.days.map(()=>'<td class="num cell-zero">-</td>').join('')}<td class="num cell-zero">-</td><td><span class="badge badge-gray">数据缺失</span></td><td></td></tr>`;
       return;
     }
-    if(mn<0) gapN++; if(mx>0) surN++;
+    if(v<0){gapN++;gapSum+=-v;} if(can>0){surN++;surSum+=can;}
     h+=`<tr><td>${esc(String(t.area).replace(/大店区/,''))}</td><td><span class="store-link" onclick="openStoreModal('${esc(t.store)}')">${esc(shortStore(t.store))}</span></td><td>${esc(t.biz)}</td>`;
-    h+=t.days.map(v=>diffCell(v)).join('');
-    h+=`<td class="num ${mn<0?'cell-neg':'cell-pos'}">${mn<0?mn:'-0'}</td>`;
-    h+=`<td>${mn<0?'<span class="badge badge-red">缺口 '+(-mn)+'</span>':'<span class="badge badge-green">冗余 '+mx+'</span>'}</td>`;
-    h+=`<td><button class="mini-btn" onclick="openLoanModal('${esc(t.store)}')">${mn<0?'申请支援':'借出支援'}</button></td></tr>`;
+    h+=t.days.map((dv,i)=>{
+      if(typeof dv!=='number') return '<td class="num cell-zero">-</td>';
+      const cls=dv<0?'cell-neg':(dv>0?'cell-pos':'cell-zero');
+      return `<td class="num ${cls}${i===di?' col-hl':''}">${dv>0?'+':''}${dv}</td>`;
+    }).join('');
+    h+=`<td class="num ${v<0?'cell-neg':(v>0?'cell-pos':'cell-zero')}">${v>0?'+':''}${v}</td>`;
+    if(v<0) h+=`<td><span class="badge badge-red">缺口 ${-v}</span></td>`;
+    else if(can>0) h+=`<td><span class="badge badge-green">可借 ${can}</span></td>`;
+    else h+=`<td><span class="badge badge-gray">不可借</span></td>`;
+    h+=`<td><button class="mini-btn" onclick="openLoanModal('${esc(t.store)}','${day}')">${v<0?'申请支援':'借出支援'}</button></td></tr>`;
   });
   h+='</tbody>';
   document.getElementById('trTable').innerHTML=h;
+  renderTransferSummary(all,day,dayName);
   renderLoanTable();
+  document.getElementById('trDaySub').textContent=`口径：${dayName}${day==='tight'?'（8 天中缺口最大的一天）':'（单日）'}，红为缺口、绿为冗余`;
   document.getElementById('trFoot').innerHTML=
-    `共 ${rows.length} 家门店，其中缺口门店 <strong class="cell-neg">${gapN}</strong> 家、有冗余可外借门店 <strong class="cell-pos">${surN}</strong> 家。同商圈门店优先互相支援，可减少跨区调动成本。`;
+    `当前筛选 ${all.length} 家门店（明细表展示 ${rows.length} 家）。按 <strong>${dayName}</strong> 口径：缺口门店 <strong class="cell-neg">${gapN}</strong> 家、缺口合计 <strong class="cell-neg">${gapSum}</strong> 人次；可外借门店 <strong class="cell-pos">${surN}</strong> 家、可借出合计 <strong class="cell-pos">${surSum}</strong> 人次。同商圈门店优先互相支援，可减少跨区调动成本。`;
+}
+
+function renderTransferSummary(rows,day,dayName){
+  const by={};
+  rows.forEach(t=>{
+    const m=String(t.area).replace(/大店区/,'');
+    const v=day==='tight'?storeTight(t.store):storeDiffOn(t.store,day);
+    const can=loanableOn(t.store,day==='tight'?SPAN:day);
+    const o=by[m]=by[m]||{mgr:m,stores:0,gapN:0,gapSum:0,surN:0,surSum:0,miss:0};
+    o.stores++;
+    if(v==null){o.miss++;return;}
+    if(v<0){o.gapN++;o.gapSum+=-v;}
+    if(can>0){o.surN++;o.surSum+=can;}
+  });
+  const list=Object.values(by).sort((a,b)=>(b.gapSum-a.gapSum)||(b.surSum-a.surSum));
+  let h=`<thead><tr><th>大店长</th><th class="num">门店数</th><th class="num">缺口门店</th><th class="num">缺口人次</th><th class="num">可外借门店</th><th class="num">可借出人次</th><th>内部可平衡</th></tr></thead><tbody>`;
+  if(!list.length) h+=`<tr><td colspan="7" style="text-align:center;color:#95a5a6;padding:22px">无匹配门店</td></tr>`;
+  const T={stores:0,gapN:0,gapSum:0,surN:0,surSum:0};
+  list.forEach(o=>{
+    T.stores+=o.stores;T.gapN+=o.gapN;T.gapSum+=o.gapSum;T.surN+=o.surN;T.surSum+=o.surSum;
+    const ok=o.surSum>=o.gapSum;
+    h+=`<tr><td><strong>${esc(o.mgr)}</strong></td><td class="num">${o.stores}</td>`+
+       `<td class="num ${o.gapN?'cell-neg':'cell-zero'}">${o.gapN}</td>`+
+       `<td class="num ${o.gapSum?'cell-neg':'cell-zero'}">${o.gapSum}</td>`+
+       `<td class="num ${o.surN?'cell-pos':'cell-zero'}">${o.surN}</td>`+
+       `<td class="num ${o.surSum?'cell-pos':'cell-zero'}">${o.surSum}</td>`+
+       `<td>${o.gapSum===0?'<span class="badge badge-green">无需支援</span>':(ok?'<span class="badge badge-blue">区内可平衡</span>':'<span class="badge badge-red">需跨区 / 补学生</span>')}</td></tr>`;
+  });
+  h+='</tbody>';
+  document.getElementById('trSumTable').innerHTML=h;
+  document.getElementById('trSumSub').textContent=`${dayName} 口径 · ${list.length} 位大店长，缺口 ${T.gapSum} 人次 / 可借出 ${T.surSum} 人次`;
 }
 
 /* ============ 供班明细 ============ */

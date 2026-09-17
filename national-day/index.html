@@ -479,6 +479,29 @@ td.col-hl{background:#f7fcf0;}
   </div>
 </div>
 
+<!-- 需补学生人力 · 单店缺口明细弹窗 -->
+<div class="modal-mask" id="gapMask">
+  <div class="modal">
+    <div class="modal-head"><span id="gapTitle">需补学生人力 · 单店缺口明细</span><button class="modal-close" onclick="closeGapModal()">×</button></div>
+    <div class="modal-body">
+      <div class="modal-sub" id="gapSub"></div>
+      <div class="filter-bar">
+        <label>大店长：</label>
+        <select id="gapMgr" onchange="renderGapModal()"><option value="all">全部大店长</option></select>
+        <div class="spacer"></div>
+        <button class="btn btn-ghost" onclick="exportGapCsv()">导出 CSV</button>
+      </div>
+      <div class="reco-title">按大店长汇总<span style="font-weight:400;color:#95a5a6" id="gapSumSub"></span></div>
+      <table id="gapSumTable" style="min-width:0"></table>
+      <div class="reco-title">缺口门店明细<span style="font-weight:400;color:#95a5a6" id="gapDetSub"></span></div>
+      <table id="gapDetTable" style="min-width:0"></table>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeGapModal()">关闭</button>
+    </div>
+  </div>
+</div>
+
 <!-- 门店详情弹窗 -->
 <div class="modal-mask" id="storeMask">
   <div class="modal">
@@ -651,6 +674,73 @@ function switchTab(name){
   if(name==='supplies') renderSupplies();
   if(name==='cal') renderCal();
 }
+/* ============ 需补学生人力 · 单店缺口明细 ============ */
+function gapPeakKey(){ return DAYKEYS.reduce((a,k)=>D.daily[k].diff<D.daily[a].diff?k:a,DAYKEYS[0]); }
+function gapRows(pk,mgr){
+  return D.stores
+    .filter(s=>(s.days[pk].diff||0)<0&&(mgr==='all'||s.mgr===mgr))
+    .sort((a,b)=>(a.days[pk].diff||0)-(b.days[pk].diff||0));
+}
+function openGapModal(){
+  const sel=document.getElementById('gapMgr');
+  if(sel.options.length<=1){
+    const keep=sel.value;
+    sel.innerHTML='<option value="all">全部大店长</option>'+MGRS.map(m=>`<option value="${esc(m)}">${esc(m)}</option>`).join('');
+    sel.value=keep||'all';
+  }
+  renderGapModal();
+  document.getElementById('gapMask').classList.add('show');
+}
+function closeGapModal(){ document.getElementById('gapMask').classList.remove('show'); }
+function renderGapModal(){
+  const pk=gapPeakKey(), day=D.daily[pk];
+  const mgr=document.getElementById('gapMgr').value;
+  const rows=gapRows(pk,mgr);
+  const scope=mgr==='all'?'全部大店长':mgr;
+  document.getElementById('gapTitle').textContent=`需补学生人力 · ${day.label} 单店缺口明细`;
+  document.getElementById('gapSub').innerHTML=
+    `测算口径：<strong>${day.label} 峰值日单日缺口</strong>合计 <strong class="cell-neg">${day.lackTotal}</strong> 人（${day.shortStores} 家门店），不按多日累加。`+
+    `招募学生国庆期间至少可供班 4 天，能覆盖 9.30-10.7 中含峰值日在内的连续 4 天即可，故按峰值日取最高值测算，9.30 前招募补齐。`;
+
+  // 按大店长汇总
+  const by={};
+  rows.forEach(s=>{
+    const o=by[s.mgr]=by[s.mgr]||{mgr:s.mgr,stores:0,gapSum:0};
+    o.stores++; o.gapSum+=-(s.days[pk].diff||0);
+  });
+  const list=Object.values(by).sort((a,b)=>b.gapSum-a.gapSum);
+  let h=`<thead><tr><th>大店长</th><th class="num">缺口门店</th><th class="num">需补学生</th><th class="num">占比</th></tr></thead><tbody>`;
+  if(!list.length) h+=`<tr><td colspan="4" style="text-align:center;color:#95a5a6;padding:20px">无缺口门店</td></tr>`;
+  list.forEach(o=>{
+    h+=`<tr><td><strong>${esc(o.mgr)}</strong></td><td class="num">${o.stores}</td><td class="num cell-neg">${o.gapSum}</td><td class="num">${day.lackTotal?Math.round(o.gapSum/day.lackTotal*100):0}%</td></tr>`;
+  });
+  h+=`</tbody>`;
+  document.getElementById('gapSumTable').innerHTML=h;
+  document.getElementById('gapSumSub').textContent=`${scope} · ${list.length} 位大店长`;
+
+  // 单店明细
+  let d=`<thead><tr><th>大店长</th><th>门店</th><th class="num">需求人数</th><th class="num">可供班全职</th><th class="num">可供班学生</th><th class="num">缺口</th><th></th></tr></thead><tbody>`;
+  if(!rows.length) d+=`<tr><td colspan="7" style="text-align:center;color:#95a5a6;padding:20px">该大店长名下 ${day.label} 无缺口门店</td></tr>`;
+  rows.forEach(s=>{
+    const dd=s.days[pk];
+    d+=`<tr><td>${esc(s.mgr)}</td><td><span class="store-link" onclick="closeGapModal();openStoreModal('${esc(s.store)}')">${esc(shortStore(s.store))}</span></td>`+
+       `<td class="num">${n(dd.need)}</td><td class="num">${n(dd.ft)}</td><td class="num">${n(dd.pt)}</td>`+
+       `<td class="num cell-neg">${-(dd.diff||0)}</td>`+
+       `<td><button class="mini-btn" onclick="closeGapModal();openLoanModal('${esc(s.store)}','${DAYLABEL[pk]}')">申请支援</button></td></tr>`;
+  });
+  d+=`</tbody>`;
+  document.getElementById('gapDetTable').innerHTML=d;
+  document.getElementById('gapDetSub').textContent=`${day.label} · ${rows.length} 家缺口门店 · 缺口合计 ${rows.reduce((t,s)=>t+(-(s.days[pk].diff||0)),0)} 人`;
+}
+function exportGapCsv(){
+  const pk=gapPeakKey(), day=D.daily[pk];
+  const mgr=document.getElementById('gapMgr').value;
+  const rows=gapRows(pk,mgr);
+  const out=[['大店长','门店',DAYLABEL[pk]+'需求人数',DAYLABEL[pk]+'可供班全职',DAYLABEL[pk]+'可供班学生',DAYLABEL[pk]+'缺口']];
+  rows.forEach(s=>{ const dd=s.days[pk]; out.push([s.mgr,s.store,dd.need,dd.ft,dd.pt,-(dd.diff||0)]); });
+  downloadCsv('需补学生人力_'+DAYLABEL[pk].replace('.','')+'_单店缺口',out);
+}
+
 /* ============ 总览 ============ */
 function renderOverview(){
   const m=D.meta, dl=D.daily;
@@ -665,11 +755,11 @@ function renderOverview(){
     {l:'可供班全职',v:m.hcAvail,u:'人',s:'剔除休长假'+m.longLeave+'、预离职'+m.preQuit,hl:false},
     {l:'峰值日缺口',v:m.peakDiff,u:'人',s:m.peakDay+' 为人力最紧日',hl:true},
     {l:'缺口门店数',v:dl[worst].shortStores,u:'家',s:m.peakDay+' 当天有缺口门店',hl:true},
-    {l:'需补学生人力',v:m.totalStaffGap,u:'人次',s:'9.30 前招募补齐',hl:true},
+    {l:'需补学生人力',v:dl[worst].lackTotal,u:'人',s:'按 '+DAYLABEL[worst]+' 峰值日单日测算 · 点击看明细',hl:true,click:'openGapModal()'},
     {l:'9.30 差值',v:dl.d0930.diff,u:'人',s:'需求450 / 全职378 / 学生192',hl:false}
   ];
   document.getElementById('ovCards').innerHTML=cards.map(c=>`
-    <div class="metric-card${c.hl?' highlight':''}">
+    <div class="metric-card${c.hl?' highlight':''}"${c.click?` style="cursor:pointer" onclick="${c.click}" title="查看单店缺口明细"`:''}>
       <div class="card-label">${esc(c.l)}</div>
       <div class="card-value${c.hl?' red':''}">${c.v}<span class="card-unit">${c.u}</span></div>
       <div class="card-sub">${esc(c.s)}</div>

@@ -350,14 +350,19 @@ tbody td.num{text-align:right;font-variant-numeric:tabular-nums;}
     <div class="description-bar">
       <div class="description-bar-title">单店供班明细</div>
       <div class="description-list">
-        <div class="description-item">在大店区汇总基础上拆分到单店，明确每一家门店的缺口</div>
-        <div class="description-item">测算逻辑与大店区一致：可供班全职 + 可供班学生 − 需求人数</div>
+        <div class="description-item">结构与「大店区供班」一致：默认「热力总览」看 108 家门店 8 天谁缺人，切「单日明细」看完整数据</div>
+        <div class="description-item">测算逻辑与大店区一致：可供班全职 + 可供班学生 − 需求人数；仅看筛选按热力视图取 8 天最紧日口径</div>
         <div class="description-item">点门店名称可查看该店 8 天明细；人员借调请前往「人员借调」栏办理</div>
       </div>
     </div>
     <div class="filter-bar">
-      <label>日期：</label>
-      <select id="stDay" onchange="renderStores()"></select>
+      <label>查看维度：</label>
+      <select id="stView" onchange="renderStores()">
+        <option value="heat">8 天热力总览</option>
+        <option value="day">单日明细</option>
+      </select>
+      <label id="stDayLabel" style="display:none">日期：</label>
+      <select id="stDay" onchange="renderStores()" style="display:none"></select>
       <label>大店长：</label>
       <select id="stMgr" onchange="renderStores()"><option value="all">全部</option></select>
       <label>仅看：</label>
@@ -1133,51 +1138,82 @@ function exportRegionCsv(){
 }
 
 /* ============ 单店供班 ============ */
+function storeWorst(s){
+  // 8 天中最紧日（差值最小的一天）
+  let w=null,wk=DAYKEYS[0];
+  DAYKEYS.forEach(k=>{ const v=s.days[k].diff||0; if(w===null||v<w){w=v;wk=k;} });
+  return {v:w===null?0:w,k:wk};
+}
+function goStoreDay(k){
+  // 热力视图点日期表头 → 切到该日明细视图
+  document.getElementById('stView').value='day';
+  document.getElementById('stDay').value=k;
+  renderStores();
+}
 function renderStores(){
+  const view=document.getElementById('stView').value;
   const day=document.getElementById('stDay').value;
   const mgr=document.getElementById('stMgr').value;
   const only=document.getElementById('stOnly').value;
   const q=document.getElementById('stSearch').value.trim();
+  const showDay=(view==='day');
+  document.getElementById('stDayLabel').style.display=showDay?'':'none';
+  document.getElementById('stDay').style.display=showDay?'':'none';
+  // 仅看筛选口径：热力视图取 8 天最紧日，单日视图取当日
+  const val=s=>view==='day'?(s.days[day].diff||0):storeWorst(s).v;
   let rows=D.stores.filter(s=>{
     if(mgr!=='all'&&s.mgr!==mgr) return false;
     if(q&&s.store.indexOf(q)<0) return false;
-    const v=s.days[day].diff||0;
+    const v=val(s);
     if(only==='gap'&&v>=0) return false;
     if(only==='surplus'&&v<=0) return false;
     return true;
   });
-  rows=rows.slice().sort((a,b)=>(a.days[day].diff||0)-(b.days[day].diff||0));
-  let h=`<thead><tr><th>大店长</th><th>门店名称</th><th class="num">月均业绩</th><th class="num">架构全职</th><th class="num">可供班</th><th class="num">休长假</th><th class="num">预离职</th><th class="num">需求人数</th><th class="num">可供班全职</th><th class="num">可供班学生</th><th class="num">人力差值</th><th>状态</th></tr></thead><tbody>`;
-  let T={need:0,ft:0,pt:0,diff:0};
-  if(!rows.length) h+=`<tr><td colspan="12" style="text-align:center;color:#95a5a6;padding:24px">无匹配门店</td></tr>`;
-  rows.forEach(s=>{
-    const d=s.days[day];
-    const v=d.diff||0;
-    h+=`<tr>
-      <td>${esc(s.mgr)}</td>
-      <td><span class="store-link" onclick="openStoreModal('${esc(s.store)}')">${esc(shortStore(s.store))}</span></td>
-      <td class="num">${s.rev?Math.round(s.rev/10000)+'万':'-'}</td>
-      <td class="num">${n(s.hcHead)}</td><td class="num">${n(s.hcAvail)}</td>
-      <td class="num">${s.longLeave||'-'}</td><td class="num">${s.preQuit||'-'}</td>
-      <td class="num">${n(d.need)}</td><td class="num">${n(d.ft)}</td><td class="num">${n(d.pt)}</td>
-      ${diffCell(v)}
-      <td>${v<0?'<span class="badge badge-red">需补人</span>':(v>0?'<span class="badge badge-green">可外借</span>':'<span class="badge badge-gray">平衡</span>')}</td>
-    </tr>`;
-    ['need','ft','pt','diff'].forEach(k=>T[k]+=Number(d[k]||0));
-  });
-  h+=`<tr class="total-row"><td colspan="7">显示 ${rows.length} 家门店合计</td><td class="num">${T.need}</td><td class="num">${T.ft}</td><td class="num">${T.pt}</td>${diffCell(T.diff)}<td colspan="1"></td></tr>`;
+  rows=rows.slice().sort((a,b)=>val(a)-val(b));
+  let h='';
+  if(view==='heat'){
+    /* —— 8 天热力总览：108 家门店 × 8 天差值色块，与大店区供班结构一致 —— */
+    h+=`<thead><tr><th>大店长</th><th>门店</th>${DAYKEYS.map(k=>`<th class="num" style="cursor:pointer" title="查看 ${DAYLABEL[k]} 明细" onclick="goStoreDay('${k}')">${DAYLABEL[k]}</th>`).join('')}<th class="num">8 天合计缺口</th><th class="num">最紧日</th></tr></thead><tbody>`;
+    if(!rows.length) h+=`<tr><td colspan="${DAYKEYS.length+4}" style="text-align:center;color:#95a5a6;padding:24px">无匹配门店</td></tr>`;
+    rows.forEach(s=>{
+      let neg=0; const w=storeWorst(s);
+      h+=`<tr><td>${esc(s.mgr)}</td><td><span class="store-link" onclick="openStoreModal('${esc(s.store)}')">${esc(shortStore(s.store))}</span></td>`;
+      DAYKEYS.forEach(k=>{
+        const v=s.days[k].diff||0;
+        if(v<0) neg+=v;
+        h+=`<td class="heat ${heatCls(v)}" title="${esc(shortStore(s.store))} · ${DAYLABEL[k]}：${v>0?'冗余 '+v:(v<0?'缺口 '+(-v):'平衡')}">${v===0?'·':(v>0?'+'+v:v)}</td>`;
+      });
+      h+=`<td class="num ${neg<0?'cell-neg':'cell-zero'}">${neg}</td><td class="num">${w.v<0?DAYLABEL[w.k]+'（'+w.v+'）':'-'}</td></tr>`;
+    });
+    h+=`<tr class="total-row"><td colspan="2">显示 ${rows.length} 家门店合计</td>`;
+    let tot=0;
+    DAYKEYS.forEach(k=>{ const v=rows.reduce((t,s)=>t+(s.days[k].diff||0),0); if(v<0) tot+=v; h+=`<td class="heat ${heatCls(v)}">${v===0?'·':(v>0?'+'+v:v)}</td>`; });
+    h+=`<td class="num cell-neg">${tot}</td><td></td></tr>`;
+    document.getElementById('stFoot').innerHTML=
+      `热力总览：红色越深缺口越重，绿色为冗余。点日期表头切到该日完整明细；点门店名查看该店 8 天测算与人员名单；人员借调请前往「人员借调」栏。`+
+      `<div class="heat-legend">色块说明：<i style="background:#8e0000"></i>缺口 ≥10　<i style="background:#c62828"></i>缺口 5-9　<i style="background:#ef8a84"></i>缺口 2-4　<i style="background:#fbe3e1"></i>缺口 1　<i style="background:#f7f3f0"></i>平衡　<i style="background:#d5f5e3"></i>有冗余</div>`;
+  }else{
+    /* —— 单日明细：列结构与大店区供班单日明细一致，行首拆分为门店 —— */
+    h+=`<thead><tr><th>大店长</th><th>门店</th><th class="num">月均业绩</th><th class="num">架构全职</th><th class="num">可供班</th><th class="num">休长假</th><th class="num">预离职</th><th class="num">店长</th><th class="num">中级训</th><th class="num">初级训</th><th class="num">服务员</th><th class="num">需求人数</th><th class="num">可供班全职</th><th class="num">可供班学生</th><th class="num">人力差值</th></tr></thead><tbody>`;
+    let T={rev:0,hcHead:0,hcAvail:0,longLeave:0,preQuit:0,lv1:0,lv2:0,lv3:0,lv4:0,need:0,ft:0,pt:0,diff:0};
+    if(!rows.length) h+=`<tr><td colspan="15" style="text-align:center;color:#95a5a6;padding:24px">无匹配门店</td></tr>`;
+    rows.forEach(s=>{
+      const d=s.days[day]; const v=d.diff||0;
+      h+=`<tr><td>${esc(s.mgr)}</td><td><span class="store-link" onclick="openStoreModal('${esc(s.store)}')">${esc(shortStore(s.store))}</span></td>`+
+         `<td class="num">${s.rev?Math.round(s.rev/10000)+'万':'-'}</td><td class="num">${n(s.hcHead)}</td><td class="num">${n(s.hcAvail)}</td><td class="num">${s.longLeave||'-'}</td><td class="num">${s.preQuit||'-'}</td>`+
+         `<td class="num">${n(s.lv1)}</td><td class="num">${n(s.lv2)}</td><td class="num">${n(s.lv3)}</td><td class="num">${n(s.lv4)}</td>`+
+         `<td class="num">${n(d.need)}</td><td class="num">${n(d.ft)}</td><td class="num">${n(d.pt)}</td>${diffCell(v)}</tr>`;
+      ['hcHead','hcAvail','longLeave','preQuit','lv1','lv2','lv3','lv4'].forEach(k=>T[k]+=Number(s[k]||0));
+      T.rev+=Number(s.rev||0);
+      ['need','ft','pt','diff'].forEach(k=>T[k]+=Number(d[k]||0));
+    });
+    h+=`<tr class="total-row"><td colspan="2">显示 ${rows.length} 家门店合计</td><td class="num">${T.rev?Math.round(T.rev/10000)+'万':'-'}</td><td class="num">${T.hcHead}</td><td class="num">${T.hcAvail}</td><td class="num">${T.longLeave}</td><td class="num">${T.preQuit}</td><td class="num">${T.lv1}</td><td class="num">${T.lv2}</td><td class="num">${T.lv3}</td><td class="num">${T.lv4}</td><td class="num">${T.need}</td><td class="num">${T.ft}</td><td class="num">${T.pt}</td>${diffCell(T.diff)}</tr>`;
+    const dd=D.daily[day];
+    document.getElementById('stFoot').innerHTML=
+      `${DAYLABEL[day]}：全品牌需求 <strong>${dd.need}</strong> 人，可供班全职 ${dd.ft} 人 + 学生 ${dd.pt} 人，人力差值 <strong class="${dd.diff<0?'cell-neg':'cell-pos'}">${dd.diff>0?'+':''}${dd.diff}</strong> 人${dd.diff<0?`，需在 9.30 前补足学生 ${dd.lackTotal} 人次（涉及 ${dd.shortStores} 家门店）`:`，整体富余，可支援其他门店`}。点门店名查看该店 8 天明细；人员借调请前往「人员借调」栏。`;
+  }
   h+='</tbody>';
   document.getElementById('stTable').innerHTML=h;
-  const dd=D.daily[day];
-  document.getElementById('stFoot').innerHTML=
-    `${DAYLABEL[day]} 全品牌：需求 ${dd.need} 人，差值 <strong class="${dd.diff<0?'cell-neg':'cell-pos'}">${dd.diff>0?'+':''}${dd.diff}</strong> 人。当天有缺口门店 <strong class="cell-neg">${dd.shortStores}</strong> 家，缺口合计 ${dd.lackTotal} 人次。点门店名称可查看 8 天明细与就近借调建议。`;
-}
-function resetStores(){
-  document.getElementById('stDay').selectedIndex=0;
-  document.getElementById('stMgr').value='all';
-  document.getElementById('stOnly').value='all';
-  document.getElementById('stSearch').value='';
-  renderStores();
 }
 function exportStoreCsv(){
   const rows=[['大店长','门店名称','1-8月月均业绩','架构内全职','可供班全职','休长假','预离职','店长','中级训练员','初级训练员','服务员']];

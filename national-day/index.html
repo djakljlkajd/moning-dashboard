@@ -94,6 +94,14 @@ tbody tr.total-row td{color:#33691e;border-top:2px solid #9ccc65;}
 .store-link{color:#21618c;cursor:pointer;text-decoration:underline dotted;font-weight:600;}
 .store-link:hover{color:#c0392b;}
 
+/* 行事历卡岗 */
+.cal-cell{min-width:96px;max-width:150px;cursor:pointer;vertical-align:top;background:#fbfdf7;}
+.cal-cell:hover{background:#f2f8e6;}
+.cal-cell.filled{background:#f4faf0;}
+.cal-store{display:block;font-weight:700;color:#2e8b57;font-size:12px;}
+.cal-note{display:block;color:#666;font-size:11px;margin-top:2px;line-height:1.4;}
+.cal-empty{display:block;color:#b8c4b0;font-size:11px;}
+
 .empty-tip{padding:34px 20px;text-align:center;color:#95a5a6;font-size:13px;background:#fff;}
 
 /* 图表 */
@@ -206,6 +214,7 @@ tbody tr.total-row td{color:#33691e;border-top:2px solid #9ccc65;}
     <button class="tab-btn" data-tab="detail" onclick="switchTab('detail')">供班明细（大店填）</button>
     <button class="tab-btn" data-tab="promo" onclick="switchTab('promo')">宣发记录</button>
     <button class="tab-btn" data-tab="supplies" onclick="switchTab('supplies')">暖心物资</button>
+    <button class="tab-btn" data-tab="cal" onclick="switchTab('cal')">行事历卡岗</button>
   </div>
 
   <!-- ================= 总览 ================= -->
@@ -396,8 +405,31 @@ tbody tr.total-row td{color:#33691e;border-top:2px solid #9ccc65;}
     <div class="footnote">物资清单按门店维度跟进，共 <span id="supTotal"></span> 家门店。</div>
   </div>
 
+  <div class="panel" id="panel-cal">
+    <div class="description-bar">
+      <div class="description-bar-title">大店长行事历与卡岗安排（9.30 - 10.7）</div>
+      <div class="description-list">
+        <div class="description-item">13 位大店长 × 8 天，点击格子填写当天卡岗门店与行事安排，云端实时同步、全员互见</div>
+        <div class="description-item">卡岗门店优先从自己分管门店中选择，也可选「机动支援」跨区巡店</div>
+      </div>
+    </div>
+    <div class="filter-bar">
+      <label>视图：</label>
+      <select id="calView" onchange="renderCal()">
+        <option value="matrix">8 天矩阵视图</option>
+        <option value="day">单日视图</option>
+      </select>
+      <select id="calDay" onchange="renderCal()" style="display:none"></select>
+      <div class="spacer"></div>
+      <button class="btn btn-ghost" onclick="exportCalCsv()">导出 CSV</button>
+    </div>
+    <div class="section-header" id="calProgress"></div>
+    <div class="table-wrap"><table id="calTable"></table></div>
+    <div class="footnote" id="calFoot">空白格表示待安排，点击即可填写。已填写格显示卡岗门店与行事摘要。</div>
+  </div>
+
   <div class="footnote">
-    本看板数据来自《墨柠国庆高峰准备落地推进计划.xlsx》，人力差值按表内实算口径呈现（可供班全职 + 可供班学生 − 需求人数）。借调台账与进度状态通过云端实时同步，可多端协作填写。
+    本看板数据来自《墨柠国庆高峰准备落地推进计划.xlsx》，人力差值按表内实算口径呈现（可供班全职 + 可供班学生 − 需求人数）。借调台账、进度状态与大店长行事历卡岗安排通过云端实时同步，可多端协作填写。
   </div>
 </div>
 
@@ -494,6 +526,33 @@ tbody tr.total-row td{color:#33691e;border-top:2px solid #9ccc65;}
   </div>
 </div>
 
+<!-- 行事历卡岗填写弹窗 -->
+<div class="modal-mask" id="calMask">
+  <div class="modal">
+    <div class="modal-head"><span id="calTitle">行事历卡岗安排</span><button class="modal-close" onclick="closeCalModal()">×</button></div>
+    <div class="modal-body">
+      <div class="modal-sub" id="calSub"></div>
+      <div class="form-row">
+        <div class="form-item">
+          <label>卡岗门店</label>
+          <select id="calStore"></select>
+          <div class="form-hint">从分管门店中选择，或选机动支援</div>
+        </div>
+        <div class="form-item">
+          <label>行事历安排</label>
+          <input type="text" id="calNote" placeholder="如：全天卡岗 / 上午巡店3家 / 下午支援门店">
+          <div class="form-hint">填写当天主要行程，简明扼要</div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="clearCalCell()">清除本格</button>
+      <button class="btn btn-ghost" onclick="closeCalModal()">取消</button>
+      <button class="btn" onclick="submitCalCell()">保存安排</button>
+    </div>
+  </div>
+</div>
+
 <script src="data.js"></script>
 <script>
 /* ============ 基础 ============ */
@@ -521,7 +580,7 @@ const SUPA_TABLE='violation_data';
 const SUPA_ID=11;                          // 国庆推进看板专用行
 const LS_KEY='gq_dashboard_backup';
 
-let CLOUD = { loans:[], plan:{}, promo:[], supplies:{} };
+let CLOUD = { loans:[], plan:{}, promo:[], supplies:{}, cal:{} };
 let cloudOK=false;
 
 function backupLocal(){ try{ localStorage.setItem(LS_KEY,JSON.stringify(CLOUD)); }catch(e){} }
@@ -532,6 +591,7 @@ function restoreLocal(){
     CLOUD.plan = Object.assign({}, d.plan||{}, CLOUD.plan||{});
     CLOUD.promo = (CLOUD.promo&&CLOUD.promo.length)?CLOUD.promo:(d.promo||[]);
     CLOUD.supplies = Object.assign({}, d.supplies||{}, CLOUD.supplies||{});
+    CLOUD.cal = Object.assign({}, d.cal||{}, CLOUD.cal||{});
   }catch(e){}
 }
 function setSync(msg,ok){
@@ -551,6 +611,7 @@ async function loadCloud(){
       CLOUD.plan=d.plan&&typeof d.plan==='object'?d.plan:{};
       CLOUD.promo=Array.isArray(d.promo)?d.promo:[];
       CLOUD.supplies=d.supplies&&typeof d.supplies==='object'?d.supplies:{};
+      CLOUD.cal=d.cal&&typeof d.cal==='object'?d.cal:{};
     }
     cloudOK=true;
     setSync('云端协作已连接 · 借调台账与进度状态全员实时同步',true);
@@ -591,6 +652,7 @@ function switchTab(name){
   if(name==='detail') renderDetail();
   if(name==='promo') renderPromo();
   if(name==='supplies') renderSupplies();
+  if(name==='cal') renderCal();
 }
 function switchDashboard(sel){
   const map={
@@ -1242,6 +1304,101 @@ function exportSupCsv(){
   downloadCsv('暖心物资跟进',rows);
 }
 
+/* ============ 行事历卡岗 ============ */
+const MGR_STORES = {};                       // 大店长 -> 分管门店列表
+MGRS.forEach(m=>MGR_STORES[m]=[]);
+D.stores.forEach(s=>{ if(MGR_STORES[s.mgr]) MGR_STORES[s.mgr].push(s.store); });
+const CAL_TOTAL = MGRS.length*DAYKEYS.length;
+
+function calKey(mgr,dk){ return mgr+'::'+dk; }
+function calGet(mgr,dk){ return (CLOUD.cal||{})[calKey(mgr,dk)]||null; }
+
+function renderCal(){
+  const view=document.getElementById('calView').value;
+  const daySel=document.getElementById('calDay');
+  daySel.style.display=view==='day'?'':'none';
+  let filled=0; MGRS.forEach(m=>DAYKEYS.forEach(k=>{ if(calGet(m,k)) filled++; }));
+  document.getElementById('calProgress').innerHTML=
+    `行事历已安排 <strong class="cell-pos">${filled}</strong> / ${CAL_TOTAL} 格`+
+    `${filled<CAL_TOTAL?`，待安排 <strong class="cell-neg">${CAL_TOTAL-filled}</strong> 格`:''}`+
+    ` · 13 位大店长 × 9.30-10.7 共 8 天`;
+
+  let h='';
+  if(view==='matrix'){
+    h+='<thead><tr><th>大店长</th><th>分管门店</th>'+DAYS.map(d=>`<th>${esc(d.label)}</th>`).join('')+'</tr></thead><tbody>';
+    MGRS.forEach(m=>{
+      h+=`<tr><td><strong>${esc(m)}</strong></td><td class="num">${MGR_STORES[m].length}家</td>`;
+      DAYKEYS.forEach(k=>{
+        const c=calGet(m,k);
+        if(c){
+          const st=c.store==='机动支援'?c.store:shortStore(c.store);
+          h+=`<td class="cal-cell filled" onclick="openCalModal('${esc(m)}','${k}')"><span class="cal-store">${esc(st)}</span>${c.note?`<span class="cal-note">${esc(c.note)}</span>`:''}</td>`;
+        }else{
+          h+=`<td class="cal-cell" onclick="openCalModal('${esc(m)}','${k}')"><span class="cal-empty">＋ 待安排</span></td>`;
+        }
+      });
+      h+='</tr>';
+    });
+    h+='</tbody>';
+  }else{
+    const dk=daySel.value||DAYKEYS[0];
+    const dd=D.daily[dk];
+    h+='<thead><tr><th>大店长</th><th>分管门店</th><th>卡岗门店</th><th>行事历安排</th><th class="num">当日差值</th><th>操作</th></tr></thead><tbody>';
+    MGRS.forEach(m=>{
+      const r=D.regions.find(x=>x.mgr===m);
+      const c=calGet(m,dk);
+      const v=r&&r.days[dk]?r.days[dk].diff:null;
+      h+=`<tr><td><strong>${esc(m)}</strong></td><td class="num">${MGR_STORES[m].length}家</td>`+
+        `<td>${c?`<span class="badge ${c.store==='机动支援'?'badge-blue':'badge-green'}">${esc(c.store==='机动支援'?'机动':shortStore(c.store))}</span>`:'<span class="badge badge-gray">待安排</span>'}</td>`+
+        `<td>${c?esc(c.note||'—'):'—'}</td>`+
+        (v==null?'<td class="num cell-zero">-</td>':`<td class="num ${v<0?'cell-neg':(v>0?'cell-pos':'cell-zero')}">${v>0?'+':''}${v}</td>`)+
+        `<td><button class="mini-btn" onclick="openCalModal('${esc(m)}','${dk}')">填写</button></td></tr>`;
+    });
+    h+='</tbody>';
+    document.getElementById('calFoot').innerHTML=`${DAYLABEL[dk]} 单日视图：全品牌需求 ${dd.need} 人，差值 ${dd.diff>0?'+':''}${dd.diff} 人。差值为该大店长所辖门店合计。`;
+  }
+  document.getElementById('calTable').innerHTML=h;
+}
+
+let CAL_EDIT=null;
+function openCalModal(mgr,dk){
+  CAL_EDIT={mgr:mgr,dk:dk};
+  document.getElementById('calTitle').textContent=`${mgr} · ${DAYLABEL[dk]} 行事历卡岗`;
+  const sel=document.getElementById('calStore');
+  let opts='<option value="机动支援">机动支援（巡店 / 跨区支援）</option>';
+  MGR_STORES[mgr].forEach(s=>{ opts+=`<option value="${esc(s)}">${esc(shortStore(s))}</option>`; });
+  sel.innerHTML=opts;
+  const c=calGet(mgr,dk);
+  if(c){ sel.value=c.store; if(sel.value!==c.store){ opts+=`<option value="${esc(c.store)}">${esc(shortStore(c.store))}（原填写）</option>`; sel.innerHTML=opts; sel.value=c.store; } }
+  document.getElementById('calNote').value=c?c.note||'':'';
+  document.getElementById('calSub').textContent=`填写后全员可见。该日 ${mgr} 分管 ${MGR_STORES[mgr].length} 家门店的卡岗与行程安排。`;
+  document.getElementById('calMask').classList.add('show');
+}
+function closeCalModal(){ document.getElementById('calMask').classList.remove('show'); CAL_EDIT=null; }
+async function submitCalCell(){
+  if(!CAL_EDIT) return;
+  const store=document.getElementById('calStore').value;
+  const note=document.getElementById('calNote').value.trim();
+  if(!store){ alert('请选择卡岗门店'); return; }
+  CLOUD.cal[CAL_EDIT.mgr+'::'+CAL_EDIT.dk]={store:store,note:note,by:CAL_EDIT.mgr,at:new Date().toISOString()};
+  backupLocal(); await saveCloud();
+  closeCalModal(); renderCal();
+}
+async function clearCalCell(){
+  if(!CAL_EDIT) return;
+  delete CLOUD.cal[CAL_EDIT.mgr+'::'+CAL_EDIT.dk];
+  backupLocal(); await saveCloud();
+  closeCalModal(); renderCal();
+}
+function exportCalCsv(){
+  const rows=[['大店长','日期','卡岗门店','行事历安排']];
+  MGRS.forEach(m=>DAYKEYS.forEach(k=>{
+    const c=calGet(m,k);
+    if(c) rows.push([m,DAYLABEL[k],c.store,c.note||'']);
+  }));
+  downloadCsv('大店长行事历卡岗安排',rows);
+}
+
 /* ============ 工具 ============ */
 function downloadCsv(name,rows){
   const csv=rows.map(r=>r.map(c=>{const s=String(c==null?'':c);return /[",\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;}).join(',')).join('\n');
@@ -1253,7 +1410,7 @@ function downloadCsv(name,rows){
 
 /* ============ 初始化 ============ */
 (async function init(){
-  fillDaySelect('regDay'); fillDaySelect('stDay'); fillDaySelect('dtDay');
+  fillDaySelect('regDay'); fillDaySelect('stDay'); fillDaySelect('dtDay'); fillDaySelect('calDay');
   fillMgrSelect('regMgr'); fillMgrSelect('stMgr'); fillMgrSelect('dtMgr');
   await loadCloud();
   renderOverview();
@@ -1263,6 +1420,7 @@ function downloadCsv(name,rows){
   document.getElementById('loanMask').addEventListener('click',function(e){ if(e.target===this) closeLoanModal(); });
   document.getElementById('storeMask').addEventListener('click',function(e){ if(e.target===this) this.classList.remove('show'); });
   document.getElementById('promoMask').addEventListener('click',function(e){ if(e.target===this) this.classList.remove('show'); });
+  document.getElementById('calMask').addEventListener('click',function(e){ if(e.target===this) closeCalModal(); });
 })();
 </script>
 </body>

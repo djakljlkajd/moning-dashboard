@@ -13,9 +13,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hira
 .header-bar{background:linear-gradient(135deg,#33691e 0%,#7cb342 100%);border-radius:8px 8px 0 0;padding:14px 22px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;}
 .header-title{font-size:18px;font-weight:bold;color:#fff;}
 .header-date{font-size:12px;color:rgba(255,255,255,.9);font-weight:500;white-space:nowrap;}
-.dash-switcher{display:flex;align-items:center;gap:8px;}
-.dash-switcher-label{color:rgba(255,255,255,.95);font-size:13px;white-space:nowrap;}
-.dash-switcher-select{background:#fff;color:#333;border:none;border-radius:20px;padding:6px 28px 6px 12px;font-size:13px;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.12);appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23558b2f' d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;min-width:160px;}
 
 /* 逻辑条 */
 .logic-bar{background:linear-gradient(90deg,#f4f8e3 0%,#f0f7d8 100%);border-bottom:2px solid #d9e6a5;padding:11px 22px;font-size:12.5px;color:#3f5a1f;line-height:1.65;}
@@ -180,16 +177,6 @@ td.col-hl{background:#f7fcf0;}
     <div>
       <div class="header-title">墨柠国庆高峰准备落地推进看板</div>
       <div class="header-date">数据源：墨柠国庆高峰准备落地推进计划.xlsx · 更新 2026-09-17</div>
-    </div>
-    <div class="dash-switcher">
-      <span class="dash-switcher-label">切换看板：</span>
-      <select class="dash-switcher-select" onchange="switchDashboard(this)">
-        <option value="current">墨柠国庆推进看板（当前）</option>
-        <option value="hours">墨柠工时分析看板</option>
-        <option value="hc">HC招募缺口看板</option>
-        <option value="turnover">古德墨柠离职数据看板</option>
-        <option value="annual">墨柠年假看板</option>
-      </select>
     </div>
   </div>
 
@@ -664,17 +651,6 @@ function switchTab(name){
   if(name==='supplies') renderSupplies();
   if(name==='cal') renderCal();
 }
-function switchDashboard(sel){
-  const map={
-    hours:'https://djakljlkajd.github.io/moning-dashboard/',
-    hc:'https://djakljlkajd.github.io/moning-dashboard/hc/',
-    turnover:'https://djakljlkajd.github.io/moning-dashboard/turnover/',
-    annual:'https://djakljlkajd.github.io/moning-dashboard/annual-leave/',
-    current:location.href
-  };
-  if(sel.value!=='current'&&map[sel.value]) window.location.href=map[sel.value];
-}
-
 /* ============ 总览 ============ */
 function renderOverview(){
   const m=D.meta, dl=D.daily;

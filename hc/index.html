@@ -543,7 +543,6 @@
                 <option value="hours">墨柠工时分析看板</option>
                 <option value="turnover">古德墨柠离职数据看板</option>
                 <option value="annual">墨柠年假看板</option>
-                <option value="national">🎑 国庆推进看板</option>
             </select>
         </div>
         <div class="header-date" id="hdr-date"></div>
@@ -2612,7 +2611,7 @@ loadSpecialLeaveExtra();
 </script>
 <script>
 function switchDashboard(sel){
-    var map={hours:'https://djakljlkajd.github.io/moning-dashboard/',turnover:'https://2a73735a1c624120bd63c94f8f741ddb.app.codebuddy.work',annual:'https://djakljlkajd.github.io/moning-dashboard/annual-leave/',national:'https://djakljlkajd.github.io/moning-dashboard/national-day/',current:location.href};
+    var map={hours:'https://djakljlkajd.github.io/moning-dashboard/',turnover:'https://2a73735a1c624120bd63c94f8f741ddb.app.codebuddy.work',annual:'https://djakljlkajd.github.io/moning-dashboard/annual-leave/',current:location.href};
     if(sel.value!=='current' && map[sel.value]) window.location.href = map[sel.value];
 }
 </script>

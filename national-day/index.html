@@ -386,7 +386,7 @@ tbody td.num{text-align:right;font-variant-numeric:tabular-nums;}
       <div class="description-list">
         <div class="description-item">人员借调统一在本栏办理：人力富足门店可向缺口门店临时借调支援，点门店行「申请借调」或右上角「＋ 新增借调申请」登记</div>
         <div class="description-item">系统按所选日期对齐缺口与冗余，按商圈就近推荐冗余门店，缺口门店可直接看到可借人来源</div>
-        <div class="description-item">提交后写入云端，13 位大店长实时互见，形成统一支援台账</div>
+        <div class="description-item">提交后写入云端，13 位大店长实时互见；每条借调需人工「确认」后生效 —— 确认即锁定 1 人调动，转出店当日冗余 -1、转入店当日缺口 -1，扣完冗余的门店不会再被推荐，防止一店多借</div>
       </div>
     </div>
     <div class="filter-bar">
@@ -749,6 +749,9 @@ function applyOp(c,op){
     if(!(c.loans||[]).some(l=>loanKey(l)===k)) c.loans=[op.v].concat(c.loans||[]);
   }else if(op.t==='loan.del'){
     c.loans=(c.loans||[]).filter(l=>loanKey(l)!==op.k);
+  }else if(op.t==='loan.confirm'){
+    const i=(c.loans||[]).findIndex(l=>loanKey(l)===op.k);
+    if(i>=0) c.loans[i]=Object.assign({},c.loans[i],{status:'已确认',confirmedAt:op.at||new Date().toISOString()});
   }else if(op.t==='plan.set'){
     c.plan=c.plan||{}; c.plan[op.k]=op.v;
   }else if(op.t==='promo.add'){
@@ -1276,6 +1279,51 @@ function storeTight(store){
   return a.length?Math.min.apply(null,a):null;
 }
 function storeDiffBy(store,label){ return label===SPAN?storeTight(store):storeDiffOn(store,label); }
+
+/* —— 已确认借调的人力调整：确认 1 条 = 转出店当日 -1 人、转入店当日 +1 人 —— */
+function loanAdj(store,label){
+  let d=0;
+  (CLOUD.loans||[]).forEach(l=>{
+    if(l.status!=='已确认') return;
+    if(l.date===label||l.date===SPAN){
+      if(l.from===store) d-=1;
+      if(l.to===store) d+=1;
+    }
+  });
+  return d;
+}
+function storeDiffOnAdj(store,label){
+  const v=storeDiffOn(store,label);
+  return v==null?null:v+loanAdj(store,label);
+}
+function storeTightAdj(store){
+  const t=TRANSFER_INFO[store];
+  if(!t) return null;
+  const a=[];
+  DAYS.forEach((d,i)=>{
+    const v=t.days[i];
+    if(typeof v==='number') a.push(v+loanAdj(store,d.label));
+  });
+  return a.length?Math.min.apply(null,a):null;
+}
+function storeDiffByAdj(store,label){ return label===SPAN?storeTightAdj(store):storeDiffOnAdj(store,label); }
+function loanableOnAdj(store,label){
+  // 含已确认借调调整后的可借出人数，<=0 表示不可借
+  const t=TRANSFER_INFO[store];
+  if(!t) return 0;
+  const nums=t.days.filter(v=>typeof v==='number');
+  if(!nums.length) return 0;
+  if(label===SPAN){
+    if(nums.length<DAYKEYS.length) return 0;
+    const mn=Math.min.apply(null,DAYS.map((d,i)=>{
+      const v=t.days[i];
+      return typeof v==='number'?v+loanAdj(store,d.label):Infinity;
+    }));
+    return mn>0?mn:0;
+  }
+  const v=storeDiffOnAdj(store,label);
+  return (typeof v==='number'&&v>0)?v:0;
+}
 function loanableOn(store,label){
   // 该日期口径下可借出人数，<=0 表示不可借
   const t=TRANSFER_INFO[store];
@@ -1293,11 +1341,13 @@ function loanableOn(store,label){
 }
 function scopeName(label){ return label===SPAN?SPAN:label; }
 function diffText(store,label){
-  const v=storeDiffBy(store,label);
+  const v=storeDiffByAdj(store,label);
+  const adj=loanAdj(store,label);
+  const suffix=adj!==0?`（已确认借调${adj>0?'净入 +'+adj:'净出 '+adj}人）`:'';
   if(v==null) return '数据缺失';
-  if(v>0) return `${scopeName(label)} 冗余 ${v} 人，可外借`;
-  if(v===0) return `${scopeName(label)} 刚好持平，无可借人力`;
-  return `${scopeName(label)} 缺口 ${-v} 人`;
+  if(v>0) return `${scopeName(label)} 冗余 ${v} 人，可外借${suffix}`;
+  if(v===0) return `${scopeName(label)} 刚好持平，无可借人力${suffix}`;
+  return `${scopeName(label)} 缺口 ${-v} 人${suffix}`;
 }
 function recoStores(store,label,q){
   // 只推荐「所支援日期当天确实有冗余」的门店，避免跨日期错配
@@ -1307,7 +1357,7 @@ function recoStores(store,label,q){
   D.transferStores.forEach(t=>{
     if(t.store===store) return;
     if(q&&t.store.indexOf(q)<0) return;
-    const can=loanableOn(t.store,label);
+    const can=loanableOnAdj(t.store,label);
     if(can<=0) return;
     list.push({store:t.store,biz:t.biz,mgr:String(t.area).replace(/大店区/,''),can:can,sameBiz:t.biz===myBiz});
   });
@@ -1354,8 +1404,8 @@ function refreshLoanOptions(){
   const toSel=document.getElementById('loanTo');
   const sur=[],gap=[];
   D.transferStores.forEach(t=>{
-    const can=loanableOn(t.store,date);
-    const d=storeDiffBy(t.store,date);
+    const can=loanableOnAdj(t.store,date);
+    const d=storeDiffByAdj(t.store,date);
     if(can>0) sur.push({store:t.store,can:can});
     if(d!=null&&d<0) gap.push({store:t.store,d:d});
   });
@@ -1365,12 +1415,12 @@ function refreshLoanOptions(){
   toSel.innerHTML=gap.length?gap.map(x=>`<option value="${esc(x.store)}">${esc(shortStore(x.store))}（缺口${-x.d}）</option>`).join(''):'<option value="">该日期无缺口门店</option>';
 
   if(curStore){
-    const d=storeDiffBy(curStore,date);
+    const d=storeDiffByAdj(curStore,date);
     if(d!=null&&d<0){
       toSel.value=curStore;
       const r=recoStores(curStore,date,'');
       if(r.length) fromSel.value=r[0].store;
-    }else if(loanableOn(curStore,date)>0){
+    }else if(loanableOnAdj(curStore,date)>0){
       fromSel.value=curStore;
       if(gap.length) toSel.value=gap[0].store;
     }
@@ -1386,7 +1436,7 @@ function onLoanFromChange(){
   const date=document.getElementById('loanDate').value;
   const f=document.getElementById('loanFrom').value;
   const t=document.getElementById('loanTo').value;
-  const tv=storeDiffBy(t,date);
+  const tv=storeDiffByAdj(t,date);
   document.getElementById('loanFromHint').textContent=f?diffText(f,date):'';
   document.getElementById('loanToHint').textContent=t?diffText(t,date):'';
   const target=t||f;
@@ -1394,7 +1444,7 @@ function onLoanFromChange(){
   const ft=TRANSFER_INFO[f], tt=TRANSFER_INFO[t];
   const fa=ft?String(ft.area).replace(/大店区/,''):'-';
   const ta=tt?String(tt.area).replace(/大店区/,''):'-';
-  const can=loanableOn(f,date);
+  const can=loanableOnAdj(f,date);
   document.getElementById('loanSub').innerHTML=
     `支援日期 <strong>${esc(scopeName(date))}</strong>：<strong>${esc(shortStore(t||f))}</strong> 需要支援，从 <strong>${esc(shortStore(f))}</strong> 临时借调（${esc(fa)} → ${esc(ta)}）`+
     `<br>同一日期口径核算：转出门店 ${f?diffText(f,date):'-'}${can>0?`，当日最多可借 <strong>${can}</strong> 人`:''}；转入门店 ${t?diffText(t,date):'-'}。`+
@@ -1440,26 +1490,43 @@ async function submitLoan(){
 }
 function renderLoanTable(){
   const el=document.getElementById('loanTable');
-  document.getElementById('loanCount').textContent=CLOUD.loans.length?`共 ${CLOUD.loans.length} 条`:'';
+  const waitN=CLOUD.loans.filter(l=>l.status!=='已确认').length;
+  document.getElementById('loanCount').textContent=CLOUD.loans.length?`共 ${CLOUD.loans.length} 条${waitN?`，待确认 ${waitN} 条`:'，全部已确认'}`:'';
   document.getElementById('tabBadgeTransfer').textContent=CLOUD.loans.length;
   document.getElementById('tabBadgeTransfer').style.display=CLOUD.loans.length?'':'none';
-  let h=`<thead><tr><th>提交时间</th><th>转出门店</th><th>转入门店</th><th>转入伙伴</th><th>支援日期</th><th>对接人</th><th>备注</th><th>操作</th></tr></thead><tbody>`;
+  let h=`<thead><tr><th>提交时间</th><th>转出门店</th><th>转入门店</th><th>转入伙伴</th><th>支援日期</th><th>状态</th><th>对接人</th><th>备注</th><th>操作</th></tr></thead><tbody>`;
   if(!CLOUD.loans.length){
-    h+=`<tr><td colspan="8" style="text-align:center;color:#95a5a6;padding:22px">暂无借调记录。点门店行「申请借调」或右上角「＋ 新增借调申请」开始登记。</td></tr>`;
+    h+=`<tr><td colspan="9" style="text-align:center;color:#95a5a6;padding:22px">暂无借调记录。点门店行「申请借调」或右上角「＋ 新增借调申请」开始登记。</td></tr>`;
   }else{
     CLOUD.loans.forEach((l,i)=>{
       const d=l.ts?new Date(l.ts):null;
       const ts=d?`${d.getMonth()+1}.${d.getDate()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`:'-';
-      h+=`<tr><td>${ts}</td><td>${esc(shortStore(l.from))}</td><td><span class="badge badge-red">${esc(shortStore(l.to))}</span></td><td style="font-weight:600">${esc(l.name)}</td><td>${esc(l.date)}</td><td>${esc(l.owner||'-')}</td><td style="white-space:normal;max-width:200px">${esc(l.note||'-')}</td><td><button class="mini-btn danger" data-lk="${esc(loanKey(l))}" onclick="delLoan(this)">删除</button></td></tr>`;
+      const cf=l.status==='已确认';
+      h+=`<tr${cf?' style="background:#f4faf0"':''}><td>${ts}</td><td>${esc(shortStore(l.from))}</td><td><span class="badge badge-red">${esc(shortStore(l.to))}</span></td><td style="font-weight:600">${esc(l.name)}</td><td>${esc(l.date)}</td>`+
+         `<td>${cf?'<span class="badge badge-green">已确认</span>':'<span class="badge badge-orange">待确认</span>'}</td>`+
+         `<td>${esc(l.owner||'-')}</td><td style="white-space:normal;max-width:180px">${esc(l.note||'-')}</td>`+
+         `<td style="white-space:nowrap">${cf?'':`<button class="mini-btn" data-lk="${esc(loanKey(l))}" onclick="confirmLoan(this)">✓ 确认</button> `}<button class="mini-btn danger" data-lk="${esc(loanKey(l))}" onclick="delLoan(this)">删除</button></td></tr>`;
     });
   }
   h+='</tbody>';
   el.innerHTML=h;
 }
-async function delLoan(btn){
-  if(!confirm('确认删除这条借调记录？')) return;
+function confirmLoan(btn){
   const k=btn.getAttribute('data-lk');
   if(!k) return;
+  const l=(CLOUD.loans||[]).find(x=>loanKey(x)===k);
+  if(!l) return;
+  if(l.status==='已确认'){ alert('这条借调已确认过，无需重复确认。'); return; }
+  if(!confirm(`确认这条借调申请？\n\n转出：${shortStore(l.from)}\n转入：${shortStore(l.to)}\n日期：${l.date} · 借调 ${l.name}（1 人）\n\n确认后：转出门店当日冗余 -1、转入门店当日缺口 -1，下方明细表差值与借调推荐将同步更新，该店当日冗余扣完后不会再被推荐。`)) return;
+  commit({t:'loan.confirm',k:k,at:new Date().toISOString()});
+  renderLoanTable(); renderTransfer();
+}
+async function delLoan(btn){
+  const k=btn.getAttribute('data-lk');
+  if(!k) return;
+  const l=(CLOUD.loans||[]).find(x=>loanKey(x)===k);
+  const tip=l&&l.status==='已确认'?'这条借调已确认，删除后双方门店的人力差值会同步回补。确认删除？':'确认删除这条借调记录？';
+  if(!confirm(tip)) return;
   commit({t:'loan.del',k:k});   // 按记录唯一键删除，避免并发下索引错位删错行
   renderLoanTable(); renderTransfer();
 }
@@ -1487,8 +1554,8 @@ function renderTransfer(){
   const biz=db.value, mgr=dm.value, day=dd.value;
   const type=document.getElementById('trType').value;
   const q=document.getElementById('trSearch').value.trim();
-  const val=t=>day==='tight'?storeTight(t.store):storeDiffOn(t.store,day);
-  const canOf=t=>loanableOn(t.store,day==='tight'?SPAN:day);
+  const val=t=>day==='tight'?storeTightAdj(t.store):storeDiffOnAdj(t.store,day);
+  const canOf=t=>loanableOnAdj(t.store,day==='tight'?SPAN:day);
 
   const all=D.transferStores.filter(t=>{
     if(mgr!=='all'&&String(t.area).replace(/大店区/,'')!==mgr) return false;
@@ -1526,8 +1593,11 @@ function renderTransfer(){
     h+=`<tr><td>${esc(String(t.area).replace(/大店区/,''))}</td><td><span class="store-link" onclick="openStoreModal('${esc(t.store)}')">${esc(shortStore(t.store))}</span></td><td>${esc(t.biz)}</td>`;
     h+=t.days.map((dv,i)=>{
       if(typeof dv!=='number') return '<td class="num cell-zero">-</td>';
-      const cls=dv<0?'cell-neg':(dv>0?'cell-pos':'cell-zero');
-      return `<td class="num ${cls}${i===di?' col-hl':''}">${dv>0?'+':''}${dv}</td>`;
+      const adj=loanAdj(t.store,DAYLABEL[DAYKEYS[i]]);
+      const sv=dv+adj;
+      const cls=sv<0?'cell-neg':(sv>0?'cell-pos':'cell-zero');
+      const mark=adj!==0?` title="原差值 ${dv>0?'+':''}${dv}，已确认借调调整 ${adj>0?'+':''}${adj}" style="text-decoration:underline dotted;text-decoration-color:var(--gold-d)"`:'';
+      return `<td class="num ${cls}${i===di?' col-hl':''}"${mark}>${sv>0?'+':''}${sv}</td>`;
     }).join('');
     h+=`<td class="num ${v<0?'cell-neg':(v>0?'cell-pos':'cell-zero')}">${v>0?'+':''}${v}</td>`;
     if(v<0) h+=`<td><span class="badge badge-red">缺口 ${-v}</span></td>`;
@@ -1548,8 +1618,8 @@ function renderTransferSummary(rows,day,dayName){
   const by={};
   rows.forEach(t=>{
     const m=String(t.area).replace(/大店区/,'');
-    const v=day==='tight'?storeTight(t.store):storeDiffOn(t.store,day);
-    const can=loanableOn(t.store,day==='tight'?SPAN:day);
+    const v=day==='tight'?storeTightAdj(t.store):storeDiffOnAdj(t.store,day);
+    const can=loanableOnAdj(t.store,day==='tight'?SPAN:day);
     const o=by[m]=by[m]||{mgr:m,stores:0,gapN:0,gapSum:0,surN:0,surSum:0,miss:0};
     o.stores++;
     if(v==null){o.miss++;return;}

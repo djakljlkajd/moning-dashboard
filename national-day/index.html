@@ -456,10 +456,21 @@ tbody td.num{text-align:right;font-variant-numeric:tabular-nums;}
       <div class="description-list">
         <div class="description-item">覆盖四类：节前打卡造势、国庆激励宣发、节中上扬案例、每日战报</div>
         <div class="description-item">记录曝光与点赞数据表现，用于复盘宣发效果</div>
+        <div class="description-item">109 家门店逐店跟进宣发完成情况：店长勾选完成并填写说明，可按大店长筛选、按门店搜索</div>
         <div class="description-item">可在线新增记录，多端同步</div>
       </div>
     </div>
-    <div class="filter-bar">
+    <div class="section-header" id="prProgress">门店宣发完成情况<span class="sub"></span></div>
+    <div class="filter-bar" style="border-top:none">
+      <label>大店长：</label>
+      <select id="prMgr" onchange="renderPromoStores()"><option value="all">全部</option></select>
+      <label>状态：</label>
+      <select id="prOnly" onchange="renderPromoStores()"><option value="all">全部</option><option value="done">已完成</option><option value="todo">未完成</option></select>
+      <input type="text" id="prSearch" placeholder="搜索门店" oninput="renderPromoStores()">
+    </div>
+    <div class="table-wrap"><table id="prTable"></table></div>
+    <div class="section-header">宣发记录流水<span class="sub">源表记录 + 在线新增</span></div>
+    <div class="filter-bar" style="border-top:none">
       <label>类型：</label>
       <select id="pmType" onchange="renderPromo()"><option value="all">全部</option></select>
       <div class="spacer"></div>
@@ -738,7 +749,7 @@ const SUPA_ID=11;                          // 国庆推进看板专用行
 const LS_KEY='gq_dashboard_backup';        // 最近一次成功同步的快照（仅离线降级用）
 const LS_PENDING='gq_pending_ops';         // 尚未确认写入云端的操作队列
 
-let CLOUD = { loans:[], plan:{}, promo:[], supplies:{}, cal:{}, pool:{} };
+let CLOUD = { loans:[], plan:{}, promo:[], supplies:{}, cal:{}, pool:{}, promoStores:{} };
 let PENDING = [];
 let cloudOK=false, syncing=false;
 
@@ -751,7 +762,8 @@ function normalizeCloud(d){
     promo:Array.isArray(d.promo)?d.promo:[],
     supplies:(d.supplies&&typeof d.supplies==='object')?d.supplies:{},
     cal:(d.cal&&typeof d.cal==='object')?d.cal:{},
-    pool:(d.pool&&typeof d.pool==='object')?d.pool:{}
+    pool:(d.pool&&typeof d.pool==='object')?d.pool:{},
+    promoStores:(d.promoStores&&typeof d.promoStores==='object')?d.promoStores:{}
   };
 }
 function applyOp(c,op){
@@ -780,6 +792,10 @@ function applyOp(c,op){
     c.pool=c.pool||{}; c.pool[op.k]=op.v;
   }else if(op.t==='pool.del'){
     c.pool=c.pool||{}; delete c.pool[op.k];
+  }else if(op.t==='promoStore.set'){
+    c.promoStores=c.promoStores||{}; c.promoStores[op.k]=op.v;
+  }else if(op.t==='promoStore.del'){
+    c.promoStores=c.promoStores||{}; delete c.promoStores[op.k];
   }
   return c;
 }
@@ -883,7 +899,7 @@ function switchTab(name){
   if(name==='stores') renderStores();
   if(name==='transfer') renderTransfer();
   if(name==='detail') renderDetail();
-  if(name==='promo') renderPromo();
+  if(name==='promo'){ renderPromo(); renderPromoStores(); }
   if(name==='supplies') renderSupplies();
   if(name==='cal') renderCal();
 }
@@ -1787,6 +1803,63 @@ function exportDetailCsv(){
 }
 
 /* ============ 宣发 ============ */
+/* ============ 门店宣发完成情况（109 家逐店跟进） ============ */
+const PR_STORES=(function(){
+  return D.transferStores.map(t=>({store:t.store,area:String(t.area).replace(/大店区/,'')}));
+})();
+function prState(store){
+  const c=(CLOUD.promoStores||{})[store];
+  if(c&&typeof c==='object') return {done:!!c.done,note:c.note||'',date:c.date||''};
+  return {done:false,note:'',date:''};
+}
+let PR_ROWS=[];
+function renderPromoStores(){
+  const mgr=document.getElementById('prMgr').value;
+  const only=document.getElementById('prOnly').value;
+  const q=document.getElementById('prSearch').value.trim();
+  let doneAll=0;
+  PR_STORES.forEach(x=>{ if(prState(x.store).done) doneAll++; });
+  const scope=PR_STORES.filter(x=>mgr==='all'||x.area===mgr);
+  let doneCur=0;
+  scope.forEach(x=>{ if(prState(x.store).done) doneCur++; });
+  PR_ROWS=scope.filter(x=>{
+    const st=prState(x.store);
+    if(q&&x.store.indexOf(q)<0) return false;
+    if(only==='done'&&!st.done) return false;
+    if(only==='todo'&&st.done) return false;
+    return true;
+  });
+  let h=`<thead><tr><th>大店长</th><th>门店</th><th style="text-align:center">完成情况</th><th>宣发说明 / 链接（可选）</th><th>更新日期</th><th>操作</th></tr></thead><tbody>`;
+  if(!PR_ROWS.length) h+=`<tr><td colspan="6" style="text-align:center;color:#95a5a6;padding:22px">无匹配门店</td></tr>`;
+  PR_ROWS.forEach((x,i)=>{
+    const st=prState(x.store);
+    h+=`<tr><td>${esc(x.area)}</td><td>${esc(shortStore(x.store))}</td>`+
+       `<td style="text-align:center">${st.done?'<span class="badge badge-green">✓ 已完成</span>':'<span class="badge badge-orange">未完成</span>'}</td>`+
+       `<td><input type="text" id="prNote_${i}" value="${esc(st.note)}" placeholder="如：打卡贴已发小红书，曝光1200" style="width:100%;min-width:220px;font-size:12.5px;padding:6px 9px;border:1px solid #e6d8cc;border-radius:4px;font-family:inherit"></td>`+
+       `<td>${esc(st.date||'-')}</td>`+
+       `<td style="white-space:nowrap"><button class="mini-btn" onclick="savePromoStore(${i},true)">✓ 完成</button> <button class="mini-btn" onclick="savePromoStore(${i},false)">保存</button></td></tr>`;
+  });
+  h+='</tbody>';
+  document.getElementById('prTable').innerHTML=h;
+  const pct=scope.length?Math.round(doneCur/scope.length*100):0;
+  document.getElementById('prProgress').innerHTML=
+    `门店宣发完成情况<span class="sub">${mgr==='all'?'':'当前只看 '+esc(mgr)+' · '}勾选完成并填说明，保存后全员可见</span>
+     <div style="margin-top:8px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+       <div class="bar-track" style="flex:1;max-width:420px;height:9px"><div class="bar-fill" style="width:${pct}%"></div></div>
+       <span style="font-size:12.5px;color:var(--gold-d);font-weight:700">${doneCur} / ${scope.length} 家（${pct}%）</span>
+       ${mgr==='all'?'':`<span style="font-size:11.5px;color:var(--ink-2)">全品牌 ${doneAll} / ${PR_STORES.length} 家（${Math.round(doneAll/PR_STORES.length*100)}%）</span>`}
+     </div>`;
+}
+function savePromoStore(i,markDone){
+  const x=PR_ROWS[i]; if(!x) return;
+  const note=document.getElementById('prNote_'+i).value.trim();
+  const cur=prState(x.store);
+  const done=markDone?true:(cur.done||!!note);
+  const v={done:done,note:note,date:todayStr(),at:new Date().toISOString()};
+  commit({t:'promoStore.set',k:x.store,v:v});
+  renderPromoStores();
+}
+
 function renderPromo(){
   const el=document.getElementById('pmType');
   const types=Array.from(new Set(D.promo.concat(CLOUD.promo).map(r=>r[3]).filter(Boolean)));
@@ -2143,7 +2216,7 @@ function downloadCsv(name,rows){
 /* ============ 初始化 ============ */
 (async function init(){
   fillDaySelect('regDay'); fillDaySelect('stDay'); fillDaySelect('dtDay'); fillDaySelect('calDay');
-  fillMgrSelect('regMgr'); fillMgrSelect('stMgr'); fillMgrSelect('dtMgr'); fillMgrSelect('spMgr'); fillMgrSelect('poolMgr');
+  fillMgrSelect('regMgr'); fillMgrSelect('stMgr'); fillMgrSelect('dtMgr'); fillMgrSelect('spMgr'); fillMgrSelect('poolMgr'); fillMgrSelect('prMgr');
   fillDaySelect('poolDay');
   document.getElementById('poolDay').value='d1004';
   await loadCloud();

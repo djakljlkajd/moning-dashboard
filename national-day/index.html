@@ -1,0 +1,1269 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>墨柠国庆高峰准备落地推进看板</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;background:#f2f5ec;color:#333;padding:16px;}
+.container{max-width:1400px;margin:0 auto;}
+
+/* 标题栏 */
+.header-bar{background:linear-gradient(135deg,#33691e 0%,#7cb342 100%);border-radius:8px 8px 0 0;padding:14px 22px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;}
+.header-title{font-size:18px;font-weight:bold;color:#fff;}
+.header-date{font-size:12px;color:rgba(255,255,255,.9);font-weight:500;white-space:nowrap;}
+.dash-switcher{display:flex;align-items:center;gap:8px;}
+.dash-switcher-label{color:rgba(255,255,255,.95);font-size:13px;white-space:nowrap;}
+.dash-switcher-select{background:#fff;color:#333;border:none;border-radius:20px;padding:6px 28px 6px 12px;font-size:13px;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.12);appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23558b2f' d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;min-width:160px;}
+
+/* 逻辑条 */
+.logic-bar{background:linear-gradient(90deg,#f4f8e3 0%,#f0f7d8 100%);border-bottom:2px solid #d9e6a5;padding:11px 22px;font-size:12.5px;color:#3f5a1f;line-height:1.65;}
+.logic-tags{margin-top:5px;}
+.logic-tag{display:inline-block;padding:2px 8px;border-radius:3px;font-size:11px;margin:0 6px 3px 0;font-weight:600;}
+.tag-ok{background:#d5f5e3;color:#1e7a45;}
+.tag-warn{background:#fdebd0;color:#a04000;}
+.tag-bad{background:#fadbd8;color:#c0392b;}
+.tag-info{background:#d6eaf8;color:#21618c;}
+
+/* 页签 */
+.tab-bar{background:#fff;display:flex;gap:2px;padding:0 14px;overflow-x:auto;border-bottom:2px solid #e0ebc8;scrollbar-width:thin;}
+.tab-bar::-webkit-scrollbar{height:4px;}
+.tab-bar::-webkit-scrollbar-thumb{background:#cde5b0;border-radius:2px;}
+.tab-btn{background:none;border:none;padding:12px 15px;font-size:13.5px;font-weight:600;color:#7f8c8d;cursor:pointer;white-space:nowrap;border-bottom:3px solid transparent;font-family:inherit;}
+.tab-btn:hover{color:#558b2f;background:#f7fbf0;}
+.tab-btn.active{color:#558b2f;border-bottom-color:#7cb342;background:#f7fbf0;}
+.tab-btn .tab-badge{display:inline-block;background:#e74c3c;color:#fff;font-size:10px;border-radius:9px;padding:0 6px;margin-left:5px;vertical-align:1px;line-height:15px;}
+
+.panel{display:none;}
+.panel.active{display:block;}
+
+/* 说明区 */
+.description-bar{background:linear-gradient(90deg,#eef7e3 0%,#e2f1cc 100%);border-bottom:2px solid #cde5b0;padding:11px 20px;font-size:12.5px;color:#2e4d1f;line-height:1.8;display:flex;gap:12px;align-items:flex-start;}
+.description-bar-title{font-weight:bold;color:#558b2f;font-size:13px;white-space:nowrap;padding-top:1px;}
+.description-item{margin-bottom:2px;}
+.description-item strong{color:#c0392b;font-weight:600;margin-right:4px;}
+
+.section-header{background:#fff;padding:12px 20px 8px;border-bottom:1px solid #eee;font-weight:bold;font-size:14px;color:#558b2f;}
+.section-header .sub{font-weight:400;font-size:11.5px;color:#95a5a6;margin-left:8px;}
+
+/* 卡片 */
+.cards-row{display:grid;grid-template-columns:repeat(7,1fr);gap:10px;background:#fff;padding:15px 20px;}
+.metric-card{position:relative;background:#fafcf6;border:1px solid #e6eede;border-radius:6px;padding:12px 12px 10px;overflow:hidden;transition:.15s;}
+.metric-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#8bc34a,#4caf50);}
+.metric-card.highlight::before{background:linear-gradient(90deg,#e74c3c,#c0392b);}
+.metric-card.clickable{cursor:pointer;}
+.metric-card.clickable:hover{box-shadow:0 3px 10px rgba(85,139,47,.18);transform:translateY(-1px);}
+.card-label{font-size:11.5px;color:#7f8c8d;margin-bottom:5px;line-height:1.35;}
+.card-value{font-size:25px;font-weight:bold;color:#2c3e50;line-height:1.15;}
+.card-value.red{color:#e74c3c;}
+.card-value.green{color:#2e8b57;}
+.card-unit{font-size:12px;color:#95a5a6;margin-left:2px;font-weight:400;}
+.card-sub{font-size:10.5px;color:#95a5a6;margin-top:4px;line-height:1.4;}
+
+/* 筛选栏 */
+.filter-bar{background:#fff;padding:11px 20px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;border-top:1px solid #f0f4e8;}
+.filter-bar label{font-size:12.5px;color:#666;}
+.filter-bar select,.filter-bar input{font-size:12.5px;padding:6px 9px;border:1px solid #d5e3c0;border-radius:4px;background:#fff;color:#333;font-family:inherit;max-width:100%;}
+.filter-bar input[type=text]{min-width:150px;}
+.btn{font-size:12.5px;padding:6px 13px;border:1px solid #7cb342;background:#7cb342;color:#fff;border-radius:4px;cursor:pointer;font-family:inherit;font-weight:600;}
+.btn:hover{background:#558b2f;border-color:#558b2f;}
+.btn-ghost{background:#fff;color:#558b2f;}
+.btn-ghost:hover{background:#f1f8e9;color:#33691e;}
+.spacer{flex:1;}
+
+/* 表格 */
+.table-wrap{background:#fff;overflow-x:auto;}
+table{width:100%;border-collapse:collapse;font-size:12.5px;white-space:nowrap;}
+thead th{background:linear-gradient(180deg,#7cb342,#558b2f);color:#fff;padding:9px 9px;text-align:left;font-weight:600;font-size:12px;position:sticky;top:0;z-index:2;}
+thead th.num{text-align:right;}
+tbody td{padding:8px 9px;border-bottom:1px solid #f0f4e8;color:#444;}
+tbody td.num{text-align:right;font-variant-numeric:tabular-nums;}
+tbody tr:hover{background:#f9fcf4;}
+tbody tr.total-row{background:linear-gradient(90deg,#e8f5d3,#cde5b0);font-weight:bold;}
+tbody tr.total-row td{color:#33691e;border-top:2px solid #9ccc65;}
+.cell-neg{color:#e74c3c;font-weight:700;}
+.cell-pos{color:#2e8b57;font-weight:600;}
+.cell-zero{color:#b0b8b0;}
+.badge{display:inline-block;padding:1px 7px;border-radius:3px;font-size:11px;font-weight:600;}
+.badge-red{background:#fadbd8;color:#c0392b;}
+.badge-green{background:#d5f5e3;color:#1e7a45;}
+.badge-gray{background:#ecf0f1;color:#7f8c8d;}
+.badge-blue{background:#d6eaf8;color:#21618c;}
+.badge-orange{background:#fdebd0;color:#a04000;}
+.store-link{color:#21618c;cursor:pointer;text-decoration:underline dotted;font-weight:600;}
+.store-link:hover{color:#c0392b;}
+
+.empty-tip{padding:34px 20px;text-align:center;color:#95a5a6;font-size:13px;background:#fff;}
+
+/* 图表 */
+.chart-box{background:#fff;padding:18px 20px 8px;border-bottom:1px solid #f0f4e8;}
+.chart-legend{display:flex;gap:16px;font-size:11.5px;color:#7f8c8d;margin-top:6px;flex-wrap:wrap;}
+.legend-dot{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px;}
+
+/* 弹窗 */
+.modal-mask{display:none;position:fixed;inset:0;background:rgba(30,42,18,.5);z-index:100;align-items:flex-start;justify-content:center;overflow-y:auto;padding:24px 12px;}
+.modal-mask.show{display:flex;}
+.modal{background:#fff;border-radius:8px;max-width:820px;width:100%;box-shadow:0 12px 40px rgba(0,0,0,.25);overflow:hidden;}
+.modal-head{background:linear-gradient(135deg,#33691e,#7cb342);color:#fff;padding:13px 18px;font-weight:bold;font-size:15px;display:flex;justify-content:space-between;align-items:center;}
+.modal-close{background:none;border:none;color:#fff;font-size:22px;cursor:pointer;line-height:1;padding:0 4px;}
+.modal-body{padding:16px 18px;max-height:66vh;overflow-y:auto;}
+.modal-foot{padding:12px 18px;background:#f7fbf0;border-top:1px solid #e6eede;display:flex;gap:10px;justify-content:flex-end;}
+.form-row{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px;}
+.form-item{flex:1;min-width:190px;}
+.form-item label{display:block;font-size:12px;color:#558b2f;font-weight:600;margin-bottom:5px;}
+.form-item input,.form-item select,.form-item textarea{width:100%;font-size:13px;padding:8px 10px;border:1px solid #d5e3c0;border-radius:4px;font-family:inherit;background:#fff;}
+.form-item input:focus,.form-item select:focus{outline:none;border-color:#7cb342;box-shadow:0 0 0 2px rgba(124,179,66,.18);}
+.form-hint{font-size:11px;color:#95a5a6;margin-top:4px;line-height:1.5;}
+.modal-sub{font-size:12.5px;color:#2e4d1f;background:#f2f8e8;border-left:3px solid #7cb342;padding:9px 12px;border-radius:0 4px 4px 0;margin-bottom:14px;line-height:1.7;}
+.reco-title{font-size:12.5px;font-weight:bold;color:#33691e;margin:14px 0 7px;}
+.reco-item{display:flex;align-items:center;gap:10px;padding:8px 11px;background:#f7fbf0;border:1px solid #e6eede;border-radius:5px;margin-bottom:6px;font-size:12.5px;flex-wrap:wrap;}
+.reco-item.best{background:#eef9e4;border-color:#9ccc65;}
+.reco-item .rn{flex:1;min-width:180px;color:#333;font-weight:600;}
+.reco-item .rb{font-size:11px;color:#7f8c8d;background:#eef2e8;padding:1px 7px;border-radius:3px;}
+.reco-item .rv{font-weight:bold;color:#2e8b57;}
+.mini-btn{font-size:11.5px;padding:4px 10px;border-radius:4px;border:1px solid #7cb342;background:#fff;color:#558b2f;cursor:pointer;font-family:inherit;font-weight:600;}
+.mini-btn:hover{background:#7cb342;color:#fff;}
+.mini-btn.danger{border-color:#e74c3c;color:#c0392b;}
+.mini-btn.danger:hover{background:#e74c3c;color:#fff;}
+.footnote{padding:12px 20px 22px;font-size:11.5px;color:#95a5a6;line-height:1.75;background:#f2f5ec;}
+
+/* 进度条 */
+.bar-track{background:#eef2e8;border-radius:3px;height:7px;overflow:hidden;min-width:70px;}
+.bar-fill{height:100%;background:linear-gradient(90deg,#8bc34a,#4caf50);border-radius:3px;}
+
+/* 状态标签按钮组 */
+.status-group{display:inline-flex;border:1px solid #d5e3c0;border-radius:4px;overflow:hidden;}
+.status-btn{font-size:11.5px;padding:4px 10px;border:none;background:#fff;color:#7f8c8d;cursor:pointer;font-family:inherit;border-right:1px solid #e6eede;}
+.status-btn:last-child{border-right:none;}
+.status-btn.on-todo{background:#ecf0f1;color:#7f8c8d;font-weight:700;}
+.status-btn.on-doing{background:#fdebd0;color:#a04000;font-weight:700;}
+.status-btn.on-done{background:#d5f5e3;color:#1e7a45;font-weight:700;}
+
+.sync-tip{font-size:11.5px;padding:6px 20px;background:#fffdf5;color:#a04000;border-bottom:1px solid #f5e6c8;}
+.sync-tip.ok{background:#f4faf0;color:#1e7a45;border-bottom-color:#d5e8c8;}
+
+@media(max-width:1100px){.cards-row{grid-template-columns:repeat(4,1fr);}}
+@media(max-width:768px){
+  body{padding:10px;}
+  .cards-row{grid-template-columns:repeat(2,1fr);padding:12px;}
+  .card-value{font-size:21px;}
+  .header-title{font-size:15px;}
+  .filter-bar{gap:8px;padding:10px 12px;}
+  .filter-bar select,.filter-bar input[type=text]{width:100%;min-width:0;}
+  .filter-bar .btn{flex:1;}
+  .spacer{display:none;}
+  .description-bar{flex-direction:column;gap:6px;}
+  .form-item{min-width:100%;}
+  table{font-size:12px;}
+  thead th,tbody td{padding:7px 6px;}
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- 标题栏 -->
+  <div class="header-bar">
+    <div>
+      <div class="header-title">墨柠国庆高峰准备落地推进看板</div>
+      <div class="header-date">数据源：墨柠国庆高峰准备落地推进计划.xlsx · 更新 2026-09-17</div>
+    </div>
+    <div class="dash-switcher">
+      <span class="dash-switcher-label">切换看板：</span>
+      <select class="dash-switcher-select" onchange="switchDashboard(this)">
+        <option value="current">墨柠国庆推进看板（当前）</option>
+        <option value="hours">墨柠工时分析看板</option>
+        <option value="hc">HC招募缺口看板</option>
+        <option value="turnover">古德墨柠离职数据看板</option>
+        <option value="annual">墨柠年假看板</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- 逻辑条 -->
+  <div class="logic-bar">
+    <div><strong>测算逻辑：</strong>全职为长期固定用工，学生为灵活兼职用工。国庆短期高峰先投放可供班全职，缺口部分在 9/30 前招募可供班学生补齐。可供班人数 = 架构人数 − 休长假 − 预离职。人力差值 = 可供班全职 + 可供班学生 − 需求人数。</div>
+    <div class="logic-tags">
+      <span class="logic-tag tag-info">大店长 13 人</span>
+      <span class="logic-tag tag-info">门店 109 家</span>
+      <span class="logic-tag tag-info">覆盖 9.30-10.7 共 8 天</span>
+      <span class="logic-tag tag-bad" id="tagPeak"></span>
+      <span class="logic-tag tag-warn" id="tagGap"></span>
+      <span class="logic-tag tag-ok">学生缺口 9/30 前补齐</span>
+    </div>
+  </div>
+
+  <div id="syncTip" class="sync-tip">协作数据加载中…</div>
+
+  <!-- 页签 -->
+  <div class="tab-bar" id="tabBar">
+    <button class="tab-btn active" data-tab="overview" onclick="switchTab('overview')">总览</button>
+    <button class="tab-btn" data-tab="plan" onclick="switchTab('plan')">计划推进</button>
+    <button class="tab-btn" data-tab="regions" onclick="switchTab('regions')">大店区供班</button>
+    <button class="tab-btn" data-tab="stores" onclick="switchTab('stores')">单店供班明细</button>
+    <button class="tab-btn" data-tab="transfer" onclick="switchTab('transfer')">可调动资源<span class="tab-badge" id="tabBadgeTransfer" style="display:none">0</span></button>
+    <button class="tab-btn" data-tab="detail" onclick="switchTab('detail')">供班明细（大店填）</button>
+    <button class="tab-btn" data-tab="promo" onclick="switchTab('promo')">宣发记录</button>
+    <button class="tab-btn" data-tab="supplies" onclick="switchTab('supplies')">暖心物资</button>
+  </div>
+
+  <!-- ================= 总览 ================= -->
+  <div class="panel active" id="panel-overview">
+    <div class="section-header">国庆人力供需总览<span class="sub" id="ovSub"></span></div>
+    <div class="cards-row" id="ovCards"></div>
+
+    <div class="section-header">9.30-10.7 逐日人力差值走势<span class="sub">缺口为负，冗余为正</span></div>
+    <div class="chart-box" id="ovChart"></div>
+
+    <div class="section-header">缺口最重的门店 TOP10<span class="sub">按 10/4 峰值日缺口排序，点击门店可查看借调建议</span></div>
+    <div class="table-wrap"><table id="ovTopTable"></table></div>
+    <div class="footnote" id="ovFoot"></div>
+  </div>
+
+  <!-- ================= 计划推进 ================= -->
+  <div class="panel" id="panel-plan">
+    <div class="description-bar">
+      <div class="description-bar-title">推进说明</div>
+      <div class="description-list">
+        <div class="description-item"><strong>前</strong>节前准备：宣发造势、人员梳理与资源置换、支援台账、暖心物料、合规宣导、轮休锁定</div>
+        <div class="description-item"><strong>中</strong>节中执行：日报机制、上扬案例、每日战报</div>
+        <div class="description-item"><strong>后</strong>节后收口：排休跟进、激励兑现与表彰</div>
+        <div class="description-item">进度状态可直接在表内点击切换，全员实时同步</div>
+      </div>
+    </div>
+    <div class="filter-bar">
+      <label>阶段：</label>
+      <select id="planPhase" onchange="renderPlan()"><option value="all">全部</option><option value="前">前（节前）</option><option value="中">中（节中）</option><option value="后">后（节后）</option></select>
+      <label>状态：</label>
+      <select id="planStatus" onchange="renderPlan()"><option value="all">全部</option><option value="未开始">未开始</option><option value="进行中">进行中</option><option value="已完成">已完成</option></select>
+      <div class="spacer"></div>
+      <button class="btn btn-ghost" onclick="exportPlanCsv()">导出 CSV</button>
+    </div>
+    <div class="table-wrap"><table id="planTable"></table></div>
+    <div class="footnote">进度合计：<span id="planProgress"></span></div>
+  </div>
+
+  <!-- ================= 大店区供班 ================= -->
+  <div class="panel" id="panel-regions">
+    <div class="description-bar">
+      <div class="description-bar-title">大店区供班汇总</div>
+      <div class="description-list">
+        <div class="description-item">B-J 列为理论数值：门店数、架构人数、可供班人数、异常汇总（休长假/预离职）、四个职级人数</div>
+        <div class="description-item">K 列起为 9.30-10.7 逐日测算，每天 4 列：需求人数 / 可供班全职 / 可供班学生 / 人力差值</div>
+        <div class="description-item"><strong>差值</strong>红色为缺口，绿色为冗余</div>
+      </div>
+    </div>
+    <div class="filter-bar">
+      <label>查看维度：</label>
+      <select id="regView" onchange="renderRegions()">
+        <option value="day">单日视图</option>
+        <option value="matrix">8 天矩阵视图</option>
+      </select>
+      <label id="regDayLabel">日期：</label>
+      <select id="regDay" onchange="renderRegions()"></select>
+      <label>大店长：</label>
+      <select id="regMgr" onchange="renderRegions()"><option value="all">全部</option></select>
+      <div class="spacer"></div>
+      <button class="btn btn-ghost" onclick="exportRegionCsv()">导出 CSV</button>
+    </div>
+    <div class="table-wrap"><table id="regTable"></table></div>
+    <div class="footnote" id="regFoot"></div>
+  </div>
+
+  <!-- ================= 单店供班 ================= -->
+  <div class="panel" id="panel-stores">
+    <div class="description-bar">
+      <div class="description-bar-title">单店供班明细</div>
+      <div class="description-list">
+        <div class="description-item">在大店区汇总基础上拆分到单店，明确每一家门店的缺口</div>
+        <div class="description-item">测算逻辑与大店区一致：可供班全职 + 可供班学生 − 需求人数</div>
+        <div class="description-item">点门店名称可查看该店 8 天明细与就近借调建议</div>
+      </div>
+    </div>
+    <div class="filter-bar">
+      <label>日期：</label>
+      <select id="stDay" onchange="renderStores()"></select>
+      <label>大店长：</label>
+      <select id="stMgr" onchange="renderStores()"><option value="all">全部</option></select>
+      <label>仅看：</label>
+      <select id="stOnly" onchange="renderStores()">
+        <option value="all">全部门店</option>
+        <option value="gap">有缺口门店</option>
+        <option value="surplus">有冗余门店</option>
+      </select>
+      <input type="text" id="stSearch" placeholder="搜索门店名称" oninput="renderStores()">
+      <button class="btn btn-ghost" onclick="resetStores()">重置</button>
+      <button class="btn btn-ghost" onclick="exportStoreCsv()">导出 CSV</button>
+    </div>
+    <div class="table-wrap"><table id="stTable"></table></div>
+    <div class="footnote" id="stFoot"></div>
+  </div>
+
+  <!-- ================= 可调动资源 ================= -->
+  <div class="panel" id="panel-transfer">
+    <div class="description-bar">
+      <div class="description-bar-title">可调动资源与借调台账</div>
+      <div class="description-list">
+        <div class="description-item">人力富足门店可向缺口门店临时借调支援。点门店行「申请借调」填写转出门店、转入伙伴姓名、支援日期</div>
+        <div class="description-item">系统按商圈就近推荐冗余门店，缺口门店可直接看到可借人来源</div>
+        <div class="description-item">提交后写入云端，13 位大店长实时互见，形成统一支援台账</div>
+      </div>
+    </div>
+    <div class="filter-bar">
+      <label>商圈：</label>
+      <select id="trBiz" onchange="renderTransfer()"><option value="all">全部商圈</option></select>
+      <label>类型：</label>
+      <select id="trType" onchange="renderTransfer()">
+        <option value="all">全部门店</option>
+        <option value="gap">缺口门店</option>
+        <option value="surplus">冗余门店</option>
+      </select>
+      <input type="text" id="trSearch" placeholder="搜索门店" oninput="renderTransfer()">
+      <div class="spacer"></div>
+      <button class="btn" onclick="openLoanModal(null)">＋ 新增借调申请</button>
+    </div>
+    <div class="section-header">借调申请台账<span class="sub" id="loanCount"></span></div>
+    <div class="table-wrap"><table id="loanTable"></table></div>
+    <div class="section-header">单店缺口核算与就近可调动资源<span class="sub">峰值缺口为 8 天中最严重的缺口</span></div>
+    <div class="table-wrap"><table id="trTable"></table></div>
+    <div class="footnote" id="trFoot"></div>
+  </div>
+
+  <!-- ================= 供班明细（大店填） ================= -->
+  <div class="panel" id="panel-detail">
+    <div class="description-bar">
+      <div class="description-bar-title">供班明细（大店填报）</div>
+      <div class="description-list">
+        <div class="description-item">大店长依据门店业绩目标推算需求人力，并列出可供班全职、学生、服管支援人员名单</div>
+        <div class="description-item">杯数为当日预估，日总工时由生产工时 + 其他水吧工时 + 非生产工时构成</div>
+        <div class="description-item">红线杯效为 13.5，实际杯效低于红线说明当日工时投入偏高</div>
+      </div>
+    </div>
+    <div class="filter-bar">
+      <label>日期：</label>
+      <select id="dtDay" onchange="renderDetail()"></select>
+      <label>大店长：</label>
+      <select id="dtMgr" onchange="renderDetail()"><option value="all">全部</option></select>
+      <label>仅看：</label>
+      <select id="dtOnly" onchange="renderDetail()"><option value="all">全部</option><option value="gap">有缺口</option><option value="loweff">杯效低于红线</option></select>
+      <input type="text" id="dtSearch" placeholder="搜索门店" oninput="renderDetail()">
+      <div class="spacer"></div>
+      <button class="btn btn-ghost" onclick="exportDetailCsv()">导出 CSV</button>
+    </div>
+    <div class="table-wrap"><table id="dtTable"></table></div>
+    <div class="footnote" id="dtFoot"></div>
+  </div>
+
+  <!-- ================= 宣发记录 ================= -->
+  <div class="panel" id="panel-promo">
+    <div class="description-bar">
+      <div class="description-bar-title">宣发记录表</div>
+      <div class="description-list">
+        <div class="description-item">覆盖四类：节前打卡造势、国庆激励宣发、节中上扬案例、每日战报</div>
+        <div class="description-item">记录曝光与点赞数据表现，用于复盘宣发效果</div>
+        <div class="description-item">可在线新增记录，多端同步</div>
+      </div>
+    </div>
+    <div class="filter-bar">
+      <label>类型：</label>
+      <select id="pmType" onchange="renderPromo()"><option value="all">全部</option></select>
+      <div class="spacer"></div>
+      <button class="btn" onclick="openPromoModal()">＋ 新增宣发记录</button>
+      <button class="btn btn-ghost" onclick="exportPromoCsv()">导出 CSV</button>
+    </div>
+    <div class="table-wrap"><table id="pmTable"></table></div>
+    <div class="footnote" id="pmFoot"></div>
+  </div>
+
+  <!-- ================= 暖心物资 ================= -->
+  <div class="panel" id="panel-supplies">
+    <div class="description-bar">
+      <div class="description-bar-title">暖心物资跟进</div>
+      <div class="description-list">
+        <div class="description-item">小药箱与门店茶歇采购到位情况跟进，9.28 前 100% 完成</div>
+        <div class="description-item">勾选即视为已到位，多端同步，供运营与大店长互查</div>
+      </div>
+    </div>
+    <div class="filter-bar">
+      <label>状态：</label>
+      <select id="spOnly" onchange="renderSupplies()"><option value="all">全部门店</option><option value="done">已完成</option><option value="todo">未完成</option></select>
+      <div class="spacer"></div>
+      <button class="btn btn-ghost" onclick="exportSupCsv()">导出 CSV</button>
+    </div>
+    <div class="section-header" id="supProgress"></div>
+    <div class="table-wrap"><table id="spTable"></table></div>
+    <div class="footnote">物资清单按门店维度跟进，共 <span id="supTotal"></span> 家门店。</div>
+  </div>
+
+  <div class="footnote">
+    本看板数据来自《墨柠国庆高峰准备落地推进计划.xlsx》，人力差值按表内实算口径呈现（可供班全职 + 可供班学生 − 需求人数）。借调台账与进度状态通过云端实时同步，可多端协作填写。
+  </div>
+</div>
+
+<!-- 借调申请弹窗 -->
+<div class="modal-mask" id="loanMask">
+  <div class="modal">
+    <div class="modal-head"><span id="loanTitle">借调申请</span><button class="modal-close" onclick="closeLoanModal()">×</button></div>
+    <div class="modal-body">
+      <div class="modal-sub" id="loanSub"></div>
+      <div class="form-row">
+        <div class="form-item">
+          <label>转出门店（人力冗余方）</label>
+          <select id="loanFrom" onchange="onLoanFromChange()"></select>
+          <div class="form-hint" id="loanFromHint"></div>
+        </div>
+        <div class="form-item">
+          <label>转入门店（人力缺口方）</label>
+          <select id="loanTo"></select>
+          <div class="form-hint" id="loanToHint"></div>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-item">
+          <label>转入伙伴姓名</label>
+          <input type="text" id="loanName" placeholder="如：谭雅琪">
+        </div>
+        <div class="form-item">
+          <label>支援日期</label>
+          <select id="loanDate"></select>
+          <div class="form-hint">可选择单日或整段 9.30-10.7，也可另行填写</div>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-item">
+          <label>备注（可选）</label>
+          <input type="text" id="loanNote" placeholder="如：支援高峰时段 14:00-22:00">
+        </div>
+        <div class="form-item">
+          <label>对接大店长</label>
+          <input type="text" id="loanOwner" placeholder="如：童璐">
+        </div>
+      </div>
+      <div class="reco-title" id="recoTitle">就近可调动资源推荐</div>
+      <div id="recoBox"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeLoanModal()">取消</button>
+      <button class="btn" id="loanSubmit" onclick="submitLoan()">提交借调申请</button>
+    </div>
+  </div>
+</div>
+
+<!-- 门店详情弹窗 -->
+<div class="modal-mask" id="storeMask">
+  <div class="modal">
+    <div class="modal-head"><span id="storeTitle">门店明细</span><button class="modal-close" onclick="document.getElementById('storeMask').classList.remove('show')">×</button></div>
+    <div class="modal-body" id="storeBody"></div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="document.getElementById('storeMask').classList.remove('show')">关闭</button>
+      <button class="btn" id="storeLoanBtn">申请借调</button>
+    </div>
+  </div>
+</div>
+
+<!-- 宣发新增弹窗 -->
+<div class="modal-mask" id="promoMask">
+  <div class="modal">
+    <div class="modal-head"><span>新增宣发记录</span><button class="modal-close" onclick="document.getElementById('promoMask').classList.remove('show')">×</button></div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-item"><label>日期</label><input type="text" id="pmDate" placeholder="如：9.22"></div>
+        <div class="form-item"><label>区域 / 大店长</label><input type="text" id="pmRegion" placeholder="如：周思凡"></div>
+        <div class="form-item"><label>门店</label><input type="text" id="pmStore" placeholder="如：古德墨柠xxx店"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-item"><label>素材类型</label><input type="text" id="pmKind" placeholder="如：打卡贴 / 上扬案例 / 每日战报"></div>
+        <div class="form-item"><label>宣发形式</label><input type="text" id="pmForm" placeholder="如：小红书 / 抖音 / 门店群"></div>
+        <div class="form-item"><label>素材主题</label><input type="text" id="pmTopic" placeholder="如：国庆打卡-青柠季"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-item"><label>拍摄 / 发布时间</label><input type="text" id="pmTime" placeholder="如：9.22 19:00"></div>
+        <div class="form-item"><label>店端执行情况</label><input type="text" id="pmExec" placeholder="如：已发布"></div>
+        <div class="form-item"><label>数据表现</label><input type="text" id="pmData" placeholder="如：曝光1200 / 点赞86"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-item"><label>督导人</label><input type="text" id="pmOwner" placeholder="如：对应BP"></div>
+        <div class="form-item"><label>备注</label><input type="text" id="pmNote" placeholder="如：词条#古德墨柠打卡"></div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="document.getElementById('promoMask').classList.remove('show')">取消</button>
+      <button class="btn" onclick="submitPromo()">提交</button>
+    </div>
+  </div>
+</div>
+
+<script src="data.js"></script>
+<script>
+/* ============ 基础 ============ */
+const D = window.GQ_DATA;
+const DAYS = D.meta.days;                 // [{key,label}]
+const DAYKEYS = DAYS.map(d=>d.key);
+const DAYLABEL = {}; DAYS.forEach(d=>DAYLABEL[d.key]=d.label);
+const MGRS = D.regions.map(r=>r.mgr);
+const STORE_INFO = {};                    // 门店名 -> 明细行
+D.stores.forEach(s=>STORE_INFO[s.store]=s);
+const TRANSFER_INFO = {};                 // 门店名 -> 缺口核算行
+D.transferStores.forEach(t=>TRANSFER_INFO[t.store]=t);
+
+const DAY_DATE = {d0930:'2026-09-30',d1001:'2026-10-01',d1002:'2026-10-02',d1003:'2026-10-03',d1004:'2026-10-04',d1005:'2026-10-05',d1006:'2026-10-06',d1007:'2026-10-07'};
+
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function diffCell(v){ if(v==null) return '<td class="num cell-zero">-</td>'; const c=v<0?'cell-neg':(v>0?'cell-pos':'cell-zero'); return `<td class="num ${c}">${v>0?'+':''}${v}</td>`; }
+function n(v){ return v==null?'-':v; }
+function shortStore(s){ return s.replace(/^古德墨柠/,''); }
+
+/* ============ Supabase 协作 ============ */
+const SUPA_URL='https://tclfmnfvlrlxquiojjya.supabase.co';
+const SUPA_KEY='sb_publishable_6sa-Pz6dX0BSlTJX3gNiRA_CbtZkf_b';
+const SUPA_TABLE='violation_data';
+const SUPA_ID=11;                          // 国庆推进看板专用行
+const LS_KEY='gq_dashboard_backup';
+
+let CLOUD = { loans:[], plan:{}, promo:[], supplies:{} };
+let cloudOK=false;
+
+function backupLocal(){ try{ localStorage.setItem(LS_KEY,JSON.stringify(CLOUD)); }catch(e){} }
+function restoreLocal(){
+  try{ const raw=localStorage.getItem(LS_KEY); if(!raw) return;
+    const d=JSON.parse(raw);
+    CLOUD.loans = (CLOUD.loans&&CLOUD.loans.length)?CLOUD.loans:(d.loans||[]);
+    CLOUD.plan = Object.assign({}, d.plan||{}, CLOUD.plan||{});
+    CLOUD.promo = (CLOUD.promo&&CLOUD.promo.length)?CLOUD.promo:(d.promo||[]);
+    CLOUD.supplies = Object.assign({}, d.supplies||{}, CLOUD.supplies||{});
+  }catch(e){}
+}
+function setSync(msg,ok){
+  const el=document.getElementById('syncTip');
+  el.textContent=msg; el.className='sync-tip'+(ok?' ok':'');
+}
+async function loadCloud(){
+  try{
+    const res=await fetch(SUPA_URL+'/rest/v1/'+SUPA_TABLE+'?id=eq.'+SUPA_ID+'&select=data',{
+      headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY}
+    });
+    if(!res.ok) throw new Error('supabase '+res.status);
+    const rows=await res.json();
+    if(rows&&rows.length&&rows[0].data){
+      const d=rows[0].data;
+      CLOUD.loans=Array.isArray(d.loans)?d.loans:[];
+      CLOUD.plan=d.plan&&typeof d.plan==='object'?d.plan:{};
+      CLOUD.promo=Array.isArray(d.promo)?d.promo:[];
+      CLOUD.supplies=d.supplies&&typeof d.supplies==='object'?d.supplies:{};
+    }
+    cloudOK=true;
+    setSync('云端协作已连接 · 借调台账与进度状态全员实时同步',true);
+  }catch(e){
+    cloudOK=false;
+    setSync('云端暂不可用，已切换本地缓存模式（数据仍保存在本机，恢复后自动同步）',false);
+  }
+  restoreLocal(); backupLocal();
+}
+async function saveCloud(){
+  try{
+    const res=await fetch(SUPA_URL+'/rest/v1/'+SUPA_TABLE+'?id=eq.'+SUPA_ID,{
+      method:'PATCH',
+      headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
+      body:JSON.stringify({data:CLOUD,updated_at:new Date().toISOString()})
+    });
+    if(!res.ok) throw new Error('sync '+res.status);
+    cloudOK=true; setSync('云端协作已连接 · 借调台账与进度状态全员实时同步',true);
+    return true;
+  }catch(e){
+    cloudOK=false; setSync('云端写入失败，已保存到本机缓存，稍后重试',false);
+    return false;
+  }
+}
+
+/* ============ 页签 ============ */
+function switchTab(name){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('panel-'+name).classList.add('active');
+  const btn=document.querySelector('.tab-btn[data-tab="'+name+'"]');
+  if(btn) btn.classList.add('active');
+  if(name==='overview') renderOverview();
+  if(name==='plan') renderPlan();
+  if(name==='regions') renderRegions();
+  if(name==='stores') renderStores();
+  if(name==='transfer') renderTransfer();
+  if(name==='detail') renderDetail();
+  if(name==='promo') renderPromo();
+  if(name==='supplies') renderSupplies();
+}
+function switchDashboard(sel){
+  const map={
+    hours:'https://djakljlkajd.github.io/moning-dashboard/',
+    hc:'https://djakljlkajd.github.io/moning-dashboard/hc/',
+    turnover:'https://djakljlkajd.github.io/moning-dashboard/turnover/',
+    annual:'https://djakljlkajd.github.io/moning-dashboard/annual-leave/',
+    current:location.href
+  };
+  if(sel.value!=='current'&&map[sel.value]) window.location.href=map[sel.value];
+}
+
+/* ============ 总览 ============ */
+function renderOverview(){
+  const m=D.meta, dl=D.daily;
+  document.getElementById('tagPeak').textContent='峰值日 '+m.peakDay+' 差值 '+m.peakDiff;
+  document.getElementById('tagGap').textContent='8 天累计缺口 '+m.totalStaffGap+' 人次';
+  document.getElementById('ovSub').textContent='数据截至 '+m.asOf;
+
+  const worst=DAYKEYS.reduce((a,k)=>dl[k].diff<dl[a].diff?k:a,DAYKEYS[0]);
+  const cards=[
+    {l:'管理门店',v:m.storeCount,u:'家',s:'13 位大店长分管'},
+    {l:'架构内全职',v:m.hcHead,u:'人',s:'店长'+m.lvl.lv1+' / 中级训'+m.lvl.lv2+' / 初级训'+m.lvl.lv3+' / 服务员'+m.lvl.lv4},
+    {l:'可供班全职',v:m.hcAvail,u:'人',s:'剔除休长假'+m.longLeave+'、预离职'+m.preQuit,hl:false},
+    {l:'峰值日缺口',v:m.peakDiff,u:'人',s:m.peakDay+' 为人力最紧日',hl:true},
+    {l:'缺口门店数',v:dl[worst].shortStores,u:'家',s:m.peakDay+' 当天有缺口门店',hl:true},
+    {l:'需补学生人力',v:m.totalStaffGap,u:'人次',s:'9.30 前招募补齐',hl:true},
+    {l:'9.30 差值',v:dl.d0930.diff,u:'人',s:'需求450 / 全职378 / 学生192',hl:false}
+  ];
+  document.getElementById('ovCards').innerHTML=cards.map(c=>`
+    <div class="metric-card${c.hl?' highlight':''}">
+      <div class="card-label">${esc(c.l)}</div>
+      <div class="card-value${c.hl?' red':''}">${c.v}<span class="card-unit">${c.u}</span></div>
+      <div class="card-sub">${esc(c.s)}</div>
+    </div>`).join('');
+
+  // 走势图
+  const vals=DAYKEYS.map(k=>dl[k].diff);
+  const maxAbs=Math.max(...vals.map(v=>Math.abs(v)),1);
+  const W=Math.max(660,DAYKEYS.length*82), H=210, padL=44, padB=44, padT=22;
+  const bw=(W-padL-16)/DAYKEYS.length;
+  const zeroY=padT+(H-padT-padB)*0.62;
+  let bars='';
+  DAYKEYS.forEach((k,i)=>{
+    const v=dl[k].diff;
+    const h=Math.abs(v)/maxAbs*(H-padT-padB)*0.58;
+    const x=padL+i*bw+bw*0.22, w=bw*0.56;
+    const y=v<0?zeroY:zeroY-h;
+    const col=v<0?'#e74c3c':'#4caf50';
+    bars+=`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="3" fill="${col}" opacity=".88"></rect>`;
+    bars+=`<text x="${x+w/2}" y="${v<0?y-6:y+h+14}" text-anchor="middle" font-size="12" font-weight="bold" fill="${col}">${v>0?'+':''}${v}</text>`;
+    bars+=`<text x="${padL+i*bw+bw/2}" y="${H-12}" text-anchor="middle" font-size="12" fill="#7f8c8d">${dl[k].label}</text>`;
+    bars+=`<text x="${padL+i*bw+bw/2}" y="${H-27}" text-anchor="middle" font-size="10" fill="#b0b8b0">缺${dl[k].shortStores}家</text>`;
+  });
+  document.getElementById('ovChart').innerHTML=`
+    <svg viewBox="0 0 ${W} ${H}" width="100%" style="max-height:250px" preserveAspectRatio="xMidYMid meet">
+      <line x1="${padL-8}" y1="${zeroY}" x2="${W-10}" y2="${zeroY}" stroke="#d9e6c0" stroke-width="1.4"></line>
+      ${bars}
+    </svg>
+    <div class="chart-legend">
+      <span><i class="legend-dot" style="background:#e74c3c"></i>人力缺口（需补学生 / 借调）</span>
+      <span><i class="legend-dot" style="background:#4caf50"></i>人力冗余（可外借）</span>
+    </div>`;
+
+  // TOP10 缺口门店
+  const top=D.transferStores.filter(t=>typeof t.peak==='number'&&t.peak<0)
+    .sort((a,b)=>a.peak-b.peak).slice(0,10);
+  let h=`<thead><tr><th>排名</th><th>门店</th><th>大店长</th><th>商圈</th>${DAYKEYS.map(k=>`<th class="num">${DAYLABEL[k]}</th>`).join('')}<th class="num">峰值缺口</th><th>操作</th></tr></thead><tbody>`;
+  if(!top.length) h+=`<tr><td colspan="${DAYKEYS.length+6}" style="text-align:center;color:#95a5a6;padding:20px">暂无缺口门店</td></tr>`;
+  top.forEach((t,i)=>{
+    h+=`<tr><td>${i+1}</td><td><span class="store-link" onclick="openStoreModal('${esc(t.store)}')">${esc(shortStore(t.store))}</span></td><td>${esc(String(t.area).replace(/大店区/,''))}</td><td>${esc(t.biz)}</td>`;
+    h+=DAYKEYS.map((k,j)=>diffCell(t.days[j])).join('');
+    h+=`<td class="num cell-neg">${t.peak}</td><td><button class="mini-btn" onclick="openLoanModal('${esc(t.store)}')">借调支援</button></td></tr>`;
+  });
+  h+='</tbody>';
+  document.getElementById('ovTopTable').innerHTML=h;
+  document.getElementById('ovFoot').innerHTML=`峰值日 <strong>${m.peakDay}</strong> 全品牌缺口 ${Math.abs(m.peakDiff)} 人，当天 ${dl[worst].shortStores} 家门店需要支援。9.30 与 10.7 整体人力富余，可作为内部借调的资源池。`;
+}
+
+/* ============ 计划推进 ============ */
+const STATUS_LIST=['未开始','进行中','已完成'];
+function planStatus(i){ return CLOUD.plan['p'+i]||D.plan[i].status||'未开始'; }
+function renderPlan(){
+  const ph=document.getElementById('planPhase').value, st=document.getElementById('planStatus').value;
+  let h=`<thead><tr><th>阶段</th><th>项目内容</th><th>开始时间</th><th>如何做</th><th>交付结果 / 衡量标准</th><th>完成时间</th><th>执行人</th><th>负责人</th><th>完成进度</th></tr></thead><tbody>`;
+  let shown=0;
+  D.plan.forEach((p,i)=>{
+    const s=planStatus(i);
+    if(ph!=='all'&&p.phase!==ph) return;
+    if(st!=='all'&&s!==st) return;
+    shown++;
+    h+=`<tr>
+      <td><span class="badge ${p.phase==='前'?'badge-blue':(p.phase==='中'?'badge-orange':'badge-green')}">${esc(p.phase)}</span></td>
+      <td style="white-space:normal;min-width:150px;font-weight:600">${esc(p.task)}</td>
+      <td>${esc(p.start)}</td>
+      <td style="white-space:normal;min-width:230px;color:#666">${esc(p.how)}</td>
+      <td style="white-space:normal;min-width:230px;color:#666">${esc(p.deliverable)}</td>
+      <td>${esc(p.due)}</td>
+      <td>${esc(p.executor)}</td>
+      <td>${esc(p.owner)}</td>
+      <td><span class="status-group">
+        ${STATUS_LIST.map(x=>`<button class="status-btn ${s===x?('on-'+({未开始:'todo',进行中:'doing',已完成:'done'}[x])):''}" onclick="setPlanStatus(${i},'${x}')">${x}</button>`).join('')}
+      </span></td>
+    </tr>`;
+  });
+  if(!shown) h+=`<tr><td colspan="9" style="text-align:center;color:#95a5a6;padding:24px">当前筛选条件下无任务</td></tr>`;
+  h+='</tbody>';
+  document.getElementById('planTable').innerHTML=h;
+
+  const cnt={未开始:0,进行中:0,已完成:0};
+  D.plan.forEach((p,i)=>cnt[planStatus(i)]++);
+  const done=cnt['已完成'], total=D.plan.length;
+  document.getElementById('planProgress').innerHTML=
+    `<strong style="color:#2e8b57">已完成 ${done}</strong> / 进行中 ${cnt['进行中']} / 未开始 ${cnt['未开始']}，共 ${total} 项，完成率 ${Math.round(done/total*100)}%`;
+}
+function setPlanStatus(i,s){
+  CLOUD.plan['p'+i]=s; backupLocal(); renderPlan(); saveCloud();
+}
+function exportPlanCsv(){
+  const rows=[['阶段','项目内容','开始时间','如何做','交付结果','完成时间','执行人','负责人','完成进度']];
+  D.plan.forEach((p,i)=>rows.push([p.phase,p.task,p.start,p.how,p.deliverable,p.due,p.executor,p.owner,planStatus(i)]));
+  downloadCsv('国庆计划推进表',rows);
+}
+
+/* ============ 大店区供班 ============ */
+function fillDaySelect(id){
+  const el=document.getElementById(id);
+  el.innerHTML=DAYS.map(d=>`<option value="${d.key}">${d.label}</option>`).join('');
+}
+function fillMgrSelect(id){
+  const el=document.getElementById(id);
+  el.innerHTML='<option value="all">全部</option>'+MGRS.map(m=>`<option value="${esc(m)}">${esc(m)}</option>`).join('');
+}
+function renderRegions(){
+  const view=document.getElementById('regView').value;
+  const day=document.getElementById('regDay').value;
+  const mgr=document.getElementById('regMgr').value;
+  document.getElementById('regDayLabel').style.display=view==='day'?'':'none';
+  document.getElementById('regDay').style.display=view==='day'?'':'none';
+  const rows=D.regions.filter(r=>mgr==='all'||r.mgr===mgr);
+  let h='';
+  if(view==='day'){
+    h+=`<thead><tr><th>大店区</th><th class="num">门店数</th><th class="num">架构人数</th><th class="num">可供班</th><th class="num">休长假</th><th class="num">预离职</th><th class="num">店长</th><th class="num">中级训</th><th class="num">初级训</th><th class="num">服务员</th><th class="num">需求人数</th><th class="num">可供班全职</th><th class="num">可供班学生</th><th class="num">人力差值</th></tr></thead><tbody>`;
+    let T={stores:0,hcHead:0,hcAvail:0,longLeave:0,preQuit:0,lv1:0,lv2:0,lv3:0,lv4:0,need:0,ft:0,pt:0,diff:0};
+    rows.forEach(r=>{
+      const d=r.days[day];
+      h+=`<tr><td style="font-weight:600">${esc(r.mgr)}</td><td class="num">${n(r.stores)}</td><td class="num">${n(r.hcHead)}</td><td class="num">${n(r.hcAvail)}</td><td class="num">${n(r.longLeave)}</td><td class="num">${n(r.preQuit)}</td><td class="num">${n(r.lv1)}</td><td class="num">${n(r.lv2)}</td><td class="num">${n(r.lv3)}</td><td class="num">${n(r.lv4)}</td><td class="num">${n(d.need)}</td><td class="num">${n(d.ft)}</td><td class="num">${n(d.pt)}</td>${diffCell(d.diff)}</tr>`;
+      ['stores','hcHead','hcAvail','longLeave','preQuit','lv1','lv2','lv3','lv4'].forEach(k=>T[k]+=Number(r[k]||0));
+      ['need','ft','pt','diff'].forEach(k=>T[k]+=Number(d[k]||0));
+    });
+    h+=`<tr class="total-row"><td>汇总</td><td class="num">${T.stores}</td><td class="num">${T.hcHead}</td><td class="num">${T.hcAvail}</td><td class="num">${T.longLeave}</td><td class="num">${T.preQuit}</td><td class="num">${T.lv1}</td><td class="num">${T.lv2}</td><td class="num">${T.lv3}</td><td class="num">${T.lv4}</td><td class="num">${T.need}</td><td class="num">${T.ft}</td><td class="num">${T.pt}</td>${diffCell(T.diff)}</tr>`;
+    const dd=D.daily[day];
+    document.getElementById('regFoot').innerHTML=
+      `${DAYLABEL[day]}：全品牌需求 <strong>${dd.need}</strong> 人，可供班全职 ${dd.ft} 人 + 学生 ${dd.pt} 人，人力差值 <strong class="${dd.diff<0?'cell-neg':'cell-pos'}">${dd.diff>0?'+':''}${dd.diff}</strong> 人${dd.diff<0?`，需在 9.30 前补足学生 ${dd.lackTotal} 人次（涉及 ${dd.shortStores} 家门店）`:`，整体富余，可支援其他门店`}。`;
+  }else{
+    h+=`<thead><tr><th>大店区</th>${DAYKEYS.map(k=>`<th class="num">${DAYLABEL[k]}</th>`).join('')}<th class="num">合计缺口</th></tr></thead><tbody>`;
+    const sum={};
+    rows.forEach(r=>{
+      let neg=0;
+      h+=`<tr><td style="font-weight:600">${esc(r.mgr)}</td>`;
+      DAYKEYS.forEach(k=>{ const v=r.days[k].diff||0; if(v<0) neg+=v; h+=diffCell(v); });
+      h+=`<td class="num ${neg<0?'cell-neg':'cell-zero'}">${neg}</td></tr>`;
+      sum[r.mgr]=neg;
+    });
+    h+=`<tr class="total-row"><td>汇总</td>`;
+    let tot=0;
+    DAYKEYS.forEach(k=>{ const v=D.daily[k].diff; if(v<0) tot+=v; h+=diffCell(v); });
+    h+=`<td class="num">${tot}</td></tr>`;
+    document.getElementById('regFoot').innerHTML=`8 天累计缺口 <strong class="cell-neg">${tot}</strong> 人次，集中在 10.3-10.5 三天。红色为缺口，绿色为冗余。`;
+  }
+  h+='</tbody>';
+  document.getElementById('regTable').innerHTML=h;
+}
+function exportRegionCsv(){
+  const rows=[['大店区','门店数','架构人数','可供班人数','休长假','预离职','店长','中级训练员','初级训练员','服务员']];
+  const head=[]; DAYS.forEach(d=>head.push(d.label+'需求',d.label+'可供班全职',d.label+'可供班学生',d.label+'差值'));
+  const hdr=rows[0].concat(head); const out=[hdr];
+  D.regions.forEach(r=>{
+    const line=[r.mgr,r.stores,r.hcHead,r.hcAvail,r.longLeave,r.preQuit,r.lv1,r.lv2,r.lv3,r.lv4];
+    DAYKEYS.forEach(k=>{ const d=r.days[k]; line.push(d.need,d.ft,d.pt,d.diff); });
+    out.push(line);
+  });
+  downloadCsv('大店区供班汇总',out);
+}
+
+/* ============ 单店供班 ============ */
+function renderStores(){
+  const day=document.getElementById('stDay').value;
+  const mgr=document.getElementById('stMgr').value;
+  const only=document.getElementById('stOnly').value;
+  const q=document.getElementById('stSearch').value.trim();
+  let rows=D.stores.filter(s=>{
+    if(mgr!=='all'&&s.mgr!==mgr) return false;
+    if(q&&s.store.indexOf(q)<0) return false;
+    const v=s.days[day].diff||0;
+    if(only==='gap'&&v>=0) return false;
+    if(only==='surplus'&&v<=0) return false;
+    return true;
+  });
+  rows=rows.slice().sort((a,b)=>(a.days[day].diff||0)-(b.days[day].diff||0));
+  let h=`<thead><tr><th>大店长</th><th>门店名称</th><th class="num">月均业绩</th><th class="num">架构全职</th><th class="num">可供班</th><th class="num">休长假</th><th class="num">预离职</th><th class="num">需求人数</th><th class="num">可供班全职</th><th class="num">可供班学生</th><th class="num">人力差值</th><th>状态</th><th>操作</th></tr></thead><tbody>`;
+  let T={need:0,ft:0,pt:0,diff:0};
+  if(!rows.length) h+=`<tr><td colspan="13" style="text-align:center;color:#95a5a6;padding:24px">无匹配门店</td></tr>`;
+  rows.forEach(s=>{
+    const d=s.days[day];
+    const v=d.diff||0;
+    h+=`<tr>
+      <td>${esc(s.mgr)}</td>
+      <td><span class="store-link" onclick="openStoreModal('${esc(s.store)}')">${esc(shortStore(s.store))}</span></td>
+      <td class="num">${s.rev?Math.round(s.rev/10000)+'万':'-'}</td>
+      <td class="num">${n(s.hcHead)}</td><td class="num">${n(s.hcAvail)}</td>
+      <td class="num">${s.longLeave||'-'}</td><td class="num">${s.preQuit||'-'}</td>
+      <td class="num">${n(d.need)}</td><td class="num">${n(d.ft)}</td><td class="num">${n(d.pt)}</td>
+      ${diffCell(v)}
+      <td>${v<0?'<span class="badge badge-red">需补人</span>':(v>0?'<span class="badge badge-green">可外借</span>':'<span class="badge badge-gray">平衡</span>')}</td>
+      <td><button class="mini-btn" onclick="openLoanModal('${esc(s.store)}')">${v<0?'申请支援':'借出支援'}</button></td>
+    </tr>`;
+    ['need','ft','pt','diff'].forEach(k=>T[k]+=Number(d[k]||0));
+  });
+  h+=`<tr class="total-row"><td colspan="7">显示 ${rows.length} 家门店合计</td><td class="num">${T.need}</td><td class="num">${T.ft}</td><td class="num">${T.pt}</td>${diffCell(T.diff)}<td colspan="2"></td></tr>`;
+  h+='</tbody>';
+  document.getElementById('stTable').innerHTML=h;
+  const dd=D.daily[day];
+  document.getElementById('stFoot').innerHTML=
+    `${DAYLABEL[day]} 全品牌：需求 ${dd.need} 人，差值 <strong class="${dd.diff<0?'cell-neg':'cell-pos'}">${dd.diff>0?'+':''}${dd.diff}</strong> 人。当天有缺口门店 <strong class="cell-neg">${dd.shortStores}</strong> 家，缺口合计 ${dd.lackTotal} 人次。点门店名称可查看 8 天明细与就近借调建议。`;
+}
+function resetStores(){
+  document.getElementById('stDay').selectedIndex=0;
+  document.getElementById('stMgr').value='all';
+  document.getElementById('stOnly').value='all';
+  document.getElementById('stSearch').value='';
+  renderStores();
+}
+function exportStoreCsv(){
+  const rows=[['大店长','门店名称','1-8月月均业绩','架构内全职','可供班全职','休长假','预离职','店长','中级训练员','初级训练员','服务员']];
+  const head=[]; DAYS.forEach(d=>head.push(d.label+'需求',d.label+'可供班全职',d.label+'可供班学生',d.label+'差值'));
+  const out=[rows[0].concat(head)];
+  D.stores.forEach(s=>{
+    const line=[s.mgr,s.store,s.rev,s.hcHead,s.hcAvail,s.longLeave,s.preQuit,s.lv1,s.lv2,s.lv3,s.lv4];
+    DAYKEYS.forEach(k=>{ const d=s.days[k]; line.push(d.need,d.ft,d.pt,d.diff); });
+    out.push(line);
+  });
+  downloadCsv('单店供班明细',out);
+}
+
+/* ============ 门店详情弹窗 ============ */
+function openStoreModal(store){
+  const s=STORE_INFO[store];
+  const t=TRANSFER_INFO[store];
+  document.getElementById('storeTitle').textContent=shortStore(store);
+  if(!s){
+    document.getElementById('storeBody').innerHTML='<div class="empty-tip">该门店暂无单店供班明细数据（未纳入单店测算表）</div>';
+    document.getElementById('storeLoanBtn').onclick=function(){ document.getElementById('storeMask').classList.remove('show'); openLoanModal(store); };
+    document.getElementById('storeMask').classList.add('show'); return;
+  }
+  let h=`<div class="modal-sub"><strong>${esc(store)}</strong> · 大店长 ${esc(s.mgr)}${t?' · '+esc(t.biz):''}<br>架构内全职 ${n(s.hcHead)} 人，可供班全职 ${n(s.hcAvail)} 人（休长假 ${s.longLeave||0}、预离职 ${s.preQuit||0}），1-8 月月均业绩 ${s.rev?Math.round(s.rev/10000)+' 万':'-'}</div>`;
+  h+=`<div class="reco-title">8 天人力测算</div><table style="min-width:0"><thead><tr><th>日期</th><th class="num">需求人数</th><th class="num">可供班全职</th><th class="num">可供班学生</th><th class="num">人力差值</th><th>状态</th></tr></thead><tbody>`;
+  DAYKEYS.forEach(k=>{
+    const d=s.days[k], v=d.diff||0;
+    h+=`<tr><td>${DAYLABEL[k]}</td><td class="num">${n(d.need)}</td><td class="num">${n(d.ft)}</td><td class="num">${n(d.pt)}</td>${diffCell(v)}<td>${v<0?'<span class="badge badge-red">缺口 '+(-v)+'</span>':(v>0?'<span class="badge badge-green">冗余 '+v+'</span>':'<span class="badge badge-gray">平衡</span>')}</td></tr>`;
+  });
+  h+='</tbody></table>';
+
+  const dt=D.detail.filter(x=>x.store===store);
+  if(dt.length){
+    h+=`<div class="reco-title">大店填报供班明细（人员名单）</div><table style="min-width:0"><thead><tr><th>日期</th><th class="num">杯数预估</th><th class="num">日总工时</th><th class="num">需求</th><th class="num">缺口</th><th>全职人员</th><th>学生人员</th></tr></thead><tbody>`;
+    dt.forEach(x=>{
+      h+=`<tr><td>${esc(x.day)}</td><td class="num">${n(x.cups)}</td><td class="num">${n(x.totalH)}</td><td class="num">${n(x.need)}</td>${diffCell(x.diff)}<td style="white-space:normal">${esc(x.ftStaff.join('、')||'-')}</td><td style="white-space:normal">${esc(x.ptStaff.join('、')||'-')}</td></tr>`;
+    });
+    h+='</tbody></table>';
+  }
+  const reco=recoStores(store,'');
+  if(reco.length){
+    h+=`<div class="reco-title">就近可调动资源（同商圈冗余门店）</div>`;
+    reco.slice(0,6).forEach((r,i)=>{
+      h+=`<div class="reco-item${i===0?' best':''}"><span class="rn">${esc(shortStore(r.store))}</span><span class="rb">${esc(r.biz)}</span><span class="rv">可借 ${r.surplus} 人</span>${r.clean?'':'<span class="badge badge-orange">峰值缺'+(-r.peak)+'</span>'}<span class="rb">${esc(r.mgr)}</span></div>`;
+    });
+  }
+  document.getElementById('storeBody').innerHTML=h;
+  document.getElementById('storeLoanBtn').onclick=function(){ document.getElementById('storeMask').classList.remove('show'); openLoanModal(store); };
+  document.getElementById('storeMask').classList.add('show');
+}
+
+/* ============ 借调 ============ */
+function storeSurplus(store){
+  // 返回 8 天中最紧的差值（负数=缺口），正数表示全程冗余
+  const t=TRANSFER_INFO[store];
+  if(!t) return null;
+  const arr=t.days.filter(v=>typeof v==='number');
+  if(!arr.length) return null;
+  return Math.min.apply(null,arr);
+}
+function storeBest(store){
+  // 返回 8 天中最富余的差值
+  const t=TRANSFER_INFO[store];
+  if(!t) return null;
+  const arr=t.days.filter(v=>typeof v==='number');
+  if(!arr.length) return null;
+  return Math.max.apply(null,arr);
+}
+function pairText(peak,best){
+  // 门店可调动能力描述
+  if(peak==null) return {short:'-',long:'数据缺失'};
+  if(peak>0) return {short:'冗余 '+peak,long:`全程冗余，最紧日仍有 ${peak} 人，可用 ${best} 人`};
+  if(peak===0) return {short:'最紧持平',long:`最紧日持平，最富余可借 ${best} 人`};
+  return {short:'缺口 '+(-peak),long:`峰值缺口 ${-peak} 人，可用日最富余 ${best} 人`};
+}
+function storeSurplusDays(store){
+  const t=TRANSFER_INFO[store];
+  if(!t) return [];
+  return t.days.map(v=>typeof v==='number'?v:null);
+}
+function recoStores(store,q){
+  const me=TRANSFER_INFO[store];
+  const myBiz=me?me.biz:'';
+  const list=[];
+  D.transferStores.forEach(t=>{
+    if(t.store===store) return;
+    const nums=t.days.filter(v=>typeof v==='number');
+    if(!nums.length) return;
+    const surplus=Math.max.apply(null,nums);          // 最富余的一天
+    const peak=Math.min.apply(null,nums);             // 最紧的一天
+    if(surplus<=0) return;
+    if(q&&t.store.indexOf(q)<0) return;
+    list.push({
+      store:t.store,biz:t.biz,mgr:String(t.area).replace(/大店区/,''),
+      surplus:surplus,peak:peak,sameBiz:t.biz===myBiz,clean:peak>=0
+    });
+  });
+  // 优先：全程无缺口 > 同商圈 > 可借人数多
+  list.sort((a,b)=>(b.clean-a.clean)||(b.sameBiz-a.sameBiz)||(b.surplus-a.surplus));
+  return list;
+}
+
+let curStore=null;
+function openLoanModal(store){
+  curStore=store;
+  const fromSel=document.getElementById('loanFrom');
+  const toSel=document.getElementById('loanTo');
+  const surplusList=[], gapList=[];
+  D.transferStores.forEach(t=>{
+    const nums=t.days.filter(v=>typeof v==='number');
+    if(!nums.length) return;
+    const mx=Math.max.apply(null,nums), mn=Math.min.apply(null,nums);
+    if(mx>0) surplusList.push({store:t.store,mx:mx,biz:t.biz});
+    if(mn<0) gapList.push({store:t.store,mn:mn,biz:t.biz});
+  });
+  surplusList.sort((a,b)=>b.mx-a.mx);
+  gapList.sort((a,b)=>a.mn-b.mn);
+  const optSur=surplusList.map(x=>`<option value="${esc(x.store)}">${esc(shortStore(x.store))}（冗余${x.mx}）</option>`).join('');
+  const optGap=gapList.map(x=>`<option value="${esc(x.store)}">${esc(shortStore(x.store))}（缺口${-x.mn}）</option>`).join('');
+  fromSel.innerHTML=optSur;
+  toSel.innerHTML=optGap;
+
+  const isGap=store&&storeSurplus(store)!==null&&storeSurplus(store)<0;
+  if(store){
+    if(isGap){
+      toSel.value=store;
+      const reco=recoStores(store,'');
+      if(reco.length) fromSel.value=reco[0].store;
+    }else{
+      fromSel.value=store;
+      const g=D.transferStores.filter(t=>{const ns=t.days.filter(v=>typeof v==='number');return ns.length&&Math.min.apply(null,ns)<0;}).sort((a,b)=>Math.min.apply(null,a.days.filter(v=>typeof v==='number'))-Math.min.apply(null,b.days.filter(v=>typeof v==='number')));
+      if(g.length) toSel.value=g[0].store;
+    }
+    document.getElementById('loanTitle').textContent='借调申请 · '+shortStore(store);
+  }else{
+    document.getElementById('loanTitle').textContent='新增借调申请';
+  }
+  document.getElementById('loanDate').innerHTML=
+    DAYS.map(d=>`<option value="${d.label}">${d.label}</option>`).join('')+
+    `<option value="9.30-10.7 全段">9.30-10.7 全段</option>`;
+  document.getElementById('loanName').value='';
+  document.getElementById('loanNote').value='';
+  document.getElementById('loanOwner').value='';
+  onLoanFromChange();
+  document.getElementById('loanMask').classList.add('show');
+}
+function closeLoanModal(){ document.getElementById('loanMask').classList.remove('show'); }
+function onLoanFromChange(){
+  const f=document.getElementById('loanFrom').value;
+  const t=document.getElementById('loanTo').value;
+  const fs=storeSurplus(f), fb=storeBest(f), ts=storeSurplus(t), tb=storeBest(t);
+  document.getElementById('loanFromHint').textContent=fs!=null?pairText(fs,fb).long:'';
+  document.getElementById('loanToHint').textContent=ts!=null&&ts<0?`该店峰值缺口 ${-ts} 人，急需支援`:'该店全程人力充足';
+  const reco=recoStores(t==null?f:t,'');
+  const box=document.getElementById('recoBox');
+  const target=t||f;
+  const me=TRANSFER_INFO[target];
+  const ft=TRANSFER_INFO[f], tt=TRANSFER_INFO[t];
+  const fa=ft?String(ft.area).replace(/大店区/,''):'-';
+  const ta=tt?String(tt.area).replace(/大店区/,''):'-';
+  document.getElementById('loanSub').innerHTML=
+    `<strong>${esc(shortStore(t||f))}</strong> 需要支援，从 <strong>${esc(shortStore(f))}</strong> 临时借调（${esc(fa)} → ${esc(ta)}）`+
+    `<br>转出门店：${fs==null?'数据缺失':pairText(fs,fb).long}；转入门店：${ts==null?'数据缺失':pairText(ts,tb).short}。`+
+    `借调属临时内部支援，支援人员当日工时仍计入原门店排班，节后归位。`;
+  document.getElementById('recoTitle').textContent=me?`就近可调动资源：${shortStore(target)}（${me.biz||'未知商圈'}）`:'就近可调动资源推荐';
+  if(!reco.length){ box.innerHTML='<div class="empty-tip" style="padding:16px">暂无其他冗余门店</div>'; return; }
+  box.innerHTML=reco.slice(0,8).map(r=>`
+    <div class="reco-item${r.sameBiz?' best':''}">
+      <span class="rn">${esc(shortStore(r.store))}</span>
+      ${r.sameBiz?'<span class="badge badge-green">同商圈</span>':''}
+      ${r.clean?'<span class="badge badge-blue">全程无缺口</span>':'<span class="badge badge-orange">峰值缺'+(-r.peak)+'</span>'}
+      <span class="rb">${esc(r.biz)}</span>
+      <span class="rv">可借 ${r.surplus} 人</span>
+      <span class="rb">${esc(r.mgr)}</span>
+      <button class="mini-btn" onclick="pickFrom('${esc(r.store)}')">选为转出</button>
+    </div>`).join('');
+}
+function pickFrom(store){
+  document.getElementById('loanFrom').value=store;
+  onLoanFromChange();
+}
+async function submitLoan(){
+  const from=document.getElementById('loanFrom').value;
+  const to=document.getElementById('loanTo').value;
+  const name=document.getElementById('loanName').value.trim();
+  const date=document.getElementById('loanDate').value;
+  const note=document.getElementById('loanNote').value.trim();
+  const owner=document.getElementById('loanOwner').value.trim();
+  if(!from||!to){ alert('请选择转出门店与转入门店'); return; }
+  if(from===to){ alert('转出门店与转入门店不能相同'); return; }
+  if(!name){ alert('请填写转入伙伴姓名'); return; }
+  const btn=document.getElementById('loanSubmit');
+  btn.disabled=true; btn.textContent='提交中…';
+  CLOUD.loans.unshift({from:from,to:to,name:name,date:date,note:note,owner:owner,ts:new Date().toISOString(),by:(owner||'')});
+  backupLocal();
+  renderTransfer(); renderLoanTable();
+  const ok=await saveCloud();
+  btn.disabled=false; btn.textContent='提交借调申请';
+  closeLoanModal();
+  if(ok) alert('借调申请已提交，已同步至云端，全体大店长可见。');
+  else alert('借调申请已保存到本机缓存，云端同步失败，请稍后重试。');
+}
+function renderLoanTable(){
+  const el=document.getElementById('loanTable');
+  document.getElementById('loanCount').textContent=CLOUD.loans.length?`共 ${CLOUD.loans.length} 条`:'';
+  document.getElementById('tabBadgeTransfer').textContent=CLOUD.loans.length;
+  document.getElementById('tabBadgeTransfer').style.display=CLOUD.loans.length?'':'none';
+  let h=`<thead><tr><th>提交时间</th><th>转出门店</th><th>转入门店</th><th>转入伙伴</th><th>支援日期</th><th>对接人</th><th>备注</th><th>操作</th></tr></thead><tbody>`;
+  if(!CLOUD.loans.length){
+    h+=`<tr><td colspan="8" style="text-align:center;color:#95a5a6;padding:22px">暂无借调记录。点门店行「申请借调」或右上角「＋ 新增借调申请」开始登记。</td></tr>`;
+  }else{
+    CLOUD.loans.forEach((l,i)=>{
+      const d=l.ts?new Date(l.ts):null;
+      const ts=d?`${d.getMonth()+1}.${d.getDate()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`:'-';
+      h+=`<tr><td>${ts}</td><td>${esc(shortStore(l.from))}</td><td><span class="badge badge-red">${esc(shortStore(l.to))}</span></td><td style="font-weight:600">${esc(l.name)}</td><td>${esc(l.date)}</td><td>${esc(l.owner||'-')}</td><td style="white-space:normal;max-width:200px">${esc(l.note||'-')}</td><td><button class="mini-btn danger" onclick="delLoan(${i})">删除</button></td></tr>`;
+    });
+  }
+  h+='</tbody>';
+  el.innerHTML=h;
+}
+async function delLoan(i){
+  if(!confirm('确认删除这条借调记录？')) return;
+  CLOUD.loans.splice(i,1); backupLocal(); renderLoanTable(); renderTransfer(); await saveCloud();
+}
+
+function renderTransfer(){
+  const biz=document.getElementById('trBiz').value;
+  const type=document.getElementById('trType').value;
+  const q=document.getElementById('trSearch').value.trim();
+  if(document.getElementById('trBiz').options.length<=1){
+    const bs=Array.from(new Set(D.transferStores.map(t=>t.biz).filter(Boolean))).sort();
+    document.getElementById('trBiz').innerHTML='<option value="all">全部商圈</option>'+bs.map(b=>`<option value="${esc(b)}">${esc(b)}</option>`).join('');
+    document.getElementById('trBiz').value=biz;
+  }
+  let rows=D.transferStores.filter(t=>{
+    if(biz!=='all'&&t.biz!==biz) return false;
+    if(q&&t.store.indexOf(q)<0) return false;
+    const nums=t.days.filter(v=>typeof v==='number');
+    if(!nums.length) return type==='all';
+    const mx=Math.max.apply(null,nums), mn=Math.min.apply(null,nums);
+    if(type==='gap'&&mn>=0) return false;
+    if(type==='surplus'&&mx<=0) return false;
+    return true;
+  });
+  rows=rows.slice().sort((a,b)=>{
+    const ma=Math.min.apply(null,a.days.filter(v=>typeof v==='number').concat([0]));
+    const mb=Math.min.apply(null,b.days.filter(v=>typeof v==='number').concat([0]));
+    return ma-mb;
+  });
+  let h=`<thead><tr><th>大店长</th><th>门店</th><th>商圈</th>${DAYKEYS.map(k=>`<th class="num">${DAYLABEL[k]}</th>`).join('')}<th class="num">峰值缺口</th><th>类型</th><th>操作</th></tr></thead><tbody>`;
+  if(!rows.length) h+=`<tr><td colspan="${DAYKEYS.length+6}" style="text-align:center;color:#95a5a6;padding:24px">无匹配门店</td></tr>`;
+  let gapN=0,surN=0;
+  rows.forEach(t=>{
+    const nums=t.days.filter(v=>typeof v==='number');
+    const has=nums.length>0;
+    const mx=has?Math.max.apply(null,nums):0, mn=has?Math.min.apply(null,nums):0;
+    if(!has){
+      h+=`<tr><td>${esc(String(t.area).replace(/大店区/,''))}</td><td>${esc(shortStore(t.store))}</td><td>${esc(t.biz)}</td>${t.days.map(()=>'<td class="num cell-zero">-</td>').join('')}<td class="num cell-zero">-</td><td><span class="badge badge-gray">数据缺失</span></td><td></td></tr>`;
+      return;
+    }
+    if(mn<0) gapN++; if(mx>0) surN++;
+    h+=`<tr><td>${esc(String(t.area).replace(/大店区/,''))}</td><td><span class="store-link" onclick="openStoreModal('${esc(t.store)}')">${esc(shortStore(t.store))}</span></td><td>${esc(t.biz)}</td>`;
+    h+=t.days.map(v=>diffCell(v)).join('');
+    h+=`<td class="num ${mn<0?'cell-neg':'cell-pos'}">${mn<0?mn:'-0'}</td>`;
+    h+=`<td>${mn<0?'<span class="badge badge-red">缺口 '+(-mn)+'</span>':'<span class="badge badge-green">冗余 '+mx+'</span>'}</td>`;
+    h+=`<td><button class="mini-btn" onclick="openLoanModal('${esc(t.store)}')">${mn<0?'申请支援':'借出支援'}</button></td></tr>`;
+  });
+  h+='</tbody>';
+  document.getElementById('trTable').innerHTML=h;
+  renderLoanTable();
+  document.getElementById('trFoot').innerHTML=
+    `共 ${rows.length} 家门店，其中缺口门店 <strong class="cell-neg">${gapN}</strong> 家、有冗余可外借门店 <strong class="cell-pos">${surN}</strong> 家。同商圈门店优先互相支援，可减少跨区调动成本。`;
+}
+
+/* ============ 供班明细 ============ */
+function renderDetail(){
+  const day=document.getElementById('dtDay').value;
+  const mgr=document.getElementById('dtMgr').value;
+  const only=document.getElementById('dtOnly').value;
+  const q=document.getElementById('dtSearch').value.trim();
+  const rows=D.detail.filter(x=>{
+    if(x.day!==DAYLABEL[day]) return false;
+    if(mgr!=='all'&&x.mgr!==mgr) return false;
+    if(q&&x.store.indexOf(q)<0) return false;
+    if(only==='gap'&&(x.diff||0)>=0) return false;
+    if(only==='loweff'){ if(x.eff==null||x.redEff==null||x.eff>=x.redEff) return false; }
+    return true;
+  }).sort((a,b)=>(a.diff||0)-(b.diff||0));
+  let h=`<thead><tr><th>大店长</th><th>门店</th><th class="num">杯数预估</th><th class="num">生产工时</th><th class="num">其他水吧工时</th><th class="num">非生产工时</th><th class="num">日总工时</th><th class="num">杯效</th><th class="num">红线杯效</th><th class="num">需求人力</th><th class="num">可供班全职</th><th class="num">可供班学生</th><th class="num">服管支援</th><th class="num">人力缺口</th><th>人员名单</th></tr></thead><tbody>`;
+  let T={cups:0,totalH:0,need:0,ft:0,pt:0,mgSup:0,diff:0};
+  if(!rows.length) h+=`<tr><td colspan="15" style="text-align:center;color:#95a5a6;padding:24px">无匹配数据</td></tr>`;
+  rows.forEach(x=>{
+    const other=(x.openH||0)+(x.closeH||0)+(x.boardH||0)+(x.prepH||0)+(x.replenH||0)+(x.tidyH||0);
+    h+=`<tr>
+      <td>${esc(x.mgr)}</td>
+      <td><span class="store-link" onclick="openStoreModal('${esc(x.store)}')">${esc(shortStore(x.store))}</span></td>
+      <td class="num">${n(x.cups)}</td><td class="num">${n(x.prodH)}</td>
+      <td class="num">${other?Math.round(other*10)/10:'-'}</td>
+      <td class="num">${n(x.nonProdH)}</td><td class="num">${n(x.totalH)}</td>
+      <td class="num ${(x.eff!=null&&x.redEff!=null&&x.eff<x.redEff)?'cell-neg':''}">${n(x.eff)}</td>
+      <td class="num cell-zero">${n(x.redEff)}</td>
+      <td class="num">${n(x.need)}</td><td class="num">${n(x.ft)}</td><td class="num">${n(x.pt)}</td><td class="num">${n(x.mgSup)}</td>
+      ${diffCell(x.diff)}
+      <td style="white-space:normal;max-width:280px;font-size:11.5px;color:#666">${esc([x.ftStaff.join('、'),x.ptStaff.join('、')].filter(Boolean).join(' | ')||'-')}</td>
+    </tr>`;
+    ['cups','totalH','need','ft','pt','mgSup','diff'].forEach(k=>T[k]+=Number(x[k]||0));
+  });
+  h+=`<tr class="total-row"><td colspan="2">合计 ${rows.length} 家</td><td class="num">${T.cups}</td><td colspan="3"></td><td class="num">${Math.round(T.totalH*10)/10}</td><td colspan="2"></td><td class="num">${T.need}</td><td class="num">${T.ft}</td><td class="num">${T.pt}</td><td class="num">${T.mgSup}</td>${diffCell(T.diff)}<td></td></tr>`;
+  h+='</tbody>';
+  document.getElementById('dtTable').innerHTML=h;
+  document.getElementById('dtFoot').innerHTML=
+    `${DAYLABEL[day]} 共 ${rows.length} 家门店有填报记录，合计需求 ${T.need} 人、可供班全职 ${T.ft} 人 + 学生 ${T.pt} 人、服管支援 ${T.mgSup} 人，人力缺口 <strong class="${T.diff<0?'cell-neg':'cell-pos'}">${T.diff}</strong>。杯效低于红线 13.5 的门店已标红。`;
+}
+function exportDetailCsv(){
+  const rows=[['大店长','门店','日期','杯数预估','生产工时','日总工时','杯效','红线杯效','需求人力','可供班全职','可供班学生','服管支援','人力缺口','全职人员','学生人员','服管人员']];
+  D.detail.forEach(x=>rows.push([x.mgr,x.store,x.day,x.cups,x.totalH,x.eff,x.redEff,x.need,x.ft,x.pt,x.mgSup,x.diff,x.ftStaff.join('、'),x.ptStaff.join('、'),x.mgStaff.join('、')]));
+  downloadCsv('供班明细_大店填',rows);
+}
+
+/* ============ 宣发 ============ */
+function renderPromo(){
+  const el=document.getElementById('pmType');
+  const types=Array.from(new Set(D.promo.concat(CLOUD.promo).map(r=>r[3]).filter(Boolean)));
+  if(el.options.length<=1){ el.innerHTML='<option value="all">全部</option>'+types.map(t=>`<option value="${esc(t)}">${esc(t)}</option>`).join(''); }
+  const t=el.value;
+  const all=D.promo.concat(CLOUD.promo);
+  const rows=all.filter(r=>t==='all'||r[3]===t);
+  const head=D.promoHead;
+  let h='<thead><tr>'+head.map(x=>`<th>${esc(x)}</th>`).join('')+'<th>来源</th></tr></thead><tbody>';
+  if(!rows.length) h+=`<tr><td colspan="${head.length+1}" style="text-align:center;color:#95a5a6;padding:24px">暂无宣发记录，点「＋ 新增宣发记录」登记</td></tr>`;
+  const base=D.promo.length;
+  rows.forEach((r,i)=>{
+    const idx=all.indexOf(r);
+    h+='<tr>'+head.map(c=>`<td style="white-space:normal;max-width:200px">${esc(r[head.indexOf(c)]||'-')}</td>`).join('');
+    h+=`<td>${idx<base?'<span class="badge badge-gray">源表</span>':'<span class="badge badge-blue">在线新增</span>'}</td></tr>`;
+  });
+  h+='</tbody>';
+  document.getElementById('pmTable').innerHTML=h;
+  document.getElementById('pmFoot').innerHTML=`共 ${rows.length} 条宣发记录，覆盖 ${types.length} 类素材。可在节中持续补充上扬案例与每日战报。`;
+}
+function openPromoModal(){ document.getElementById('promoMask').classList.add('show'); }
+async function submitPromo(){
+  const g=id=>document.getElementById(id).value.trim();
+  const row=[g('pmDate'),g('pmRegion'),g('pmStore')||'-',g('pmKind'),g('pmForm'),g('pmTopic'),g('pmTime'),g('pmExec'),g('pmData'),g('pmOwner'),g('pmNote')];
+  if(!row[0]||!row[5]){ alert('请至少填写日期与素材主题'); return; }
+  CLOUD.promo.unshift(row); backupLocal();
+  document.getElementById('promoMask').classList.remove('show');
+  ['pmDate','pmRegion','pmStore','pmKind','pmForm','pmTopic','pmTime','pmExec','pmData','pmOwner','pmNote'].forEach(x=>document.getElementById(x).value='');
+  document.getElementById('pmType').innerHTML='<option value="all">全部</option>';
+  renderPromo(); await saveCloud();
+}
+function exportPromoCsv(){
+  const rows=[D.promoHead];
+  D.promo.concat(CLOUD.promo).forEach(r=>rows.push(r));
+  downloadCsv('国庆宣发记录表',rows);
+}
+
+/* ============ 暖心物资 ============ */
+const SUP_STORES=(function(){
+  // 以 109 家门店为清单基础，源表已填则带上源值
+  const src={}; (D.supplies||[]).forEach(r=>{ if(r[0]) src[r[0]]=r; });
+  const list=D.transferStores.map(t=>({store:t.store,area:String(t.area).replace(/大店区/,'')}));
+  return list.map(x=>{
+    const r=src[x.store]||['','','','','','','', ''];
+    return {store:x.store,area:x.area,box:r[1]||'',boxImg:r[2]||'',tea:r[3]||'',teaImg:r[4]||'',fix:r[5]||'',checker:r[6]||'',date:r[7]||''};
+  });
+})();
+function spState(store){
+  if(CLOUD.supplies&&CLOUD.supplies[store]) return CLOUD.supplies[store];
+  const r=SUP_STORES.find(x=>x.store===store);
+  if(r&&(r.box==='已到位'||r.tea==='已到位')) return {box:r.box==='已到位',tea:r.tea==='已到位'};
+  return {box:false,tea:false};
+}
+function renderSupplies(){
+  const only=document.getElementById('spOnly').value;
+  let done=0;
+  const rows=SUP_STORES.filter(x=>{
+    const st=spState(x.store);
+    const ok=st.box&&st.tea;
+    if(ok) done++;
+    if(only==='done') return ok;
+    if(only==='todo') return !ok;
+    return true;
+  });
+  let h=`<thead><tr><th>大店长</th><th>门店</th><th style="text-align:center">小药箱到位</th><th style="text-align:center">茶歇到位</th><th>整改完成</th><th>检查人</th><th>检查日期</th><th>状态</th></tr></thead><tbody>`;
+  if(!rows.length) h+=`<tr><td colspan="8" style="text-align:center;color:#95a5a6;padding:24px">无匹配门店</td></tr>`;
+  const total=SUP_STORES.length;
+  rows.forEach(x=>{
+    const st=spState(x.store);
+    const ok=st.box&&st.tea;
+    h+=`<tr>
+      <td>${esc(x.area)}</td><td>${esc(shortStore(x.store))}</td>
+      <td style="text-align:center"><input type="checkbox" ${st.box?'checked':''} onchange="toggleSup('${esc(x.store)}','box',this.checked)" style="width:17px;height:17px;cursor:pointer;accent-color:#7cb342"></td>
+      <td style="text-align:center"><input type="checkbox" ${st.tea?'checked':''} onchange="toggleSup('${esc(x.store)}','tea',this.checked)" style="width:17px;height:17px;cursor:pointer;accent-color:#7cb342"></td>
+      <td>${esc(x.fix||'-')}</td><td>${esc(x.checker||'-')}</td><td>${esc(x.date||'-')}</td>
+      <td>${ok?'<span class="badge badge-green">已齐备</span>':'<span class="badge badge-orange">待跟进</span>'}</td>
+    </tr>`;
+  });
+  h+='</tbody>';
+  document.getElementById('spTable').innerHTML=h;
+  document.getElementById('supTotal').textContent=total;
+  const pct=Math.round(done/total*100);
+  document.getElementById('supProgress').innerHTML=
+    `物资到位进度<span class="sub">9.28 前需 100% 完成</span>
+     <div style="margin-top:8px;display:flex;align-items:center;gap:10px">
+       <div class="bar-track" style="flex:1;max-width:420px;height:9px"><div class="bar-fill" style="width:${pct}%"></div></div>
+       <span style="font-size:12.5px;color:#558b2f;font-weight:700">${done} / ${total} 家（${pct}%）</span>
+     </div>`;
+}
+async function toggleSup(store,kind,val){
+  const st=spState(store); st[kind]=val;
+  CLOUD.supplies[store]=st; backupLocal(); renderSupplies(); await saveCloud();
+}
+function exportSupCsv(){
+  const rows=[['大店长','门店','小药箱到位','茶歇到位','整改完成','检查人','检查日期']];
+  SUP_STORES.forEach(x=>{const st=spState(x.store);rows.push([x.area,x.store,st.box?'已到位':'未到位',st.tea?'已到位':'未到位',x.fix,x.checker,x.date]);});
+  downloadCsv('暖心物资跟进',rows);
+}
+
+/* ============ 工具 ============ */
+function downloadCsv(name,rows){
+  const csv=rows.map(r=>r.map(c=>{const s=String(c==null?'':c);return /[",\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;}).join(',')).join('\n');
+  const blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob); a.download=name+'.csv'; a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+/* ============ 初始化 ============ */
+(async function init(){
+  fillDaySelect('regDay'); fillDaySelect('stDay'); fillDaySelect('dtDay');
+  fillMgrSelect('regMgr'); fillMgrSelect('stMgr'); fillMgrSelect('dtMgr');
+  await loadCloud();
+  renderOverview();
+  switchTab('overview');
+  // 借调弹窗选择联动
+  document.getElementById('loanTo').addEventListener('change',onLoanFromChange);
+  document.getElementById('loanMask').addEventListener('click',function(e){ if(e.target===this) closeLoanModal(); });
+  document.getElementById('storeMask').addEventListener('click',function(e){ if(e.target===this) this.classList.remove('show'); });
+  document.getElementById('promoMask').addEventListener('click',function(e){ if(e.target===this) this.classList.remove('show'); });
+})();
+</script>
+</body>
+</html>

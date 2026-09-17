@@ -184,7 +184,7 @@ td.col-hl{background:#f7fcf0;}
 
   <!-- 逻辑条 -->
   <div class="logic-bar">
-    <div><strong>测算逻辑：</strong>全职为长期固定用工，学生为灵活兼职用工。国庆短期高峰先投放可供班全职，缺口部分在 9/30 前招募可供班学生补齐。可供班人数 = 架构人数 − 休长假 − 预离职。人力差值 = 可供班全职 + 可供班学生 − 需求人数。</div>
+    <div id="logicText"></div>
     <div class="logic-tags">
       <span class="logic-tag tag-info" id="tagMgrs">大店长 —</span>
       <span class="logic-tag tag-info" id="tagStores">门店 —</span>
@@ -820,6 +820,9 @@ function exportGapCsv(){
 /* ============ 总览 ============ */
 function renderOverview(){
   const m=D.meta, dl=D.daily;
+  document.getElementById('logicText').innerHTML=
+    (m.purpose?`<strong>开展目的：</strong>${esc(m.purpose)}<br>`:'')+
+    (m.goal?`<strong>达成目标：</strong>${esc(m.goal)}`:'');
   document.getElementById('tagMgrs').textContent='大店长 '+MGRS.length+' 人';
   document.getElementById('tagStores').textContent='门店 '+D.transferStores.length+' 家';
   document.getElementById('tagDays').textContent='覆盖 '+DAYLABEL[DAYKEYS[0]]+'-'+DAYLABEL[DAYKEYS[DAYKEYS.length-1]]+' 共 '+DAYKEYS.length+' 天';

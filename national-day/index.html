@@ -640,6 +640,18 @@ tbody td.num{text-align:right;font-variant-numeric:tabular-nums;}
   </div>
 </div>
 
+<!-- 通用确认弹窗（替代原生 confirm，避免浏览器拦截导致按钮无反应） -->
+<div class="modal-mask" id="askMask" style="z-index:220">
+  <div class="modal" style="max-width:430px">
+    <div class="modal-head"><span>操作确认</span><button class="modal-close" onclick="closeAsk(false)">×</button></div>
+    <div class="modal-body"><div id="askMsg" style="font-size:13.5px;line-height:1.8;white-space:pre-line;color:#3d3a38"></div></div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeAsk(false)">取消</button>
+      <button class="btn" onclick="closeAsk(true)">确定</button>
+    </div>
+  </div>
+</div>
+
 <!-- 图片大图预览 -->
 <div class="modal-mask" id="imgMask" style="z-index:210">
   <div style="position:relative;margin:auto;max-width:94vw">
@@ -1625,24 +1637,38 @@ function savePoolRow(i){
   renderPool();
 }
 
+/* 通用确认弹窗：原生 confirm 可能被浏览器"阻止此页面创建对话框"静默拦截，导致按钮看似无反应 */
+let ASK_CB=null;
+function askConfirm(msg,cb){
+  ASK_CB=cb;
+  document.getElementById('askMsg').textContent=msg;
+  document.getElementById('askMask').classList.add('show');
+}
+function closeAsk(ok){
+  document.getElementById('askMask').classList.remove('show');
+  const cb=ASK_CB; ASK_CB=null;
+  if(ok&&cb) cb();
+}
 function confirmLoan(btn){
   const k=btn.getAttribute('data-lk');
   if(!k) return;
   const l=(CLOUD.loans||[]).find(x=>loanKey(x)===k);
   if(!l) return;
   if(l.status==='已确认'){ alert('这条借调已确认过，无需重复确认。'); return; }
-  if(!confirm(`确认这条借调申请？\n\n转出：${shortStore(l.from)}\n转入：${shortStore(l.to)}\n日期：${l.date} · 借调 ${l.name}（1 人）\n\n确认后：转出门店当日冗余 -1、转入门店当日缺口 -1，下方明细表差值与借调推荐将同步更新，该店当日冗余扣完后不会再被推荐。`)) return;
-  commit({t:'loan.confirm',k:k,at:new Date().toISOString()});
-  renderLoanTable(); renderTransfer();
+  askConfirm(`确认这条借调申请？\n\n转出：${shortStore(l.from)}\n转入：${shortStore(l.to)}\n日期：${l.date} · 借调 ${l.name}（1 人）\n\n确认后：转出门店当日冗余 -1、转入门店当日缺口 -1，下方明细表差值与借调推荐将同步更新，该店当日冗余扣完后不会再被推荐。`,()=>{
+    commit({t:'loan.confirm',k:k,at:new Date().toISOString()});
+    renderLoanTable(); renderTransfer();
+  });
 }
 async function delLoan(btn){
   const k=btn.getAttribute('data-lk');
   if(!k) return;
   const l=(CLOUD.loans||[]).find(x=>loanKey(x)===k);
   const tip=l&&l.status==='已确认'?'这条借调已确认，删除后双方门店的人力差值会同步回补。确认删除？':'确认删除这条借调记录？';
-  if(!confirm(tip)) return;
-  commit({t:'loan.del',k:k});   // 按记录唯一键删除，避免并发下索引错位删错行
-  renderLoanTable(); renderTransfer();
+  askConfirm(tip,()=>{
+    commit({t:'loan.del',k:k});   // 按记录唯一键删除，避免并发下索引错位删错行
+    renderLoanTable(); renderTransfer();
+  });
 }
 
 function renderTransfer(){
@@ -2085,15 +2111,16 @@ async function onSupImg(input,kind){
 }
 async function delSupImg(kind){
   if(!SP_EDIT||!SP_IMGS[kind]) return;
-  if(!confirm('删除这张照片？')) return;
   const key=SP_EDIT.store+'::'+kind;
-  try{ await saveImgs(SP_EDIT.mgr,imgs=>{ delete imgs[key]; }); }catch(e){}
-  SP_IMGS[kind]=null;
-  const st=Object.assign({},spState(SP_EDIT.store));
-  st[kind==='box'?'boxImg':'teaImg']=false;
-  commit({t:'sup.set',k:SP_EDIT.store,v:st});
-  renderSupImgBox(kind);
-  renderSupplies();
+  askConfirm('删除这张照片？',async()=>{
+    try{ await saveImgs(SP_EDIT.mgr,imgs=>{ delete imgs[key]; }); }catch(e){}
+    SP_IMGS[kind]=null;
+    const st=Object.assign({},spState(SP_EDIT.store));
+    st[kind==='box'?'boxImg':'teaImg']=false;
+    commit({t:'sup.set',k:SP_EDIT.store,v:st});
+    renderSupImgBox(kind);
+    renderSupplies();
+  });
 }
 function submitSup(){
   if(!SP_EDIT) return;
@@ -2233,6 +2260,7 @@ function downloadCsv(name,rows){
   document.getElementById('gapMask').addEventListener('click',function(e){ if(e.target===this) closeGapModal(); });
   document.getElementById('spMask').addEventListener('click',function(e){ if(e.target===this) closeSupModal(); });
   document.getElementById('imgMask').addEventListener('click',function(e){ if(e.target===this) this.classList.remove('show'); });
+  document.getElementById('askMask').addEventListener('click',function(e){ if(e.target===this) closeAsk(false); });
   // 多人协作保护：每 60 秒自动补推未同步改动；联网 / 切回标签页时拉取云端最新
   setInterval(function(){ if(PENDING.length&&!syncing) flushPending(); },60000);
   window.addEventListener('online',function(){ flushPending(); loadCloud().then(rerenderCurrent); });

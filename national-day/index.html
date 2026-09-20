@@ -2144,7 +2144,12 @@ function exportSupCsv(){
 const MGR_STORES = {};                       // 大店长 -> 分管门店列表
 MGRS.forEach(m=>MGR_STORES[m]=[]);
 D.stores.forEach(s=>{ if(MGR_STORES[s.mgr]) MGR_STORES[s.mgr].push(s.store); });
-const CAL_TOTAL = MGRS.length*DAYKEYS.length;
+// HRBP 三人（周丽/杨梦琳/戴嘉伟）：排在表格最下方，分管门店列显示「HRBP」，卡岗可选全部门店
+const CAL_EXTRA=['周丽','杨梦琳','戴嘉伟'];
+const CAL_ALL=MGRS.concat(CAL_EXTRA);
+CAL_EXTRA.forEach(m=>MGR_STORES[m]=D.transferStores.map(t=>t.store));
+const CAL_TOTAL = CAL_ALL.length*DAYKEYS.length;
+function calScope(m){ return CAL_EXTRA.indexOf(m)>=0?'HRBP':MGR_STORES[m].length+'家'; }
 
 function calKey(mgr,dk){ return mgr+'::'+dk; }
 function calGet(mgr,dk){ return (CLOUD.cal||{})[calKey(mgr,dk)]||null; }
@@ -2153,17 +2158,17 @@ function renderCal(){
   const view=document.getElementById('calView').value;
   const daySel=document.getElementById('calDay');
   daySel.style.display=view==='day'?'':'none';
-  let filled=0; MGRS.forEach(m=>DAYKEYS.forEach(k=>{ if(calGet(m,k)) filled++; }));
+  let filled=0; CAL_ALL.forEach(m=>DAYKEYS.forEach(k=>{ if(calGet(m,k)) filled++; }));
   document.getElementById('calProgress').innerHTML=
     `行事历已安排 <strong class="cell-pos">${filled}</strong> / ${CAL_TOTAL} 格`+
     `${filled<CAL_TOTAL?`，待安排 <strong class="cell-neg">${CAL_TOTAL-filled}</strong> 格`:''}`+
-    ` · ${MGRS.length} 位大店长 × ${DAYKEYS.length} 天`;
+    ` · ${MGRS.length} 位大店长 + ${CAL_EXTRA.length} 位 HRBP × ${DAYKEYS.length} 天`;
 
   let h='';
   if(view==='matrix'){
-    h+='<thead><tr><th>大店长</th><th>分管门店</th>'+DAYS.map(d=>`<th>${esc(d.label)}</th>`).join('')+'</tr></thead><tbody>';
-    MGRS.forEach(m=>{
-      h+=`<tr><td><strong>${esc(m)}</strong></td><td class="num">${MGR_STORES[m].length}家</td>`;
+    h+='<thead><tr><th>大店长 / HRBP</th><th>分管门店</th>'+DAYS.map(d=>`<th>${esc(d.label)}</th>`).join('')+'</tr></thead><tbody>';
+    CAL_ALL.forEach(m=>{
+      h+=`<tr><td><strong>${esc(m)}</strong>${CAL_EXTRA.indexOf(m)>=0?' <span class="badge badge-blue">BP</span>':''}</td><td class="num">${calScope(m)}</td>`;
       DAYKEYS.forEach(k=>{
         const c=calGet(m,k);
         if(c){
@@ -2179,19 +2184,19 @@ function renderCal(){
   }else{
     const dk=daySel.value||DAYKEYS[0];
     const dd=D.daily[dk];
-    h+='<thead><tr><th>大店长</th><th>分管门店</th><th>卡岗门店</th><th>行事历安排</th><th class="num">当日差值</th><th>操作</th></tr></thead><tbody>';
-    MGRS.forEach(m=>{
+    h+='<thead><tr><th>大店长 / HRBP</th><th>分管门店</th><th>卡岗门店</th><th>行事历安排</th><th class="num">当日差值</th><th>操作</th></tr></thead><tbody>';
+    CAL_ALL.forEach(m=>{
       const r=D.regions.find(x=>x.mgr===m);
       const c=calGet(m,dk);
       const v=r&&r.days[dk]?r.days[dk].diff:null;
-      h+=`<tr><td><strong>${esc(m)}</strong></td><td class="num">${MGR_STORES[m].length}家</td>`+
+      h+=`<tr><td><strong>${esc(m)}</strong>${CAL_EXTRA.indexOf(m)>=0?' <span class="badge badge-blue">BP</span>':''}</td><td class="num">${calScope(m)}</td>`+
         `<td>${c?`<span class="badge ${c.store==='机动支援'?'badge-blue':'badge-green'}">${esc(c.store==='机动支援'?'机动':shortStore(c.store))}</span>`:'<span class="badge badge-gray">待安排</span>'}</td>`+
         `<td>${c?esc(c.note||'—'):'—'}</td>`+
         (v==null?'<td class="num cell-zero">-</td>':`<td class="num ${v<0?'cell-neg':(v>0?'cell-pos':'cell-zero')}">${v>0?'+':''}${v}</td>`)+
         `<td><button class="mini-btn" onclick="openCalModal('${esc(m)}','${dk}')">填写</button></td></tr>`;
     });
     h+='</tbody>';
-    document.getElementById('calFoot').innerHTML=`${DAYLABEL[dk]} 单日视图：全品牌需求 ${dd.need} 人，差值 ${dd.diff>0?'+':''}${dd.diff} 人。差值为该大店长所辖门店合计。`;
+    document.getElementById('calFoot').innerHTML=`${DAYLABEL[dk]} 单日视图：全品牌需求 ${dd.need} 人，差值 ${dd.diff>0?'+':''}${dd.diff} 人。差值为该大店长所辖门店合计；HRBP 行无区域差值，按巡店/支援安排填写。`;
   }
   document.getElementById('calTable').innerHTML=h;
 }
@@ -2207,7 +2212,9 @@ function openCalModal(mgr,dk){
   const c=calGet(mgr,dk);
   if(c){ sel.value=c.store; if(sel.value!==c.store){ opts+=`<option value="${esc(c.store)}">${esc(shortStore(c.store))}（原填写）</option>`; sel.innerHTML=opts; sel.value=c.store; } }
   document.getElementById('calNote').value=c?c.note||'':'';
-  document.getElementById('calSub').textContent=`填写后全员可见。该日 ${mgr} 分管 ${MGR_STORES[mgr].length} 家门店的卡岗与行程安排。`;
+  document.getElementById('calSub').textContent=CAL_EXTRA.indexOf(mgr)>=0
+    ?`填写后全员可见。${mgr}（HRBP）当日巡店 / 跨区支援的卡岗与行程安排。`
+    :`填写后全员可见。该日 ${mgr} 分管 ${MGR_STORES[mgr].length} 家门店的卡岗与行程安排。`;
   document.getElementById('calMask').classList.add('show');
 }
 function closeCalModal(){ document.getElementById('calMask').classList.remove('show'); CAL_EDIT=null; }

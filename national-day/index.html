@@ -385,7 +385,7 @@ tbody td.num{text-align:right;font-variant-numeric:tabular-nums;}
       <div class="description-bar-title">人员借调</div>
       <div class="description-list">
         <div class="description-item">人员借调统一在本栏办理：人力富足门店可向缺口门店临时借调支援，点门店行「申请借调」或右上角「＋ 新增借调申请」登记</div>
-        <div class="description-item"><strong>冗余人员登记</strong>：只需登记 10.3-10.6 高峰 4 天（其余日期缺口不大不要求填写），大店长登记各店单日冗余伙伴姓名后，借调申请即可精确到具体个人</div>
+        <div class="description-item"><strong>冗余人员登记</strong>：按 9.30-10.7 逐日登记各店冗余伙伴姓名（高峰 4 天优先，9.30 与 10.7 有冗余也建议填写），借调申请即可精确到具体个人</div>
         <div class="description-item">系统按所选日期对齐缺口与冗余，按商圈就近推荐冗余门店，缺口门店可直接看到可借人来源</div>
         <div class="description-item">提交后写入云端，13 位大店长实时互见；每条借调需人工「确认」后生效 —— 确认即锁定 1 人调动，转出店当日冗余 -1、转入店当日缺口 -1，扣完冗余的门店不会再被推荐，防止一店多借</div>
       </div>
@@ -1580,8 +1580,8 @@ function renderLoanTable(){
   el.innerHTML=h;
 }
 /* ============ 冗余人员登记（大店长确认各店单日冗余伙伴姓名） ============ */
-// 只登记 10.3-10.6 高峰 4 天（9.30-10.2 与 10.7 缺口不大，不要求填写）
-const POOL_DAYS=['d1003','d1004','d1005','d1006'];
+// 登记范围：9.30-10.7 全周期 8 天（部分大店长 9.30 与 10.7 也有借调需求）
+const POOL_DAYS=DAYKEYS.slice();
 function poolList(store,label){
   // 某店某日已登记的冗余伙伴名单
   if(label===SPAN){

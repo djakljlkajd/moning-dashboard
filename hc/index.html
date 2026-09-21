@@ -834,11 +834,11 @@
 
 </div><!-- end container -->
 
-<script src="data.js?v=20260915d"></script>
-<script src="stores.js?v=20260915d"></script>
-<script src="details.js?v=20260915d"></script>
-<script src="staff_lookup.js?v=20260915d"></script>
-<script src="store_base.js?v=20260915d"></script>
+<script src="data.js?v=20260921a"></script>
+<script src="stores.js?v=20260921a"></script>
+<script src="details.js?v=20260921a"></script>
+<script src="staff_lookup.js?v=20260921a"></script>
+<script src="store_base.js?v=20260921a"></script>
 <script>
 const D = window.DASHBOARD_DATA;
 let specialLeaveExtra = [];
@@ -996,7 +996,7 @@ document.getElementById('recruit-number').textContent = D.recruitFinal.value || 
 function renderProgressCard(type, cfg, title, footNote) {
     const recruit = cfg.recruit || 0;
     const arrived = cfg.arrived || 0;
-    const rate = recruit > 0 ? Math.round(arrived / recruit * 100) : 0;
+    const rate = recruit > 0 ? Math.floor(arrived / recruit * 100) : 0;
     const rateZero = (recruit > 0 && arrived === 0);
     const arrowSvg = '<svg viewBox="0 0 24 24"><path d="M4 2 L4 20 L9 15 L12 21 L15 20 L12 14 L18 14 Z"/></svg>';
     // 新人明细统计：按类型读取对应线上新增记录数
@@ -1251,7 +1251,7 @@ function renderCards(source) {
             { label: "花名册在职合计", sub: "(AE列/人)", value: getAETotal(), red: false, highlight: false },
             { label: "特殊请假合计", sub: "(H列/人)", value: slCount, red: true, highlight: false },
             { label: "预离职合计", sub: "(I列/人)", value: plCount, red: true, highlight: false },
-            { label: "9月全职缺口", sub: "(BA列/人)", value: getBAGapTotal(), red: true, highlight: true },
+            { label: "10月全职缺口", sub: "(人)", value: getBAGapTotal(), red: true, highlight: true },
             { label: "撤店合计", sub: "(L列/家)", value: sum.closed, red: false, highlight: false }
         ];
     } else {
@@ -1261,7 +1261,7 @@ function renderCards(source) {
             if (c.label === '花名册在职合计') return { ...c, value: getAETotal(), sub: '(AE列/人)' };
             if (c.label === '特殊请假合计') return { ...c, value: slCount };
             if (c.label === '预离职合计') return { ...c, value: plCount };
-            if (c.label === '9月全职缺口') return { ...c, value: getBAGapTotal(), sub: '(BA列/人)' };
+            if (c.label === '10月全职缺口') return { ...c, value: getBAGapTotal(), sub: '(人)' };
             return c;
         });
     }
@@ -1272,7 +1272,7 @@ function renderCards(source) {
     const storeHcTotal = storeHcBaseAdd + storeHcExtraAdd;
     const shcIdx = cards.findIndex(c => c.label === '预离职合计');
     if (shcIdx >= 0) cards.splice(shcIdx + 1, 0, { label: '单店特殊新增HC人数', sub: '(人)', value: storeHcTotal, red: true, highlight: false });
-    const clickableCards = ['特殊请假合计', '预离职合计', '撤店合计', '单店特殊新增HC人数', '9月全职缺口'];
+    const clickableCards = ['特殊请假合计', '预离职合计', '撤店合计', '单店特殊新增HC人数', '10月全职缺口'];
     const arrowSvg = '<svg viewBox="0 0 24 24"><path d="M4 2 L4 20 L9 15 L12 21 L15 20 L12 14 L18 14 Z"/></svg>';
     const cardsRow = document.getElementById('cards-row');
     cardsRow.innerHTML = '';
@@ -1307,14 +1307,14 @@ const detailMap = {
     '预离职合计': '预离职',
     '撤店合计': '撤店',
     '单店特殊新增HC人数': '单店特殊新增HC',
-    '9月全职缺口': '9月单店缺口'
+    '10月全职缺口': '10月单店缺口'
 };
 const detailColumnsMap = {
     '特殊请假': ['大店长', '门店', '工号', '姓名', '开始时间', '结束时间', '休息天数', '备注原因'],
     '预离职': ['大店长', '门店', '工号', '姓名', '备注原因'],
     '撤店': ['大店长', '门店', '工号', '姓名', '备注原因'],
     '单店特殊新增HC': ['大店长', '门店', '新增人员数量', '新增HC原因'],
-    '9月单店缺口': ['大店长', '门店', '全职需求合计', '架构人数', '标准HC差值', '最终合计招募人数']
+    '10月单店缺口': ['大店长', '门店', '全职需求合计', '架构人数', '标准HC差值', '最终合计招募人数']
 };
 // 单店特殊新增HC：合并门店底表 AZ 列（非零）+ 用户线上新增记录
 function getStoreHcBaseRecords() {
@@ -1352,9 +1352,10 @@ function getStoreHcGradeRow(storeName) {
 }
 
 // 花名册在职合计卡片值：门店底表 AE 列（架构人数）之和，按当前大店长筛选
-// ROSTER_ADJUST：花名册在职合计人工修正值（2026-09-15 口径调整 +2 → 410）
+// ROSTER_ADJUST：花名册在职合计人工修正值（门店底表架构合计 408）
+// 2026-09-15 口径 +2 → 410；2026-09-21 口径调整 -8 → 400
 // 仅计入「全部」维度；按大店长筛选时保持各店架构人数原值
-var ROSTER_ADJUST = 2;
+var ROSTER_ADJUST = -8;
 function getAETotal() {
     var total = 0;
     Object.keys(window.STORE_BASE || {}).forEach(function(store) {
@@ -1366,8 +1367,11 @@ function getAETotal() {
     return total;
 }
 
-// 9月全职缺口卡片值：门店底表 BA 列（最终合计招募人数）之和，按当前大店长筛选
+// 10月全职缺口卡片值：BA_OVERRIDE 非 null 时为人工口径（2026-09-21 定为 0，10月缺口待区经确认）
+// 为 null 时回落到门店底表 BA 列（最终合计招募人数）之和，按当前大店长筛选
+var BA_OVERRIDE = 0;
 function getBAGapTotal() {
+    if (BA_OVERRIDE !== null && BA_OVERRIDE !== undefined) return BA_OVERRIDE;
     var total = 0;
     Object.keys(window.STORE_BASE || {}).forEach(function(store) {
         var b = window.STORE_BASE[store];
@@ -1377,8 +1381,9 @@ function getBAGapTotal() {
     return total;
 }
 
-// 9月全职缺口明细：门店底表 BA 列（最终合计招募人数 > 0 的门店）
+// 10月全职缺口明细：BA_OVERRIDE 生效时不展示9月门店底表明细（口径已切换）
 function buildStoreGapData() {
+    if (BA_OVERRIDE !== null && BA_OVERRIDE !== undefined) return [];
     var rows = [];
     Object.keys(window.STORE_BASE || {}).forEach(function(store) {
         var b = window.STORE_BASE[store];
@@ -1423,7 +1428,7 @@ function openDetailModal(cardLabel) {
         all.forEach(function(r) {
             STORE_HC_GRADE_COLS.forEach(function(h) { if (r[h] === undefined || r[h] === null) r[h] = '—'; });
         });
-    } else if (key === '9月单店缺口') {
+    } else if (key === '10月单店缺口') {
         all = buildStoreGapData();
         all.forEach(r => { r._isAdded = false; });
     } else {
@@ -1479,7 +1484,7 @@ function openDetailModal(cardLabel) {
             : (key === '单店特殊新增HC')
                 ? '（门店底表 ' + getStoreHcBaseRecords().length + ' 条 / 线上新增 ' + storeHcExtra.length + ' 条' + (storeHcHidden.length > 0 ? ' / 已隐藏 ' + storeHcHidden.length + ' 条' : '') + '）'
                 : '';
-    const gapTotal = (key === '9月单店缺口')
+    const gapTotal = (key === '10月单店缺口')
         ? filtered.reduce((a, r) => a + (r['最终合计招募人数'] || 0), 0)
         : null;
     title.textContent = cardLabel + '明细' + (currentDimension !== 'all' ? '（当前：' + currentDimension + '）' : '') + ' - 共 ' + filtered.length + ' 条' + slExtraInfo +
@@ -1498,7 +1503,7 @@ function openDetailModal(cardLabel) {
             '<tbody>' + filtered.map(r => {
                 let cells = finalColumns.map(h => {
                     let v = (r[h] === undefined || r[h] === null ? '' : r[h]);
-                    if (key === '9月单店缺口' && (h === '最终合计招募人数' || h === '标准HC差值') && v !== '') v = fmtVal(v);
+                    if (key === '10月单店缺口' && (h === '最终合计招募人数' || h === '标准HC差值') && v !== '') v = fmtVal(v);
                     const titleAttr = String(v).replace(/"/g, '&quot;');
                     return '<td title="' + titleAttr + '">' + v + '</td>';
                 }).join('');
@@ -1867,6 +1872,23 @@ async function loadSpecialLeaveExtra() {
             const cloudNhStudentIds = new Set(cloudNhStudent.map(r => r.id));
             newHiresFullExtra = [...cloudNhFull, ...localNhFull.filter(r => !cloudNhFullIds.has(r.id))];
             newHiresStudentExtra = [...cloudNhStudent, ...localNhStudent.filter(r => !cloudNhStudentIds.has(r.id))];
+            // 2026-09-21 自愈：共享行曾被外部整体覆盖导致云端键被清空，
+            // 若本地 localStorage 合并贡献了云端没有的数据，自动回推一次帮所有人恢复
+            const needRecovery =
+                (specialLeaveExtra.length > cloudData.length) ||
+                (airportCertExtra.length > cloudAir.length) ||
+                (storeHcExtra.length > cloudShc.length) ||
+                (newHiresFullExtra.length > cloudNhFull.length) ||
+                (newHiresStudentExtra.length > cloudNhStudent.length) ||
+                (specialLeaveHidden.length > cloudHidden.length) ||
+                (airportCertHidden.length > cloudAirHidden.length) ||
+                (Object.keys(specialLeaveVisit).length > Object.keys(data.special_leave_visit || {}).length) ||
+                (Object.keys(specialLeaveType).length > Object.keys(data.special_leave_type || {}).length) ||
+                (Object.keys(specialLeaveFinish).length > Object.keys(data.special_leave_finish || {}).length);
+            if (needRecovery) {
+                console.log('检测到云端数据缺失，本地有备份数据，自动回推恢复');
+                scheduleSLSync();
+            }
         }
         slBackupToLocal();
     } catch(e) {

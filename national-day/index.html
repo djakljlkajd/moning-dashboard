@@ -430,8 +430,7 @@ tbody td.num{text-align:right;font-variant-numeric:tabular-nums;}
       <div class="description-bar-title">供班明细（大店填报）</div>
       <div class="description-list">
         <div class="description-item">大店长依据门店业绩目标推算需求人力，并列出可供班全职、学生、服管支援人员名单</div>
-        <div class="description-item">日总工时由生产工时 + 其他水吧工时 + 非生产工时构成（杯数预估与生产工时属敏感数据，已不在本看板展示）</div>
-        <div class="description-item">红线杯效为 13.5，实际杯效低于红线说明当日工时投入偏高</div>
+        <div class="description-item">工时与杯效类数据（杯数预估/生产工时/其他水吧工时/非生产工时/日总工时/杯效/红线杯效）属敏感数据，已不在本看板展示</div>
       </div>
     </div>
     <div class="filter-bar">
@@ -440,7 +439,7 @@ tbody td.num{text-align:right;font-variant-numeric:tabular-nums;}
       <label>大店长：</label>
       <select id="dtMgr" onchange="renderDetail()"><option value="all">全部</option></select>
       <label>仅看：</label>
-      <select id="dtOnly" onchange="renderDetail()"><option value="all">全部</option><option value="gap">有缺口</option><option value="loweff">杯效低于红线</option></select>
+      <select id="dtOnly" onchange="renderDetail()"><option value="all">全部</option><option value="gap">有缺口</option></select>
       <input type="text" id="dtSearch" placeholder="搜索门店" oninput="renderDetail()">
       <div class="spacer"></div>
       <button class="btn btn-ghost" onclick="exportDetailCsv()">导出 CSV</button>
@@ -1294,9 +1293,9 @@ function openStoreModal(store){
 
   const dt=D.detail.filter(x=>x.store===store);
   if(dt.length){
-    h+=`<div class="reco-title">大店填报供班明细（人员名单）</div><table style="min-width:0"><thead><tr><th>日期</th><th class="num">日总工时</th><th class="num">需求</th><th class="num">缺口</th><th>全职人员</th><th>学生人员</th></tr></thead><tbody>`;
+    h+=`<div class="reco-title">大店填报供班明细（人员名单）</div><table style="min-width:0"><thead><tr><th>日期</th><th class="num">需求</th><th class="num">缺口</th><th>全职人员</th><th>学生人员</th></tr></thead><tbody>`;
     dt.forEach(x=>{
-      h+=`<tr><td>${esc(x.day)}</td><td class="num">${n(x.totalH)}</td><td class="num">${n(x.need)}</td>${diffCell(x.diff)}<td style="white-space:normal">${esc(x.ftStaff.join('、')||'-')}</td><td style="white-space:normal">${esc(x.ptStaff.join('、')||'-')}</td></tr>`;
+      h+=`<tr><td>${esc(x.day)}</td><td class="num">${n(x.need)}</td>${diffCell(x.diff)}<td style="white-space:normal">${esc(x.ftStaff.join('、')||'-')}</td><td style="white-space:normal">${esc(x.ptStaff.join('、')||'-')}</td></tr>`;
     });
     h+='</tbody></table>';
   }
@@ -1797,36 +1796,30 @@ function renderDetail(){
     if(mgr!=='all'&&x.mgr!==mgr) return false;
     if(q&&x.store.indexOf(q)<0) return false;
     if(only==='gap'&&(x.diff||0)>=0) return false;
-    if(only==='loweff'){ if(x.eff==null||x.redEff==null||x.eff>=x.redEff) return false; }
     return true;
   }).sort((a,b)=>(a.diff||0)-(b.diff||0));
-  let h=`<thead><tr><th>大店长</th><th>门店</th><th class="num">其他水吧工时</th><th class="num">非生产工时</th><th class="num">日总工时</th><th class="num">杯效</th><th class="num">红线杯效</th><th class="num">需求人力</th><th class="num">可供班全职</th><th class="num">可供班学生</th><th class="num">服管支援</th><th class="num">人力缺口</th><th>人员名单</th></tr></thead><tbody>`;
-  let T={totalH:0,need:0,ft:0,pt:0,mgSup:0,diff:0};
-  if(!rows.length) h+=`<tr><td colspan="13" style="text-align:center;color:#95a5a6;padding:24px">无匹配数据</td></tr>`;
+  let h=`<thead><tr><th>大店长</th><th>门店</th><th class="num">需求人力</th><th class="num">可供班全职</th><th class="num">可供班学生</th><th class="num">服管支援</th><th class="num">人力缺口</th><th>人员名单</th></tr></thead><tbody>`;
+  let T={need:0,ft:0,pt:0,mgSup:0,diff:0};
+  if(!rows.length) h+=`<tr><td colspan="8" style="text-align:center;color:#95a5a6;padding:24px">无匹配数据</td></tr>`;
   rows.forEach(x=>{
-    const other=(x.openH||0)+(x.closeH||0)+(x.boardH||0)+(x.prepH||0)+(x.replenH||0)+(x.tidyH||0);
     h+=`<tr>
       <td>${esc(x.mgr)}</td>
       <td><span class="store-link" onclick="openStoreModal('${esc(x.store)}')">${esc(shortStore(x.store))}</span></td>
-      <td class="num">${other?Math.round(other*10)/10:'-'}</td>
-      <td class="num">${n(x.nonProdH)}</td><td class="num">${n(x.totalH)}</td>
-      <td class="num ${(x.eff!=null&&x.redEff!=null&&x.eff<x.redEff)?'cell-neg':''}">${n(x.eff)}</td>
-      <td class="num cell-zero">${n(x.redEff)}</td>
       <td class="num">${n(x.need)}</td><td class="num">${n(x.ft)}</td><td class="num">${n(x.pt)}</td><td class="num">${n(x.mgSup)}</td>
       ${diffCell(x.diff)}
       <td style="white-space:normal;max-width:280px;font-size:11.5px;color:#666">${esc([x.ftStaff.join('、'),x.ptStaff.join('、')].filter(Boolean).join(' | ')||'-')}</td>
     </tr>`;
-    ['totalH','need','ft','pt','mgSup','diff'].forEach(k=>T[k]+=Number(x[k]||0));
+    ['need','ft','pt','mgSup','diff'].forEach(k=>T[k]+=Number(x[k]||0));
   });
-  h+=`<tr class="total-row"><td colspan="2">合计 ${rows.length} 家</td><td colspan="2"></td><td class="num">${Math.round(T.totalH*10)/10}</td><td colspan="2"></td><td class="num">${T.need}</td><td class="num">${T.ft}</td><td class="num">${T.pt}</td><td class="num">${T.mgSup}</td>${diffCell(T.diff)}<td></td></tr>`;
+  h+=`<tr class="total-row"><td colspan="2">合计 ${rows.length} 家</td><td class="num">${T.need}</td><td class="num">${T.ft}</td><td class="num">${T.pt}</td><td class="num">${T.mgSup}</td>${diffCell(T.diff)}<td></td></tr>`;
   h+='</tbody>';
   document.getElementById('dtTable').innerHTML=h;
   document.getElementById('dtFoot').innerHTML=
-    `${DAYLABEL[day]} 共 ${rows.length} 家门店有填报记录，合计需求 ${T.need} 人、可供班全职 ${T.ft} 人 + 学生 ${T.pt} 人、服管支援 ${T.mgSup} 人，人力缺口 <strong class="${T.diff<0?'cell-neg':'cell-pos'}">${T.diff}</strong>。杯效低于红线 13.5 的门店已标红。`;
+    `${DAYLABEL[day]} 共 ${rows.length} 家门店有填报记录，合计需求 ${T.need} 人、可供班全职 ${T.ft} 人 + 学生 ${T.pt} 人、服管支援 ${T.mgSup} 人，人力缺口 <strong class="${T.diff<0?'cell-neg':'cell-pos'}">${T.diff}</strong>。`;
 }
 function exportDetailCsv(){
-  const rows=[['大店长','门店','日期','日总工时','杯效','红线杯效','需求人力','可供班全职','可供班学生','服管支援','人力缺口','全职人员','学生人员','服管人员']];
-  D.detail.forEach(x=>rows.push([x.mgr,x.store,x.day,x.totalH,x.eff,x.redEff,x.need,x.ft,x.pt,x.mgSup,x.diff,x.ftStaff.join('、'),x.ptStaff.join('、'),x.mgStaff.join('、')]));
+  const rows=[['大店长','门店','日期','需求人力','可供班全职','可供班学生','服管支援','人力缺口','全职人员','学生人员','服管人员']];
+  D.detail.forEach(x=>rows.push([x.mgr,x.store,x.day,x.need,x.ft,x.pt,x.mgSup,x.diff,x.ftStaff.join('、'),x.ptStaff.join('、'),x.mgStaff.join('、')]));
   downloadCsv('供班明细_大店填',rows);
 }
 

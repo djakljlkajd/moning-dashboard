@@ -22,7 +22,7 @@ window.DASHBOARD_DATA = {
     {
       "label": "花名册在职合计",
       "sub": "(G列/人)",
-      "value": 410,
+      "value": 400,
       "red": false,
       "highlight": false
     },
@@ -41,9 +41,9 @@ window.DASHBOARD_DATA = {
       "highlight": false
     },
     {
-      "label": "9月全职缺口",
-      "sub": "(K列/人)",
-      "value": 19,
+      "label": "10月全职缺口",
+      "sub": "(人)",
+      "value": 0,
       "red": true,
       "highlight": true
     },
@@ -65,8 +65,8 @@ window.DASHBOARD_DATA = {
       "arrived": 0
     },
     "student": {
-      "recruit": 175,
-      "arrived": 48
+      "recruit": 178,
+      "arrived": 167
     }
   },
   "region": {

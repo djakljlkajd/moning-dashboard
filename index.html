@@ -202893,11 +202893,17 @@ async function syncViolationData(){
   violationWriteLock=true;
   try{
     backupToLocal();
-    const payload={
-      violation_over13:violationCache.over13,
-      violation_consec8:violationCache.consec8,
-      zero_full_edits:zeroFullCache
-    };
+    // 2026-09-21 修复：改为读-改-写。旧逻辑整体覆盖 data 列，
+    // 会把共享行 id=1 里其他看板（HC看板等）的键全部抹掉
+    const readRes=await fetch(SUPA_URL+'/rest/v1/'+SUPA_TABLE+'?id=eq.1&select=data',{
+      headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY}
+    });
+    if(!readRes.ok)throw new Error('read '+readRes.status);
+    const rows=await readRes.json();
+    const curData=(rows&&rows.length)?(rows[0].data||{}):{};
+    curData.violation_over13=violationCache.over13;
+    curData.violation_consec8=violationCache.consec8;
+    curData.zero_full_edits=zeroFullCache;
     const res=await fetch(SUPA_URL+'/rest/v1/'+SUPA_TABLE+'?id=eq.1',{
       method:'PATCH',
       headers:{
@@ -202906,7 +202912,7 @@ async function syncViolationData(){
         'Content-Type':'application/json',
         'Prefer':'return=minimal'
       },
-      body:JSON.stringify({data:payload,updated_at:new Date().toISOString()})
+      body:JSON.stringify({data:curData,updated_at:new Date().toISOString()})
     });
     if(!res.ok){
       const txt=await res.text();

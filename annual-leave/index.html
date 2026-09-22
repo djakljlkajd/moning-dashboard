@@ -326,7 +326,7 @@
 <div class="description-bar">
     <div class="description-bar-title">📋 看板相关说明</div>
     <div class="description-list">
-        <div class="description-item">1、<strong>进度口径：</strong>期初剩余（8/25）- 9/15剩余 = 9月已完成年假天数；已完成 ÷ 期初 = 本月完成进度</div>
+        <div class="description-item">1、<strong>进度口径：</strong>期初剩余（8/25）- 9/22剩余 = 9月已完成年假天数；已完成 ÷ 期初 = 本月完成进度</div>
         <div class="description-item">2、<strong>目标口径：</strong>「9月目标」为各大店长在员工明细弹窗中<strong>自行填写的计划合计</strong>（非固定值），「达标差额」= 目标 - 本月已休，差额 &gt; 0 即未达标（红色标记行）；未填写目标的大店区不计入未达标</div>
         <div class="description-item">3、<strong>明细填报：</strong>点击大店长行查看员工明细，点击员工「计划填写」单元格可登记天数及<strong>具体休息日期区间（必填）</strong>，支持分多段，数据实时同步云端</div>
     </div>
@@ -443,7 +443,7 @@ function staffOfRegion(region) {
     return D.staff.filter(s => s.大店区 === region);
 }
 function staffGt3(region) {
-    return D.staff.filter(s => (region === 'all' || s.大店区 === region) && s.剩余915 > 3);
+    return D.staff.filter(s => (region === 'all' || s.大店区 === region) && s.left > 3);
 }
 function sepRestFor(empNo) {
     return sepRestCache[empNo];
@@ -554,7 +554,7 @@ function openDetailModal(cardLabel) {
 
     if (cardLabel === '未达标大店区') {
         const list = D.regions.rows.map(deriveRegion).filter(isFailRow).sort((a, b) => b.差额 - a.差额);
-        const columns = ['大店长', '员工数', '期初剩余', '9/15剩余', '本月已休', '9月目标(自填)', '还差', '完成率'];
+        const columns = ['大店长', '员工数', '期初剩余', '9/22剩余', '本月已休', '9月目标(自填)', '还差', '完成率'];
         title.textContent = '9月未达标大店区（已休 < 自填目标） - 共 ' + list.length + ' 个';
         foot.textContent = '还差合计 ' + list.reduce((a, r) => a + r.差额, 0) + ' 天 · 点击行可直接打开该区员工明细 · 未填写目标的大店区不计入';
         body.innerHTML = list.length === 0
@@ -564,7 +564,7 @@ function openDetailModal(cardLabel) {
                   '<td><strong>' + r.name + '</strong></td>' +
                   '<td>' + r.员工数 + '</td>' +
                   '<td>' + r.期初剩余 + '</td>' +
-                  '<td class="val-915">' + r.剩余915 + '</td>' +
+                  '<td class="val-915">' + r.left + '</td>' +
                   '<td class="val-done">' + r.已休 + '</td>' +
                   '<td>' + r.目标 + '</td>' +
                   '<td><span class="badge-fail">还差 ' + r.差额 + ' 天</span></td>' +
@@ -574,10 +574,10 @@ function openDetailModal(cardLabel) {
         return;
     }
 
-    // 剩余年假>3天 员工明细（9/15 口径）
-    const list = staffGt3('all').sort((a, b) => b.剩余915 - a.剩余915);
-    const columns = ['工号', '姓名', '大店区', '门店', '剩余年假(9/15)'];
-    title.textContent = '剩余年假>3天员工明细（截至 9/15）- 共 ' + list.length + ' 人';
+    // 剩余年假>3天 员工明细（9/22 口径）
+    const list = staffGt3('all').sort((a, b) => b.left - a.left);
+    const columns = ['工号', '姓名', '大店区', '门店', '剩余年假(9/22)'];
+    title.textContent = '剩余年假>3天员工明细（截至 9/22）- 共 ' + list.length + ' 人';
     foot.textContent = '共 ' + list.length + ' 人 · 建议尽快安排调休';
     if (list.length === 0) {
         body.innerHTML = '<div class="modal-empty">暂无数据</div>';
@@ -590,7 +590,7 @@ function openDetailModal(cardLabel) {
                     '<td><strong>' + r.姓名 + '</strong></td>' +
                     '<td>' + r.大店区 + '</td>' +
                     '<td class="text-left">' + r.门店 + '</td>' +
-                    '<td><span class="badge-warn">' + r.剩余915 + '天</span></td>' +
+                    '<td><span class="badge-warn">' + r.left + '天</span></td>' +
                 '</tr>';
             }).join('') + '</tbody></table>';
     }
@@ -606,13 +606,13 @@ function openRegionModal(region) {
     const title = document.getElementById('modal-title');
     const body = document.getElementById('modal-body');
     const foot = document.getElementById('modal-foot');
-    const list = staffOfRegion(region).slice().sort((a, b) => b.剩余915 - a.剩余915);
+    const list = staffOfRegion(region).slice().sort((a, b) => b.left - a.left);
     const row = deriveRegion(D.regions.rows.find(r => r.大店区 === region) || { 已休: 0 });
-    const columns = ['工号', '姓名', '门店', '期初剩余', '9/15剩余', '本月已休', '计划填写（天数/日期）', '剩余>3天'];
+    const columns = ['工号', '姓名', '门店', '期初剩余', '9/22剩余', '本月已休', '计划填写（天数/日期）', '剩余>3天'];
     const regionTotal = row.目标;
     const regionFilled = row.计划已填;
     title.textContent = region + ' 员工年假明细 - 共 ' + list.length + ' 人';
-    foot.textContent = '本区：期初 ' + (row.期初剩余 || 0) + ' → 9/15 剩余 ' + (row.剩余915 || 0) +
+    foot.textContent = '本区：期初 ' + (row.期初剩余 || 0) + ' → 9/22 剩余 ' + (row.left || 0) +
         '，已休 ' + (row.已休 || 0) + ' 天 / 目标 ' + (row.目标 || 0) + ' 天（' +
         ((row.目标 || 0) > 0 ? ((row.差额 > 0) ? '还差 ' + row.差额 + ' 天' : '✅ 已达标') : '目标待填写') + '）· 计划已填 ' + regionFilled + '/' + list.length + ' 人合计 ' + regionTotal + ' 天';
     if (list.length === 0) {
@@ -635,10 +635,10 @@ function openRegionModal(region) {
                     '<td><strong>' + r.姓名 + '</strong></td>' +
                     '<td class="text-left">' + r.门店 + '</td>' +
                     '<td>' + initTxt + '</td>' +
-                    '<td>' + (r.剩余915 > 3 ? '<span class="badge-warn">' + r.剩余915 + '天</span>' : '<span class="val-915">' + r.剩余915 + '</span>') + '</td>' +
+                    '<td>' + (r.left > 3 ? '<span class="badge-warn">' + r.left + '天</span>' : '<span class="val-915">' + r.left + '</span>') + '</td>' +
                     '<td>' + doneTxt + '</td>' +
                     '<td class="sep-rest-cell" onclick="event.stopPropagation();openRestModal(' + JSON.stringify(r.工号).replace(/"/g, '&quot;') + ')">' + restCell + '</td>' +
-                    '<td>' + (r.剩余915 > 3 ? '<span class="badge-warn">是</span>' : '<span class="badge-ok">否</span>') + '</td>' +
+                    '<td>' + (r.left > 3 ? '<span class="badge-warn">是</span>' : '<span class="badge-ok">否</span>') + '</td>' +
                 '</tr>';
             }).join('') + '</tbody></table>';
     }
@@ -655,13 +655,13 @@ const regionHead = document.getElementById('region-head');
 const regionTbody = document.getElementById('region-tbody');
 const regionFoot = document.getElementById('region-foot');
 
-// 表头：期初 → 9/15 → 已休 → 进度 → 目标 → 差额
+// 表头：期初 → 9/22 → 已休 → 进度 → 目标 → 差额
 const REGION_COLS = [
-    '大店长', '门店数', '员工数', '期初剩余', '9/15剩余', '本月已休', '完成进度', '9月目标', '达标差额', '剩余年假>3天'
+    '大店长', '门店数', '员工数', '期初剩余', '9/22剩余', '本月已休', '完成进度', '9月目标', '达标差额', '剩余年假>3天'
 ];
 const REGION_SUBS = {
-    3: '（8/25）', 4: '（截至9/15）', 5: '（期初-9/15）', 6: '（已休/期初）',
-    7: '（大店长自填）', 8: '（目标-已休）', 9: '（9/15口径）'
+    3: '（8/25）', 4: '（截至9/22）', 5: '（期初-9/22）', 6: '（已休/期初）',
+    7: '（大店长自填）', 8: '（目标-已休）', 9: '（9/22口径）'
 };
 regionHead.innerHTML = REGION_COLS.map((h, i) =>
     '<th>' + h + (REGION_SUBS[i] ? '<span class="col-sub">' + REGION_SUBS[i] + '</span>' : '') + '</th>'
@@ -716,7 +716,7 @@ function renderRegions() {
             '<td>' + r.门店数 + '</td>' +
             '<td>' + r.员工数 + '</td>' +
             '<td><strong>' + r.期初剩余 + '</strong></td>' +
-            '<td class="val-915">' + r.剩余915 + '</td>' +
+            '<td class="val-915">' + r.left + '</td>' +
             '<td class="val-done">' + r.已休 + '</td>' +
             '<td>' + rateBar(r.完成率) + '</td>' +
             '<td>' + (r.目标 > 0 ? '<strong>' + r.目标 + '</strong> 天' : '<span style="color:#bbb;">— 点击填写</span>') + '</td>' +
@@ -730,9 +730,9 @@ function renderRegions() {
     if (shown.length > 0) {
         const sum = shown.reduce((a, r) => ({
             门店数: a.门店数 + r.门店数, 员工数: a.员工数 + r.员工数,
-            期初剩余: a.期初剩余 + r.期初剩余, 剩余915: a.剩余915 + r.剩余915,
+            期初剩余: a.期初剩余 + r.期初剩余, left: a.left + r.left,
             已休: a.已休 + r.已休, 目标: a.目标 + r.目标, 差额: a.差额 + r.差额, gt3: a.gt3 + r.gt3
-        }), { 门店数: 0, 员工数: 0, 期初剩余: 0, 剩余915: 0, 已休: 0, 目标: 0, 差额: 0, gt3: 0 });
+        }), { 门店数: 0, 员工数: 0, 期初剩余: 0, left: 0, 已休: 0, 目标: 0, 差额: 0, gt3: 0 });
         const isAll = (region === 'all' && status === 'all' && !q);
         const rate = sum.期初剩余 ? Math.round(sum.已休 / sum.期初剩余 * 1000) / 10 : 0;
         regionFoot.innerHTML =
@@ -740,7 +740,7 @@ function renderRegions() {
             '<td><strong>' + sum.门店数 + '</strong></td>' +
             '<td><strong>' + sum.员工数 + '</strong></td>' +
             '<td><strong>' + sum.期初剩余 + '</strong></td>' +
-            '<td><strong class="val-915">' + sum.剩余915 + '</strong></td>' +
+            '<td><strong class="val-915">' + sum.left + '</strong></td>' +
             '<td><strong class="val-done">' + sum.已休 + '</strong></td>' +
             '<td><strong>' + rate + '%</strong></td>' +
             '<td><strong>' + (sum.目标 > 0 ? sum.目标 + ' 天' : '—') + '</strong></td>' +
@@ -770,17 +770,17 @@ function exportData() {
     let list = D.staff.slice();
     if (region !== 'all') list = list.filter(s => s.大店区 === region);
     if (q) list = list.filter(s => s.大店区.includes(q) || s.姓名.includes(q));
-    if (status === 'gt3') list = list.filter(s => s.剩余915 > 3);
+    if (status === 'gt3') list = list.filter(s => s.left > 3);
     if (status === 'fail') {
         const failRegions = D.regions.rows.map(deriveRegion).filter(isFailRow).map(r => r.大店区);
         list = list.filter(s => failRegions.includes(s.大店区));
     }
-    list = list.slice().sort((a, b) => b.剩余915 - a.剩余915);
-    const header = ['员工工号', '员工姓名', '大店区', '门店', '期初剩余年假(8/25)', '9/15剩余年假', '9月已休天数'];
+    list = list.slice().sort((a, b) => b.left - a.left);
+    const header = ['员工工号', '员工姓名', '大店区', '门店', '期初剩余年假(8/25)', '9/22剩余年假', '9月已休天数'];
     const lines = [header.join(',')].concat(list.map(s =>
         [s.工号, s.姓名, s.大店区, s.门店,
          (s.期初剩余 === null || s.期初剩余 === undefined) ? '' : s.期初剩余,
-         s.剩余915,
+         s.left,
          (s.已休 === null || s.已休 === undefined) ? '' : s.已休].map(v => {
             const sv = String(v);
             return sv.includes(',') || sv.includes('"') ? '"' + sv.replace(/"/g, '""') + '"' : sv;

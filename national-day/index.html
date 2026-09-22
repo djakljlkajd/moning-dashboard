@@ -556,7 +556,7 @@ tbody td.num{text-align:right;font-variant-numeric:tabular-nums;}
           <div class="form-hint" id="loanFromHint"></div>
         </div>
         <div class="form-item">
-          <label>转入门店（当日人力缺口方）</label>
+          <label>转入门店（缺口或临时缺勤方）</label>
           <select id="loanTo"></select>
           <div class="form-hint" id="loanToHint"></div>
         </div>
@@ -1432,8 +1432,9 @@ function openLoanModal(store,prefDay){
 
   if(!store) document.getElementById('loanTitle').textContent='新增借调申请';
   else{
-    const v=storeDiffOn(store,defDay);
-    document.getElementById('loanTitle').textContent=(v!=null&&v<0?'借调申请 · ':'借出支援 · ')+shortStore(store);
+    const v=storeDiffByAdj(store,defDay);
+    const can0=loanableOnAdj(store,defDay);
+    document.getElementById('loanTitle').textContent=((v!=null&&v<0)||can0<=0?'借调申请 · ':'借出支援 · ')+shortStore(store);
   }
   document.getElementById('loanName').value='';
   document.getElementById('loanNote').value='';
@@ -1447,17 +1448,22 @@ function refreshLoanOptions(){
   const date=document.getElementById('loanDate').value;
   const fromSel=document.getElementById('loanFrom');
   const toSel=document.getElementById('loanTo');
-  const sur=[],gap=[];
+  const sur=[],gap=[],flat=[];
   D.transferStores.forEach(t=>{
     const can=loanableOnAdj(t.store,date);
     const d=storeDiffByAdj(t.store,date);
     if(can>0) sur.push({store:t.store,can:can});
     if(d!=null&&d<0) gap.push({store:t.store,d:d});
+    else flat.push({store:t.store,d:d});
   });
   sur.sort((a,b)=>b.can-a.can);
   gap.sort((a,b)=>a.d-b.d);
+  flat.sort((a,b)=>(a.d==null?999:a.d)-(b.d==null?999:b.d));
   fromSel.innerHTML=sur.length?sur.map(x=>`<option value="${esc(x.store)}">${esc(shortStore(x.store))}（可借${x.can}）</option>`).join(''):'<option value="">该日期无冗余门店</option>';
-  toSel.innerHTML=gap.length?gap.map(x=>`<option value="${esc(x.store)}">${esc(shortStore(x.store))}（缺口${-x.d}）</option>`).join(''):'<option value="">该日期无缺口门店</option>';
+  // 转入门店：全部门店可选——缺口门店置顶，持平/冗余门店也可因临时缺勤（隐性缺口）发起借调
+  const gapOpts=gap.map(x=>`<option value="${esc(x.store)}">${esc(shortStore(x.store))}（缺口${-x.d}）</option>`).join('');
+  const flatOpts=flat.map(x=>`<option value="${esc(x.store)}">${esc(shortStore(x.store))}（${x.d==null?'数据缺失':(x.d===0?'持平':'冗余'+x.d)}）</option>`).join('');
+  toSel.innerHTML=((gapOpts?`<optgroup label="当日有缺口">${gapOpts}</optgroup>`:'')+(flatOpts?`<optgroup label="当日持平/冗余（临时缺勤可选）">${flatOpts}</optgroup>`:''))||'<option value="">无门店数据</option>';
 
   if(curStore){
     const d=storeDiffByAdj(curStore,date);
@@ -1468,6 +1474,11 @@ function refreshLoanOptions(){
     }else if(loanableOnAdj(curStore,date)>0){
       fromSel.value=curStore;
       if(gap.length) toSel.value=gap[0].store;
+    }else{
+      // 持平门店：表内满人但可能存在临时缺勤，预设为转入方
+      toSel.value=curStore;
+      const r=recoStores(curStore,date,'');
+      if(r.length) fromSel.value=r[0].store;
     }
   }else{
     if(sur.length) fromSel.value=sur[0].store;
@@ -1487,7 +1498,7 @@ function onLoanFromChange(){
   const ft0=TRANSFER_INFO[f];
   if(ft0&&!OWNER_MANUAL) document.getElementById('loanOwner').value=String(ft0.area).replace(/大店区/,'');
   document.getElementById('loanFromHint').textContent=f?diffText(f,date):'';
-  document.getElementById('loanToHint').textContent=t?diffText(t,date):'';
+  document.getElementById('loanToHint').textContent=t?(diffText(t,date)+(tv!=null&&tv>=0?'，表内无缺口，临时缺勤也可发起':'')):'';
   const target=t||f;
   const me=TRANSFER_INFO[target];
   const ft=TRANSFER_INFO[f], tt=TRANSFER_INFO[t];
@@ -1742,7 +1753,7 @@ function renderTransfer(){
     if(v<0) h+=`<td><span class="badge badge-red">缺口 ${-v}</span></td>`;
     else if(can>0) h+=`<td><span class="badge badge-green">可借 ${can}</span></td>`;
     else h+=`<td><span class="badge badge-gray">不可借</span></td>`;
-    h+=`<td><button class="mini-btn" onclick="openLoanModal('${esc(t.store)}','${day}')">${v<0?'申请支援':'借出支援'}</button></td></tr>`;
+    h+=`<td><button class="mini-btn" onclick="openLoanModal('${esc(t.store)}','${day}')">${v>0?'借出支援':'申请支援'}</button></td></tr>`;
   });
   h+='</tbody>';
   document.getElementById('trTable').innerHTML=h;

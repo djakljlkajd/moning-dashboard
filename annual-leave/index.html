@@ -209,7 +209,7 @@
             border-top: 1px dashed #eef0f3; border-radius: 0 0 8px 8px;
         }
 
-        /* ===== 9月休息天数（多人协作填写） ===== */
+        /* ===== 10月休息天数（多人协作填写） ===== */
         .sep-rest-cell { cursor: pointer; }
         .sep-rest-cell:hover { background: #eef6e0; }
         .sep-rest-val { color: #558b2f; font-weight: bold; font-size: 13.5px; }
@@ -326,9 +326,10 @@
 <div class="description-bar">
     <div class="description-bar-title">📋 看板相关说明</div>
     <div class="description-list">
-        <div class="description-item">1、<strong>进度口径：</strong>期初剩余（8/25）- 9/22剩余 = 9月已完成年假天数；已完成 ÷ 期初 = 本月完成进度</div>
-        <div class="description-item">2、<strong>目标口径：</strong>「9月目标」为各大店长在员工明细弹窗中<strong>自行填写的计划合计</strong>（非固定值），「达标差额」= 目标 - 本月已休，差额 &gt; 0 即未达标（红色标记行）；未填写目标的大店区不计入未达标</div>
-        <div class="description-item">3、<strong>明细填报：</strong>点击大店长行查看员工明细，点击员工「计划填写」单元格可登记天数及<strong>具体休息日期区间（必填）</strong>，支持分多段，数据实时同步云端</div>
+        <div class="description-item">1、<strong>进度口径：</strong>本年度应休年假 - 10/8剩余年假 = 年度已休年假天数；已休 ÷ 应休 = 年度完成进度</div>
+        <div class="description-item">2、<strong>离职口径：</strong>离职员工剩余年假已折算薪资发放，其剩余年假按 <strong>0</strong> 计（源表 G 列仍显示原值，看板已按 0 处理）</div>
+        <div class="description-item">3、<strong>督办口径：</strong>「本期已休」= 上期剩余（9/22）− 10/8剩余，反映 9/22 以来的实际消化量；「10月排休目标」为各大店长在员工明细弹窗中<strong>自行填写的计划合计</strong>，「达标差额」= 自填目标 − 本期已休，差额 &gt; 0 即未达标（红色标记行）；未填写目标的大店区不计入未达标</div>
+        <div class="description-item">4、<strong>明细填报：</strong>点击大店长行查看员工明细，点击员工「计划填写」单元格可登记天数及<strong>具体休息日期区间（必填）</strong>，支持分多段，数据实时同步云端</div>
     </div>
 </div>
 
@@ -337,7 +338,7 @@
 <div class="cards-row" id="cards-row"></div>
 
 <!-- ===== 第二排：大店区明细 ===== -->
-<div class="section-header" style="margin-top:2px;">【第二排】大店区明细看板 - 9月年假完成进度 vs 目标</div>
+<div class="section-header" style="margin-top:2px;">【第二排】大店区明细看板 - 年假完成进度 vs 目标</div>
 
 <div class="tip-bar">
     <span class="tip-bar-icon">👇</span>
@@ -364,9 +365,9 @@
 <div class="table-wrapper">
     <table style="min-width:1080px;">
         <colgroup>
-            <col style="width:11%"><col style="width:7%"><col style="width:7%"><col style="width:10%">
-            <col style="width:10%"><col style="width:9.5%"><col style="width:12%"><col style="width:9.5%">
-            <col style="width:14%"><col style="width:10%">
+            <col style="width:10%"><col style="width:6%"><col style="width:6.5%"><col style="width:7.5%">
+            <col style="width:8.5%"><col style="width:7.5%"><col style="width:8%"><col style="width:11%">
+            <col style="width:8.5%"><col style="width:9.5%"><col style="width:10%"><col style="width:7%">
         </colgroup>
         <thead><tr id="region-head"></tr></thead>
         <tbody id="region-tbody"></tbody>
@@ -388,15 +389,15 @@
     </div>
 </div>
 
-<!-- ===== 9月休息天数 编辑弹窗（多人协作·按员工） ===== -->
+<!-- ===== 10月休息天数 编辑弹窗（多人协作·按员工） ===== -->
 <div class="modal-overlay" id="rest-modal" onclick="closeRestModal(event)">
     <div class="modal-box small" onclick="event.stopPropagation()">
         <div class="modal-header">
-            <span class="modal-title">✏️ 填写 9月休息天数</span>
+            <span class="modal-title">✏️ 填写 10月休息天数</span>
             <button class="modal-close" onclick="closeRestModal()">×</button>
         </div>
         <div class="rest-form">
-            <div class="rest-form-label">员工：<b id="rest-emp-name"></b>（<span id="rest-emp-no"></span>）<br>大店区：<b id="rest-region-name"></b><br>请填写该员工 9月 计划休息天数及具体休息日期区间，保存后同步到云端，其他伙伴可见。</div>
+            <div class="rest-form-label">员工：<b id="rest-emp-name"></b>（<span id="rest-emp-no"></span>）<br>大店区：<b id="rest-region-name"></b><br>请填写该员工 10月 计划休息天数及具体休息日期区间，保存后同步到云端，其他伙伴可见。</div>
             <div class="rest-input-wrap">
                 <input type="number" class="rest-input" id="rest-input" min="0" max="31" step="1" placeholder="0">
             </div>
@@ -404,7 +405,7 @@
             <div class="rest-dates-label" style="font-weight:600;color:#33691e;">📅 休息日期区间（必填，当天数&gt;0 时）</div>
             <div id="rest-ranges-box"></div>
             <button type="button" class="rest-range-add" onclick="addRestRange()">＋ 添加一段区间</button>
-            <div class="rest-dates-hint">选择每段休息的起止日期（限 9/1 - 9/30），可分多段；区间总天数应与上方填写天数一致</div>
+            <div class="rest-dates-hint">选择每段休息的起止日期（限 10/1 - 10/31），可分多段；区间总天数应与上方填写天数一致</div>
         </div>
         <div class="rest-form-btns" style="padding:0 24px 12px;">
             <button class="rest-btn rest-btn-cancel" onclick="closeRestModal()">取消</button>
@@ -416,11 +417,11 @@
 
 </div>
 
-<script src="data.js?v=20260825b"></script>
+<script src="data.js?v=20261008a"></script>
 <!-- v=20260916a: 新增休息日期区间（起止日期多段填写+校验+明细显示） -->
 <script>
 const D = window.ANNUAL_LEAVE_DATA;
-let sepRestCache = {};       // 员工工号 -> 9月休息天数（多人协作云端同步）
+let sepRestCache = {};       // 员工工号 -> 10月休息天数（多人协作云端同步）
 let sepRestDatesCache = {};  // 员工工号 -> 具体休息日期字符串（如 "9/3、9/5-9/6"），选填
 
 // ---------- 标题 / 日期 ----------
@@ -449,10 +450,12 @@ function sepRestFor(empNo) {
     return sepRestCache[empNo];
 }
 function sepRestRegionTotal(region) {
-    return staffOfRegion(region).reduce(function (sum, s) { return sum + (sepRestCache[s.工号] || 0); }, 0);
+    // 仅统计在职员工（离职员工无需排休）
+    return staffOfRegion(region).filter(function (s) { return s.状态 !== '离职'; })
+        .reduce(function (sum, s) { return sum + (sepRestCache[s.工号] || 0); }, 0);
 }
 function sepRestRegionFilled(region) {
-    return staffOfRegion(region).filter(function (s) { return sepRestCache[s.工号] !== undefined; }).length;
+    return staffOfRegion(region).filter(function (s) { return s.状态 !== '离职' && sepRestCache[s.工号] !== undefined; }).length;
 }
 function sepRestTotal() {
     return Object.values(sepRestCache).reduce(function (a, b) { return a + b; }, 0);
@@ -460,16 +463,16 @@ function sepRestTotal() {
 function sepRestFilledCount() {
     return Object.keys(sepRestCache).length;
 }
-// 动态目标：9月目标 = 该区大店长在弹窗中自行填写的计划合计（非固定25%计划）
+// 动态目标：10月排休目标 = 该区大店长在弹窗中自行填写的计划合计（非固定25%计划）
 function deriveRegion(r) {
     const t = sepRestRegionTotal(r.大店区);
-    return Object.assign({}, r, { 目标: t, 计划已填: sepRestRegionFilled(r.大店区), 差额: t - r.已休 });
+    return Object.assign({}, r, { 目标: t, 计划已填: sepRestRegionFilled(r.大店区), 差额: t - (r.本期已休 || 0) });
 }
 function isFailRow(r) { return r.目标 > 0 && r.差额 > 0; }
 function updateSepRestCard() { /* 卡片改为静态进度口径，此处保留空实现以兼容旧调用 */ }
 
 // ---------- 休息日期区间工具 ----------
-const REST_MONTH_MIN = '2026-09-01', REST_MONTH_MAX = '2026-09-30';
+const REST_MONTH_MIN = '2026-10-01', REST_MONTH_MAX = '2026-10-31';
 function daysInclusive(s, e) {
     return Math.round((new Date(e) - new Date(s)) / 86400000) + 1;
 }
@@ -484,9 +487,9 @@ function parseRestDates(v) {
         v.split(/[、,，;；\s]+/).forEach(function (part) {
             if (!part) return;
             const m = part.match(/^(\d{1,2})\/(\d{1,2})(?:\s*[-~～]\s*(\d{1,2})\/(\d{1,2}))?$/);
-            if (m && m[1] === '9') {
-                const s = '2026-09-' + String(m[2]).padStart(2, '0');
-                const e = m[3] ? '2026-09-' + String(m[4]).padStart(2, '0') : s;
+            if (m && m[1] === '10') {
+                const s = '2026-10-' + String(m[2]).padStart(2, '0');
+                const e = m[3] ? '2026-10-' + String(m[4]).padStart(2, '0') : s;
                 out.push({ s: s, e: e });
             }
         });
@@ -499,7 +502,7 @@ function formatRestDates(v) {
     if (typeof v === 'string') return v;   // 旧文本原样显示
     const arr = parseRestDates(v);
     return arr.map(function (r) {
-        return r.s === r.e ? '9/' + parseInt(r.s.slice(-2), 10) : '9/' + parseInt(r.s.slice(-2), 10) + '~9/' + parseInt(r.e.slice(-2), 10);
+        return r.s === r.e ? '10/' + parseInt(r.s.slice(-2), 10) : '10/' + parseInt(r.s.slice(-2), 10) + '~9/' + parseInt(r.e.slice(-2), 10);
     }).join('、');
 }
 
@@ -526,7 +529,7 @@ function renderCards() {
 }
 renderCards();
 
-// 动态卡片：未达标大店区数量 / 9月完成进度目标，随大店长填写计划实时更新
+// 动态卡片：未达标大店区数量 / 年度完成进度，随大店长填写排休计划实时更新
 function updateDynamicCards() {
     const failRows = D.regions.rows.map(deriveRegion).filter(isFailRow);
     document.querySelectorAll('.metric-card').forEach(function (card) {
@@ -537,14 +540,14 @@ function updateDynamicCards() {
         if (label === '未达标大店区') {
             valEl.textContent = failRows.length;
             if (subEl) subEl.textContent = '(个 · 点详情 · 按自填目标)';
-        } else if (label === '9月完成进度') {
-            if (subEl) subEl.textContent = '(大店长目标 ' + sepRestTotal() + ' 天)';
+        } else if (label === '年度完成进度') {
+            if (subEl) subEl.textContent = '(已休 ' + D.summary.已休 + ' ÷ 应休 ' + D.summary.应休 + ')';
         }
     });
 }
 
 // ---------- 明细弹窗 ----------
-function fullRowNo(s) { return (s.期初剩余 === null || s.期初剩余 === undefined) ? '—' : s.期初剩余; }
+function fullRowNo(s) { return (s.应休 === null || s.应休 === undefined) ? '—' : s.应休; }
 
 function openDetailModal(cardLabel) {
     const modal = document.getElementById('detail-modal');
@@ -554,8 +557,8 @@ function openDetailModal(cardLabel) {
 
     if (cardLabel === '未达标大店区') {
         const list = D.regions.rows.map(deriveRegion).filter(isFailRow).sort((a, b) => b.差额 - a.差额);
-        const columns = ['大店长', '员工数', '期初剩余', '9/22剩余', '本月已休', '9月目标(自填)', '还差', '完成率'];
-        title.textContent = '9月未达标大店区（已休 < 自填目标） - 共 ' + list.length + ' 个';
+        const columns = ['大店长', '员工数', '应休', '10/8剩余', '本期已休<br>(9/22→10/8)', '10月排休目标', '还差', '完成率'];
+        title.textContent = '10月未达标大店区（本期已休 < 自填目标） - 共 ' + list.length + ' 个';
         foot.textContent = '还差合计 ' + list.reduce((a, r) => a + r.差额, 0) + ' 天 · 点击行可直接打开该区员工明细 · 未填写目标的大店区不计入';
         body.innerHTML = list.length === 0
             ? '<div class="modal-empty">全部大店区均已达标 🎉</div>'
@@ -563,9 +566,9 @@ function openDetailModal(cardLabel) {
               list.map(r => '<tr style="cursor:pointer" onclick="closeModalForce();openRegionModal(\'' + r.大店区 + '\')">' +
                   '<td><strong>' + r.name + '</strong></td>' +
                   '<td>' + r.员工数 + '</td>' +
-                  '<td>' + r.期初剩余 + '</td>' +
+                  '<td>' + r.应休 + '</td>' +
                   '<td class="val-915">' + r.left + '</td>' +
-                  '<td class="val-done">' + r.已休 + '</td>' +
+                  '<td class="val-done">' + (r.本期已休 || 0) + '</td>' +
                   '<td>' + r.目标 + '</td>' +
                   '<td><span class="badge-fail">还差 ' + r.差额 + ' 天</span></td>' +
                   '<td>' + r.完成率 + '%</td>' +
@@ -574,10 +577,10 @@ function openDetailModal(cardLabel) {
         return;
     }
 
-    // 剩余年假>3天 员工明细（9/22 口径）
+    // 剩余年假>3天 员工明细（10/8 口径）
     const list = staffGt3('all').sort((a, b) => b.left - a.left);
-    const columns = ['工号', '姓名', '大店区', '门店', '剩余年假(9/22)'];
-    title.textContent = '剩余年假>3天员工明细（截至 9/22）- 共 ' + list.length + ' 人';
+    const columns = ['工号', '姓名', '大店区', '门店', '剩余年假(10/8)'];
+    title.textContent = '剩余年假>3天员工明细（截至 10/8）- 共 ' + list.length + ' 人';
     foot.textContent = '共 ' + list.length + ' 人 · 建议尽快安排调休';
     if (list.length === 0) {
         body.innerHTML = '<div class="modal-empty">暂无数据</div>';
@@ -608,36 +611,45 @@ function openRegionModal(region) {
     const foot = document.getElementById('modal-foot');
     const list = staffOfRegion(region).slice().sort((a, b) => b.left - a.left);
     const row = deriveRegion(D.regions.rows.find(r => r.大店区 === region) || { 已休: 0 });
-    const columns = ['工号', '姓名', '门店', '期初剩余', '9/22剩余', '本月已休', '计划填写（天数/日期）', '剩余>3天'];
+    const columns = ['工号', '姓名', '状态', '门店', '应休', '10/8剩余', '年度已休', '计划填写（天数/日期）', '剩余>3天'];
     const regionTotal = row.目标;
     const regionFilled = row.计划已填;
-    title.textContent = region + ' 员工年假明细 - 共 ' + list.length + ' 人';
-    foot.textContent = '本区：期初 ' + (row.期初剩余 || 0) + ' → 9/22 剩余 ' + (row.left || 0) +
+    const nLeaver = list.filter(s => s.状态 === '离职').length;
+    const nActive = list.length - nLeaver;
+    title.textContent = region + ' 员工年假明细 - 共 ' + list.length + ' 人（在职 ' + nActive + ' / 离职 ' + nLeaver + '）';
+    foot.textContent = '本区：应休 ' + (row.应休 || 0) + ' → 10/8 剩余 ' + (row.left || 0) +
         '，已休 ' + (row.已休 || 0) + ' 天 / 目标 ' + (row.目标 || 0) + ' 天（' +
-        ((row.目标 || 0) > 0 ? ((row.差额 > 0) ? '还差 ' + row.差额 + ' 天' : '✅ 已达标') : '目标待填写') + '）· 计划已填 ' + regionFilled + '/' + list.length + ' 人合计 ' + regionTotal + ' 天';
+        ((row.目标 || 0) > 0 ? ((row.差额 > 0) ? '还差 ' + row.差额 + ' 天' : '✅ 已达标') : '目标待填写') + '）· 计划已填 ' + regionFilled + '/' + nActive + ' 人合计 ' + regionTotal + ' 天';
     if (list.length === 0) {
         body.innerHTML = '<div class="modal-empty">暂无数据</div>';
     } else {
         body.innerHTML =
             '<table><thead><tr>' + columns.map(h => '<th>' + h + '</th>').join('') + '</tr></thead>' +
             '<tbody>' + list.map(r => {
+                const isLeaver = r.状态 === '离职';
                 const restVal = sepRestCache[r.工号];
                 const datesStr = formatRestDates(sepRestDatesCache[r.工号]);
                 const datesHtml = datesStr ? '<span class="rest-dates-display" style="display:block;max-width:100%;white-space:normal;margin-top:2px;">📅 ' + datesStr + '</span>' : '';
-                const restCell = restVal !== undefined
-                    ? '<span class="sep-rest-val">' + restVal + '天</span><span class="sep-rest-edit">✏️改</span>' + datesHtml
-                    : '<span class="sep-rest-empty">— 点击填写</span><span class="sep-rest-edit">✏️填</span>';
-                const initTxt = (r.期初剩余 === null || r.期初剩余 === undefined) ? '<span style="color:#bbb">—</span>' : r.期初剩余;
+                const restCell = isLeaver
+                    ? '<span style="color:#bbb;font-size:12px;">— 离职已折算</span>'
+                    : (restVal !== undefined
+                        ? '<span class="sep-rest-val">' + restVal + '天</span><span class="sep-rest-edit">✏️改</span>' + datesHtml
+                        : '<span class="sep-rest-empty">— 点击填写</span><span class="sep-rest-edit">✏️填</span>');
+                const initTxt = (r.应休 === null || r.应休 === undefined) ? '<span style="color:#bbb">—</span>' : r.应休;
                 const doneTxt = (r.已休 === null || r.已休 === undefined) ? '<span style="color:#bbb">—</span>'
                     : (r.已休 > 0 ? '<span class="val-done">' + r.已休 + '</span>' : '<span style="color:#bbb">0</span>');
-                return '<tr>' +
+                const statusCell = isLeaver
+                    ? '<span style="color:#999;background:#f0f0f0;padding:2px 7px;border-radius:9px;font-size:11px;">离职</span>'
+                    : '<span style="color:#33691e;background:#e8f5e0;padding:2px 7px;border-radius:9px;font-size:11px;">在职</span>';
+                return '<tr' + (isLeaver ? ' style="opacity:.62;"' : '') + '>' +
                     '<td>' + r.工号 + '</td>' +
                     '<td><strong>' + r.姓名 + '</strong></td>' +
+                    '<td>' + statusCell + '</td>' +
                     '<td class="text-left">' + r.门店 + '</td>' +
                     '<td>' + initTxt + '</td>' +
                     '<td>' + (r.left > 3 ? '<span class="badge-warn">' + r.left + '天</span>' : '<span class="val-915">' + r.left + '</span>') + '</td>' +
                     '<td>' + doneTxt + '</td>' +
-                    '<td class="sep-rest-cell" onclick="event.stopPropagation();openRestModal(' + JSON.stringify(r.工号).replace(/"/g, '&quot;') + ')">' + restCell + '</td>' +
+                    '<td class="sep-rest-cell"' + (isLeaver ? '' : ' onclick="event.stopPropagation();openRestModal(' + JSON.stringify(r.工号).replace(/"/g, '&quot;') + ')"') + '>' + restCell + '</td>' +
                     '<td>' + (r.left > 3 ? '<span class="badge-warn">是</span>' : '<span class="badge-ok">否</span>') + '</td>' +
                 '</tr>';
             }).join('') + '</tbody></table>';
@@ -655,13 +667,13 @@ const regionHead = document.getElementById('region-head');
 const regionTbody = document.getElementById('region-tbody');
 const regionFoot = document.getElementById('region-foot');
 
-// 表头：期初 → 9/22 → 已休 → 进度 → 目标 → 差额
+// 表头：应休 → 10/8剩余 → 年度已休 → 进度 → 本期已休 → 10月目标 → 差额
 const REGION_COLS = [
-    '大店长', '门店数', '员工数', '期初剩余', '9/22剩余', '本月已休', '完成进度', '9月目标', '达标差额', '剩余年假>3天'
+    '大店长', '门店数', '员工数', '离职', '应休', '10/8剩余', '年度已休', '完成进度', '本期已休', '10月排休目标', '达标差额', '剩余年假>3天'
 ];
 const REGION_SUBS = {
-    3: '（8/25）', 4: '（截至9/22）', 5: '（期初-9/22）', 6: '（已休/期初）',
-    7: '（大店长自填）', 8: '（目标-已休）', 9: '（9/22口径）'
+    3: '（人数）', 4: '（年度应休）', 5: '（截至10/8）', 6: '（应休-10/8）', 7: '（已休÷应休）',
+    8: '（9/22→10/8）', 9: '（大店长自填）', 10: '（目标-本期已休）', 11: '（10/8口径）'
 };
 regionHead.innerHTML = REGION_COLS.map((h, i) =>
     '<th>' + h + (REGION_SUBS[i] ? '<span class="col-sub">' + REGION_SUBS[i] + '</span>' : '') + '</th>'
@@ -705,7 +717,7 @@ function renderRegions() {
 
     regionTbody.innerHTML = '';
     if (rows.length === 0) {
-        regionTbody.innerHTML = '<tr><td colspan="10" style="padding:30px;color:#999;">无匹配记录</td></tr>';
+        regionTbody.innerHTML = '<tr><td colspan="12" style="padding:30px;color:#999;">无匹配记录</td></tr>';
     }
     rows.forEach(r => {
         const tr = document.createElement('tr');
@@ -715,10 +727,12 @@ function renderRegions() {
             '<td class="text-left"><strong>' + r.name + '</strong></td>' +
             '<td>' + r.门店数 + '</td>' +
             '<td>' + r.员工数 + '</td>' +
-            '<td><strong>' + r.期初剩余 + '</strong></td>' +
+            '<td>' + (r.离职数 > 0 ? '<span style="color:#999">' + r.离职数 + '</span>' : '0') + '</td>' +
+            '<td><strong>' + r.应休 + '</strong></td>' +
             '<td class="val-915">' + r.left + '</td>' +
             '<td class="val-done">' + r.已休 + '</td>' +
             '<td>' + rateBar(r.完成率) + '</td>' +
+            '<td class="val-done">' + (r.本期已休 || 0) + '</td>' +
             '<td>' + (r.目标 > 0 ? '<strong>' + r.目标 + '</strong> 天' : '<span style="color:#bbb;">— 点击填写</span>') + '</td>' +
             '<td>' + diffCell(r.差额, r.目标) + '</td>' +
             '<td>' + warnCell(r.gt3) + '</td>';
@@ -729,25 +743,28 @@ function renderRegions() {
     const shown = rows;
     if (shown.length > 0) {
         const sum = shown.reduce((a, r) => ({
-            门店数: a.门店数 + r.门店数, 员工数: a.员工数 + r.员工数,
-            期初剩余: a.期初剩余 + r.期初剩余, left: a.left + r.left,
-            已休: a.已休 + r.已休, 目标: a.目标 + r.目标, 差额: a.差额 + r.差额, gt3: a.gt3 + r.gt3
-        }), { 门店数: 0, 员工数: 0, 期初剩余: 0, left: 0, 已休: 0, 目标: 0, 差额: 0, gt3: 0 });
+            门店数: a.门店数 + r.门店数, 员工数: a.员工数 + r.员工数, 离职数: a.离职数 + (r.离职数 || 0),
+            应休: a.应休 + r.应休, left: a.left + r.left,
+            已休: a.已休 + r.已休, 本期已休: a.本期已休 + (r.本期已休 || 0),
+            目标: a.目标 + r.目标, 差额: a.差额 + r.差额, gt3: a.gt3 + r.gt3
+        }), { 门店数: 0, 员工数: 0, 离职数: 0, 应休: 0, left: 0, 已休: 0, 本期已休: 0, 目标: 0, 差额: 0, gt3: 0 });
         const isAll = (region === 'all' && status === 'all' && !q);
-        const rate = sum.期初剩余 ? Math.round(sum.已休 / sum.期初剩余 * 1000) / 10 : 0;
+        const rate = sum.应休 ? Math.round(sum.已休 / sum.应休 * 1000) / 10 : 0;
         regionFoot.innerHTML =
             '<td class="text-left"><strong>' + (isAll ? '合计' : '小计(' + shown.length + '区)') + '</strong></td>' +
             '<td><strong>' + sum.门店数 + '</strong></td>' +
             '<td><strong>' + sum.员工数 + '</strong></td>' +
-            '<td><strong>' + sum.期初剩余 + '</strong></td>' +
+            '<td><strong style="color:#999">' + sum.离职数 + '</strong></td>' +
+            '<td><strong>' + sum.应休 + '</strong></td>' +
             '<td><strong class="val-915">' + sum.left + '</strong></td>' +
             '<td><strong class="val-done">' + sum.已休 + '</strong></td>' +
             '<td><strong>' + rate + '%</strong></td>' +
+            '<td><strong class="val-done">' + sum.本期已休 + '</strong></td>' +
             '<td><strong>' + (sum.目标 > 0 ? sum.目标 + ' 天' : '—') + '</strong></td>' +
             '<td>' + diffCell(sum.差额, sum.目标) + '</td>' +
             '<td>' + warnCell(sum.gt3) + '</td>';
     } else {
-        regionFoot.innerHTML = '<td colspan="10" style="text-align:center;">—</td>';
+        regionFoot.innerHTML = '<td colspan="12" style="text-align:center;">—</td>';
     }
     updateDynamicCards();
 }
@@ -776,12 +793,13 @@ function exportData() {
         list = list.filter(s => failRegions.includes(s.大店区));
     }
     list = list.slice().sort((a, b) => b.left - a.left);
-    const header = ['员工工号', '员工姓名', '大店区', '门店', '期初剩余年假(8/25)', '9/22剩余年假', '9月已休天数'];
+    const header = ['员工工号', '员工姓名', '在职状态', '大店区', '门店', '本年度应休年假', '10/8剩余年假', '年度已休天数', '剩余>3天'];
     const lines = [header.join(',')].concat(list.map(s =>
-        [s.工号, s.姓名, s.大店区, s.门店,
-         (s.期初剩余 === null || s.期初剩余 === undefined) ? '' : s.期初剩余,
+        [s.工号, s.姓名, s.状态 || '', s.大店区, s.门店,
+         (s.应休 === null || s.应休 === undefined) ? '' : s.应休,
          s.left,
-         (s.已休 === null || s.已休 === undefined) ? '' : s.已休].map(v => {
+         (s.已休 === null || s.已休 === undefined) ? '' : s.已休,
+         s.left > 3 ? '是' : '否'].map(v => {
             const sv = String(v);
             return sv.includes(',') || sv.includes('"') ? '"' + sv.replace(/"/g, '""') + '"' : sv;
         }).join(',')
@@ -794,7 +812,7 @@ function exportData() {
     URL.revokeObjectURL(a.href);
 }
 
-// ========== 9月休息天数 · 多人线上协作（Supabase 云端同步，同工时看板机制） ==========
+// ========== 10月休息天数 · 多人线上协作（Supabase 云端同步，同工时看板机制） ==========
 const SUPA_URL = 'https://tclfmnfvlrlxquiojjya.supabase.co';
 const SUPA_KEY = 'sb_publishable_6sa-Pz6dX0BSlTJX3gNiRA_CbtZkf_b';
 const SUPA_TABLE = 'violation_data';
@@ -857,7 +875,7 @@ async function saveSepRest() {
     }
 }
 
-// ---------- 9月休息天数 编辑弹窗 ----------
+// ---------- 10月休息天数 编辑弹窗 ----------
 let currentRestEmp = null;
 
 function openRestModal(empNo) {
@@ -922,7 +940,7 @@ function collectRestRanges() {
 async function confirmRestSave() {
     if (!currentRestEmp) return;
     const raw = document.getElementById('rest-input').value.trim();
-    if (raw === '') { alert('请填写 9月休息天数（0-31）'); return; }
+    if (raw === '') { alert('请填写 10月休息天数（0-31）'); return; }
     let v = parseInt(raw, 10);
     if (isNaN(v) || v < 0 || v > 31) { alert('请输入 0-31 之间的天数'); return; }
     // 日期区间校验
@@ -953,7 +971,7 @@ async function confirmRestSave() {
     }
     sepRestBackup();
     renderRegions();
-    // 如果员工明细弹窗正在打开，同步刷新其中的 9月休息天数 列
+    // 如果员工明细弹窗正在打开，同步刷新其中的 10月休息天数 列
     if (document.getElementById('detail-modal').classList.contains('active')) {
         openRegionModal(currentRestEmp.大店区);
     }
@@ -971,7 +989,7 @@ async function confirmRestSave() {
 
 async function clearRestValue() {
     if (!currentRestEmp) return;
-    if (!confirm('确定清空「' + currentRestEmp.姓名 + '」的 9月休息天数填写？')) return;
+    if (!confirm('确定清空「' + currentRestEmp.姓名 + '」的 10月休息天数填写？')) return;
     delete sepRestCache[currentRestEmp.工号];
     delete sepRestDatesCache[currentRestEmp.工号];
     sepRestBackup();

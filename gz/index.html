@@ -881,6 +881,13 @@ function renderMetrics(){
         {l:'法定加班(h)',v:(S4.holiday_ot||0).toLocaleString(undefined,{maximumFractionDigits:1}),s:'法定节假日当天全部工时',c:'purple',type:'hour_split',calc:'节假日当天整班工时'}
       );
     }
+    // 探亲假方块（紧跟法定加班后）：有 family_leave 数据时显示，点击看明细
+    const FL=activeData.family_leave||null;
+    if(FL&&FL.total>0){
+      mDat.push(
+        {l:'探亲假',v:FL.total+'<span class="unit">人</span>',s:'指定探亲地台账，点击查看明细',c:'coral',type:'family_leave',calc:'探亲交通费报销·调动人员'}
+      );
+    }
   }
   let h='';
   mDat.forEach(m=>{
@@ -954,11 +961,12 @@ function showAlertDetail(type){
   const mgrSel=document.getElementById('alertModalManagerSel');
   const mgrHint=document.getElementById('alertModalMgrHint');
   const mgrReset=document.getElementById('alertModalMgrReset');
-  if(type==='over13' || type==='consec8' || type==='ot_over' || type==='hours_over' || type==='hour_split'){
+  if(type==='over13' || type==='consec8' || type==='ot_over' || type==='hours_over' || type==='hour_split' || type==='family_leave'){
     const srcData= type==='over13' ? (activeData.over13||[])
       : type==='consec8' ? (activeData.warn7||[]).filter(p=>p['当月最大连续']>=9)
       : type==='ot_over' ? (activeData.ot_over||[])
       : type==='hour_split' ? (activeData.full_detail||[])
+      : type==='family_leave' ? ((activeData.family_leave&&activeData.family_leave.rows)||[])
       : (activeData.hours_over||[]);
     const mgrList=[...new Set(srcData.map(p=>p['大店长']).filter(Boolean))].sort();
     mgrSel.innerHTML='<option value="">全部大店长</option>' +
@@ -1100,6 +1108,33 @@ function showAlertDetail(type){
         <td style="${hd>0?'color:#534AB7;font-weight:600':''}">${hd||'-'}</td>
         <td>${p['出勤天数']}d/${p['休息天数']}d</td></tr>`;
     });
+  } else if(type==='family_leave'){
+    title.textContent='探亲假明细（指定探亲地台账）';
+    const allFL=(activeData.family_leave&&activeData.family_leave.rows)||[];
+    const data=allFL.filter(p=>{
+      if(modalFilterManager && p['大店长']!==modalFilterManager) return false;
+      return true;
+    }).sort((a,b)=>{
+      if(a['大店长']!==b['大店长'])return a['大店长'].localeCompare(b['大店长'],'zh');
+      return (a['姓名']||'').localeCompare(b['姓名']||'','zh');
+    });
+    cnt=data.length;
+    const unmatchedN=data.filter(p=>p['大店长']==='未匹配').length;
+    count.innerHTML=`当前范围共 <b>${cnt}</b> 人享受探亲交通费报销${unmatchedN>0?`，其中 <b>${unmatchedN}</b> 人未匹配到本期工时名单（大店长本人或无排班记录）`:''}，按大店长分组展示`;
+    hh='<th style="width:28px">#</th><th style="width:88px">大店长</th>'+
+       '<th style="width:66px">工号</th><th style="width:72px">姓名</th><th style="width:78px">职位</th>'+
+       '<th style="min-width:180px;text-align:left">指定探亲地</th>'+
+       '<th style="width:88px">开始时间</th><th style="width:88px">预计结束</th>'+
+       '<th style="width:88px">实际结束</th><th style="width:56px">次数</th>';
+    data.forEach((p,i)=>{
+      const isUn=p['大店长']==='未匹配';
+      bb+=`<tr style="${isUn?'background:rgba(186,117,23,.04)':''}">
+        <td>${i+1}</td><td class="col-name">${p['大店长']}</td>
+        <td>${p['工号']}</td><td>${p['姓名']}</td><td>${p['职位']}</td>
+        <td class="col-name" style="text-align:left">${p['指定探亲地']||'-'}</td>
+        <td>${p['开始时间']||'-'}</td><td>${p['预计结束时间']||'-'}</td>
+        <td>${p['实际结束时间']||'-'}</td><td>${p['可享受探亲次数']||'-'}</td></tr>`;
+    });
   } else if(type==='ot_over'){
     const payCfg=(activeData.summary&&activeData.summary.pay_structure)||{daily_std_hours:8,monthly_ot_cap:36,monthly_total_cap:202};
     title.textContent=`月加班超${payCfg.monthly_ot_cap}h人员名单（标准工时制）`;
@@ -1201,7 +1236,7 @@ function showAlertDetail(type){
   head.innerHTML=hh;
   body.innerHTML=bb||'<tr><td colspan="20" style="padding:30px;text-align:center;color:var(--hint)">暂无数据</td></tr>';
   modal.style.display='flex';
-  const FW=type==='zeros_full'?[18,66,70,46,62,58]:type==='manager_rank'?[44,86,76,76,64]:type==='over13'?[66,78,200,76,64,48]:type==='consec8'?[66,78,200,76,50,60,48,62,62,280]:type==='hour_split'?[66,78,58,66,60,58,58,64,64,58,44]:(type==='ot_over'||type==='hours_over')?[66,78,60,66,60,72,60,56,50]:[66,70,46,62,58];
+  const FW=type==='zeros_full'?[18,66,70,46,62,58]:type==='manager_rank'?[44,86,76,76,64]:type==='over13'?[66,78,200,76,64,48]:type==='consec8'?[66,78,200,76,50,60,48,62,62,280]:type==='hour_split'?[66,78,58,66,60,58,58,64,64,58,44]:type==='family_leave'?[24,72,56,62,66,150,76,76,76,48]:(type==='ot_over'||type==='hours_over')?[66,78,60,66,60,72,60,56,50]:[66,70,46,62,58];
   const freezeCols=type==='zeros_full'?6:0; // 手机端取消基础信息冻结，整体可滑动
   setTimeout(()=>freezeAlertCols(FW,freezeCols),0);
 }

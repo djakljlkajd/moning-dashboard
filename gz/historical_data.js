@@ -37,7 +37,11 @@ const HISTORICAL_DATA={
         "10/13"
       ],
       "has_preperiod": false,
-      "supa_row_id": 21
+      "supa_row_id": 21,
+      "brand": {
+        "title": "广州中台看板",
+        "theme": "gz"
+      }
     },
     "summary": {
       "total_stores": 2,

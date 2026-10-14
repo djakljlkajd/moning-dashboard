@@ -149,6 +149,16 @@ body{font-family:-apple-system,'PingFang SC','Helvetica Neue',sans-serif;backgro
 
 /* 待核实备注可编辑 */
 .remark-edit{color:var(--amber);cursor:pointer;text-decoration:underline;text-underline-offset:2px}
+/* 探亲假已休确认 */
+.fl-btn{border:none;border-radius:5px;padding:3px 10px;font-size:11px;cursor:pointer;font-family:inherit}
+.fl-mark{background:var(--blueBg);color:var(--blue);border:1px solid var(--blue)}
+.fl-mark:hover{background:var(--blue);color:#fff}
+.fl-ok{background:var(--green);color:#fff;margin-left:4px}
+.fl-cancel{background:#f0f0f0;color:#666;margin-left:4px}
+.fl-taken{color:var(--green);font-weight:600;font-size:12px;cursor:pointer;border-bottom:1px dashed var(--green)}
+.fl-taken:hover{color:var(--red);border-bottom-color:var(--red)}
+.fl-edit-row{display:flex;align-items:center;gap:2px}
+.fl-date-inp{border:1px solid var(--bor);border-radius:5px;padding:2px 4px;font-size:11px;font-family:inherit;max-width:108px}
 .remark-edit:hover{color:var(--red)}
 
 /* 编辑小弹窗 */
@@ -884,8 +894,9 @@ function renderMetrics(){
     // 探亲假方块（紧跟法定加班后）：有 family_leave 数据时显示，点击看明细
     const FL=activeData.family_leave||null;
     if(FL&&FL.total>0){
+      const takenN=(FL.rows||[]).filter(p=>getFLTaken(p['工号'])).length;
       mDat.push(
-        {l:'探亲假',v:FL.total+'<span class="unit">人</span>',s:'指定探亲地台账，点击查看明细',c:'coral',type:'family_leave',calc:'探亲交通费报销·调动人员'}
+        {l:'探亲假',v:FL.total+'<span class="unit">人</span>',s:`已休 ${takenN} 人，点击查看明细`,c:'coral',type:'family_leave',calc:'探亲交通费报销·调动人员'}
       );
     }
   }
@@ -1120,20 +1131,24 @@ function showAlertDetail(type){
     });
     cnt=data.length;
     const unmatchedN=data.filter(p=>p['大店长']==='未匹配').length;
-    count.innerHTML=`当前范围共 <b>${cnt}</b> 人享受探亲交通费报销${unmatchedN>0?`，其中 <b>${unmatchedN}</b> 人未匹配到本期工时名单（大店长本人或无排班记录）`:''}，按大店长分组展示`;
+    const takenN=data.filter(p=>getFLTaken(p['工号'])).length;
+    count.innerHTML=`当前范围共 <b>${cnt}</b> 人享受探亲交通费报销，已休 <b class="c-red">${takenN}</b> 人${unmatchedN>0?`，${unmatchedN} 人未匹配到本期工时名单`:''}。每位员工一次探亲假机会，点击「标记已休」填休息日期确认，全员可见`;
     hh='<th style="width:28px">#</th><th style="width:88px">大店长</th>'+
        '<th style="width:66px">工号</th><th style="width:72px">姓名</th><th style="width:78px">职位</th>'+
-       '<th style="min-width:180px;text-align:left">指定探亲地</th>'+
+       '<th style="min-width:170px;text-align:left">指定探亲地</th>'+
        '<th style="width:88px">开始时间</th><th style="width:88px">预计结束</th>'+
-       '<th style="width:88px">实际结束</th>';
+       '<th style="width:88px">实际结束</th>'+
+       '<th style="width:150px" class="c-red">探亲假确认<div style="font-size:10px;color:rgba(255,255,255,.75);font-weight:400;margin-top:2px">已休+休息日期，全员可见</div></th>';
     data.forEach((p,i)=>{
       const isUn=p['大店长']==='未匹配';
-      bb+=`<tr style="${isUn?'background:rgba(186,117,23,.04)':''}">
+      const isTaken=!!getFLTaken(p['工号']);
+      bb+=`<tr style="${isUn?'background:rgba(186,117,23,.04)':isTaken?'background:rgba(59,109,17,.04)':''}">
         <td>${i+1}</td><td class="col-name">${p['大店长']}</td>
         <td>${p['工号']}</td><td>${p['姓名']}</td><td>${p['职位']}</td>
         <td class="col-name" style="text-align:left">${p['指定探亲地']||'-'}</td>
         <td>${p['开始时间']||'-'}</td><td>${p['预计结束时间']||'-'}</td>
-        <td>${p['实际结束时间']||'-'}</td></tr>`;
+        <td>${p['实际结束时间']||'-'}</td>
+        <td>${getFLTakeHtml(p)}</td></tr>`;
     });
   } else if(type==='ot_over'){
     const payCfg=(activeData.summary&&activeData.summary.pay_structure)||{daily_std_hours:8,monthly_ot_cap:36,monthly_total_cap:202};
@@ -1236,7 +1251,7 @@ function showAlertDetail(type){
   head.innerHTML=hh;
   body.innerHTML=bb||'<tr><td colspan="20" style="padding:30px;text-align:center;color:var(--hint)">暂无数据</td></tr>';
   modal.style.display='flex';
-  const FW=type==='zeros_full'?[18,66,70,46,62,58]:type==='manager_rank'?[44,86,76,76,64]:type==='over13'?[66,78,200,76,64,48]:type==='consec8'?[66,78,200,76,50,60,48,62,62,280]:type==='hour_split'?[66,78,58,66,60,58,58,64,64,58,44]:type==='family_leave'?[24,72,56,62,66,150,76,76,76]:(type==='ot_over'||type==='hours_over')?[66,78,60,66,60,72,60,56,50]:[66,70,46,62,58];
+  const FW=type==='zeros_full'?[18,66,70,46,62,58]:type==='manager_rank'?[44,86,76,76,64]:type==='over13'?[66,78,200,76,64,48]:type==='consec8'?[66,78,200,76,50,60,48,62,62,280]:type==='hour_split'?[66,78,58,66,60,58,58,64,64,58,44]:type==='family_leave'?[24,72,56,62,66,140,76,76,76,130]:(type==='ot_over'||type==='hours_over')?[66,78,60,66,60,72,60,56,50]:[66,70,46,62,58];
   const freezeCols=type==='zeros_full'?6:0; // 手机端取消基础信息冻结，整体可滑动
   setTimeout(()=>freezeAlertCols(FW,freezeCols),0);
 }
@@ -1409,6 +1424,7 @@ function supaRowId(){
 }
 let violationCache={over13:{},consec8:{}};
 let zeroFullCache={resigned:[],remarks:{}};
+let familyLeaveCache={}; // 探亲假已休确认：{工号:{date:'YYYY-MM-DD',ts}}
 let violationSyncTimer=null;
 let violationWriteLock=false;
 
@@ -1418,6 +1434,7 @@ function backupToLocal(){
       violation_over13:violationCache.over13,
       violation_consec8:violationCache.consec8,
       zero_full_edits:zeroFullCache,
+      family_leave_taken:familyLeaveCache,
       ts:Date.now()
     }));
   }catch(e){}
@@ -1430,6 +1447,7 @@ function restoreFromLocal(){
     const data=JSON.parse(raw);
     violationCache.over13=data.violation_over13||violationCache.over13;
     violationCache.consec8=data.violation_consec8||violationCache.consec8;
+    familyLeaveCache=data.family_leave_taken||familyLeaveCache;
     const zf=data.zero_full_edits||{};
     zeroFullCache.resigned=zf.resigned||zeroFullCache.resigned;
     zeroFullCache.remarks=zf.remarks||zeroFullCache.remarks;
@@ -1449,6 +1467,8 @@ async function loadViolationData(){
     const data=rows[0].data||{};
     violationCache.over13=data.violation_over13||{};
     violationCache.consec8=data.violation_consec8||{};
+    // 探亲假已休确认（云端共享，所有人可见）
+    familyLeaveCache=data.family_leave_taken||{};
     // 0工时备注云端数据
     const zfEdits=data.zero_full_edits||{};
     const cloudResigned=zfEdits.resigned||[];
@@ -1472,6 +1492,7 @@ async function loadViolationData(){
       if(title.includes('13'))showAlertDetail('over13');
       else if(title.includes('8天'))showAlertDetail('consec8');
       else if(title.includes('0工时'))showAlertDetail('zeros_full');
+      else if(title.includes('探亲'))showAlertDetail('family_leave');
     }
     // 刷新第三排（0工时备注可能已更新）
     if(curTab==='zeros_full'){renderDetail();}
@@ -1488,7 +1509,8 @@ async function syncViolationData(){
     const payload={
       violation_over13:violationCache.over13,
       violation_consec8:violationCache.consec8,
-      zero_full_edits:zeroFullCache
+      zero_full_edits:zeroFullCache,
+      family_leave_taken:familyLeaveCache
     };
     const res=await fetch(SUPA_URL+'/rest/v1/'+SUPA_TABLE+'?id=eq.'+supaRowId(),{
       method:'PATCH',
@@ -1511,6 +1533,58 @@ async function syncViolationData(){
 function scheduleSync(){
   if(violationSyncTimer)clearTimeout(violationSyncTimer);
   violationSyncTimer=setTimeout(()=>{syncViolationData();},800);
+}
+
+/* ========== 探亲假已休确认（云端共享） ========== */
+let flEditingGid=null; // 当前正在填日期的工号
+
+function getFLTaken(gid){ return familyLeaveCache[gid]||null; }
+
+function openFLTake(gid){
+  flEditingGid=gid;
+  showAlertDetail('family_leave');
+  setTimeout(()=>{
+    const inp=document.getElementById('fl-date-'+gid);
+    if(inp){inp.focus(); inp.showPicker&&inp.showPicker();}
+  },50);
+}
+
+function cancelFLTake(){
+  flEditingGid=null;
+  showAlertDetail('family_leave');
+}
+
+function confirmFLTake(gid){
+  const inp=document.getElementById('fl-date-'+gid);
+  const date=inp?inp.value:'';
+  if(!date){alert('请先选择休息日期');return;}
+  familyLeaveCache[gid]={date:date,ts:Date.now()};
+  flEditingGid=null;
+  scheduleSync();
+  showAlertDetail('family_leave');
+}
+
+function revokeFLTake(gid,name){
+  if(!confirm(`确定撤销「${name}」的已休确认吗？\n撤销后该员工恢复为未休状态，全员可见。`))return;
+  delete familyLeaveCache[gid];
+  scheduleSync();
+  showAlertDetail('family_leave');
+}
+
+function getFLTakeHtml(p){
+  const gid=p['工号'];
+  const rec=getFLTaken(gid);
+  if(flEditingGid===gid){
+    return `<div class="fl-edit-row">
+      <input type="date" id="fl-date-${gid}" class="fl-date-inp" value="${new Date().toISOString().slice(0,10)}">
+      <button class="fl-btn fl-ok" onclick="confirmFLTake('${gid}')">确认</button>
+      <button class="fl-btn fl-cancel" onclick="cancelFLTake()">取消</button>
+    </div>`;
+  }
+  if(rec){
+    return `<span class="fl-taken" title="点击撤销已休确认" onclick="revokeFLTake('${gid}','${p['姓名']}')">已休 ${rec.date}</span>`;
+  }
+  return `<button class="fl-btn fl-mark" onclick="openFLTake('${gid}')">标记已休</button>`;
 }
 
 function getViolationRecord(type,gid){

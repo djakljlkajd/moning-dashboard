@@ -65,8 +65,8 @@ window.DASHBOARD_DATA = {
       "arrived": 0
     },
     "student": {
-      "recruit": 178,
-      "arrived": 191
+      "recruit": 0,
+      "arrived": 0
     }
   },
   "region": {

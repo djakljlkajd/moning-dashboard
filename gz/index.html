@@ -1132,7 +1132,7 @@ function showAlertDetail(type){
     cnt=data.length;
     const unmatchedN=data.filter(p=>p['大店长']==='未匹配').length;
     const takenN=data.filter(p=>getFLTaken(p['工号'])).length;
-    count.innerHTML=`当前范围共 <b>${cnt}</b> 人享受探亲交通费报销，已休 <b class="c-red">${takenN}</b> 人${unmatchedN>0?`，${unmatchedN} 人未匹配到本期工时名单`:''}。每位员工一次探亲假机会，点击「标记已休」填休息日期确认，全员可见`;
+    count.innerHTML=`当前范围共 <b>${cnt}</b> 人享受探亲交通费报销，已休 <b class="c-red">${takenN}</b> 人${unmatchedN>0?`，${unmatchedN} 人未匹配到本期工时名单`:''}。每位员工一次探亲假机会，点击「待休」填休息日期确认，全员可见`;
     hh='<th style="width:28px">#</th><th style="width:88px">大店长</th>'+
        '<th style="width:66px">工号</th><th style="width:72px">姓名</th><th style="width:78px">职位</th>'+
        '<th style="min-width:170px;text-align:left">指定探亲地</th>'+
@@ -1584,7 +1584,7 @@ function getFLTakeHtml(p){
   if(rec){
     return `<span class="fl-taken" title="点击撤销已休确认" onclick="revokeFLTake('${gid}','${p['姓名']}')">已休 ${rec.date}</span>`;
   }
-  return `<button class="fl-btn fl-mark" onclick="openFLTake('${gid}')">标记已休</button>`;
+  return `<button class="fl-btn fl-mark" onclick="openFLTake('${gid}')">待休</button>`;
 }
 
 function getViolationRecord(type,gid){

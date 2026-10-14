@@ -50,7 +50,7 @@ window.DASHBOARD_DATA = {
     {
       "label": "撤店合计",
       "sub": "(L列/家)",
-      "value": 8,
+      "value": 7,
       "red": false,
       "highlight": false
     }

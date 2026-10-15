@@ -270,6 +270,20 @@ body{font-family:-apple-system,'PingFang SC','Helvetica Neue',sans-serif;backgro
 #wxTip b{color:#FFD54F}
 #wxTip .x{float:right;margin-left:10px;color:#9aa0a6;cursor:pointer;font-weight:700}
 
+/* ===== 弹窗大店长多选下拉 ===== */
+.mgr-multi-wrap{position:relative;display:inline-block;vertical-align:middle}
+.mgr-multi-toggle{font-size:12px;padding:4px 10px;border:1px solid #DDD;border-radius:4px;background:#FFF;color:#333;cursor:pointer;min-width:120px;max-width:200px;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mgr-multi-toggle::after{content:'▼';font-size:9px;margin-left:8px;color:#999}
+.mgr-multi-dropdown{display:none;position:absolute;top:100%;left:0;margin-top:4px;background:#FFF;border:1px solid #DDD;border-radius:6px;box-shadow:0 4px 12px rgba(0,0,0,.12);z-index:1000;min-width:180px;max-width:260px;padding:6px 0}
+.mgr-multi-dropdown.open{display:block}
+.mgr-multi-actions{display:flex;justify-content:space-between;padding:0 10px 6px;border-bottom:1px solid #EEE;margin-bottom:4px;font-size:11px;color:var(--blue)}
+.mgr-multi-actions span{cursor:pointer;padding:2px 4px;border-radius:3px}
+.mgr-multi-actions span:hover{background:var(--blueBg)}
+.mgr-multi-options{max-height:260px;overflow-y:auto}
+.mgr-multi-option{display:flex;align-items:center;gap:6px;padding:5px 10px;cursor:pointer;font-size:12px;color:#333;white-space:nowrap}
+.mgr-multi-option:hover{background:#F5F7FA}
+.mgr-multi-option input{margin:0;cursor:pointer}
+
 /* ===== 三看板选项卡 ===== */
 .board-tabs{display:flex;align-items:center;gap:10px;padding:12px 24px;background:#fff;border-bottom:1px solid var(--bor);flex-wrap:wrap}
 .board-tab{font-size:13px;padding:7px 20px;border-radius:20px;border:1px solid var(--bor);background:#fff;color:var(--sec);cursor:pointer;transition:all .15s;outline:none}
@@ -243521,14 +243535,49 @@ function updateTotalAlert(){
 
 /* ========== 指标卡弹窗：预警人员名单 ========== */
 let currentAlertType=null;
-let modalFilterManager='';
+let modalFilterManager=[];
+let modalMgrList=[];
+
+function toggleMgrDropdown(e){
+  if(e) e.stopPropagation();
+  const dd=document.getElementById('alertModalMgrDropdown');
+  if(dd) dd.classList.toggle('open');
+}
+function closeMgrDropdown(){
+  const dd=document.getElementById('alertModalMgrDropdown');
+  if(dd) dd.classList.remove('open');
+}
+document.addEventListener('click', function(e){
+  const wrap=document.getElementById('alertModalMgrWrap');
+  if(wrap && !wrap.contains(e.target)) closeMgrDropdown();
+});
+
+function selectAllMgrs(){
+  modalFilterManager=modalMgrList.slice();
+  if(currentAlertType) showAlertDetail(currentAlertType);
+}
+function clearMgrs(){
+  modalFilterManager=[];
+  if(currentAlertType) showAlertDetail(currentAlertType);
+}
+function toggleMgr(mgr){
+  const idx=modalFilterManager.indexOf(mgr);
+  if(idx>=0) modalFilterManager.splice(idx,1);
+  else modalFilterManager.push(mgr);
+  if(currentAlertType) showAlertDetail(currentAlertType);
+}
+function setMgrToggleText(){
+  const t=document.getElementById('alertModalMgrToggle');
+  if(!t) return;
+  if(!modalFilterManager.length) t.textContent='全部大店长';
+  else if(modalFilterManager.length===1) t.textContent=modalFilterManager[0].replace('大店区','');
+  else t.textContent=`已选 ${modalFilterManager.length} 位大店长`;
+}
 
 function onAlertModalMgrChange(mgr){
-  modalFilterManager=mgr||'';
-  const sel=document.getElementById('alertModalManagerSel');
-  if(sel && sel.value!==modalFilterManager) sel.value=modalFilterManager;
-  const reset=document.getElementById('alertModalMgrReset');
-  if(reset) reset.style.display=modalFilterManager?'inline':'none';
+  // 兼容旧重置调用
+  if(Array.isArray(mgr)) modalFilterManager=mgr.slice();
+  else if(!mgr) modalFilterManager=[];
   if(currentAlertType) showAlertDetail(currentAlertType);
 }
 
@@ -243542,9 +243591,9 @@ function showAlertDetail(type){
   const chartBox=document.getElementById('alertModalChart');
   chartBox.style.display='none';
   chartBox.innerHTML='';
-  // 大店长筛选器：仅 over13 / consec8 显示
+  // 大店长筛选器：仅 over13 / consec8 / low_hours / store_gap 显示
   const mgrFilterBox=document.getElementById('alertModalManagerFilter');
-  const mgrSel=document.getElementById('alertModalManagerSel');
+  const mgrOptions=document.getElementById('alertModalMgrOptions');
   const mgrHint=document.getElementById('alertModalMgrHint');
   const mgrReset=document.getElementById('alertModalMgrReset');
   if(type==='over13' || type==='consec8' || type==='low_hours' || type==='store_gap'){
@@ -243552,19 +243601,25 @@ function showAlertDetail(type){
       : type==='consec8' ? (activeData.warn7||[]).filter(p=>p['当月最大连续']>=9 && !p['国庆豁免'])
       : type==='store_gap' ? (activeData.store_gap||[])
       : (activeData.low_hours||[]);
-    const mgrList=[...new Set(srcData.map(p=>p['大店长']).filter(Boolean))].sort();
-    mgrSel.innerHTML='<option value="">全部大店长</option>' +
-      mgrList.map(m=>`<option value="${m}"${m===modalFilterManager?' selected':''}>${m}</option>`).join('');
+    modalMgrList=[...new Set(srcData.map(p=>p['大店长']).filter(Boolean))].sort();
+    // 过滤掉不在当前列表里的旧选项
+    modalFilterManager=modalFilterManager.filter(m=>modalMgrList.includes(m));
+    mgrOptions.innerHTML=modalMgrList.map(m=>
+      `<label class="mgr-multi-option" onclick="event.stopPropagation()">
+         <input type="checkbox" value="${m}" ${modalFilterManager.includes(m)?'checked':''}
+                onchange="toggleMgr('${m}')">${m}
+       </label>`).join('');
     mgrFilterBox.style.display='block';
-    mgrReset.style.display=modalFilterManager?'inline':'none';
-    mgrHint.textContent=modalFilterManager?`当前仅显示：${modalFilterManager}`:'';
+    mgrReset.style.display=modalFilterManager.length?'inline':'none';
+    mgrHint.textContent=modalFilterManager.length?`当前仅显示：${modalFilterManager.map(x=>x.replace('大店区','')).join('、')}`:'';
+    setMgrToggleText();
   } else {
     mgrFilterBox.style.display='none';
-    modalFilterManager='';
+    modalFilterManager=[];
   }
   const filt=function(p){
     if(!getDetailFilterFn()(p)) return false;
-    if(modalFilterManager && p['大店长']!==modalFilterManager) return false;
+    if(modalFilterManager.length && !modalFilterManager.includes(p['大店长'])) return false;
     return true;
   };
   let hh='', bb='', cnt=0;
@@ -243841,7 +243896,9 @@ function freezeAlertCols(widths,freezeCount){
 
 function closeAlertModal(){
   document.getElementById('alertModal').style.display='none';
-  modalFilterManager='';
+  modalFilterManager=[];
+  modalMgrList=[];
+  closeMgrDropdown();
   currentAlertType=null;
 }
 
@@ -244537,10 +244594,17 @@ try{
       <div id="alertModalCount" class="modal-count"></div>
       <div id="alertModalManagerFilter" style="display:none;margin:0 0 10px 0">
         <label style="font-size:12px;color:var(--hint);margin-right:6px">仅看大店长：</label>
-        <select id="alertModalManagerSel" style="font-size:12px;padding:4px 8px;border:1px solid #DDD;border-radius:4px;background:#FFF;color:#333;max-width:180px" onchange="onAlertModalMgrChange(this.value)">
-          <option value="">全部大店长</option>
-        </select>
-        <span id="alertModalMgrReset" style="font-size:12px;color:#4A90E2;cursor:pointer;margin-left:8px;display:none" onclick="onAlertModalMgrChange('')">重置</span>
+        <div class="mgr-multi-wrap" id="alertModalMgrWrap">
+          <button id="alertModalMgrToggle" class="mgr-multi-toggle" onclick="toggleMgrDropdown(event)">全部大店长</button>
+          <div id="alertModalMgrDropdown" class="mgr-multi-dropdown">
+            <div class="mgr-multi-actions">
+              <span onclick="selectAllMgrs()">全选</span>
+              <span onclick="clearMgrs()">清空</span>
+            </div>
+            <div id="alertModalMgrOptions" class="mgr-multi-options"></div>
+          </div>
+        </div>
+        <span id="alertModalMgrReset" style="font-size:12px;color:#4A90E2;cursor:pointer;margin-left:8px;display:none" onclick="clearMgrs()">重置</span>
         <span id="alertModalMgrHint" style="font-size:12px;color:#999;margin-left:10px"></span>
       </div>
       <div id="alertModalChart" style="display:none"></div>

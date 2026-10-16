@@ -269,6 +269,32 @@
         .rest-col-head { cursor: default; }
         .rest-col-head .rest-col-sub { display: block; font-size: 10px; font-weight: normal; opacity: .85; }
 
+        /* ===== 大店长年假卡片区 ===== */
+        .mgr-cards-row {
+            display: grid; grid-template-columns: repeat(13, 1fr); gap: 7px;
+            background: #fff; padding: 12px 16px 14px;
+        }
+        .mgr-card {
+            background: #fafbf7; border: 1px solid #e8e8e8; border-radius: 6px;
+            padding: 10px 4px 8px; text-align: center; cursor: pointer;
+            transition: all .25s ease; position: relative; overflow: hidden;
+        }
+        .mgr-card::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+            background: linear-gradient(90deg, #8bc34a, #4caf50);
+        }
+        .mgr-card.done::before { background: linear-gradient(90deg, #b0bec5, #90a4ae); }
+        .mgr-card:hover { transform: translateY(-3px); box-shadow: 0 6px 18px rgba(0,0,0,0.1); border-color: #8bc34a; }
+        .mgr-name { font-size: 12.5px; font-weight: bold; color: #2c3e50; margin-bottom: 2px; }
+        .mgr-left { font-size: 21px; font-weight: bold; color: #33691e; line-height: 1.25; }
+        .mgr-sub { font-size: 9.5px; color: #95a5a6; margin-top: 1px; }
+        .mgr-plan { font-size: 10px; color: #b5c4a6; margin-top: 4px; line-height: 1.45; }
+        .mgr-plan.has { color: #558b2f; font-weight: 600; }
+        .mgr-plan.dates {
+            color: #7f8c8d; font-weight: normal; white-space: nowrap; overflow: hidden;
+            text-overflow: ellipsis; padding: 0 3px;
+        }
+
         /* ===== 未达标行 / 进度条 ===== */
         tr.row-fail { background: #fff6f5 !important; }
         tr.row-fail:hover { background: #ffeceb !important; }
@@ -292,9 +318,11 @@
         /* ===== 响应式 ===== */
         @media (max-width: 1100px) {
             .cards-row { grid-template-columns: repeat(3, 1fr); }
+            .mgr-cards-row { grid-template-columns: repeat(7, 1fr); }
         }        @media (max-width: 768px) {
             body { padding: 10px; }
             .cards-row { grid-template-columns: repeat(2, 1fr); gap: 8px; padding: 12px; }
+            .mgr-cards-row { grid-template-columns: repeat(4, 1fr); gap: 6px; padding: 10px; }
             .filter-bar { flex-direction: column; align-items: stretch; }
             .search-box { margin-left: 0; }
             .search-box input { flex: 1; }
@@ -330,15 +358,20 @@
         <div class="description-item">2、<strong>离职口径：</strong>离职员工剩余年假已折算薪资发放，其剩余年假按 <strong>0</strong> 计（源表 G 列仍显示原值，看板已按 0 处理）</div>
         <div class="description-item">3、<strong>督办口径：</strong>「本期已休」= 上期剩余（9/22）− 10/8剩余，反映 9/22 以来的实际消化量；「10月排休目标」为各大店长在员工明细弹窗中<strong>自行填写的计划合计</strong>，「达标差额」= 自填目标 − 本期已休，差额 &gt; 0 即未达标（红色标记行）；未填写目标的大店区不计入未达标</div>
         <div class="description-item">4、<strong>明细填报：</strong>点击大店长行查看员工明细，点击员工「计划填写」单元格可登记天数及<strong>具体休息日期区间（必填）</strong>，支持分多段，数据实时同步云端</div>
+        <div class="description-item">5、<strong>大店长年假：</strong>第一排为 13 位大店长本年度年假卡片（应休 5 天/人），点击卡片登记本人休息日期区间，<strong>规则与门店伙伴排休一致</strong>，实时同步云端</div>
     </div>
 </div>
 
-<!-- ===== 第一排：核心指标 ===== -->
-<div class="section-header">【第一排】年假总览 - 核心指标</div>
+<!-- ===== 第一排：大店长年假 ===== -->
+<div class="section-header">【第一排】大店长年假 - 剩余天数与排休安排（点击卡片填写休息日期区间）</div>
+<div class="mgr-cards-row" id="mgr-cards-row"></div>
+
+<!-- ===== 第二排：核心指标 ===== -->
+<div class="section-header" style="margin-top:2px;">【第二排】年假总览 - 核心指标</div>
 <div class="cards-row" id="cards-row"></div>
 
-<!-- ===== 第二排：大店区明细 ===== -->
-<div class="section-header" style="margin-top:2px;">【第二排】大店区明细看板 - 年假完成进度 vs 目标</div>
+<!-- ===== 第三排：大店区明细 ===== -->
+<div class="section-header" style="margin-top:2px;">【第三排】大店区明细看板 - 年假完成进度 vs 目标</div>
 
 <div class="tip-bar">
     <span class="tip-bar-icon">👇</span>
@@ -415,14 +448,38 @@
     </div>
 </div>
 
+<!-- ===== 大店长排休登记弹窗 ===== -->
+<div class="modal-overlay" id="mgr-modal" onclick="closeMgrModal(event)">
+    <div class="modal-box small" onclick="event.stopPropagation()">
+        <div class="modal-header">
+            <span class="modal-title">✏️ 大店长年假排休登记</span>
+            <button class="modal-close" onclick="closeMgrModal()">×</button>
+        </div>
+        <div class="rest-form">
+            <div class="rest-form-label">大店长：<b id="mgr-name"></b>（<span id="mgr-no"></span>）<br>本年度应休 <b id="mgr-total"></b> 天 · 剩余 <b id="mgr-left" style="color:#c0392b;"></b> 天<br>请填写本人休息日期区间（规则与门店伙伴排休一致），保存后同步到云端。</div>
+            <div class="rest-dates-label" style="font-weight:600;color:#33691e;">📅 休息日期区间（必填）</div>
+            <div id="mgr-ranges-box"></div>
+            <button type="button" class="rest-range-add" onclick="addMgrRange()">＋ 添加一段区间</button>
+            <div class="rest-dates-hint">选择每段休息的起止日期（限 10/1 - 10/31），可分多段；区间合计天数不能超过剩余年假</div>
+        </div>
+        <div class="rest-form-btns" style="padding:0 24px 12px;">
+            <button class="rest-btn rest-btn-cancel" onclick="closeMgrModal()">取消</button>
+            <button class="rest-btn rest-btn-ok" onclick="confirmMgrSave()">✓ 保存并同步</button>
+        </div>
+        <div class="rest-sync-status" id="mgr-sync-status"><span id="mgr-sync-text">数据实时同步至云端 · 多人协作填写</span><a href="javascript:void(0)" id="mgr-clear-link" onclick="clearMgrValue()" style="margin-left:10px;color:#e74c3c;font-weight:600;display:none;">清空该大店长排休</a></div>
+    </div>
 </div>
 
-<script src="data.js?v=20261008a"></script>
+</div>
+
+<script src="data.js?v=20261016a"></script>
+<!-- v=20261016a: 第一排新增13位大店长年假卡片 + 大店长排休日期区间登记（云端 mgr_rest_dates） -->
 <!-- v=20260916a: 新增休息日期区间（起止日期多段填写+校验+明细显示） -->
 <script>
 const D = window.ANNUAL_LEAVE_DATA;
 let sepRestCache = {};       // 员工工号 -> 10月休息天数（多人协作云端同步）
 let sepRestDatesCache = {};  // 员工工号 -> 具体休息日期字符串（如 "9/3、9/5-9/6"），选填
+let mgrRestDatesCache = {};  // 大店长工号 -> [{s,e}] 本年度休息日期区间（云端同步）
 
 // ---------- 标题 / 日期 ----------
 document.getElementById('hdr-title').textContent = '● ' + D.meta.title;
@@ -502,7 +559,7 @@ function formatRestDates(v) {
     if (typeof v === 'string') return v;   // 旧文本原样显示
     const arr = parseRestDates(v);
     return arr.map(function (r) {
-        return r.s === r.e ? '10/' + parseInt(r.s.slice(-2), 10) : '10/' + parseInt(r.s.slice(-2), 10) + '~9/' + parseInt(r.e.slice(-2), 10);
+        return r.s === r.e ? '10/' + parseInt(r.s.slice(-2), 10) : '10/' + parseInt(r.s.slice(-2), 10) + '~10/' + parseInt(r.e.slice(-2), 10);
     }).join('、');
 }
 
@@ -819,7 +876,7 @@ const SUPA_TABLE = 'violation_data';
 const SUPA_ID = 10;   // 年假看板专用行
 
 function sepRestBackup() {
-    try { localStorage.setItem('sepRestBackupEmp', JSON.stringify({ sep_rest_emp: sepRestCache, sep_rest_dates: sepRestDatesCache, ts: Date.now() })); } catch (e) {}
+    try { localStorage.setItem('sepRestBackupEmp', JSON.stringify({ sep_rest_emp: sepRestCache, sep_rest_dates: sepRestDatesCache, mgr_rest_dates: mgrRestDatesCache, ts: Date.now() })); } catch (e) {}
 }
 function sepRestRestore() {
     try {
@@ -828,6 +885,7 @@ function sepRestRestore() {
         const d = JSON.parse(raw);
         if (d && d.sep_rest_emp) sepRestCache = Object.assign({}, d.sep_rest_emp, sepRestCache);
         if (d && d.sep_rest_dates) sepRestDatesCache = Object.assign({}, d.sep_rest_dates, sepRestDatesCache);
+        if (d && d.mgr_rest_dates) mgrRestDatesCache = Object.assign({}, d.mgr_rest_dates, mgrRestDatesCache);
     } catch (e) {}
 }
 
@@ -842,21 +900,24 @@ async function loadSepRest() {
             const d = rows[0].data || {};
             sepRestCache = d.sep_rest_emp || {};
             sepRestDatesCache = d.sep_rest_dates || {};
+            mgrRestDatesCache = d.mgr_rest_dates || {};
         }
         sepRestRestore();
         renderRegions();
+        renderMgrCards();
         updateSepRestCard();
     } catch (e) {
         console.error('loadSepRest failed', e);
         sepRestRestore();
         renderRegions();
+        renderMgrCards();
         updateSepRestCard();
     }
 }
 
 async function saveSepRest() {
     try {
-        const payload = { sep_rest_emp: sepRestCache, sep_rest_dates: sepRestDatesCache };
+        const payload = { sep_rest_emp: sepRestCache, sep_rest_dates: sepRestDatesCache, mgr_rest_dates: mgrRestDatesCache };
         const res = await fetch(SUPA_URL + '/rest/v1/' + SUPA_TABLE + '?id=eq.' + SUPA_ID, {
             method: 'PATCH',
             headers: {
@@ -926,6 +987,12 @@ function renderRestRanges(ranges) {
     const box = document.getElementById('rest-ranges-box');
     box.innerHTML = '';
     (ranges || []).forEach(function (r) { addRestRange(r.s, r.e); });
+}
+// 通用：向指定容器渲染区间编辑行（员工/大店长弹窗共用 rangeRowHtml）
+function renderRestRangesIn(boxId, ranges) {
+    const box = document.getElementById(boxId);
+    box.innerHTML = '';
+    (ranges || []).forEach(function (r) { box.insertAdjacentHTML('beforeend', rangeRowHtml(r.s, r.e)); });
 }
 function collectRestRanges() {
     const out = [];
@@ -1012,12 +1079,153 @@ async function clearRestValue() {
     }
 }
 
+// ========== 第一排 · 大店长年假卡片区 ==========
+let currentMgr = null;
+
+function mgrRangesOf(id) { return parseRestDates(mgrRestDatesCache[id]); }
+function mgrPlannedDays(id) {
+    return mgrRangesOf(id).reduce(function (s, r) { return s + daysInclusive(r.s, r.e); }, 0);
+}
+
+function renderMgrCards() {
+    const row = document.getElementById('mgr-cards-row');
+    if (!row || !D.managers) return;
+    row.innerHTML = D.managers.map(function (m) {
+        const ranges = mgrRangesOf(m.id);
+        const planned = ranges.reduce(function (s, r) { return s + daysInclusive(r.s, r.e); }, 0);
+        const datesStr = ranges.map(function (r) {
+            return r.s === r.e ? '10/' + parseInt(r.s.slice(-2), 10) : '10/' + parseInt(r.s.slice(-2), 10) + '~10/' + parseInt(r.e.slice(-2), 10);
+        }).join('、');
+        let planHtml;
+        if (m.left === 0) {
+            planHtml = '<div class="mgr-plan" style="color:#c0392b;font-weight:600;">✓ 年假已休完</div>';
+        } else if (planned > 0) {
+            planHtml = '<div class="mgr-plan has">📅 已排 ' + planned + ' 天</div>' +
+                       '<div class="mgr-plan dates" title="' + datesStr + '">' + datesStr + '</div>';
+        } else {
+            planHtml = '<div class="mgr-plan">待填写排休日期</div>';
+        }
+        const leftStyle = m.left === 0 ? ' style="color:#90a4ae;"' : '';
+        return '<div class="mgr-card' + (m.left === 0 ? ' done' : '') + '" onclick="openMgrModal(\'' + m.id + '\')" title="点击填写 ' + m.name + ' 的休息日期区间">' +
+            '<div class="mgr-name">' + m.name + '</div>' +
+            '<div class="mgr-left"' + leftStyle + '>' + m.left + '<span style="font-size:11px;color:#95a5a6;font-weight:normal;"> 天</span></div>' +
+            '<div class="mgr-sub">剩余 / 应休 ' + m.total + ' 天</div>' +
+            planHtml +
+        '</div>';
+    }).join('');
+}
+
+// ---------- 大店长排休弹窗 ----------
+function openMgrModal(id) {
+    const m = (D.managers || []).find(function (x) { return x.id === id; });
+    if (!m) return;
+    currentMgr = m;
+    document.getElementById('mgr-name').textContent = m.name;
+    document.getElementById('mgr-no').textContent = m.id;
+    document.getElementById('mgr-total').textContent = m.total;
+    document.getElementById('mgr-left').textContent = m.left;
+    renderRestRangesIn('mgr-ranges-box', mgrRangesOf(id));
+    document.getElementById('mgr-clear-link').style.display = mgrRestDatesCache[id] ? 'inline' : 'none';
+    setMgrSyncStatus('数据实时同步至云端 · 多人协作填写');
+    document.getElementById('mgr-modal').classList.add('active');
+}
+
+function closeMgrModal(e) {
+    if (e && e.target !== document.getElementById('mgr-modal')) return;
+    document.getElementById('mgr-modal').classList.remove('active');
+    currentMgr = null;
+}
+
+function setMgrSyncStatus(msg, cls) {
+    const st = document.getElementById('mgr-sync-status');
+    const txt = document.getElementById('mgr-sync-text');
+    if (txt) txt.textContent = msg; else st.textContent = msg;
+    st.className = 'rest-sync-status' + (cls ? ' ' + cls : '');
+}
+
+function addMgrRange(s, e) {
+    document.getElementById('mgr-ranges-box').insertAdjacentHTML('beforeend', rangeRowHtml(s, e));
+}
+
+function collectMgrRanges() {
+    const out = [];
+    document.querySelectorAll('#mgr-ranges-box .rest-range-row').forEach(function (row) {
+        const s = row.querySelector('.rest-range-start').value;
+        const e = row.querySelector('.rest-range-end').value;
+        if (s || e) out.push({ s: s, e: e });
+    });
+    return out;
+}
+
+function validateRanges(ranges) {
+    if (ranges.some(function (r) { return !r.s || !r.e; })) return '有区间未选完整起止日期，请补全或删除该段';
+    for (let i = 0; i < ranges.length; i++) {
+        if (ranges[i].s > ranges[i].e) return '区间开始日期不能晚于结束日期';
+    }
+    const sorted = ranges.slice().sort(function (a, b) { return a.s < b.s ? -1 : 1; });
+    for (let i = 1; i < sorted.length; i++) {
+        if (sorted[i].s <= sorted[i - 1].e) return '区间日期存在重叠，请合并或调整区间';
+    }
+    return '';
+}
+
+async function confirmMgrSave() {
+    if (!currentMgr) return;
+    const ranges = collectMgrRanges();
+    if (ranges.length === 0) {
+        if (!confirm('未填写任何区间，保存后将清空「' + currentMgr.name + '」的排休记录。是否继续？')) return;
+    } else {
+        const err = validateRanges(ranges);
+        if (err) { alert(err); return; }
+        const totalDays = ranges.reduce(function (sum, r) { return sum + daysInclusive(r.s, r.e); }, 0);
+        if (totalDays > currentMgr.left) {
+            alert('区间合计 ' + totalDays + ' 天，超过剩余年假 ' + currentMgr.left + ' 天，请调整区间');
+            return;
+        }
+        if (totalDays < currentMgr.left) {
+            if (!confirm('区间合计 ' + totalDays + ' 天，剩余年假 ' + currentMgr.left + ' 天（尚未排完）。\n是否按当前内容保存？')) return;
+        }
+    }
+    if (ranges.length > 0) {
+        mgrRestDatesCache[currentMgr.id] = ranges;
+    } else {
+        delete mgrRestDatesCache[currentMgr.id];
+    }
+    sepRestBackup();
+    renderMgrCards();
+    setMgrSyncStatus('⏳ 正在同步到云端...');
+    const ok = await saveSepRest();
+    if (ok) {
+        setMgrSyncStatus('✓ 已保存并同步到云端，其他伙伴可见', 'ok');
+        setTimeout(function () { closeMgrModal(); }, 650);
+    } else {
+        setMgrSyncStatus('✗ 同步失败（已保存在本机，刷新页面可恢复）', 'err');
+    }
+}
+
+async function clearMgrValue() {
+    if (!currentMgr) return;
+    if (!confirm('确定清空「' + currentMgr.name + '」的排休登记？')) return;
+    delete mgrRestDatesCache[currentMgr.id];
+    sepRestBackup();
+    renderMgrCards();
+    renderRestRangesIn('mgr-ranges-box', []);
+    document.getElementById('mgr-clear-link').style.display = 'none';
+    setMgrSyncStatus('⏳ 正在同步到云端...');
+    const ok = await saveSepRest();
+    if (ok) setMgrSyncStatus('✓ 已清空并同步', 'ok');
+    else setMgrSyncStatus('✗ 同步失败（已保存在本机）', 'err');
+}
+
+renderMgrCards();
+
 loadSepRest();
 
 // 键盘 Esc 关闭弹窗
 document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape') {
         if (document.getElementById('rest-modal').classList.contains('active')) closeRestModal();
+        else if (document.getElementById('mgr-modal').classList.contains('active')) closeMgrModal();
         else closeModal();
     }
 });

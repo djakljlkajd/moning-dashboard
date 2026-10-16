@@ -293,11 +293,9 @@ body{font-family:-apple-system,'PingFang SC','Helvetica Neue',sans-serif;backgro
 .board-tab.active{background:var(--blue);color:#fff;border-color:var(--blue);font-weight:500}
 .pane{display:none}
 .pane.active{display:block}
-#iframe-hc,#iframe-turnover{width:100%;height:calc(100vh - 110px);border:0;display:block}
 @media (max-width: 768px){
   .board-tabs{padding:10px 16px;gap:8px}
   .board-tab{padding:6px 14px;font-size:12px}
-  #iframe-hc,#iframe-turnover{height:calc(100vh - 96px)}
 }
 </style>
 </head>
@@ -329,8 +327,7 @@ body{font-family:-apple-system,'PingFang SC','Helvetica Neue',sans-serif;backgro
 <!-- 看板切换选项卡 -->
 <div class="board-tabs">
   <button class="board-tab active" data-board="hours" onclick="switchBoard('hours',this)">工时</button>
-  <button class="board-tab" data-board="hc" onclick="switchBoard('hc',this)">HC</button>
-  <button class="board-tab" data-board="turnover" onclick="switchBoard('turnover',this)">离职</button>
+  <button class="board-tab" data-board="family_leave" onclick="switchBoard('family_leave',this)">探亲假</button>
 </div>
 
 <!-- 工时看板内容区 -->
@@ -451,14 +448,22 @@ body{font-family:-apple-system,'PingFang SC','Helvetica Neue',sans-serif;backgro
 </div>
 <!-- /pane-hours -->
 
-<!-- HC 看板内容区（iframe 懒加载） -->
-<div id="pane-hc" class="pane">
-  <iframe id="iframe-hc" title="HC 招募缺口看板" src="about:blank"></iframe>
-</div>
-
-<!-- 离职看板内容区（iframe 懒加载） -->
-<div id="pane-turnover" class="pane">
-  <iframe id="iframe-turnover" title="离职率看板" src="about:blank"></iframe>
+<!-- 探亲假内容区（明细大表，替代原 HC/离职 iframe 位） -->
+<div id="pane-family_leave" class="pane">
+  <div class="container">
+    <div class="sec" style="margin-top:16px">
+      <div class="sec-hd">
+        <h2 id="flBoardTitle">探亲假明细</h2>
+        <div class="f-bar">
+          <select id="flBoardFilter" class="manager-filter" onchange="renderFLBoard()">
+            <option value="">全部大店长</option>
+          </select>
+        </div>
+      </div>
+      <div class="notebar" style="margin:0 0 10px"><div class="note-body" id="flBoardCount"></div></div>
+      <div class="tbl-wrap"><div id="flBoardBody"></div></div>
+    </div>
+  </div>
 </div>
 
 <script src="historical_data.js"></script>
@@ -500,7 +505,7 @@ function switchDashboard(path){
   if(target!==location.href){ location.href=target; }
 }
 
-/* 顶部选项卡切换：工时 / HC / 离职 */
+/* 顶部选项卡切换：工时 / 探亲假 */
 function switchBoard(board,btn){
   // 选项卡高亮
   document.querySelectorAll('.board-tab').forEach(function(b){ b.classList.remove('active'); });
@@ -518,18 +523,8 @@ function switchBoard(board,btn){
     pane.style.display='block';
   }
 
-  // iframe 懒加载（每次切换都强制刷新，确保拿到最新版）
-  if(board==='hc'){
-    var iframeHc=document.getElementById('iframe-hc');
-    if(iframeHc){
-      iframeHc.src='./hc/index.html?v='+Date.now();
-    }
-  } else if(board==='turnover'){
-    var iframeTr=document.getElementById('iframe-turnover');
-    if(iframeTr){
-      iframeTr.src='./turnover/index.html?v='+Date.now();
-    }
-  }
+  // 探亲假面板：每次切入重渲（数据/已休状态可能已变）
+  if(board==='family_leave'){ renderFLBoard(); }
 }
 
 const _dr=`数据周期：${M.date_from} ~ ${M.date_to}（共${M.days}天）`;
@@ -812,6 +807,10 @@ function refreshAll(){
   try{updateScopeTag();}catch(e){console.error('[refresh] updateScopeTag error:',e);}
   try{updateDetailScopeHint();}catch(e){console.error('[refresh] updateDetailScopeHint error:',e);}
   try{updateTotalAlert();}catch(e){console.error('[refresh] updateTotalAlert error:',e);}
+  try{
+    const flPane=document.getElementById('pane-family_leave');
+    if(flPane&&flPane.classList.contains('active'))renderFLBoard();
+  }catch(e){console.error('[refresh] renderFLBoard error:',e);}
 }
 
 /* ========== 品牌主题：标题 + 顶栏皮肤（来自 meta.brand，跑数时由 config.json 注入） ========== */
@@ -896,14 +895,14 @@ function renderMetrics(){
     if(FL&&FL.total>0){
       const takenN=(FL.rows||[]).filter(p=>getFLTaken(p['工号'])).length;
       mDat.push(
-        {l:'探亲假',v:FL.total+'<span class="unit">人</span>',s:`已休 ${takenN} 人，点击查看明细`,c:'coral',type:'family_leave',calc:'探亲交通费报销·调动人员'}
+        {l:'探亲假',v:FL.total+'<span class="unit">人</span>',s:`已休 ${takenN} 人 · 本季 ${flBatchLabel(currentFLBatch())}，剩 ${flDaysLeft()} 天`,c:'coral',type:'family_leave',board:'family_leave',calc:'探亲交通费报销·调动人员，每季度一次，未休不累计'}
       );
     }
   }
   let h='';
   mDat.forEach(m=>{
     const clickable=m.type?'clickable':'';
-    const onClick=m.type?`onclick="showAlertDetail('${m.type}')"`:'style="cursor:default"';
+    const onClick=m.type?(m.board?`onclick="switchBoard('${m.board}')"`:`onclick="showAlertDetail('${m.type}')"`):'style="cursor:default"';
     const detailBtn=m.type?'<div class="detail-btn">详情</div>':'';
     const sub2=m.s2?`<div class="sub" style="font-size:10px;margin-top:2px">${m.s2}</div>`:'';
     const calcHtml=m.calc?`<div class="calc">${m.calc}</div>`:'';
@@ -1120,7 +1119,7 @@ function showAlertDetail(type){
         <td>${p['出勤天数']}d/${p['休息天数']}d</td></tr>`;
     });
   } else if(type==='family_leave'){
-    title.textContent='探亲假明细（指定探亲地台账）';
+    title.textContent='探亲假明细（本季度 '+flBatchLabel(currentFLBatch())+'）';
     const allFL=(activeData.family_leave&&activeData.family_leave.rows)||[];
     const data=allFL.filter(p=>{
       if(modalFilterManager && p['大店长']!==modalFilterManager) return false;
@@ -1132,7 +1131,7 @@ function showAlertDetail(type){
     cnt=data.length;
     const unmatchedN=data.filter(p=>p['大店长']==='未匹配').length;
     const takenN=data.filter(p=>getFLTaken(p['工号'])).length;
-    count.innerHTML=`当前范围共 <b>${cnt}</b> 人享受探亲交通费报销，已休 <b class="c-red">${takenN}</b> 人${unmatchedN>0?`，${unmatchedN} 人未匹配到本期工时名单`:''}。每位员工一次探亲假机会，点击「待休」填休息日期确认，全员可见`;
+    count.innerHTML=`当前范围共 <b>${cnt}</b> 人享受探亲交通费报销，本季度已休 <b class="c-red">${takenN}</b> 人${unmatchedN>0?`，${unmatchedN} 人未匹配到本期工时名单`:''}。每位员工每季度一次探亲假（${flBatchLabel(currentFLBatch())}，剩 ${flDaysLeft()} 天），<b class="c-red">季度内未休不累计至下季度</b>，点击「待休」填休息日期确认，全员可见`;
     hh='<th style="width:28px">#</th><th style="width:88px">大店长</th>'+
        '<th style="width:66px">工号</th><th style="width:72px">姓名</th><th style="width:78px">职位</th>'+
        '<th style="min-width:170px;text-align:left">指定探亲地</th>'+
@@ -1448,6 +1447,7 @@ function restoreFromLocal(){
     violationCache.over13=data.violation_over13||violationCache.over13;
     violationCache.consec8=data.violation_consec8||violationCache.consec8;
     familyLeaveCache=data.family_leave_taken||familyLeaveCache;
+    migrateFLCache();
     const zf=data.zero_full_edits||{};
     zeroFullCache.resigned=zf.resigned||zeroFullCache.resigned;
     zeroFullCache.remarks=zf.remarks||zeroFullCache.remarks;
@@ -1467,8 +1467,9 @@ async function loadViolationData(){
     const data=rows[0].data||{};
     violationCache.over13=data.violation_over13||{};
     violationCache.consec8=data.violation_consec8||{};
-    // 探亲假已休确认（云端共享，所有人可见）
+    // 探亲假已休确认（云端共享，所有人可见；按季度批次隔离）
     familyLeaveCache=data.family_leave_taken||{};
+    migrateFLCache(); // 旧数据归入 9/1 批次
     // 0工时备注云端数据
     const zfEdits=data.zero_full_edits||{};
     const cloudResigned=zfEdits.resigned||[];
@@ -1535,14 +1536,104 @@ function scheduleSync(){
   violationSyncTimer=setTimeout(()=>{syncViolationData();},800);
 }
 
-/* ========== 探亲假已休确认（云端共享） ========== */
+/* ========== 探亲假已休确认（云端共享，按季度批次隔离） ========== */
+// 规则：每季度一次探亲假，批次区间 9/1~11/30、12/1~次年2月末、3/1~5/31、6/1~8/31；
+// 已休记录以「批次ID:工号」为 key 存云端，季度结束未休自动作废、不累计到下季度。
 let flEditingGid=null; // 当前正在填日期的工号
 
-function getFLTaken(gid){ return familyLeaveCache[gid]||null; }
+function flBatchOf(dateStr){
+  const y=+dateStr.slice(0,4), m=+dateStr.slice(5,7);
+  if(m>=9&&m<=11) return y+'-09';
+  if(m===12) return y+'-12';
+  if(m<=2) return (y-1)+'-12';
+  if(m<=5) return y+'-03';
+  return y+'-06';
+}
+function flBatchRange(bid){
+  const y=+bid.slice(0,4), mm=+bid.slice(5);
+  const end=new Date(y,mm+2,0); // 批次第3个月的最后一天
+  const f=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+  return [y+'-'+String(mm).padStart(2,'0')+'-01', f(end)];
+}
+function flBatchLabel(bid){
+  const [s,e]=flBatchRange(bid);
+  return s.replace(/-/g,'/')+' ~ '+e.replace(/-/g,'/');
+}
+function currentFLBatch(){
+  const d=new Date();
+  return flBatchOf(d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'));
+}
+function flDaysLeft(){
+  const [,e]=flBatchRange(currentFLBatch());
+  return Math.max(0,Math.ceil((new Date(e+'T23:59:59')-Date.now())/86400000));
+}
+function flKey(gid){ return currentFLBatch()+':'+gid; }
+function migrateFLCache(){
+  // 旧数据迁移：无批次前缀的 key 统一归入 9/1 批次（历史已休记录均属该批次）
+  const legacy=flBatchOf('2026-09-01');
+  Object.keys(familyLeaveCache).forEach(k=>{
+    if(!k.includes(':')){ familyLeaveCache[legacy+':'+k]=familyLeaveCache[k]; delete familyLeaveCache[k]; }
+  });
+}
+
+function getFLTaken(gid){ return familyLeaveCache[flKey(gid)]||null; }
+
+/* 探亲假专属面板（顶部 Tab）：明细大表 + 大店长筛选 */
+function renderFLBoard(){
+  const box=document.getElementById('flBoardBody');
+  if(!box)return;
+  const allFL=(activeData.family_leave&&activeData.family_leave.rows)||[];
+  // 首次渲染填充大店长筛选选项
+  const flt=document.getElementById('flBoardFilter');
+  if(flt&&flt.options.length<=1){
+    const mgrs=[...new Set(allFL.map(p=>p['大店长']))].sort((a,b)=>a.localeCompare(b,'zh'));
+    mgrs.forEach(m=>{const o=document.createElement('option');o.value=m;o.textContent=m;flt.appendChild(o);});
+  }
+  const mgr=flt?flt.value:'';
+  const data=allFL.filter(p=>!mgr||p['大店长']===mgr).sort((a,b)=>{
+    if(a['大店长']!==b['大店长'])return a['大店长'].localeCompare(b['大店长'],'zh');
+    return (a['姓名']||'').localeCompare(b['姓名']||'','zh');
+  });
+  const titleEl=document.getElementById('flBoardTitle');
+  if(titleEl)titleEl.textContent='探亲假明细（本季度 '+flBatchLabel(currentFLBatch())+'）';
+  const takenN=data.filter(p=>getFLTaken(p['工号'])).length;
+  const unmatchedN=data.filter(p=>p['大店长']==='未匹配').length;
+  const cntEl=document.getElementById('flBoardCount');
+  if(cntEl)cntEl.innerHTML=`当前范围共 <b>${data.length}</b> 人享受探亲交通费报销，本季度已休 <b class="c-red">${takenN}</b> 人${unmatchedN>0?`，${unmatchedN} 人未匹配到本期工时名单`:''}。每位员工每季度一次探亲假（${flBatchLabel(currentFLBatch())}，剩 ${flDaysLeft()} 天），<b class="c-red">季度内未休不累计至下季度</b>，点击「待休」填休息日期确认，全员可见`;
+  let h='<table><thead><tr>'+
+    '<th style="width:28px">#</th><th style="width:88px">大店长</th>'+
+    '<th style="width:66px">工号</th><th style="width:72px">姓名</th><th style="width:78px">职位</th>'+
+    '<th style="min-width:170px;text-align:left">指定探亲地</th>'+
+    '<th style="width:88px">开始时间</th><th style="width:88px">预计结束</th>'+
+    '<th style="width:88px">实际结束</th>'+
+    '<th style="width:150px" class="c-red">探亲假确认<div style="font-size:10px;color:rgba(255,255,255,.75);font-weight:400;margin-top:2px">已休+休息日期，全员可见</div></th>'+
+    '</tr></thead><tbody>';
+  data.forEach((p,i)=>{
+    const isUn=p['大店长']==='未匹配';
+    const isTaken=!!getFLTaken(p['工号']);
+    h+=`<tr style="${isUn?'background:rgba(186,117,23,.04)':isTaken?'background:rgba(59,109,17,.04)':''}">
+      <td>${i+1}</td><td class="col-name">${p['大店长']}</td>
+      <td>${p['工号']}</td><td>${p['姓名']}</td><td>${p['职位']}</td>
+      <td class="col-name" style="text-align:left">${p['指定探亲地']||'-'}</td>
+      <td>${p['开始时间']||'-'}</td><td>${p['预计结束时间']||'-'}</td>
+      <td>${p['实际结束时间']||'-'}</td>
+      <td>${getFLTakeHtml(p)}</td></tr>`;
+  });
+  h+='</tbody></table>';
+  box.innerHTML=h;
+}
+
+/* 探亲假视图统一刷新：面板激活刷面板，弹窗开着刷弹窗 */
+function refreshFLViews(){
+  const pane=document.getElementById('pane-family_leave');
+  if(pane&&pane.classList.contains('active'))renderFLBoard();
+  const modal=document.getElementById('alertModal');
+  if(modal&&modal.style.display==='flex')showAlertDetail('family_leave');
+}
 
 function openFLTake(gid){
   flEditingGid=gid;
-  showAlertDetail('family_leave');
+  refreshFLViews();
   setTimeout(()=>{
     const inp=document.getElementById('fl-date-'+gid);
     if(inp){inp.focus(); inp.showPicker&&inp.showPicker();}
@@ -1551,24 +1642,24 @@ function openFLTake(gid){
 
 function cancelFLTake(){
   flEditingGid=null;
-  showAlertDetail('family_leave');
+  refreshFLViews();
 }
 
 function confirmFLTake(gid){
   const inp=document.getElementById('fl-date-'+gid);
   const date=inp?inp.value:'';
   if(!date){alert('请先选择休息日期');return;}
-  familyLeaveCache[gid]={date:date,ts:Date.now()};
+  familyLeaveCache[flKey(gid)]={date:date,ts:Date.now()};
   flEditingGid=null;
   scheduleSync();
-  showAlertDetail('family_leave');
+  refreshFLViews();
 }
 
 function revokeFLTake(gid,name){
   if(!confirm(`确定撤销「${name}」的已休确认吗？\n撤销后该员工恢复为未休状态，全员可见。`))return;
-  delete familyLeaveCache[gid];
+  delete familyLeaveCache[flKey(gid)];
   scheduleSync();
-  showAlertDetail('family_leave');
+  refreshFLViews();
 }
 
 function getFLTakeHtml(p){

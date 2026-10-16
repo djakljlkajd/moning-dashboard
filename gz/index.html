@@ -890,14 +890,6 @@ function renderMetrics(){
         {l:'法定加班(h)',v:(S4.holiday_ot||0).toLocaleString(undefined,{maximumFractionDigits:1}),s:'法定节假日当天全部工时',c:'purple',type:'hour_split',calc:'节假日当天整班工时'}
       );
     }
-    // 探亲假方块（紧跟法定加班后）：有 family_leave 数据时显示，点击看明细
-    const FL=activeData.family_leave||null;
-    if(FL&&FL.total>0){
-      const takenN=(FL.rows||[]).filter(p=>getFLTaken(p['工号'])).length;
-      mDat.push(
-        {l:'探亲假',v:FL.total+'<span class="unit">人</span>',s:`已休 ${takenN} 人 · 本季 ${flBatchLabel(currentFLBatch())}，剩 ${flDaysLeft()} 天`,c:'coral',type:'family_leave',board:'family_leave',calc:'探亲交通费报销·调动人员，每季度一次，未休不累计'}
-      );
-    }
   }
   let h='';
   mDat.forEach(m=>{

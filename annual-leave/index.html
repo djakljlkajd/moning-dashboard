@@ -271,7 +271,7 @@
 
         /* ===== 大店长年假卡片区 ===== */
         .mgr-cards-row {
-            display: grid; grid-template-columns: repeat(13, 1fr); gap: 7px;
+            display: grid; grid-template-columns: repeat(14, 1fr); gap: 6px;
             background: #fff; padding: 12px 16px 14px;
         }
         .mgr-card {
@@ -318,7 +318,7 @@
         /* ===== 响应式 ===== */
         @media (max-width: 1100px) {
             .cards-row { grid-template-columns: repeat(3, 1fr); }
-            .mgr-cards-row { grid-template-columns: repeat(7, 1fr); }
+            .mgr-cards-row { grid-template-columns: repeat(7, 1fr); gap: 6px; }
         }        @media (max-width: 768px) {
             body { padding: 10px; }
             .cards-row { grid-template-columns: repeat(2, 1fr); gap: 8px; padding: 12px; }
@@ -354,11 +354,11 @@
 <div class="description-bar">
     <div class="description-bar-title">📋 看板相关说明</div>
     <div class="description-list">
-        <div class="description-item">1、<strong>进度口径：</strong>本年度应休年假 - 10/8剩余年假 = 年度已休年假天数；已休 ÷ 应休 = 年度完成进度</div>
+        <div class="description-item">1、<strong>进度口径：</strong>本年度应休年假 - 10/19剩余年假 = 年度已休年假天数；已休 ÷ 应休 = 年度完成进度（14 位大店长本人不计入本口径，单独见第一排）</div>
         <div class="description-item">2、<strong>离职口径：</strong>离职员工剩余年假已折算薪资发放，其剩余年假按 <strong>0</strong> 计（源表 G 列仍显示原值，看板已按 0 处理）</div>
-        <div class="description-item">3、<strong>督办口径：</strong>「本期已休」= 上期剩余（9/22）− 10/8剩余，反映 9/22 以来的实际消化量；「10月排休目标」为各大店长在员工明细弹窗中<strong>自行填写的计划合计</strong>，「达标差额」= 自填目标 − 本期已休，差额 &gt; 0 即未达标（红色标记行）；未填写目标的大店区不计入未达标</div>
+        <div class="description-item">3、<strong>督办口径：</strong>「本期已休」= 上期剩余（10/8）− 10/19剩余，反映上期以来的实际消化量；「10月排休目标」为各大店长在员工明细弹窗中<strong>自行填写的计划合计</strong>，「达标差额」= 自填目标 − 本期已休，差额 &gt; 0 即未达标（红色标记行）；未填写目标的大店区不计入未达标</div>
         <div class="description-item">4、<strong>明细填报：</strong>点击大店长行查看员工明细，点击员工「计划填写」单元格可登记天数及<strong>具体休息日期区间（必填）</strong>，支持分多段，数据实时同步云端</div>
-        <div class="description-item">5、<strong>大店长年假：</strong>第一排为 13 位大店长本年度年假卡片（应休 5 天/人），点击卡片登记本人休息日期区间，<strong>规则与门店伙伴排休一致</strong>，实时同步云端</div>
+        <div class="description-item">5、<strong>大店长年假：</strong>第一排为 14 位大店长本年度年假卡片（应休 5 天/人，<strong>不并入员工口径汇总</strong>），点击卡片登记本人休息日期区间，<strong>规则与门店伙伴排休一致</strong>，实时同步云端</div>
     </div>
 </div>
 
@@ -472,8 +472,9 @@
 
 </div>
 
-<script src="data.js?v=20261016a"></script>
-<!-- v=20261016a: 第一排新增13位大店长年假卡片 + 大店长排休日期区间登记（云端 mgr_rest_dates） -->
+<script src="data.js?v=20261019a"></script>
+<!-- v=20261019a: 数据刷新至10/19（14位大店长不并入员工口径，仅在第一排卡片展示） -->
+<!-- v=20261016a: 第一排新增大店长年假卡片 + 大店长排休日期区间登记（云端 mgr_rest_dates） -->
 <!-- v=20260916a: 新增休息日期区间（起止日期多段填写+校验+明细显示） -->
 <script>
 const D = window.ANNUAL_LEAVE_DATA;
@@ -614,7 +615,7 @@ function openDetailModal(cardLabel) {
 
     if (cardLabel === '未达标大店区') {
         const list = D.regions.rows.map(deriveRegion).filter(isFailRow).sort((a, b) => b.差额 - a.差额);
-        const columns = ['大店长', '员工数', '应休', '10/8剩余', '本期已休<br>(9/22→10/8)', '10月排休目标', '还差', '完成率'];
+        const columns = ['大店长', '员工数', '应休', PREV + '剩余', '本期已休<br>(' + PREV + '→' + CUR + ')', '10月排休目标', '还差', '完成率'];
         title.textContent = '10月未达标大店区（本期已休 < 自填目标） - 共 ' + list.length + ' 个';
         foot.textContent = '还差合计 ' + list.reduce((a, r) => a + r.差额, 0) + ' 天 · 点击行可直接打开该区员工明细 · 未填写目标的大店区不计入';
         body.innerHTML = list.length === 0
@@ -634,10 +635,10 @@ function openDetailModal(cardLabel) {
         return;
     }
 
-    // 剩余年假>3天 员工明细（10/8 口径）
+    // 剩余年假>3天 员工明细（本期口径）
     const list = staffGt3('all').sort((a, b) => b.left - a.left);
-    const columns = ['工号', '姓名', '大店区', '门店', '剩余年假(10/8)'];
-    title.textContent = '剩余年假>3天员工明细（截至 10/8）- 共 ' + list.length + ' 人';
+    const columns = ['工号', '姓名', '大店区', '门店', '剩余年假(' + CUR + ')'];
+    title.textContent = '剩余年假>3天员工明细（截至 ' + CUR + '）- 共 ' + list.length + ' 人';
     foot.textContent = '共 ' + list.length + ' 人 · 建议尽快安排调休';
     if (list.length === 0) {
         body.innerHTML = '<div class="modal-empty">暂无数据</div>';
@@ -668,13 +669,13 @@ function openRegionModal(region) {
     const foot = document.getElementById('modal-foot');
     const list = staffOfRegion(region).slice().sort((a, b) => b.left - a.left);
     const row = deriveRegion(D.regions.rows.find(r => r.大店区 === region) || { 已休: 0 });
-    const columns = ['工号', '姓名', '状态', '门店', '应休', '10/8剩余', '年度已休', '计划填写（天数/日期）', '剩余>3天'];
+    const columns = ['工号', '姓名', '状态', '门店', '应休', CUR + '剩余', '年度已休', '计划填写（天数/日期）', '剩余>3天'];
     const regionTotal = row.目标;
     const regionFilled = row.计划已填;
     const nLeaver = list.filter(s => s.状态 === '离职').length;
     const nActive = list.length - nLeaver;
     title.textContent = region + ' 员工年假明细 - 共 ' + list.length + ' 人（在职 ' + nActive + ' / 离职 ' + nLeaver + '）';
-    foot.textContent = '本区：应休 ' + (row.应休 || 0) + ' → 10/8 剩余 ' + (row.left || 0) +
+    foot.textContent = '本区：应休 ' + (row.应休 || 0) + ' → ' + CUR + ' 剩余 ' + (row.left || 0) +
         '，已休 ' + (row.已休 || 0) + ' 天 / 目标 ' + (row.目标 || 0) + ' 天（' +
         ((row.目标 || 0) > 0 ? ((row.差额 > 0) ? '还差 ' + row.差额 + ' 天' : '✅ 已达标') : '目标待填写') + '）· 计划已填 ' + regionFilled + '/' + nActive + ' 人合计 ' + regionTotal + ' 天';
     if (list.length === 0) {
@@ -724,13 +725,15 @@ const regionHead = document.getElementById('region-head');
 const regionTbody = document.getElementById('region-tbody');
 const regionFoot = document.getElementById('region-foot');
 
-// 表头：应休 → 10/8剩余 → 年度已休 → 进度 → 本期已休 → 10月目标 → 差额
+// 表头：应休 → 上期剩余 → 年度已休 → 进度 → 本期已休 → 10月目标 → 差额（日期口径跟随 data.js meta）
+const CUR = (D.meta && D.meta.currentLabel) || '10/8';   // 本期口径，如 10/19
+const PREV = (D.meta && D.meta.prevLabel) || '9/22';     // 上期口径，如 10/8
 const REGION_COLS = [
-    '大店长', '门店数', '员工数', '离职', '应休', '10/8剩余', '年度已休', '完成进度', '本期已休', '10月排休目标', '达标差额', '剩余年假>3天'
+    '大店长', '门店数', '员工数', '离职', '应休', PREV + '剩余', '年度已休', '完成进度', '本期已休', '10月排休目标', '达标差额', '剩余年假>3天'
 ];
 const REGION_SUBS = {
-    3: '（人数）', 4: '（年度应休）', 5: '（截至10/8）', 6: '（应休-10/8）', 7: '（已休÷应休）',
-    8: '（9/22→10/8）', 9: '（大店长自填）', 10: '（目标-本期已休）', 11: '（10/8口径）'
+    3: '（人数）', 4: '（年度应休）', 5: '（截至' + CUR + '）', 6: '（应休-' + CUR + '）', 7: '（已休÷应休）',
+    8: '（' + PREV + '→' + CUR + '）', 9: '（大店长自填）', 10: '（目标-本期已休）', 11: '（' + CUR + '口径）'
 };
 regionHead.innerHTML = REGION_COLS.map((h, i) =>
     '<th>' + h + (REGION_SUBS[i] ? '<span class="col-sub">' + REGION_SUBS[i] + '</span>' : '') + '</th>'
@@ -850,7 +853,7 @@ function exportData() {
         list = list.filter(s => failRegions.includes(s.大店区));
     }
     list = list.slice().sort((a, b) => b.left - a.left);
-    const header = ['员工工号', '员工姓名', '在职状态', '大店区', '门店', '本年度应休年假', '10/8剩余年假', '年度已休天数', '剩余>3天'];
+    const header = ['员工工号', '员工姓名', '在职状态', '大店区', '门店', '本年度应休年假', CUR + '剩余年假', '年度已休天数', '剩余>3天'];
     const lines = [header.join(',')].concat(list.map(s =>
         [s.工号, s.姓名, s.状态 || '', s.大店区, s.门店,
          (s.应休 === null || s.应休 === undefined) ? '' : s.应休,

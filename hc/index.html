@@ -834,11 +834,12 @@
 
 </div><!-- end container -->
 
-<script src="data.js?v=20261014d"></script>
-<script src="stores.js?v=20261014d"></script>
-<script src="details.js?v=20261014d"></script>
-<script src="staff_lookup.js?v=20261014d"></script>
-<script src="store_base.js?v=20261014d"></script>
+<script src="data.js?v=20261021a"></script>
+<script src="stores.js?v=20261021a"></script>
+<script src="details.js?v=20261021a"></script>
+<script src="staff_lookup.js?v=20261021a"></script>
+<script src="store_base.js?v=20261021a"></script>
+<script src="roster.js?v=20261021a"></script>
 <script>
 const D = window.DASHBOARD_DATA;
 let specialLeaveExtra = [];
@@ -1272,7 +1273,7 @@ function renderCards(source) {
     const storeHcTotal = storeHcBaseAdd + storeHcExtraAdd;
     const shcIdx = cards.findIndex(c => c.label === '预离职合计');
     if (shcIdx >= 0) cards.splice(shcIdx + 1, 0, { label: '单店特殊新增HC人数', sub: '(人)', value: storeHcTotal, red: true, highlight: false });
-    const clickableCards = ['特殊请假合计', '预离职合计', '撤店合计', '单店特殊新增HC人数', '10月全职缺口'];
+    const clickableCards = ['特殊请假合计', '预离职合计', '撤店合计', '单店特殊新增HC人数', '10月全职缺口', '花名册在职合计'];
     const arrowSvg = '<svg viewBox="0 0 24 24"><path d="M4 2 L4 20 L9 15 L12 21 L15 20 L12 14 L18 14 Z"/></svg>';
     const cardsRow = document.getElementById('cards-row');
     cardsRow.innerHTML = '';
@@ -1307,14 +1308,16 @@ const detailMap = {
     '预离职合计': '预离职',
     '撤店合计': '撤店',
     '单店特殊新增HC人数': '单店特殊新增HC',
-    '10月全职缺口': '10月单店缺口'
+    '10月全职缺口': '10月单店缺口',
+    '花名册在职合计': '花名册'
 };
 const detailColumnsMap = {
     '特殊请假': ['大店长', '门店', '工号', '姓名', '开始时间', '结束时间', '休息天数', '备注原因'],
     '预离职': ['大店长', '门店', '工号', '姓名', '备注原因'],
     '撤店': ['大店长', '门店', '工号', '姓名', '职位', '去向门店', '备注原因'],
     '单店特殊新增HC': ['大店长', '门店', '新增人员数量', '新增HC原因'],
-    '10月单店缺口': ['大店长', '门店', '全职需求合计', '架构人数', '标准HC差值', '最终合计招募人数']
+    '10月单店缺口': ['大店长', '门店', '全职需求合计', '架构人数', '标准HC差值', '最终合计招募人数'],
+    '花名册': ['大店长', '门店', '工号', '姓名', '职级', '入职时间']
 };
 // 单店特殊新增HC：合并门店底表 AZ 列（非零）+ 用户线上新增记录
 function getStoreHcBaseRecords() {
@@ -1351,12 +1354,17 @@ function getStoreHcGradeRow(storeName) {
     };
 }
 
-// 花名册在职合计卡片值：门店底表 AE 列（架构人数）之和，按当前大店长筛选
-// ROSTER_ADJUST：花名册在职合计人工修正值（门店底表架构合计 408）
-// 2026-09-15 口径 +2 → 410；2026-09-21 口径调整 -8 → 400
-// 仅计入「全部」维度；按大店长筛选时保持各店架构人数原值
-var ROSTER_ADJUST = -8;
+// 花名册在职合计卡片值
+// 2026-10-21 起：权威数据源改为桌面「1021人员信息.xlsx」（window.ROSTER_DATA，391 人）
+//   按当前大店长筛选时统计该大店长名下人数；全部维度 = 391
+// 若 roster.js 未加载则回落到旧逻辑（门店底表架构人数之和 + ROSTER_ADJUST）
+var ROSTER_ADJUST = -17;   // 回落用：底表架构合计 408 - 17 = 391
 function getAETotal() {
+    var roster = window.ROSTER_DATA;
+    if (roster && roster.length) {
+        if (currentDimension === 'all') return roster.length;
+        return roster.filter(function(r) { return r.大店长 === currentDimension; }).length;
+    }
     var total = 0;
     Object.keys(window.STORE_BASE || {}).forEach(function(store) {
         var b = window.STORE_BASE[store];

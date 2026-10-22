@@ -1,0 +1,1800 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>古德墨柠 2026 茶颜小主节氛围执行看板</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --brand:#e8562a;--brand-d:#b83517;--brand-l:#ff8a5c;--brand-x:#ffb08a;--brand-w:#fff0e9;
+  --gold:#f0a020;--gold-d:#c47c0a;--gold-l:#fdf0d8;
+  --bg:#fdf4ef;--ink:#3f332e;--ink-2:#8d7d75;--line:#f3e2d8;
+  --neg:#c62828;--pos:#2e8b57;--warn:#c47a00;
+}
+body{font-family:"Microsoft YaHei","微软雅黑","PingFang SC","Hiragino Sans GB",sans-serif;background:var(--bg);color:var(--ink);padding:16px;}
+.container{max-width:1440px;margin:0 auto;}
+
+/* 标题栏（桔红渐变 + 小主祝福人像剪影） */
+.header-bar{position:relative;background:linear-gradient(118deg,var(--brand-d) 0%,var(--brand) 46%,var(--brand-l) 80%,var(--brand-x) 100%);border-radius:10px 10px 0 0;padding:16px 24px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;overflow:hidden;}
+.header-title{font-size:19px;font-weight:bold;color:#fff;letter-spacing:.6px;text-shadow:0 1px 3px rgba(120,30,0,.42);}
+.header-date{font-size:12px;color:rgba(255,255,255,.92);font-weight:500;white-space:nowrap;margin-top:3px;}
+.header-art{position:absolute;top:0;right:0;bottom:0;width:min(520px,54vw);pointer-events:none;}
+.header-art svg{width:100%;height:100%;display:block;}
+
+/* 逻辑条 */
+.logic-bar{background:linear-gradient(90deg,var(--gold-l) 0%,#fbeeca 100%);border-bottom:2px solid #f0e0b4;padding:11px 22px;font-size:12.5px;color:#7a5410;line-height:1.65;}
+.logic-tags{margin-top:5px;}
+.logic-tag{display:inline-block;padding:2px 8px;border-radius:3px;font-size:11px;margin:0 6px 3px 0;font-weight:600;}
+.tag-ok{background:#d5f5e3;color:#1e7a45;}
+.tag-warn{background:#fdebd0;color:#a04000;}
+.tag-bad{background:#fadbd8;color:#b71c1c;}
+.tag-info{background:#ffe2d4;color:#b83517;}
+
+/* 页签 */
+.tab-bar{background:#fff;display:flex;gap:2px;padding:0 14px;overflow-x:auto;border-bottom:2px solid var(--line);scrollbar-width:thin;}
+.tab-bar::-webkit-scrollbar{height:4px;}
+.tab-bar::-webkit-scrollbar-thumb{background:#f0c9b4;border-radius:2px;}
+.tab-btn{background:none;border:none;padding:12px 15px;font-size:13.5px;font-weight:600;color:var(--ink-2);cursor:pointer;white-space:nowrap;border-bottom:3px solid transparent;font-family:inherit;}
+.tab-btn:hover{color:var(--brand-d);background:#fff2ec;}
+.tab-btn.active{color:var(--brand-d);border-bottom-color:var(--brand);background:#fff2ec;}
+.tab-btn .tab-badge{display:inline-block;background:var(--neg);color:#fff;font-size:10px;border-radius:9px;padding:0 6px;margin-left:5px;vertical-align:1px;line-height:15px;}
+
+/* 模块说明条 */
+.description-bar{background:linear-gradient(90deg,var(--gold-l) 0%,#f9e8c4 100%);border-bottom:2px solid #f0e0b4;padding:11px 20px;font-size:12.5px;color:#7a5410;line-height:1.8;display:flex;gap:12px;align-items:flex-start;}
+.description-bar-title{font-weight:bold;color:#9a6a14;font-size:13px;white-space:nowrap;padding-top:1px;}
+.description-list{line-height:1.8;}
+.description-item strong{color:#b71c1c;font-weight:600;margin-right:4px;}
+
+.section-header{background:#fff;padding:12px 20px 8px;border-bottom:1px solid var(--line);font-weight:bold;font-size:14px;color:var(--brand-d);}
+.section-header .sub{font-weight:400;font-size:11.5px;color:var(--ink-2);margin-left:8px;}
+
+/* 指标卡片 */
+.cards-row{display:grid;grid-template-columns:repeat(7,1fr);gap:10px;background:#fff;padding:15px 20px;}
+.metric-card{position:relative;background:#fffaf7;border:1px solid var(--line);border-radius:8px;padding:12px 12px 10px;overflow:hidden;transition:.15s;}
+.metric-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--brand-l),var(--brand-d));}
+.metric-card.highlight::before{background:linear-gradient(90deg,var(--gold),var(--gold-d));}
+.metric-card.clickable{cursor:pointer;}
+.metric-card.clickable:hover{box-shadow:0 3px 10px rgba(110,168,0,.16);transform:translateY(-1px);}
+.card-label{font-size:11.5px;color:var(--ink-2);margin-bottom:5px;line-height:1.35;}
+.card-value{font-size:25px;font-weight:bold;color:#3b3a33;line-height:1.15;}
+.card-value.red{color:var(--neg);}
+.card-value.green{color:var(--pos);}
+.card-value.brand{color:var(--brand-d);}
+.card-unit{font-size:12px;color:var(--ink-2);margin-left:2px;font-weight:400;}
+.card-sub{font-size:10.5px;color:var(--ink-2);margin-top:4px;line-height:1.4;}
+
+/* 筛选栏 */
+.filter-bar{background:#fff;padding:11px 20px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;border-top:1px solid var(--line);}
+.filter-bar label{font-size:12.5px;color:#666;}
+.filter-bar select,.filter-bar input{font-size:12.5px;padding:6px 9px;border:1px solid #f0d5c8;border-radius:5px;background:#fff;color:var(--ink);font-family:inherit;max-width:100%;}
+.spacer{flex:1;}
+
+.btn{font-size:12.5px;padding:6px 13px;border:1px solid var(--brand-d);background:var(--brand-d);color:#fff;border-radius:5px;cursor:pointer;font-family:inherit;font-weight:600;transition:.15s;}
+.btn:hover{background:#982c11;border-color:#982c11;}
+.btn-ghost{background:#fff;color:var(--brand-d);}
+.btn-ghost:hover{background:#ffece3;color:#982c11;}
+
+/* 表格 */
+.table-wrap{background:#fff;overflow-x:auto;}
+table{width:100%;border-collapse:collapse;font-size:12.5px;white-space:nowrap;}
+thead th{background:linear-gradient(180deg,var(--brand-l),var(--brand));color:#fff;padding:9px 9px;text-align:left;font-weight:600;font-size:12px;position:sticky;top:0;z-index:2;}
+tbody td{padding:8px 9px;border-bottom:1px solid var(--line);color:#4a4740;}
+tbody tr:hover{background:#fff7f2;}
+tbody tr.total-row{background:linear-gradient(90deg,var(--gold-l),#fbe7c0);font-weight:bold;}
+tbody tr.total-row td{color:#8a5f0e;border-top:2px solid var(--gold-d);}
+.cell-neg{color:var(--neg);font-weight:700;}
+.cell-pos{color:var(--pos);font-weight:600;}
+.cell-zero{color:#c3bdb2;}
+.badge{display:inline-block;padding:1px 7px;border-radius:3px;font-size:11px;font-weight:600;}
+.badge-red{background:#fadbd8;color:#b71c1c;}
+.badge-green{background:#d5f5e3;color:#1e7a45;}
+.badge-gray{background:#f0eee9;color:#8b8778;}
+.badge-blue{background:#ffe2d4;color:#b83517;}
+.badge-orange{background:#fdebd0;color:#a04000;}
+
+/* 排行色阶 */
+.rank-1{background:#fdf0c2;color:#8a5f0e;font-weight:800;}
+.rank-2{background:#f1f1e8;color:#6b675c;font-weight:700;}
+.rank-3{background:#f7e6d4;color:#96591f;font-weight:700;}
+
+/* 行事历卡岗 */
+.cal-cell{cursor:pointer;border-radius:4px;padding:6px 8px;min-width:92px;}
+.cal-cell:hover{background:#fff4ee;}
+.cal-cell.filled{background:#fffaf7;}
+.cal-store{display:block;font-weight:700;color:var(--brand-d);font-size:12px;}
+.cal-note{display:block;color:#666;font-size:11px;margin-top:2px;line-height:1.4;}
+.cal-empty{display:block;color:#c3bdb2;font-size:11px;}
+
+.empty-tip{padding:34px 20px;text-align:center;color:var(--ink-2);font-size:13px;background:#fff;}
+
+.chart-box{background:#fff;padding:18px 20px 8px;border-bottom:1px solid var(--line);}
+.chart-legend{display:flex;gap:16px;font-size:11.5px;color:var(--ink-2);margin-top:6px;flex-wrap:wrap;}
+.legend-dot{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px;}
+
+/* 弹窗 */
+.modal-mask{display:none;position:fixed;inset:0;background:rgba(45,60,10,.5);z-index:100;align-items:flex-start;justify-content:center;overflow-y:auto;padding:24px 12px;}
+.modal-mask.show{display:flex;}
+.modal{background:#fff;border-radius:10px;max-width:860px;width:100%;box-shadow:0 12px 40px rgba(0,0,0,.25);overflow:hidden;}
+.modal-head{background:linear-gradient(135deg,var(--brand-d),var(--brand-l));color:#fff;padding:13px 18px;font-weight:bold;font-size:15px;display:flex;justify-content:space-between;align-items:center;}
+.modal-close{background:none;border:none;color:#fff;font-size:22px;cursor:pointer;line-height:1;padding:0 4px;}
+.modal-body{padding:16px 18px;}
+.modal-foot{padding:12px 18px;background:#fafcee;border-top:1px solid var(--line);display:flex;gap:10px;justify-content:flex-end;}
+
+.form-row{display:flex;gap:14px;flex-wrap:wrap;}
+.form-item{flex:1;min-width:220px;margin-bottom:12px;}
+.form-item label{display:block;font-size:12px;color:var(--brand-d);font-weight:600;margin-bottom:5px;}
+.form-item input,.form-item select,.form-item textarea{width:100%;font-size:13px;padding:8px 10px;border:1px solid #f0d5c8;border-radius:5px;font-family:inherit;background:#fff;}
+.form-item input:focus,.form-item select:focus,.form-item textarea:focus{outline:none;border-color:var(--brand-l);box-shadow:0 0 0 2px rgba(110,168,0,.16);}
+.form-hint{font-size:11px;color:var(--ink-2);margin-top:4px;line-height:1.5;}
+.modal-sub{font-size:12.5px;color:#7a5410;background:#fdf6e3;border-left:3px solid var(--gold);padding:9px 12px;border-radius:0 5px 5px 0;margin-bottom:14px;line-height:1.7;}
+.reco-title{font-size:12.5px;font-weight:bold;color:var(--brand-d);margin:14px 0 7px;}
+.footnote{padding:12px 20px 22px;font-size:11.5px;color:var(--ink-2);line-height:1.75;background:var(--bg);}
+
+/* 进度条 */
+.bar-track{background:#f0e0d6;border-radius:3px;height:7px;overflow:hidden;min-width:70px;}
+.bar-fill{height:100%;background:linear-gradient(90deg,var(--brand-l),var(--brand-d));border-radius:3px;}
+
+/* 状态标签按钮组 */
+.status-group{display:inline-flex;border:1px solid #f0d5c8;border-radius:4px;overflow:hidden;}
+.status-btn{font-size:11.5px;padding:4px 10px;border:none;background:#fff;color:var(--ink-2);cursor:pointer;font-family:inherit;border-right:1px solid var(--line);}
+.status-btn:last-child{border-right:none;}
+.status-btn.on-todo{background:#f0eee9;color:#8b8778;font-weight:700;}
+.status-btn.on-doing{background:#fdebd0;color:#a04000;font-weight:700;}
+.status-btn.on-done{background:#d5f5e3;color:#1e7a45;font-weight:700;}
+
+.sync-tip{font-size:11.5px;padding:6px 20px;background:#fffaf0;color:#a04000;border-bottom:1px solid #f5e6c8;}
+.sync-tip.ok{background:#f4faf0;color:#1e7a45;border-bottom-color:#d5e8c8;}
+.sync-bar{display:flex;align-items:center;gap:10px;background:#fffaf0;border-bottom:1px solid #f5e6c8;padding-right:14px;flex-wrap:wrap;}
+.sync-bar .sync-tip{border-bottom:none;flex:1;min-width:180px;background:transparent;}
+
+@media(max-width:1180px){.cards-row{grid-template-columns:repeat(4,1fr);}}
+@media(max-width:768px){
+  body{padding:10px;}
+  .cards-row{grid-template-columns:repeat(2,1fr);padding:12px;}
+  .card-value{font-size:21px;}
+  .header-title{font-size:15px;}
+  .header-art{opacity:.5;}
+  .filter-bar{gap:8px;padding:10px 12px;}
+  .filter-bar select,.filter-bar input[type=text]{width:100%;min-width:0;}
+  .filter-bar .btn{flex:1;}
+  .spacer{display:none;}
+  .description-bar{flex-direction:column;gap:6px;}
+  .form-item{min-width:100%;}
+  table{font-size:12px;}
+  thead th,tbody td{padding:7px 6px;}
+}
+/* 页签面板 */
+.panel{display:none;}
+.panel.active{display:block;}
+
+/* 门店名链接 */
+.store-link{color:var(--brand-d);cursor:pointer;text-decoration:underline dotted;font-weight:600;}
+.store-link:hover{color:var(--brand);}
+
+/* 数字列右对齐 */
+thead th.num{text-align:right;}
+tbody td.num{text-align:right;font-variant-numeric:tabular-nums;}
+
+/* 机制总表分类色 */
+.mcat{display:inline-block;padding:1px 7px;border-radius:3px;font-size:11px;font-weight:600;}
+
+/* 表内输入 */
+.cell-input{font-size:12.5px;padding:5px 8px;border:1px solid #f0d5c8;border-radius:4px;font-family:inherit;background:#fff;width:100%;}
+.cell-input.num{text-align:right;}
+select.cell-input{padding:4px 6px;}
+
+/* 物资跟进弹窗 */
+.sup-item{border:1px solid var(--line);border-radius:8px;padding:12px 14px;margin-bottom:12px;background:#fffaf7;}
+.sup-item-head{margin-bottom:8px;}
+.sup-check{display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13.5px;color:var(--ink);}
+.sup-img-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.sup-thumb{width:86px;height:86px;object-fit:cover;border-radius:6px;border:1px solid var(--line);cursor:pointer;transition:.15s;}
+.sup-thumb:hover{transform:scale(1.04);}
+.sup-thumb-wrap{position:relative;display:inline-block;}
+.sup-thumb-del{position:absolute;top:-7px;right:-7px;background:#c62828;color:#fff;border:none;border-radius:50%;width:20px;height:20px;font-size:12px;cursor:pointer;line-height:1;}
+.sup-img-loading{font-size:12px;color:var(--ink-2);}
+
+/* 红线提示 */
+.redline{background:#fff;border-left:4px solid var(--neg);border-radius:0 6px 6px 0;padding:12px 16px;margin-bottom:10px;}
+.redline-t{font-size:13px;font-weight:700;color:#b71c1c;margin-bottom:4px;}
+.redline-b{font-size:12.5px;color:#5a5750;line-height:1.7;}
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- 标题栏 -->
+  <div class="header-bar">
+    <div>
+      <div class="header-title">古德墨柠 2026 茶颜小主节氛围执行看板</div>
+      <div class="header-date">数据源：2026小主节氛围执行方案_1116-1121.xlsx · 11.14-11.15 充值 · 11.16-11.21 宣发 · 更新 2026-10-22</div>
+    </div>
+    <div class="header-art" aria-hidden="true">
+      <svg viewBox="0 0 520 92" preserveAspectRatio="xMaxYMax meet">
+        <defs>
+          <!-- 「充」祝福牌：手举牌+ 人物剪影符号 -->
+          <g id="xz-fig">
+            <!-- 人物：头 + 身体 + 举起的手臂 + 腿 -->
+            <g fill="#fff">
+              <circle cx="0" cy="-16" r="7.2"/>
+              <path d="M-8 -8 q8 -3.4 16 0 l3.4 20 h-22.8 z"/>
+              <rect x="-7.4" y="12" width="5.6" height="17" rx="2.6"/>
+              <rect x="1.8" y="12" width="5.6" height="17" rx="2.6"/>
+              <!-- 举牌手臂 -->
+              <path d="M-7 -5.6 l-9.4 -8.4 l3.4 -3.8 l10.4 8.8 z"/>
+            </g>
+            <!-- 手举「充」祝福牌 -->
+            <g transform="translate(-20,-30)">
+              <rect x="-15" y="-13" width="30" height="24" rx="4.5" fill="#ffe9a8"/>
+              <rect x="-15" y="-13" width="30" height="24" rx="4.5" fill="none" stroke="#fff" stroke-width="1.8" opacity=".85"/>
+              <text x="0" y="7" text-anchor="middle" font-size="18" font-weight="bold" fill="#c9300f"
+                    font-family="Microsoft YaHei,微软雅黑,sans-serif">充</text>
+              <!-- 牌柄 -->
+              <rect x="-1.4" y="11" width="2.8" height="7" rx="1.2" fill="#fff"/>
+            </g>
+          </g>
+        </defs>
+
+        <!-- 后排小主（淡化，营造纵深） -->
+        <g opacity=".3"><use href="#xz-fig" transform="translate(300,64) scale(.62)"/></g>
+        <g opacity=".26"><use href="#xz-fig" transform="translate(348,68) scale(.5)"/></g>
+        <g opacity=".24"><use href="#xz-fig" transform="translate(492,70) scale(.55)"/></g>
+
+        <!-- 主剪影（两高一矮，节奏错落） -->
+        <g opacity=".95"><use href="#xz-fig" transform="translate(262,58) scale(1.06)"/></g>
+        <g opacity=".88"><use href="#xz-fig" transform="translate(322,64) scale(.86)"/></g>
+        <g opacity=".9"><use href="#xz-fig" transform="translate(374,60) scale(.98)"/></g>
+        <g opacity=".8"><use href="#xz-fig" transform="translate(422,66) scale(.74)"/></g>
+        <g opacity=".85"><use href="#xz-fig" transform="translate(462,62) scale(.9)"/></g>
+
+        <!-- 飘浮气泡 -->
+        <circle cx="238" cy="26" r="5.5" fill="#fff" opacity=".26"/>
+        <circle cx="222" cy="46" r="3.2" fill="#fff" opacity=".2"/>
+        <circle cx="512" cy="40" r="4.6" fill="#fff" opacity=".22"/>
+        <circle cx="500" cy="24" r="2.8" fill="#fff" opacity=".18"/>
+
+        <!-- 左侧小音符 / 星点 -->
+        <g fill="#fff" opacity=".26">
+          <circle cx="112" cy="40" r="4.4"/>
+          <rect x="109.6" y="43.6" width="4.8" height="11" rx="1.8"/>
+        </g>
+        <g fill="#fff" opacity=".2">
+          <circle cx="146" cy="58" r="3.6"/>
+          <rect x="143.8" y="60.8" width="4.4" height="9" rx="1.6"/>
+        </g>
+        <g fill="#fff" opacity=".22">
+          <path d="M172 34 l2.6 6.4 h6.6 l-5.2 4.4 1.9 6.4 -5.9-4.2 -5.9 4.2 1.9-6.4 -5.2-4.4 h6.6 z"/>
+        </g>
+        <g fill="#fff" opacity=".18">
+          <path d="M76 52 l1.9 4.6 h4.8 l-3.8 3.2 1.4 4.6 -4.3-3 -4.3 3 1.4-4.6 -3.8-3.2 h4.8 z"/>
+        </g>
+      </svg>
+    </div>
+  </div>
+
+  <!-- 逻辑条 -->
+  <div class="logic-bar">
+    <div id="logicText"></div>
+    <div class="logic-tags">
+      <span class="logic-tag tag-info" id="tagMgrs">大店长 —</span>
+      <span class="logic-tag tag-info" id="tagStores">门店 —</span>
+      <span class="logic-tag tag-info" id="tagRegion">大店区 —</span>
+      <span class="logic-tag tag-bad" id="tagCutoff"></span>
+      <span class="logic-tag tag-warn" id="tagWeight"></span>
+      <span class="logic-tag tag-ok">11.21 24:00 数据截止</span>
+    </div>
+  </div>
+
+  <div class="sync-bar">
+    <div id="syncTip" class="sync-tip">协作数据加载中…</div>
+    <button class="btn btn-ghost" onclick="syncNow()">🔄 拉取最新</button>
+  </div>
+
+  <!-- 页签 -->
+  <div class="tab-bar" id="tabBar">
+    <button class="tab-btn active" data-tab="overview" onclick="switchTab('overview')">总览</button>
+    <button class="tab-btn" data-tab="plan" onclick="switchTab('plan')">计划推进<span class="tab-badge" id="tabBadgePlan" style="display:none">0</span></button>
+    <button class="tab-btn" data-tab="mech" onclick="switchTab('mech')">机制总表</button>
+    <button class="tab-btn" data-tab="promo" onclick="switchTab('promo')">宣发记录<span class="tab-badge" id="tabBadgePromo" style="display:none">0</span></button>
+    <button class="tab-btn" data-tab="supplies" onclick="switchTab('supplies')">暖心物资<span class="tab-badge" id="tabBadgeSup" style="display:none">0</span></button>
+    <button class="tab-btn" data-tab="hr" onclick="switchTab('hr')">人力保障<span class="tab-badge" id="tabBadgeHr" style="display:none">0</span></button>
+    <button class="tab-btn" data-tab="cal" onclick="switchTab('cal')">行事历卡岗</button>
+  </div>
+
+  <!-- ================= 总览 ================= -->
+  <div class="panel active" id="panel-overview">
+    <div class="section-header">小主节执行总览<span class="sub" id="ovSub"></span></div>
+    <div class="cards-row" id="ovCards"></div>
+
+    <div class="section-header">大店区宣发完成情况<span class="sub">按大店长分列，已发布 / 未发布门店数；点击卡片可跳转宣发记录</span></div>
+    <div class="chart-box" id="ovChart"></div>
+
+    <div class="section-header">门店加权点赞 TOP15<span class="sub">视频 ×1.25、图文 ×1.0；数据截止 11.21 24:00，以截图为准</span></div>
+    <div class="table-wrap"><table id="ovTopTable"></table></div>
+    <div class="footnote" id="ovFoot"></div>
+  </div>
+
+  <!-- ================= 计划推进 ================= -->
+  <div class="panel" id="panel-plan">
+    <div class="description-bar">
+      <div class="description-bar-title">推进说明</div>
+      <div class="description-list">
+        <div class="description-item"><strong>前</strong>节前准备：宣发标准培训、小药箱普查补齐、目标下沉、战前总检（11.13 前 <span id="planReadyCount">—</span> 家 100% 就绪）</div>
+        <div class="description-item"><strong>中</strong>节中执行：11.14-11.15 充值日每日喜报与点赞播报、认同表扬卡到店、11.19-11.21 高峰人力保障与工时合规</div>
+        <div class="description-item"><strong>后</strong>节后收口：点赞汇总与 TOP3 评选、11.22-11.28 人员排休跟进硬指标、执行力加分兑现与案例沉淀</div>
+        <div class="description-item">进度状态可直接在表内点击切换（未开始 / 进行中 / 已完成），全员实时同步</div>
+      </div>
+    </div>
+    <div class="filter-bar">
+      <label>阶段：</label>
+      <select id="planPhase" onchange="renderPlan()"><option value="all">全部</option><option value="前">前（节前）</option><option value="中">中（节中）</option><option value="后">后（节后）</option></select>
+      <label>战线：</label>
+      <select id="planLine" onchange="renderPlan()"><option value="all">全部</option></select>
+      <label>状态：</label>
+      <select id="planStatus" onchange="renderPlan()"><option value="all">全部</option><option value="未开始">未开始</option><option value="进行中">进行中</option><option value="已完成">已完成</option></select>
+      <div class="spacer"></div>
+      <button class="btn btn-ghost" onclick="exportPlanCsv()">导出 CSV</button>
+    </div>
+    <div class="section-header" id="planProgressHead"></div>
+    <div class="table-wrap"><table id="planTable"></table></div>
+    <div class="footnote">进度合计：<span id="planProgress"></span></div>
+  </div>
+
+  <!-- ================= 机制总表 ================= -->
+  <div class="panel" id="panel-mech">
+    <div class="description-bar">
+      <div class="description-bar-title">机制总表</div>
+      <div class="description-list">
+        <div class="description-item">本次<strong>不设专项奖励方案</strong>；激励以大店长执行力加分、认同表扬卡、最佳氛围门店投票为主</div>
+        <div class="description-item">加权口径已校准：视频 <strong>×1.25</strong>、图文 <strong>×1.0</strong>；大店长加分统一 <strong>TOP1 +3 / TOP2 +2 / TOP3 +1</strong></div>
+        <div class="description-item">同分按「评论 + 收藏」排序；本季物资由夏季防暑调整为<strong>冬季保暖</strong>（保暖物资 + 及时伞）</div>
+      </div>
+    </div>
+    <div class="filter-bar">
+      <label>类目：</label>
+      <select id="mechCat" onchange="renderMech()"><option value="all">全部</option></select>
+      <label>大店长：</label>
+      <select id="mechMgr" onchange="renderMech()"><option value="all">全部</option></select>
+      <div class="spacer"></div>
+      <button class="btn btn-ghost" onclick="exportMechCsv()">导出 CSV</button>
+    </div>
+    <div class="section-header" id="mechCount"></div>
+    <div class="table-wrap"><table id="mechTable"></table></div>
+    <div class="footnote" id="mechFoot"></div>
+  </div>
+
+  <!-- ================= 宣发记录 ================= -->
+  <div class="panel" id="panel-promo">
+    <div class="description-bar">
+      <div class="description-bar-title">门店宣发回传与记录</div>
+      <div class="description-list">
+        <div class="description-item"><strong>11.16 每店发布 1 篇小红书</strong>，可多发，以单篇最高加权点赞参与排名；发布率目标 100%</div>
+        <div class="description-item">必带话题 <strong>#茶颜青柠乳茶 #古德墨柠青柠乳茶节</strong>，文案出现「青柠乳茶」「墨柠节」关键词，带齐率 100%</div>
+        <div class="description-item">发布后 <strong>24h 内</strong>回填：笔记链接、发布账号、内容形式、点赞/评论/收藏；加权点赞与排名自动计算</div>
+        <div class="description-item">发布后严禁删帖、改话题；违规计入抽检不合格</div>
+      </div>
+    </div>
+    <div class="section-header" id="prProgress"></div>
+    <div class="filter-bar" style="border-top:none">
+      <label>大店区：</label>
+      <select id="prRegion" onchange="renderPromoStores()"><option value="all">全部</option></select>
+      <label>大店长：</label>
+      <select id="prMgr" onchange="renderPromoStores()"><option value="all">全部</option></select>
+      <label>仅看：</label>
+      <select id="prOnly" onchange="renderPromoStores()">
+        <option value="all">全部门店</option>
+        <option value="done">已发布</option>
+        <option value="todo">未发布</option>
+        <option value="nofb">未回填数据</option>
+      </select>
+      <input type="text" id="prSearch" placeholder="搜索门店名称" oninput="renderPromoStores()">
+      <div class="spacer"></div>
+      <button class="btn btn-ghost" onclick="exportStoreCsv()">导出门店 CSV</button>
+    </div>
+    <div class="table-wrap"><table id="prTable"></table></div>
+
+    <div class="section-header">大店长执行力 PK 榜<span class="sub">按所辖门店加权点赞合计排序，TOP3 兑现 +3 / +2 / +1</span></div>
+    <div class="table-wrap"><table id="prRankTable"></table></div>
+
+    <div class="section-header">宣发记录流水<span class="sub">在线新增登记：每日喜报、上扬案例、节前推广、案例沉淀</span></div>
+    <div class="filter-bar" style="border-top:none">
+      <label>类型：</label>
+      <select id="pmType" onchange="renderPromo()"><option value="all">全部</option></select>
+      <div class="spacer"></div>
+      <button class="btn" onclick="openPromoModal()">＋ 新增宣发记录</button>
+      <button class="btn btn-ghost" onclick="exportPromoCsv()">导出 CSV</button>
+    </div>
+    <div class="table-wrap"><table id="pmTable"></table></div>
+    <div class="footnote" id="pmFoot"></div>
+  </div>
+
+  <!-- ================= 暖心物资 ================= -->
+  <div class="panel" id="panel-supplies">
+    <div class="description-bar">
+      <div class="description-bar-title">暖心物资跟进（小药箱）</div>
+      <div class="description-list">
+        <div class="description-item">小药箱普查补齐：创口贴 / 花露水 / 烫伤膏 / 云南白药 / 棉签 / 碘酒 / 红糖姜茶，<strong>11.10 前 100% 闭环</strong></div>
+        <div class="description-item">本季（11 月）物资口径由夏季防暑调整为<strong>冬季保暖</strong>：保暖物资 + 及时伞</div>
+        <div class="description-item">勾选即视为已到位，可上传照片留痕；确认人按大店长自动匹配对应 BP，无需填写，多端同步</div>
+      </div>
+    </div>
+    <div class="filter-bar">
+      <label>大店区：</label>
+      <select id="spRegion" onchange="renderSupplies()"><option value="all">全部</option></select>
+      <label>大店长：</label>
+      <select id="spMgr" onchange="renderSupplies()"><option value="all">全部</option></select>
+      <label>状态：</label>
+      <select id="spOnly" onchange="renderSupplies()"><option value="all">全部门店</option><option value="done">已闭环</option><option value="todo">待跟进</option></select>
+      <div class="spacer"></div>
+      <button class="btn btn-ghost" onclick="exportSupCsv()">导出 CSV</button>
+    </div>
+    <div class="section-header" id="supProgress"></div>
+    <div class="table-wrap"><table id="spTable"></table></div>
+    <div class="footnote">物资按门店维度跟进，共 <span id="supTotal"></span> 家门店。物资未闭环将限期整改并通报（各 BP 主责）。</div>
+  </div>
+
+  <!-- ================= 人力保障 ================= -->
+  <div class="panel" id="panel-hr">
+    <div class="description-bar">
+      <div class="description-bar-title">人力保障与支援登记</div>
+      <div class="description-list">
+        <div class="description-item"><strong>11.19-11.21 高峰人力保障</strong>：无缺岗、无工时超限（单日不超 11H），由大店长 + BP 负责，每日发布情况</div>
+        <div class="description-item">富余门店可向缺员门店临时借调支援，点「＋ 新增支援登记」登记，提交后 <strong>13 位大店长实时互见</strong></div>
+        <div class="description-item">每条支援需人工「确认」后生效 —— 确认即锁定 1 人调动，防止一店多借</div>
+      </div>
+    </div>
+    <div class="filter-bar">
+      <label>大店区：</label>
+      <select id="hrRegion" onchange="renderHr()"><option value="all">全部</option></select>
+      <label>类型：</label>
+      <select id="hrType" onchange="renderHr()">
+        <option value="all">全部类型</option>
+        <option value="待确认">待确认</option>
+        <option value="已确认">已确认</option>
+      </select>
+      <input type="text" id="hrSearch" placeholder="搜索门店 / 伙伴姓名" oninput="renderHr()">
+      <div class="spacer"></div>
+      <button class="btn" onclick="openLoanModal(null)">＋ 新增支援登记</button>
+      <button class="btn btn-ghost" onclick="exportHrCsv()">导出 CSV</button>
+    </div>
+    <div class="section-header">支援登记台账<span class="sub" id="loanCount"></span></div>
+    <div class="table-wrap"><table id="loanTable"></table></div>
+    <div class="section-header">按大店区汇总<span class="sub">支援发出 / 支援接收</span></div>
+    <div class="table-wrap"><table id="hrSumTable"></table></div>
+    <div class="footnote" id="hrFoot"></div>
+  </div>
+
+  <!-- ================= 行事历卡岗 ================= -->
+  <div class="panel" id="panel-cal">
+    <div class="description-bar">
+      <div class="description-bar-title">大店长行事历与走访安排（11.14 - 11.21）</div>
+      <div class="description-list">
+        <div class="description-item">13 位大店长 + BP × 8 天，点击格子填写当天走访门店与行事安排，云端实时同步、全员互见</div>
+        <div class="description-item">走访门店优先从自己分管门店中选择，也可选「机动支援」跨区巡店</div>
+      </div>
+    </div>
+    <div class="filter-bar">
+      <label>视图：</label>
+      <select id="calView" onchange="renderCal()">
+        <option value="matrix">8 天矩阵视图</option>
+        <option value="day">单日视图</option>
+      </select>
+      <select id="calDay" onchange="renderCal()" style="display:none"></select>
+      <div class="spacer"></div>
+      <button class="btn btn-ghost" onclick="exportCalCsv()">导出 CSV</button>
+    </div>
+    <div class="section-header" id="calProgress"></div>
+    <div class="table-wrap"><table id="calTable"></table></div>
+    <div class="footnote" id="calFoot">空白格表示待安排，点击即可填写。已填写格显示走访门店与行事摘要。</div>
+  </div>
+
+  <div class="footnote">
+    本看板数据来自《2026小主节氛围执行方案_1116-1121.xlsx》，覆盖 <span id="footStoreCount">—</span> 家门店 / <span id="footMgrCount">—</span> 位大店长 / <span id="footRegionCount">—</span> 个大店区（已并入 10 月撤店 5 家、新开 1 家）。宣发回传、小药箱确认、人力支援登记、行事历卡岗与进度状态均通过云端实时同步，可多端协作填写。
+  </div>
+</div>
+
+<!-- 门店宣发回填弹窗 -->
+<div class="modal-mask" id="storeMask">
+  <div class="modal">
+    <div class="modal-head"><span id="storeTitle">门店宣发回填</span><button class="modal-close" onclick="closeStoreModal()">×</button></div>
+    <div class="modal-body" id="storeBody"></div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeStoreModal()">关闭</button>
+      <button class="btn" id="storeSubmit" onclick="submitStoreModal()">保存回填</button>
+    </div>
+  </div>
+</div>
+
+<!-- 支援登记弹窗 -->
+<div class="modal-mask" id="loanMask">
+  <div class="modal">
+    <div class="modal-head"><span id="loanTitle">人力支援登记</span><button class="modal-close" onclick="closeLoanModal()">×</button></div>
+    <div class="modal-body">
+      <div class="modal-sub" id="loanSub"></div>
+      <div class="form-row">
+        <div class="form-item">
+          <label>支援日期</label>
+          <select id="loanDate"></select>
+          <div class="form-hint">11.19-11.21 为高峰人力保障期，请优先选择该区间日期</div>
+        </div>
+        <div class="form-item">
+          <label>支援伙伴姓名</label>
+          <input type="text" id="loanName" placeholder="如：谭雅琪">
+          <div class="form-hint">填写具体到人，便于核对工时合规</div>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-item">
+          <label>支援发出门店</label>
+          <select id="loanFrom" onchange="onLoanFromChange()"></select>
+          <div class="form-hint" id="loanFromHint"></div>
+        </div>
+        <div class="form-item">
+          <label>支援接收门店</label>
+          <select id="loanTo"></select>
+          <div class="form-hint" id="loanToHint"></div>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-item">
+          <label>对接大店长</label>
+          <input type="text" id="loanOwner" placeholder="自动匹配发出门店大店长" oninput="OWNER_MANUAL=true">
+          <div class="form-hint">默认自动匹配支援发出门店的大店长，可手动调整</div>
+        </div>
+        <div class="form-item">
+          <label>支援时段 / 备注（可选）</label>
+          <input type="text" id="loanNote" placeholder="如：高峰时段 14:00-22:00">
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeLoanModal()">取消</button>
+      <button class="btn" onclick="submitLoan()">提交登记</button>
+    </div>
+  </div>
+</div>
+
+<!-- 物资跟进弹窗 -->
+<div class="modal-mask" id="spMask">
+  <div class="modal">
+    <div class="modal-head"><span id="spTitle">物资跟进</span><button class="modal-close" onclick="closeSupModal()">×</button></div>
+    <div class="modal-body">
+      <div class="modal-sub" id="spSub"></div>
+      <div class="sup-item">
+        <div class="sup-item-head"><label class="sup-check"><input type="checkbox" id="spBox" style="width:18px;height:18px;accent-color:#e8562a"> <strong>小药箱已齐全</strong></label></div>
+        <div class="sup-img-row">
+          <button class="btn btn-ghost" type="button" onclick="document.getElementById('spBoxFile').click()">📷 上传照片</button>
+          <input type="file" id="spBoxFile" accept="image/*" style="display:none" onchange="onSupImg(this,'box')">
+          <span id="spBoxImgBox"></span>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-item"><label>缺项说明 / 整改完成（可选）</label><input type="text" id="spFix" placeholder="如：已补齐烫伤膏与云南白药"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-item"><label>确认日期</label><input type="date" id="spDate"></div>
+        <div class="form-item"><label>抽查结果</label>
+          <select id="spInspect">
+            <option value="">未抽查</option>
+            <option value="合格">合格</option>
+            <option value="不合格">不合格</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeSupModal()">取消</button>
+      <button class="btn" id="spSubmit" onclick="submitSup()">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- 宣发新增弹窗 -->
+<div class="modal-mask" id="promoMask">
+  <div class="modal">
+    <div class="modal-head"><span>新增宣发记录</span><button class="modal-close" onclick="document.getElementById('promoMask').classList.remove('show')">×</button></div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-item"><label>日期</label><input type="text" id="pmDate" placeholder="如：11.16"></div>
+        <div class="form-item"><label>大店长</label><input type="text" id="pmRegion" placeholder="如：周思凡"></div>
+        <div class="form-item"><label>门店</label><input type="text" id="pmStore" placeholder="如：古德墨柠xx店"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-item"><label>素材类型</label><input type="text" id="pmKind" placeholder="如：每日喜报 / 上扬案例 / 节前推广"></div>
+        <div class="form-item"><label>宣发形式</label><input type="text" id="pmForm" placeholder="如：小红书 / 抖音 / 门店群"></div>
+        <div class="form-item"><label>素材主题</label><input type="text" id="pmTopic" placeholder="如：青柠乳茶节-氛围打卡"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-item"><label>发布时间</label><input type="text" id="pmTime" placeholder="如：11.16 19:00"></div>
+        <div class="form-item"><label>店端执行情况</label><input type="text" id="pmExec" placeholder="如：已发布"></div>
+        <div class="form-item"><label>数据表现</label><input type="text" id="pmData" placeholder="如：点赞 86 / 评论 12"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-item"><label>督导人</label><input type="text" id="pmOwner" placeholder="如：周丽"></div>
+        <div class="form-item"><label>备注</label><input type="text" id="pmNote" placeholder="如：话题已带齐"></div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="document.getElementById('promoMask').classList.remove('show')">取消</button>
+      <button class="btn" onclick="submitPromo()">提交</button>
+    </div>
+  </div>
+</div>
+
+<!-- 行事历卡岗填写弹窗 -->
+<div class="modal-mask" id="calMask">
+  <div class="modal">
+    <div class="modal-head"><span id="calTitle">行事历卡岗安排</span><button class="modal-close" onclick="closeCalModal()">×</button></div>
+    <div class="modal-body">
+      <div class="modal-sub" id="calSub"></div>
+      <div class="form-row">
+        <div class="form-item">
+          <label>走访门店</label>
+          <select id="calStore"></select>
+          <div class="form-hint">从分管门店中选择，或选机动支援</div>
+        </div>
+        <div class="form-item">
+          <label>行事历安排</label>
+          <input type="text" id="calNote" placeholder="如：全天卡岗 / 上午巡店 3 家 / 下午支援门店">
+          <div class="form-hint">填写当天主要行程，简明扼要</div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="clearCalCell()">清除本格</button>
+      <button class="btn btn-ghost" onclick="closeCalModal()">取消</button>
+      <button class="btn" onclick="submitCalCell()">保存安排</button>
+    </div>
+  </div>
+</div>
+
+<!-- 通用确认弹窗 -->
+<div class="modal-mask" id="askMask" style="z-index:220">
+  <div class="modal" style="max-width:430px">
+    <div class="modal-head"><span>操作确认</span><button class="modal-close" onclick="closeAsk(false)">×</button></div>
+    <div class="modal-body"><div id="askMsg" style="font-size:13.5px;line-height:1.8;white-space:pre-line;color:#3b3a33"></div></div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeAsk(false)">取消</button>
+      <button class="btn" onclick="closeAsk(true)">确定</button>
+    </div>
+  </div>
+</div>
+
+<!-- 图片大图预览 -->
+<div class="modal-mask" id="imgMask" style="z-index:210">
+  <div style="position:relative;margin:auto;max-width:94vw">
+    <img id="imgBig" style="display:block;max-width:94vw;max-height:84vh;border-radius:10px;box-shadow:0 10px 40px rgba(0,0,0,.45)" alt="">
+    <button class="modal-close" style="position:absolute;top:-10px;right:-10px;background:#fff;color:#333;border-radius:50%;width:32px;height:32px;box-shadow:0 2px 8px rgba(0,0,0,.3)" onclick="document.getElementById('imgMask').classList.remove('show')">×</button>
+  </div>
+</div>
+
+<script src="data.js"></script>
+<script>
+/* ============ 基础 ============ */
+const D = window.XZ_DATA;
+const DAYS = D.meta.days;
+const DAYKEYS = DAYS.map(d=>d.key);
+const DAYLABEL = {}; DAYS.forEach(d=>DAYLABEL[d.key]=d.label);
+const DAYNOTE = {}; DAYS.forEach(d=>DAYNOTE[d.key]=d.note);
+const MGRS = D.mgrs;
+const REGION_LIST = Object.keys(D.regionList);
+const STORE_INFO = {}; D.stores.forEach(s=>STORE_INFO[s.store]=s);
+const STORE_ROWS = D.stores;
+const VW = D.meta.videoWeight, IW = D.meta.imgWeight;
+
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function n(v){ return (v==null||v==='')?'-':v; }
+function shortStore(s){ return String(s||'').replace(/^古德墨柠/,''); }
+function todayStr(){ const d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function numOrNull(v){ if(v===''||v==null||isNaN(Number(v))) return null; return Math.max(0,parseInt(v,10)||0); }
+
+/* ============ Supabase 协作 ============
+   多人协作安全策略：填写动作先入操作队列 PENDING 并本地即时生效，
+   推送时先取云端最新，再把未确认操作重放后整体提交，避免互相覆盖。 */
+const SUPA_URL='https://tclfmnfvlrlxquiojjya.supabase.co';
+const SUPA_KEY='sb_publishable_6sa-Pz6dX0BSlTJX3gNiRA_CbtZkf_b';
+const SUPA_TABLE='violation_data';
+const SUPA_ID=30;                         // 小主节氛围执行看板专用行
+const LS_KEY='xz_dashboard_backup';
+const LS_PENDING='xz_pending_ops';
+
+let CLOUD = { loans:[], plan:{}, promo:[], supplies:{}, cal:{}, stores:{} };
+let PENDING = [];
+let cloudOK=false, syncing=false;
+
+function loanKey(l){ return [l&&l.from,l&&l.to,l&&l.name,l&&l.date,l&&l.ts].join('|'); }
+function normalizeCloud(d){
+  d=(d&&typeof d==='object')?d:{};
+  return {
+    loans:Array.isArray(d.loans)?d.loans:[],
+    plan:(d.plan&&typeof d.plan==='object')?d.plan:{},
+    promo:Array.isArray(d.promo)?d.promo:[],
+    supplies:(d.supplies&&typeof d.supplies==='object')?d.supplies:{},
+    cal:(d.cal&&typeof d.cal==='object')?d.cal:{},
+    stores:(d.stores&&typeof d.stores==='object')?d.stores:{}
+  };
+}
+function applyOp(c,op){
+  if(!op||!op.t) return c;
+  if(op.t==='loan.add'){
+    const k=loanKey(op.v);
+    if(!(c.loans||[]).some(l=>loanKey(l)===k)) c.loans=[op.v].concat(c.loans||[]);
+  }else if(op.t==='loan.del'){
+    c.loans=(c.loans||[]).filter(l=>loanKey(l)!==op.k);
+  }else if(op.t==='loan.confirm'){
+    const i=(c.loans||[]).findIndex(l=>loanKey(l)===op.k);
+    if(i>=0) c.loans[i]=Object.assign({},c.loans[i],{status:'已确认',confirmedAt:op.at||new Date().toISOString()});
+  }else if(op.t==='plan.set'){
+    c.plan=c.plan||{}; c.plan[op.k]=op.v;
+  }else if(op.t==='promo.add'){
+    const sig=JSON.stringify(op.v);
+    if(!(c.promo||[]).some(r=>JSON.stringify(r)===sig)) c.promo=[op.v].concat(c.promo||[]);
+  }else if(op.t==='sup.set'){
+    c.supplies=c.supplies||{}; c.supplies[op.k]=Object.assign({},c.supplies[op.k]||{},op.v);
+  }else if(op.t==='cal.set'){
+    c.cal=c.cal||{}; c.cal[op.k]=op.v;
+  }else if(op.t==='cal.del'){
+    c.cal=c.cal||{}; delete c.cal[op.k];
+  }else if(op.t==='store.set'){
+    // 字段级合并：不同人分别填不同字段时互不覆盖
+    c.stores=c.stores||{}; c.stores[op.k]=Object.assign({},c.stores[op.k]||{},op.v);
+  }
+  return c;
+}
+function backupLocal(){ try{ localStorage.setItem(LS_KEY,JSON.stringify(CLOUD)); }catch(e){} }
+function restoreLocal(){
+  try{ const raw=localStorage.getItem(LS_KEY); if(!raw) return; CLOUD=normalizeCloud(JSON.parse(raw)); }catch(e){}
+}
+function loadPending(){ try{ const p=JSON.parse(localStorage.getItem(LS_PENDING)||'[]'); PENDING=Array.isArray(p)?p:[]; }catch(e){ PENDING=[]; } }
+function savePending(){ try{ localStorage.setItem(LS_PENDING,JSON.stringify(PENDING)); }catch(e){} }
+function pendingTip(){ return PENDING.length?` · 本机有 ${PENDING.length} 条改动待同步`:''; }
+function setSync(msg,ok){
+  const el=document.getElementById('syncTip');
+  el.textContent=msg; el.className='sync-tip'+(ok?' ok':'');
+}
+async function fetchCloud(){
+  const res=await fetch(SUPA_URL+'/rest/v1/'+SUPA_TABLE+'?id=eq.'+SUPA_ID+'&select=data',{
+    headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY}
+  });
+  if(!res.ok) throw new Error('supabase '+res.status);
+  const rows=await res.json();
+  return normalizeCloud(rows&&rows.length?rows[0].data:null);
+}
+async function loadCloud(){
+  loadPending();
+  try{
+    let c=await fetchCloud();
+    PENDING.forEach(op=>applyOp(c,op));
+    CLOUD=c; cloudOK=true;
+    backupLocal();
+    setSync('云端协作已连接 · 宣发回填 / 物资确认 / 支援登记全员实时同步'+pendingTip(),true);
+    if(PENDING.length) flushPending();
+  }catch(e){
+    cloudOK=false; restoreLocal();
+    setSync('云端暂不可用，已切换本地缓存模式（联网后自动补推）'+pendingTip(),false);
+    savePending();
+  }
+}
+async function flushPending(){
+  if(syncing) return false;
+  if(!PENDING.length){
+    if(cloudOK) setSync('云端协作已连接 · 宣发回填 / 物资确认 / 支援登记全员实时同步',true);
+    return true;
+  }
+  syncing=true;
+  try{
+    const remote=await fetchCloud();
+    const ops=PENDING.slice();
+    ops.forEach(op=>applyOp(remote,op));
+    const res=await fetch(SUPA_URL+'/rest/v1/'+SUPA_TABLE+'?id=eq.'+SUPA_ID,{
+      method:'PATCH',
+      headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
+      body:JSON.stringify({data:remote,updated_at:new Date().toISOString()})
+    });
+    if(!res.ok) throw new Error('sync '+res.status);
+    PENDING=PENDING.slice(ops.length);
+    savePending();
+    CLOUD=remote; backupLocal();
+    cloudOK=true; syncing=false;
+    setSync('云端协作已连接 · 宣发回填 / 物资确认 / 支援登记全员实时同步'+pendingTip(),true);
+    if(PENDING.length) return flushPending();
+    return true;
+  }catch(e){
+    syncing=false; cloudOK=false;
+    setSync('云端写入失败，改动已留在本机（联网后自动补推）'+pendingTip(),false);
+    return false;
+  }
+}
+async function commit(op){
+  if(op){ PENDING.push(op); applyOp(CLOUD,op); backupLocal(); savePending(); }
+  return flushPending();
+}
+function syncNow(){ return loadCloud().then(()=>rerenderCurrent()); }
+function rerenderCurrent(){
+  const b=document.querySelector('.tab-btn.active');
+  if(b) switchTab(b.getAttribute('data-tab'));
+}
+
+/* ============ 页签 ============ */
+function switchTab(name){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('panel-'+name).classList.add('active');
+  const btn=document.querySelector('.tab-btn[data-tab="'+name+'"]');
+  if(btn) btn.classList.add('active');
+  if(name==='overview') renderOverview();
+  if(name==='plan') renderPlan();
+  if(name==='mech') renderMech();
+  if(name==='promo'){ renderPromoStores(); renderPromoRank(); renderPromo(); }
+  if(name==='supplies') renderSupplies();
+  if(name==='hr') renderHr();
+  if(name==='cal') renderCal();
+  updateBadges();
+}
+
+/* ============ 门店宣发状态 ============ */
+function stOf(store){
+  const c=(CLOUD.stores||{})[store];
+  return {
+    done: !!(c&&c.done),
+    form:(c&&c.form)||'',
+    account:(c&&c.account)||'',
+    link:(c&&c.link)||'',
+    pubAt:(c&&c.pubAt)||'',
+    likes:c&&c.likes!=null?c.likes:'',
+    comments:c&&c.comments!=null?c.comments:'',
+    favs:c&&c.favs!=null?c.favs:'',
+    topic:!!(c&&c.topic),
+    at:(c&&c.at)||''
+  };
+}
+function weightedOf(s){
+  const lk=numOrNull(s.likes);
+  if(lk===null) return null;
+  const w=(s.form==='视频')?VW:IW;
+  return Math.round(lk*w);
+}
+/* 全品牌加权点赞排名（并列同名次） */
+function rankMap(){
+  const list=STORE_ROWS.map(s=>({s:s.store,v:weightedOf(stOf(s.store))}))
+    .filter(x=>x.v!==null&&x.v>0)
+    .sort((a,b)=>b.v-a.v);
+  const map={}; let last=null,lastRank=0;
+  list.forEach((x,i)=>{
+    if(last!==null&&x.v===last) map[x.s]=lastRank;
+    else { lastRank=i+1; map[x.s]=lastRank; }
+    last=x.v;
+  });
+  return map;
+}
+function pubStats(scope){
+  let done=0,fb=0,likes=0,weighted=0,topic=0,video=0;
+  scope.forEach(x=>{
+    const s=stOf(x.store);
+    if(s.done) done++;
+    if(s.topic) topic++;
+    if(s.form==='视频') video++;
+    const w=weightedOf(s);
+    if(w!==null){ fb++; likes+=numOrNull(s.likes)||0; weighted+=w; }
+  });
+  return {done:done,fb:fb,likes:likes,weighted:weighted,topic:topic,video:video,total:scope.length};
+}
+
+/* ============ 总览 ============ */
+function renderOverview(){
+  const m=D.meta;
+  document.getElementById('logicText').innerHTML=
+    (m.purpose?`<strong>开展目的：</strong>${esc(m.purpose)}<br>`:'')+
+    (m.goal?`<strong>达成目标：</strong>${esc(m.goal)}`:'');
+  document.getElementById('tagMgrs').textContent='大店长 '+MGRS.length+' 人';
+  document.getElementById('tagStores').textContent='门店 '+m.storeCount+' 家';
+  document.getElementById('tagRegion').textContent='大店区 '+m.regionCount+' 个 · BP '+D.bps.join('/');
+  document.getElementById('tagCutoff').textContent='宣发窗口 11.16-11.21（6 天）';
+  document.getElementById('tagWeight').textContent='加权口径 视频×'+VW+' / 图文×'+IW;
+  document.getElementById('ovSub').textContent='数据截至 '+m.asOf;
+
+  const all=pubStats(STORE_ROWS);
+  const planDone=D.plan.filter((p,i)=>planStatus(i)==='已完成').length;
+  const supAll=SUP_STORES.filter(x=>spState(x.store).box).length;
+  const hrPending=(CLOUD.loans||[]).filter(l=>l.status!=='已确认').length;
+
+  const cards=[
+    {l:'覆盖门店',v:m.storeCount,u:'家',s:m.mgrCount+' 位大店长 / '+m.regionCount+' 个大店区',hl:false},
+    {l:'宣发完成',v:all.done,u:'家',s:'目标 11.16 发布率 100%',hl:true},
+    {l:'话题带齐',v:all.topic,u:'家',s:'双话题带齐率目标 100%',hl:false},
+    {l:'数据回传',v:all.fb,u:'家',s:'发布后 24h 内回填点赞',hl:false},
+    {l:'加权点赞合计',v:all.weighted,u:'',s:'实际点赞 '+all.likes+' · 视频 '+all.video+' 篇',hl:true},
+    {l:'计划完成率',v:D.plan.length?Math.round(planDone/D.plan.length*100):0,u:'%',s:planDone+' / '+D.plan.length+' 项已完成',hl:false},
+    {l:'小药箱闭环',v:supAll,u:'家',s:'11.10 前需 100% 闭环',hl:true,click:"switchTab('supplies')"}
+  ];
+  document.getElementById('ovCards').innerHTML=cards.map(c=>`
+    <div class="metric-card${c.hl?' highlight':''}${c.click?' clickable':''}"${c.click?` onclick="${c.click}"`:''}>
+      <div class="card-label">${esc(c.l)}</div>
+      <div class="card-value${c.hl?' brand':''}">${c.v}<span class="card-unit">${c.u}</span></div>
+      <div class="card-sub">${esc(c.s)}</div>
+    </div>`).join('');
+
+  // 大店区宣发完成情况（堆叠条）
+  const W=Math.max(680,MGRS.length*74), rowH=30, padT=16, padL=76, padR=58;
+  const H=padT+MGRS.length*rowH+26;
+  const maxTot=Math.max.apply(null,MGRS.map(m=>STORE_ROWS.filter(s=>s.mgr===m).length).concat([1]));
+  const barMax=W-padL-padR;
+  let bars='';
+  MGRS.forEach((mg,i)=>{
+    const list=STORE_ROWS.filter(s=>s.mgr===mg);
+    const st=pubStats(list);
+    const y=padT+i*rowH;
+    const wTot=barMax*list.length/maxTot;
+    const wDone=wTot*(st.done/list.length);
+    const region=STORE_ROWS.find(s=>s.mgr===mg).region;
+    bars+=`<text x="${padL-8}" y="${y+13}" text-anchor="end" font-size="11.5" fill="#4a4740">${esc(mg)}</text>`;
+    bars+=`<rect x="${padL}" y="${y+2}" width="${wTot}" height="15" rx="3" fill="#f0eee9"></rect>`;
+    bars+=`<rect x="${padL}" y="${y+2}" width="${wDone}" height="15" rx="3" fill="#e8562a" opacity=".9"></rect>`;
+    bars+=`<text x="${padL+wTot+8}" y="${y+13}" font-size="11.5" fill="${st.done===list.length?'#2e8b57':'#8b8778'}">${st.done}/${list.length}</text>`;
+    bars+=`<text x="${padL-8}" y="${y+13}" text-anchor="end" font-size="10" fill="#b3ada1" dx="0" dy="0"></text>`;
+  });
+  document.getElementById('ovChart').innerHTML=`
+    <svg viewBox="0 0 ${W} ${H}" width="100%" style="max-height:${Math.max(220,MGRS.length*32)}px" preserveAspectRatio="xMidYMin meet">
+      ${bars}
+    </svg>
+    <div class="chart-legend">
+      <span><i class="legend-dot" style="background:#e8562a"></i>已发布门店</span>
+      <span><i class="legend-dot" style="background:#f0eee9"></i>未发布</span>
+      <span>横条长度按门店数缩放，右侧为「已发布 / 分管门店数」</span>
+    </div>`;
+
+  // TOP15 门店
+  const rk=rankMap();
+  const top=STORE_ROWS.map(s=>({s:s,st:stOf(s.store),v:weightedOf(stOf(s.store))}))
+    .filter(x=>x.v!==null&&x.v>0)
+    .sort((a,b)=>b.v-a.v).slice(0,15);
+  let h=`<thead><tr><th>排名</th><th>门店</th><th>大店区</th><th>大店长</th><th>BP</th><th>内容形式</th><th class="num">实际点赞</th><th class="num">加权点赞</th><th class="num">评论</th><th class="num">收藏</th><th>话题</th><th>笔记链接</th></tr></thead><tbody>`;
+  if(!top.length) h+=`<tr><td colspan="12" style="text-align:center;color:#95a5a6;padding:26px">暂无回传数据 —— 11.16 发布后由各店回填点赞，看板自动计算加权与排名</td></tr>`;
+  top.forEach(x=>{
+    const r=rk[x.s.store]||'-';
+    h+=`<tr><td><span class="${r===1?'rank-1':(r===2?'rank-2':(r===3?'rank-3':''))}">${r}</span></td>`+
+      `<td><span class="store-link" onclick="openStoreModal('${esc(x.s.store)}')">${esc(shortStore(x.s.store))}</span></td>`+
+      `<td>${esc(x.s.region)}</td><td>${esc(x.s.mgr)}</td><td>${esc(x.s.bp)}</td>`+
+      `<td>${x.st.form?'<span class="badge badge-blue">'+esc(x.st.form)+'</span>':'<span class="badge badge-gray">未填</span>'}</td>`+
+      `<td class="num">${n(numOrNull(x.st.likes))}</td><td class="num"><strong>${x.v}</strong></td>`+
+      `<td class="num">${n(numOrNull(x.st.comments))}</td><td class="num">${n(numOrNull(x.st.favs))}</td>`+
+      `<td>${x.st.topic?'<span class="badge badge-green">✓</span>':'<span class="badge badge-orange">缺</span>'}</td>`+
+      `<td style="white-space:normal;max-width:230px">${x.st.link?`<a href="${esc(x.st.link)}" target="_blank" rel="noopener" style="color:#e8562a">查看笔记</a>`:'<span class="cell-zero">-</span>'}</td></tr>`;
+  });
+  h+='</tbody>';
+  document.getElementById('ovTopTable').innerHTML=h;
+
+  document.getElementById('ovFoot').innerHTML=
+    `加权口径：视频 ×${VW}、图文 ×${IW}，四舍五入取整；同分按「评论 + 收藏」排序，以 <strong>${esc(m.cutoff)}</strong> 截图为准。`+
+    ` TOP3 门店由所在大店长兑现执行力加分 +3 / +2 / +1；门店未发布或话题缺失，每店扣 1 分。`;
+}
+
+/* ============ 计划推进 ============ */
+const STATUS_LIST=['未开始','进行中','已完成'];
+const STATUS_CLS={'未开始':'todo','进行中':'doing','已完成':'done'};
+function planStatus(i){ return CLOUD.plan['p'+i]||D.plan[i].status||'未开始'; }
+function renderPlan(){
+  const ph=document.getElementById('planPhase').value;
+  const ln=document.getElementById('planLine').value;
+  const st=document.getElementById('planStatus').value;
+  let h=`<thead><tr><th>阶段</th><th>战线</th><th>时间</th><th>动作（What / How）</th><th>交付物</th><th>验收标准 / 风险预警</th><th>责任人</th><th>完成进度</th></tr></thead><tbody>`;
+  let shown=0;
+  D.plan.forEach((p,i)=>{
+    const s=planStatus(i);
+    if(ph!=='all'&&p.phase!==ph) return;
+    if(ln!=='all'&&p.line!==ln) return;
+    if(st!=='all'&&s!==st) return;
+    shown++;
+    h+=`<tr>
+      <td><span class="badge ${p.phase==='前'?'badge-blue':(p.phase==='中'?'badge-orange':'badge-green')}">${esc(p.phase)}</span></td>
+      <td><span class="mcat" style="background:#ffe8dc;color:#b83517">${esc(p.line)}</span></td>
+      <td>${esc(p.start)}</td>
+      <td style="white-space:normal;min-width:260px;font-weight:600">${esc(p.task)}</td>
+      <td style="white-space:normal;min-width:120px;color:#666">${esc(p.deliverable)}</td>
+      <td style="white-space:normal;min-width:180px;color:#666">${esc(p.accept)}</td>
+      <td>${esc(p.owner)}</td>
+      <td><span class="status-group">
+        ${STATUS_LIST.map(x=>`<button class="status-btn ${s===x?('on-'+STATUS_CLS[x]):''}" onclick="setPlanStatus(${i},'${x}')">${x}</button>`).join('')}
+      </span></td>
+    </tr>`;
+  });
+  if(!shown) h+=`<tr><td colspan="8" style="text-align:center;color:#95a5a6;padding:24px">当前筛选条件下无任务</td></tr>`;
+  h+='</tbody>';
+  document.getElementById('planTable').innerHTML=h;
+
+  const cnt={'未开始':0,'进行中':0,'已完成':0};
+  D.plan.forEach((p,i)=>cnt[planStatus(i)]++);
+  const done=cnt['已完成'], total=D.plan.length;
+  const pct=total?Math.round(done/total*100):0;
+  const phases=['前','中','后'].map(ph2=>{
+    const t=D.plan.filter(p=>p.phase===ph2);
+    const d=t.filter((p,i)=>planStatus(D.plan.indexOf(p))==='已完成').length;
+    return `${ph2} ${d}/${t.length}`;
+  }).join(' · ');
+  document.getElementById('planProgressHead').innerHTML=
+    `节前 · 节中 · 节后 执行推进<span class="sub">${esc(phases)}</span>
+     <div style="margin-top:8px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+       <div class="bar-track" style="flex:1;max-width:420px;height:9px"><div class="bar-fill" style="width:${pct}%"></div></div>
+       <span style="font-size:12.5px;color:var(--brand-d);font-weight:700">${done} / ${total} 项（${pct}%）</span>
+     </div>`;
+  document.getElementById('planProgress').innerHTML=
+    `<strong style="color:#2e8b57">已完成 ${done}</strong> / 进行中 ${cnt['进行中']} / 未开始 ${cnt['未开始']}，共 ${total} 项，完成率 ${pct}%`;
+}
+function setPlanStatus(i,s){
+  commit({t:'plan.set',k:'p'+i,v:s});
+  renderPlan();
+  updateBadges();
+}
+function exportPlanCsv(){
+  const rows=[['阶段','战线','时间','动作（What/How）','交付物','验收标准/风险预警','责任人','完成进度']];
+  D.plan.forEach((p,i)=>rows.push([p.phase,p.line,p.start,p.task,p.deliverable,p.accept,p.owner,planStatus(i)]));
+  downloadCsv('小主节计划推进表',rows);
+}
+
+/* ============ 机制总表 ============ */
+const MECH_CLS={
+  '内容分层':'background:#ffe2d4;color:#b83517',
+  '执行规范':'background:#ddeeff;color:#1c5c99',
+  '顾客路径':'background:#fdf0c2;color:#8a5f0e',
+  '红线管控':'background:#fadbd8;color:#b71c1c',
+  '加减分':'background:#e8e2f7;color:#5b3fa8',
+  '认同激励':'background:#ffe3ec;color:#a83257',
+  '责任分工':'background:#d5f5e3;color:#1e7a45',
+  '口径校准':'background:#f0eee9;color:#6b675c'
+};
+function renderMech(){
+  const cat=document.getElementById('mechCat').value;
+  const mgr=document.getElementById('mechMgr').value;
+  let rows=D.mech;
+  if(cat!=='all') rows=rows.filter(m=>m[0]===cat);
+  if(mgr!=='all') rows=rows.filter(m=>m[3]===mgr||m[3].indexOf(mgr)>=0||(m[3]==='大店长'));
+  let h=`<thead><tr><th>类目</th><th>机制项</th><th>规则 / 内容</th><th>责任人</th><th>加减分 / 口径</th></tr></thead><tbody>`;
+  if(!rows.length) h+=`<tr><td colspan="5" style="text-align:center;color:#95a5a6;padding:24px">无匹配条款</td></tr>`;
+  rows.forEach(m=>{
+    const style=MECH_CLS[m[0]]||'background:#f0eee9;color:#6b675c';
+    const isRed=m[0]==='红线管控';
+    h+=`<tr>
+      <td><span class="mcat" style="${style}">${esc(m[0])}</span></td>
+      <td style="font-weight:600;${isRed?'color:#b71c1c':''}">${esc(m[1])}</td>
+      <td style="white-space:normal;min-width:340px">${esc(m[2])}</td>
+      <td>${esc(m[3])}</td>
+      <td style="white-space:normal;min-width:150px;color:${isRed?'#b71c1c':'#666'};${isRed?'font-weight:600':''}">${esc(m[4])}</td>
+    </tr>`;
+  });
+  h+='</tbody>';
+  document.getElementById('mechTable').innerHTML=h;
+  document.getElementById('mechCount').innerHTML=`机制条款 ${rows.length} 条<span class="sub">${cat==='all'?'全类目':esc(cat)} · 共 ${D.mech.length} 条</span>`;
+  const reds=D.mech.filter(m=>m[0]==='红线管控');
+  document.getElementById('mechFoot').innerHTML=
+    reds.length?`<div style="margin-bottom:8px;font-weight:700;color:#b71c1c;font-size:12.5px">红线管控（零客诉零误导，全体必读）</div>`+
+    reds.map(m=>`<div class="redline"><div class="redline-t">${esc(m[1])}</div><div class="redline-b">${esc(m[2])}</div></div>`).join('')+
+    `<div style="margin-top:6px">本节不设专项奖励方案；激励以大店长执行力加分、认同表扬卡、最佳氛围门店投票为主。</div>`
+    :'';
+}
+function exportMechCsv(){
+  const rows=[['类目','机制项','规则/内容','责任人','加减分/口径']].concat(D.mech);
+  downloadCsv('小主节机制总表',rows);
+}
+
+/* ============ 宣发记录 · 门店回传 ============ */
+let PR_ROWS=[];
+function renderPromoStores(){
+  const rg=document.getElementById('prRegion').value;
+  const mgr=document.getElementById('prMgr').value;
+  const only=document.getElementById('prOnly').value;
+  const q=document.getElementById('prSearch').value.trim();
+  const scope=STORE_ROWS.filter(s=>(rg==='all'||s.region===rg)&&(mgr==='all'||s.mgr===mgr));
+  PR_ROWS=scope.filter(s=>{
+    const st=stOf(s.store);
+    if(q&&s.store.indexOf(q)<0&&s.mgr.indexOf(q)<0) return false;
+    if(only==='done'&&!st.done) return false;
+    if(only==='todo'&&st.done) return false;
+    if(only==='nofb'&&weightedOf(st)!==null) return false;
+    return true;
+  });
+  const rk=rankMap();
+  let h=`<thead><tr><th>大店区</th><th>大店长</th><th>门店</th><th>BP</th><th style="text-align:center">发布</th><th style="text-align:center">形式</th><th style="text-align:center">话题</th><th class="num">实际点赞</th><th class="num">加权点赞</th><th class="num">排名</th><th>操作</th></tr></thead><tbody>`;
+  if(!PR_ROWS.length) h+=`<tr><td colspan="11" style="text-align:center;color:#95a5a6;padding:24px">无匹配门店</td></tr>`;
+  PR_ROWS.forEach((x,i)=>{
+    const st=stOf(x.store);
+    const w=weightedOf(st);
+    h+=`<tr>
+      <td>${esc(x.region)}</td><td>${esc(x.mgr)}</td>
+      <td><span class="store-link" onclick="openStoreModal('${esc(x.store)}')">${esc(shortStore(x.store))}</span></td>
+      <td>${esc(x.bp)}</td>
+      <td style="text-align:center"><input type="checkbox" id="prDone_${i}" ${st.done?'checked':''} onchange="quickSavePromo(${i})" style="width:16px;height:16px;accent-color:#e8562a;cursor:pointer"></td>
+      <td style="text-align:center"><select class="cell-input" id="prForm_${i}" onchange="quickSavePromo(${i})" style="width:74px">
+        <option value=""${st.form===''?' selected':''}>—</option>
+        <option value="视频"${st.form==='视频'?' selected':''}>视频</option>
+        <option value="图文"${st.form==='图文'?' selected':''}>图文</option></select></td>
+      <td style="text-align:center"><input type="checkbox" id="prTopic_${i}" ${st.topic?'checked':''} onchange="quickSavePromo(${i})" style="width:16px;height:16px;accent-color:#e8562a;cursor:pointer"></td>
+      <td class="num"><input type="number" class="cell-input num" id="prLikes_${i}" value="${st.likes===''?'':esc(st.likes)}" min="0" step="1" placeholder="0" style="width:78px" onchange="quickSavePromo(${i})"></td>
+      <td class="num"><strong>${w==null?'<span class="cell-zero">-</span>':w}</strong></td>
+      <td class="num">${rk[x.store]?('<span class="'+(rk[x.store]===1?'rank-1':(rk[x.store]===2?'rank-2':(rk[x.store]===3?'rank-3':'')))+'">'+rk[x.store]+'</span>'):'<span class="cell-zero">-</span>'}</td>
+      <td style="white-space:nowrap"><button class="mini-btn" onclick="openStoreModal('${esc(x.store)}')">回填详情</button></td>
+    </tr>`;
+  });
+  h+='</tbody>';
+  document.getElementById('prTable').innerHTML=h;
+
+  const st=pubStats(scope);
+  const pct=st.total?Math.round(st.done/st.total*100):0;
+  const all=pubStats(STORE_ROWS);
+  document.getElementById('prProgress').innerHTML=
+    `门店宣发完成情况<span class="sub">勾选发布 / 选择内容形式 / 填点赞即自动保存，加权点赞与排名实时重算</span>
+     <div style="margin-top:8px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+       <div class="bar-track" style="flex:1;max-width:420px;height:9px"><div class="bar-fill" style="width:${pct}%"></div></div>
+       <span style="font-size:12.5px;color:var(--brand-d);font-weight:700">${st.done} / ${st.total} 家（${pct}%）</span>
+       <span style="font-size:12px;color:var(--ink-2)">话题带齐 ${st.topic} 家 · 已回传 ${st.fb} 家 · 加权点赞合计 ${st.weighted}</span>
+       ${(rg!=='all'||mgr!=='all')?`<span style="font-size:11.5px;color:var(--ink-2)">全品牌 ${all.done} / ${all.total} 家（${all.total?Math.round(all.done/all.total*100):0}%）</span>`:''}
+     </div>`;
+}
+function quickSavePromo(i){
+  const x=PR_ROWS[i]; if(!x) return;
+  const cur=stOf(x.store);
+  const v={
+    done:document.getElementById('prDone_'+i).checked,
+    form:document.getElementById('prForm_'+i).value,
+    topic:document.getElementById('prTopic_'+i).checked,
+    likes:(document.getElementById('prLikes_'+i).value||'').trim(),
+    at:new Date().toISOString()
+  };
+  commit({t:'store.set',k:x.store,v:v});
+  renderPromoStores();
+  renderPromoRank();
+}
+function exportStoreCsv(){
+  const rk=rankMap();
+  const rows=[['大店区','大店长','门店编码','门店名称','BP','发布状态','内容形式','话题带齐','小红书账号','笔记链接','发布时间','实际点赞','评论数','收藏数','加权点赞','排名']];
+  STORE_ROWS.forEach(s=>{
+    const st=stOf(s.store); const w=weightedOf(st);
+    rows.push([s.region,s.mgr,s.code,s.store,s.bp,st.done?'已发布':'未发布',st.form||'',st.topic?'是':'否',
+      st.account||'',st.link||'',st.pubAt||'',numOrNull(st.likes)??'',numOrNull(st.comments)??'',
+      numOrNull(st.favs)??'', w==null?'':w, rk[s.store]||'']);
+  });
+  downloadCsv('门店宣发回传表',rows);
+}
+
+/* ============ 门店回填弹窗 ============ */
+let STORE_EDIT=null;
+function openStoreModal(store){
+  const rec=STORE_INFO[store];
+  STORE_EDIT=store;
+  const st=stOf(store);
+  const rk=rankMap();
+  document.getElementById('storeTitle').textContent='宣发回填 · '+shortStore(store);
+  let h=`<div class="modal-sub"><strong>${esc(store)}</strong> · 大店区 ${esc(rec.region)} · 大店长 ${esc(rec.mgr)} · BP ${esc(rec.bp)} · 编码 ${rec.code?esc(rec.code):'<span style="color:#c47a00;font-weight:600">待补</span>'}<br>
+    口径：视频 ×${VW}、图文 ×${IW}；11.16 每店发布 1 篇，可多发以单篇最高加权点赞参与排名；发布后 24h 内完成回填。</div>`;
+  h+=`<div class="form-row">
+    <div class="form-item"><label>发布状态</label>
+      <select id="sd_done">
+        <option value="0"${!st.done?' selected':''}>未发布</option>
+        <option value="1"${st.done?' selected':''}>已发布</option>
+      </select></div>
+    <div class="form-item"><label>内容形式</label>
+      <select id="sd_form">
+        <option value=""${st.form===''?' selected':''}>未填</option>
+        <option value="视频"${st.form==='视频'?' selected':''}>视频（×${VW}）</option>
+        <option value="图文"${st.form==='图文'?' selected':''}>图文（×${IW}）</option>
+      </select></div>
+    <div class="form-item"><label>话题带齐</label>
+      <select id="sd_topic">
+        <option value="0"${!st.topic?' selected':''}>未带齐</option>
+        <option value="1"${st.topic?' selected':''}>已带齐（双话题 + 关键词）</option>
+      </select></div>
+  </div>
+  <div class="form-row">
+    <div class="form-item"><label>小红书账号</label><input type="text" id="sd_account" value="${esc(st.account)}" placeholder="如：古德墨柠xx店"></div>
+    <div class="form-item"><label>笔记链接</label><input type="text" id="sd_link" value="${esc(st.link)}" placeholder="粘贴小红书笔记链接"></div>
+    <div class="form-item"><label>发布时间</label><input type="text" id="sd_pubAt" value="${esc(st.pubAt)}" placeholder="如：11.16 19:30"></div>
+  </div>
+  <div class="form-row">
+    <div class="form-item"><label>实际点赞</label><input type="number" id="sd_likes" value="${st.likes===''?'':esc(st.likes)}" min="0" step="1" oninput="previewWeighted()"></div>
+    <div class="form-item"><label>评论数</label><input type="number" id="sd_comments" value="${st.comments===''?'':esc(st.comments)}" min="0" step="1"></div>
+    <div class="form-item"><label>收藏数</label><input type="number" id="sd_favs" value="${st.favs===''?'':esc(st.favs)}" min="0" step="1"></div>
+  </div>
+  <div class="reco-title">加权与排名测算</div>
+  <table style="min-width:0"><thead><tr><th>实际点赞</th><th>内容形式</th><th>加权系数</th><th class="num">加权点赞</th><th class="num">当前全品牌排名</th></tr></thead>
+  <tbody><tr>
+    <td id="pv_raw">${n(numOrNull(st.likes))}</td>
+    <td id="pv_form">${st.form||'-'}</td>
+    <td id="pv_w">${st.form==='视频'?VW:IW}</td>
+    <td class="num" id="pv_wv"><strong>${weightedOf(st)==null?'-':weightedOf(st)}</strong></td>
+    <td class="num" id="pv_rank">${rk[store]||'-'}</td>
+  </tr></tbody></table>
+  <div class="form-hint" style="margin-top:8px">加权点赞 = 实际点赞 × 形式系数，四舍五入取整；同分按「评论 + 收藏」排序。</div>`;
+  document.getElementById('storeBody').innerHTML=h;
+  document.getElementById('storeMask').classList.add('show');
+}
+function previewWeighted(){
+  const lk=numOrNull(document.getElementById('sd_likes').value);
+  const form=document.getElementById('sd_form').value;
+  const w=form==='视频'?VW:IW;
+  document.getElementById('pv_raw').textContent=n(lk);
+  document.getElementById('pv_form').textContent=form||'-';
+  document.getElementById('pv_w').textContent=w;
+  document.getElementById('pv_wv').innerHTML=lk===null?'-':'<strong>'+Math.round(lk*w)+'</strong>';
+}
+function closeStoreModal(){ document.getElementById('storeMask').classList.remove('show'); STORE_EDIT=null; }
+function submitStoreModal(){
+  if(!STORE_EDIT) return;
+  const g=id=>document.getElementById(id).value.trim();
+  const v={
+    done:document.getElementById('sd_done').value==='1',
+    form:g('sd_form'),
+    topic:document.getElementById('sd_topic').value==='1',
+    account:g('sd_account'),
+    link:g('sd_link'),
+    pubAt:g('sd_pubAt'),
+    likes:g('sd_likes'),
+    comments:g('sd_comments'),
+    favs:g('sd_favs'),
+    at:new Date().toISOString()
+  };
+  commit({t:'store.set',k:STORE_EDIT,v:v});
+  closeStoreModal();
+  renderPromoStores(); renderPromoRank();
+}
+
+/* ============ 大店长执行力 PK 榜 ============ */
+function renderPromoRank(){
+  const rows=MGRS.map(m=>{
+    const list=STORE_ROWS.filter(s=>s.mgr===m);
+    const st=pubStats(list);
+    return {mgr:m,region:list.length?list[0].region:'',bp:list.length?list[0].bp:'',stat:st};
+  }).sort((a,b)=>(b.stat.weighted-a.stat.weighted)||(b.stat.done-a.stat.done));
+  const BONUS={'1':3,'2':2,'3':1};
+  let h=`<thead><tr><th>排名</th><th>大店区</th><th>大店长</th><th>BP</th><th class="num">分管门店</th><th class="num">已发布</th><th class="num">发布率</th><th class="num">话题带齐</th><th class="num">加权点赞合计</th><th class="num">执行力加分</th><th>扣分提示</th></tr></thead><tbody>`;
+  rows.forEach((r,i)=>{
+    const no=r.i=i+1;
+    const rate=r.stat.total?Math.round(r.stat.done/r.stat.total*100):0;
+    const minus=(r.stat.total-r.stat.done);
+    const bonus=BONUS[String(no)]||0;
+    h+=`<tr>
+      <td><span class="${no===1?'rank-1':(no===2?'rank-2':(no===3?'rank-3':''))}">${no}</span></td>
+      <td>${esc(r.region)}</td><td><strong>${esc(r.mgr)}</strong></td><td>${esc(r.bp)}</td>
+      <td class="num">${r.stat.total}</td><td class="num">${r.stat.done}</td>
+      <td class="num ${rate===100?'cell-pos':(rate<50?'cell-neg':'')}">${rate}%</td>
+      <td class="num">${r.stat.topic}</td>
+      <td class="num"><strong>${r.stat.weighted}</strong></td>
+      <td class="num">${bonus?'<span class="badge badge-green">+'+bonus+' 分</span>':'<span class="cell-zero">-</span>'}</td>
+      <td>${minus>0?`<span class="badge badge-red">${minus} 店未发布 −${minus}</span>`:'<span class="badge badge-green">无扣分</span>'}</td>
+    </tr>`;
+  });
+  const tot=pubStats(STORE_ROWS);
+  h+=`<tr class="total-row"><td colspan="4">全品牌合计</td><td class="num">${tot.total}</td><td class="num">${tot.done}</td>`+
+    `<td class="num">${tot.total?Math.round(tot.done/tot.total*100):0}%</td><td class="num">${tot.topic}</td>`+
+    `<td class="num">${tot.weighted}</td><td class="num">+6 分</td><td>扣分上限 ${tot.total-tot.done}</td></tr>`;
+  h+='</tbody>';
+  document.getElementById('prRankTable').innerHTML=h;
+}
+
+/* ============ 宣发记录流水 ============ */
+function renderPromo(){
+  const el=document.getElementById('pmType');
+  const all=D.promo.concat(CLOUD.promo||[]);
+  const types=Array.from(new Set(all.map(r=>r[3]).filter(Boolean)));
+  if(el.options.length<=1) el.innerHTML='<option value="all">全部</option>'+types.map(t=>`<option value="${esc(t)}">${esc(t)}</option>`).join('');
+  const t=el.value;
+  const rows=all.filter(r=>t==='all'||r[3]===t);
+  const head=D.promoHead;
+  let h='<thead><tr>'+head.map((x,i)=>`<th${i>=8?' class="num"':''}>${esc(x)}</th>`).join('')+'<th>来源</th></tr></thead><tbody>';
+  if(!rows.length) h+=`<tr><td colspan="${head.length+1}" style="text-align:center;color:#95a5a6;padding:24px">暂无宣发记录，点「＋ 新增宣发记录」登记每日喜报与上扬案例</td></tr>`;
+  const base=D.promo.length;
+  rows.forEach((r)=>{
+    const idx=all.indexOf(r);
+    h+='<tr>'+head.map((c,i)=>`<td style="white-space:normal;max-width:220px;${i>=8?'text-align:right':''}">${esc(r[i]||'-')}</td>`).join('');
+    h+=`<td>${idx<base?'<span class="badge badge-gray">源表</span>':'<span class="badge badge-blue">在线新增</span>'}</td></tr>`;
+  });
+  h+='</tbody>';
+  document.getElementById('pmTable').innerHTML=h;
+  document.getElementById('pmFoot').innerHTML=`共 ${rows.length} 条宣发记录，覆盖 ${types.length} 类素材。节中每日 17:00 前更新点赞进度播报，无断更。`;
+}
+function openPromoModal(){ document.getElementById('promoMask').classList.add('show'); }
+function submitPromo(){
+  const g=id=>document.getElementById(id).value.trim();
+  const row=[g('pmDate'),g('pmRegion'),g('pmStore')||'-',g('pmKind'),g('pmForm'),g('pmTopic'),g('pmTime'),g('pmExec'),g('pmData'),g('pmOwner'),g('pmNote')];
+  if(!row[0]||!row[5]){ alert('请至少填写日期与素材主题'); return; }
+  commit({t:'promo.add',v:row});
+  document.getElementById('promoMask').classList.remove('show');
+  ['pmDate','pmRegion','pmStore','pmKind','pmForm','pmTopic','pmTime','pmExec','pmData','pmOwner','pmNote'].forEach(x=>document.getElementById(x).value='');
+  document.getElementById('pmType').innerHTML='<option value="all">全部</option>';
+  renderPromo();
+}
+function exportPromoCsv(){
+  downloadCsv('小主节宣发记录表',[D.promoHead].concat(D.promo).concat(CLOUD.promo||[]));
+}
+
+/* ============ 暖心物资 ============ */
+const SUP_STORES=D.stores.map(s=>({store:s.store,mgr:s.mgr,region:s.region,bp:s.bp}));
+/* 确认人按大店长固定映射：周丽对接 6 位（何海云/童璐/周思凡/钟天祥/旷瑶/易彪），其余 → 杨梦琳 */
+const CHECKER_ZHOULI=['何海云','童璐','周思凡','钟天祥','旷瑶','易彪'];
+function checkerOf(mgr){ return CHECKER_ZHOULI.indexOf(mgr)>=0?'周丽':'杨梦琳'; }
+function spState(store){
+  const c=(CLOUD.supplies||{})[store];
+  if(c) return {box:!!c.box,boxImg:!!c.boxImg,fix:c.fix||'',date:c.date||'',inspect:c.inspect||''};
+  return {box:false,boxImg:false,fix:'',date:'',inspect:''};
+}
+function supBadge(done,hasImg){
+  return (done?'<span class="badge badge-green">✓ 已齐全</span>':'<span class="badge badge-orange">待补齐</span>')
+       +(hasImg?' <span class="badge badge-blue" title="已上传照片">📷</span>':'');
+}
+function renderSupplies(){
+  const rg=document.getElementById('spRegion').value;
+  const mgr=document.getElementById('spMgr').value;
+  const only=document.getElementById('spOnly').value;
+  const scope=SUP_STORES.filter(x=>(rg==='all'||x.region===rg)&&(mgr==='all'||x.mgr===mgr));
+  let doneAll=0;
+  SUP_STORES.forEach(x=>{ if(spState(x.store).box) doneAll++; });
+  let done=0;
+  scope.forEach(x=>{ if(spState(x.store).box) done++; });
+  const rows=scope.filter(x=>{
+    const ok=spState(x.store).box;
+    if(only==='done') return ok;
+    if(only==='todo') return !ok;
+    return true;
+  });
+  let h=`<thead><tr><th>大店区</th><th>大店长</th><th>门店</th><th>BP</th><th style="text-align:center">小药箱</th><th>缺项说明 / 整改</th><th>确认人</th><th>确认日期</th><th style="text-align:center">抽查</th><th>状态</th><th>操作</th></tr></thead><tbody>`;
+  if(!rows.length) h+=`<tr><td colspan="11" style="text-align:center;color:#95a5a6;padding:24px">无匹配门店</td></tr>`;
+  rows.forEach(x=>{
+    const st=spState(x.store);
+    h+=`<tr>
+      <td>${esc(x.region)}</td><td>${esc(x.mgr)}</td><td>${esc(shortStore(x.store))}</td><td>${esc(x.bp)}</td>
+      <td style="text-align:center">${supBadge(st.box,st.boxImg)}</td>
+      <td style="white-space:normal;max-width:200px">${esc(st.fix||'-')}</td>
+      <td>${esc(checkerOf(x.mgr))}</td><td>${esc(st.date||'-')}</td>
+      <td style="text-align:center">${st.inspect?`<span class="badge ${st.inspect==='合格'?'badge-green':'badge-red'}">${esc(st.inspect)}</span>`:'<span class="badge badge-gray">未抽查</span>'}</td>
+      <td>${st.box?'<span class="badge badge-green">已闭环</span>':'<span class="badge badge-orange">待跟进</span>'}</td>
+      <td><button class="mini-btn" onclick="openSupModal('${esc(x.store)}')">跟进填写</button></td>
+    </tr>`;
+  });
+  h+='</tbody>';
+  document.getElementById('spTable').innerHTML=h;
+  document.getElementById('supTotal').textContent=scope.length;
+  const pct=scope.length?Math.round(done/scope.length*100):0;
+  document.getElementById('supProgress').innerHTML=
+    `小药箱闭环进度<span class="sub">11.10 前需 100% 闭环${(rg!=='all'||mgr!=='all')?' · 当前只看 '+esc(rg!=='all'?mgr:rg):''}</span>
+     <div style="margin-top:8px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+       <div class="bar-track" style="flex:1;max-width:420px;height:9px"><div class="bar-fill" style="width:${pct}%"></div></div>
+       <span style="font-size:12.5px;color:var(--brand-d);font-weight:700">${done} / ${scope.length} 家（${pct}%）</span>
+       ${(rg!=='all'||mgr!=='all')?`<span style="font-size:11.5px;color:var(--ink-2)">全品牌 ${doneAll} / ${SUP_STORES.length} 家（${Math.round(doneAll/SUP_STORES.length*100)}%）</span>`:''}
+     </div>`;
+}
+
+/* ============ 物资跟进弹窗 + 图片上传 ============ */
+const IMG_ROW_BASE=120;
+function imgRowId(mgr){ const i=MGRS.indexOf(mgr); return IMG_ROW_BASE+(i>=0?i:0); }
+let SP_EDIT=null, SP_IMGS={box:null}, SP_IMG_PENDING={box:false};
+async function openSupModal(store){
+  const rec=SUP_STORES.find(x=>x.store===store)||{store:store,mgr:'',region:'',bp:''};
+  SP_EDIT=rec;
+  const st=spState(store);
+  document.getElementById('spTitle').textContent='物资跟进 · '+shortStore(store);
+  document.getElementById('spSub').innerHTML=
+    `<strong>${esc(store)}</strong> · 大店区 ${esc(rec.region)} · 大店长 ${esc(rec.mgr)} · 确认人 <strong>${esc(checkerOf(rec.mgr))}</strong>（按大店长自动匹配）<br>
+     需齐全：创口贴 / 花露水 / 烫伤膏 / 云南白药 / 棉签 / 碘酒 / 红糖姜茶；本季为冬季保暖口径（保暖物资 + 及时伞）。`;
+  document.getElementById('spBox').checked=st.box;
+  document.getElementById('spDate').value=st.date||todayStr();
+  document.getElementById('spFix').value=st.fix||'';
+  document.getElementById('spInspect').value=st.inspect||'';
+  document.getElementById('spBoxFile').value='';
+  SP_IMGS={box:null}; SP_IMG_PENDING={box:false};
+  renderSupImgBox('box','');
+  document.getElementById('spMask').classList.add('show');
+  if(st.boxImg){
+    renderSupImgBox('box','加载中…');
+    try{ const imgs=await fetchImgs(rec.mgr); SP_IMGS.box=imgs[store+'::box']||null; }catch(e){}
+    renderSupImgBox('box');
+  }
+}
+function closeSupModal(){ document.getElementById('spMask').classList.remove('show'); SP_EDIT=null; }
+function renderSupImgBox(kind,tip){
+  const el=document.getElementById('spBoxImgBox');
+  if(SP_IMG_PENDING[kind]){ el.innerHTML='<span class="sup-img-loading">上传中…</span>'; return; }
+  const data=SP_IMGS[kind];
+  el.innerHTML=data
+    ?`<span class="sup-thumb-wrap"><img class="sup-thumb" src="${data}" onclick="showBigImg()" title="点击放大"><button class="sup-thumb-del" onclick="delSupImg()" title="删除照片">×</button></span>`
+    :(tip?`<span class="sup-img-loading">${tip}</span>`:'<span class="sup-img-loading">暂无照片</span>');
+}
+function showBigImg(){
+  if(!SP_IMGS.box) return;
+  document.getElementById('imgBig').src=SP_IMGS.box;
+  document.getElementById('imgMask').classList.add('show');
+}
+async function fetchImgs(mgr){
+  const res=await fetch(SUPA_URL+'/rest/v1/'+SUPA_TABLE+'?id=eq.'+imgRowId(mgr)+'&select=data',{
+    headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY}
+  });
+  if(!res.ok) throw new Error('img '+res.status);
+  const rows=await res.json();
+  const d=rows&&rows.length?rows[0].data:null;
+  return (d&&d.imgs&&typeof d.imgs==='object')?d.imgs:{};
+}
+async function saveImgs(mgr,mutate){
+  const cur=await fetchImgs(mgr);
+  mutate(cur);
+  const res=await fetch(SUPA_URL+'/rest/v1/'+SUPA_TABLE,{
+    method:'POST',
+    headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY,'Content-Type':'application/json','Prefer':'resolution=merge-duplicates,return=minimal'},
+    body:JSON.stringify({id:imgRowId(mgr),data:{imgs:cur},updated_at:new Date().toISOString()})
+  });
+  if(!res.ok) throw new Error('img save '+res.status);
+}
+function compressImg(file,maxDim,quality){
+  return new Promise((resolve,reject)=>{
+    const img=new Image();
+    img.onload=function(){
+      let w=img.width,h=img.height;
+      const sc=Math.min(1,maxDim/Math.max(w,h));
+      w=Math.round(w*sc); h=Math.round(h*sc);
+      const cv=document.createElement('canvas'); cv.width=w; cv.height=h;
+      cv.getContext('2d').drawImage(img,0,0,w,h);
+      resolve(cv.toDataURL('image/jpeg',quality));
+      URL.revokeObjectURL(img.src);
+    };
+    img.onerror=reject;
+    img.src=URL.createObjectURL(file);
+  });
+}
+async function onSupImg(input){
+  const file=input.files&&input.files[0];
+  if(!file||!SP_EDIT){ input.value=''; return; }
+  if(!/^image\//.test(file.type)){ alert('请选择图片文件'); input.value=''; return; }
+  SP_IMG_PENDING.box=true; renderSupImgBox('box');
+  try{
+    let data=await compressImg(file,1000,0.62);
+    if(data.length>240*1024) data=await compressImg(file,760,0.55);
+    await saveImgs(SP_EDIT.mgr,imgs=>{ imgs[SP_EDIT.store+'::box']=data; });
+    SP_IMGS.box=data;
+    const st=Object.assign({},spState(SP_EDIT.store));
+    st.boxImg=true;
+    commit({t:'sup.set',k:SP_EDIT.store,v:st});
+    renderSupplies();
+  }catch(e){ alert('照片上传失败，请检查网络后重试'); }
+  SP_IMG_PENDING.box=false; renderSupImgBox('box');
+  input.value='';
+}
+function delSupImg(){
+  if(!SP_EDIT||!SP_IMGS.box) return;
+  askConfirm('删除这张照片？',async()=>{
+    try{ await saveImgs(SP_EDIT.mgr,imgs=>{ delete imgs[SP_EDIT.store+'::box']; }); }catch(e){}
+    SP_IMGS.box=null;
+    const st=Object.assign({},spState(SP_EDIT.store));
+    st.boxImg=false;
+    commit({t:'sup.set',k:SP_EDIT.store,v:st});
+    renderSupImgBox('box'); renderSupplies();
+  });
+}
+function submitSup(){
+  if(!SP_EDIT) return;
+  if(SP_IMG_PENDING.box){ alert('照片上传中，请稍候'); return; }
+  const st=Object.assign({},spState(SP_EDIT.store));
+  st.box=document.getElementById('spBox').checked;
+  st.date=document.getElementById('spDate').value||todayStr();
+  st.fix=document.getElementById('spFix').value.trim();
+  st.inspect=document.getElementById('spInspect').value;
+  commit({t:'sup.set',k:SP_EDIT.store,v:st});
+  closeSupModal();
+  renderSupplies();
+}
+function exportSupCsv(){
+  const rows=[['大店区','大店长','门店','BP','小药箱齐全','照片','缺项说明','确认人','确认日期','抽查结果']];
+  SUP_STORES.forEach(x=>{ const st=spState(x.store);
+    rows.push([x.region,x.mgr,x.store,x.bp,st.box?'已齐全':'待补齐',st.boxImg?'有':'',st.fix||'',checkerOf(x.mgr),st.date,st.inspect||'未抽查']); });
+  downloadCsv('小主节暖心物资跟进',rows);
+}
+
+/* ============ 人力保障 ============ */
+function loanDateLabel(dk){ return DAYLABEL[dk]||dk; }
+function renderHr(){
+  const rg=document.getElementById('hrRegion').value;
+  const tp=document.getElementById('hrType').value;
+  const q=document.getElementById('hrSearch').value.trim();
+  const all=(CLOUD.loans||[]).slice();
+  const rows=all.filter(l=>{
+    const f=STORE_INFO[l.from]||{}, t=STORE_INFO[l.to]||{};
+    if(rg!=='all'&&f.region!==rg&&t.region!==rg) return false;
+    if(tp==='待确认'&&l.status==='已确认') return false;
+    if(tp==='已确认'&&l.status!=='已确认') return false;
+    if(q&&[l.from,l.to,l.name,l.owner].join(' ').indexOf(q)<0) return false;
+    return true;
+  });
+  let h=`<thead><tr><th>支援日期</th><th>伙伴姓名</th><th>支援发出门店</th><th>大店长</th><th>支援接收门店</th><th>大店长</th><th>对接大店长</th><th>时段 / 备注</th><th>状态</th><th>登记时间</th><th>操作</th></tr></thead><tbody>`;
+  if(!rows.length) h+=`<tr><td colspan="11" style="text-align:center;color:#95a5a6;padding:26px">暂无支援登记 —— 11.19-11.21 高峰期如需跨店支援，点「＋ 新增支援登记」</td></tr>`;
+  rows.forEach(l=>{
+    const f=STORE_INFO[l.from]||{}, t=STORE_INFO[l.to]||{};
+    const ok=l.status==='已确认';
+    h+=`<tr>
+      <td><strong>${esc(loanDateLabel(l.date))}</strong></td>
+      <td><strong>${esc(l.name||'-')}</strong></td>
+      <td>${esc(shortStore(l.from))}</td><td>${esc(f.mgr||'-')}</td>
+      <td>${esc(shortStore(l.to))}</td><td>${esc(t.mgr||'-')}</td>
+      <td>${esc(l.owner||'-')}</td>
+      <td style="white-space:normal;max-width:180px">${esc(l.note||'-')}</td>
+      <td>${ok?'<span class="badge badge-green">✓ 已确认</span>':'<span class="badge badge-orange">待确认</span>'}</td>
+      <td>${esc((l.ts||'').replace('T',' ').slice(0,16)||'-')}</td>
+      <td style="white-space:nowrap">
+        ${ok?'':`<button class="mini-btn" onclick="confirmLoan('${esc(l.key)}')">确认</button> `}
+        <button class="mini-btn danger" onclick="delLoan('${esc(l.key)}')">删除</button>
+      </td>
+    </tr>`;
+  });
+  h+='</tbody>';
+  document.getElementById('loanTable').innerHTML=h;
+
+  // 按大店区汇总
+  let sh=`<thead><tr><th>大店区</th><th class="num">支援发出</th><th class="num">支援接收</th><th class="num">净流入</th><th class="num">待确认</th></tr></thead><tbody>`;
+  REGION_LIST.forEach(rg2=>{
+    let out=0,inN=0,pend=0;
+    all.forEach(l=>{
+      const f=STORE_INFO[l.from]||{}, t=STORE_INFO[l.to]||{};
+      if(f.region===rg2) out++;
+      if(t.region===rg2) inN++;
+      if(l.status!=='已确认'&&(f.region===rg2||t.region===rg2)) pend++;
+    });
+    const net=inN-out;
+    sh+=`<tr><td>${esc(rg2)}</td><td class="num">${out}</td><td class="num">${inN}</td>`+
+      `<td class="num ${net>0?'cell-pos':(net<0?'cell-neg':'cell-zero')}">${net>0?'+':''}${net}</td>`+
+      `<td class="num ${pend?'cell-neg':'cell-zero'}">${pend}</td></tr>`;
+  });
+  sh+='</tbody>';
+  document.getElementById('hrSumTable').innerHTML=sh;
+
+  const pendN=all.filter(l=>l.status!=='已确认').length;
+  document.getElementById('loanCount').innerHTML=all.length?`共 ${all.length} 条 · 待确认 ${pendN} 条 · 已确认 ${all.length-pendN} 条`:'';
+  document.getElementById('hrFoot').innerHTML=
+    `11.19-11.21 高峰人力保障要求：<strong>无缺岗、无工时超限</strong>（单日不超 11H），由大店长 + BP 每日发布情况。`+
+    `确认即锁定 1 人调动，防止一店多借；11.22-11.28 每人至少休 1 天为硬指标，未落实每店扣 1 分。`;
+}
+function confirmLoan(key){
+  askConfirm('确认这条支援登记？确认后即锁定 1 人调动。',()=>{
+    commit({t:'loan.confirm',k:key,at:new Date().toISOString()});
+    renderHr();
+  });
+}
+function delLoan(key){
+  askConfirm('删除这条支援登记？',()=>{
+    commit({t:'loan.del',k:key});
+    renderHr();
+  });
+}
+function openLoanModal(){
+  SP_EDIT=null;
+  document.getElementById('loanTitle').textContent='新增人力支援登记';
+  const dateSel=document.getElementById('loanDate');
+  dateSel.innerHTML=DAYKEYS.map(k=>`<option value="${k}">${esc(DAYLABEL[k])}${esc(DAYNOTE[k])?'（'+esc(DAYNOTE[k])+'）':''}</option>`).join('');
+  dateSel.value='d1119';
+  document.getElementById('loanName').value='';
+  document.getElementById('loanNote').value='';
+  document.getElementById('loanOwner').value='';
+  OWNER_MANUAL=false;
+  const fromSel=document.getElementById('loanFrom');
+  const toSel=document.getElementById('loanTo');
+  fromSel.innerHTML=STORE_ROWS.map(s=>`<option value="${esc(s.store)}">${esc(shortStore(s.store))}（${esc(s.mgr)}）</option>`).join('');
+  toSel.innerHTML=STORE_ROWS.map(s=>`<option value="${esc(s.store)}">${esc(shortStore(s.store))}（${esc(s.mgr)}）</option>`).join('');
+  document.getElementById('loanSub').innerHTML=
+    `11.19-11.21 为高峰人力保障期：需保证 <strong>无缺岗、工时不超 11H</strong>。富余门店可向缺员门店登记支援，提交后 13 位大店长实时互见，需人工确认后生效。`;
+  document.getElementById('loanMask').classList.add('show');
+}
+let OWNER_MANUAL=false;
+function onLoanFromChange(){
+  const f=document.getElementById('loanFrom').value;
+  const rec=STORE_INFO[f];
+  if(rec&&!OWNER_MANUAL) document.getElementById('loanOwner').value=rec.mgr;
+  document.getElementById('loanFromHint').textContent=rec?`大店区 ${rec.region} · 大店长 ${rec.mgr} · BP ${rec.bp}`:'';
+  const t=document.getElementById('loanTo').value;
+  const trec=STORE_INFO[t];
+  document.getElementById('loanToHint').textContent=trec?`大店区 ${trec.region} · 大店长 ${trec.mgr} · BP ${trec.bp}`:'';
+}
+function closeLoanModal(){ document.getElementById('loanMask').classList.remove('show'); }
+function submitLoan(){
+  const from=document.getElementById('loanFrom').value;
+  const to=document.getElementById('loanTo').value;
+  const name=document.getElementById('loanName').value.trim();
+  const date=document.getElementById('loanDate').value;
+  const note=document.getElementById('loanNote').value.trim();
+  const owner=document.getElementById('loanOwner').value.trim();
+  if(!from||!to){ alert('请选择支援发出与接收门店'); return; }
+  if(from===to){ alert('发出与接收门店不能相同'); return; }
+  if(!name){ alert('请填写支援伙伴姓名'); return; }
+  const v={from:from,to:to,name:name,date:date,note:note,owner:owner||((STORE_INFO[from]||{}).mgr||''),
+    status:'待确认',ts:new Date().toISOString()};
+  v.key=loanKey(v);
+  commit({t:'loan.add',v:v});
+  closeLoanModal();
+  renderHr();
+}
+function exportHrCsv(){
+  const rows=[['支援日期','伙伴姓名','支援发出门店','大店长','支援接收门店','大店长','对接大店长','时段/备注','状态','登记时间']];
+  (CLOUD.loans||[]).forEach(l=>{
+    const f=STORE_INFO[l.from]||{}, t=STORE_INFO[l.to]||{};
+    rows.push([loanDateLabel(l.date),l.name,l.from,f.mgr||'',l.to,t.mgr||'',l.owner||'',l.note||'',l.status||'待确认',(l.ts||'').replace('T',' ').slice(0,16)]);
+  });
+  downloadCsv('小主节人力支援登记',rows);
+}
+
+/* ============ 行事历卡岗 ============ */
+const MGR_STORES={};
+MGRS.forEach(m=>MGR_STORES[m]=[]);
+D.stores.forEach(s=>{ if(MGR_STORES[s.mgr]) MGR_STORES[s.mgr].push(s.store); });
+const CAL_EXTRA=D.bps.slice();
+const CAL_ALL=MGRS.concat(CAL_EXTRA);
+CAL_EXTRA.forEach(m=>MGR_STORES[m]=D.stores.map(s=>s.store));
+const CAL_TOTAL=CAL_ALL.length*DAYKEYS.length;
+function calScope(m){ return CAL_EXTRA.indexOf(m)>=0?'BP':MGR_STORES[m].length+'家'; }
+function calKey(mgr,dk){ return mgr+'::'+dk; }
+function calGet(mgr,dk){ return (CLOUD.cal||{})[calKey(mgr,dk)]||null; }
+function renderCal(){
+  const view=document.getElementById('calView').value;
+  const daySel=document.getElementById('calDay');
+  daySel.style.display=view==='day'?'':'none';
+  let filled=0;
+  CAL_ALL.forEach(m=>DAYKEYS.forEach(k=>{ if(calGet(m,k)) filled++; }));
+  document.getElementById('calProgress').innerHTML=
+    `行事历已安排 <strong class="cell-pos">${filled}</strong> / ${CAL_TOTAL} 格`+
+    `${filled<CAL_TOTAL?`，待安排 <strong class="cell-neg">${CAL_TOTAL-filled}</strong> 格`:''}`+
+    ` · ${MGRS.length} 位大店长 + ${CAL_EXTRA.length} 位 BP × ${DAYKEYS.length} 天`;
+
+  let h='';
+  if(view==='matrix'){
+    h+='<thead><tr><th>大店长 / BP</th><th>分管门店</th>'+DAYS.map(d=>`<th>${esc(d.label)}<br><span style="font-weight:400;font-size:10px;opacity:.85">${esc(d.note)}</span></th>`).join('')+'</tr></thead><tbody>';
+    CAL_ALL.forEach(m=>{
+      h+=`<tr><td><strong>${esc(m)}</strong>${CAL_EXTRA.indexOf(m)>=0?' <span class="badge badge-blue">BP</span>':''}</td><td class="num">${calScope(m)}</td>`;
+      DAYKEYS.forEach(k=>{
+        const c=calGet(m,k);
+        if(c){
+          const stt=c.store==='机动支援'?c.store:shortStore(c.store);
+          h+=`<td class="cal-cell filled" onclick="openCalModal('${esc(m)}','${k}')"><span class="cal-store">${esc(stt)}</span>${c.note?`<span class="cal-note">${esc(c.note)}</span>`:''}</td>`;
+        }else{
+          h+=`<td class="cal-cell" onclick="openCalModal('${esc(m)}','${k}')"><span class="cal-empty">＋ 待安排</span></td>`;
+        }
+      });
+      h+='</tr>';
+    });
+    h+='</tbody>';
+  }else{
+    const dk=daySel.value||DAYKEYS[0];
+    h+='<thead><tr><th>大店长 / BP</th><th>分管门店</th><th>走访门店</th><th>行事历安排</th><th>操作</th></tr></thead><tbody>';
+    CAL_ALL.forEach(m=>{
+      const c=calGet(m,dk);
+      h+=`<tr><td><strong>${esc(m)}</strong>${CAL_EXTRA.indexOf(m)>=0?' <span class="badge badge-blue">BP</span>':''}</td><td class="num">${calScope(m)}</td>`+
+        `<td>${c?`<span class="badge ${c.store==='机动支援'?'badge-blue':'badge-green'}">${esc(c.store==='机动支援'?'机动':shortStore(c.store))}</span>`:'<span class="badge badge-gray">待安排</span>'}</td>`+
+        `<td style="white-space:normal;min-width:220px">${c?esc(c.note||'—'):'—'}</td>`+
+        `<td><button class="mini-btn" onclick="openCalModal('${esc(m)}','${dk}')">填写</button></td></tr>`;
+    });
+    h+='</tbody>';
+    document.getElementById('calFoot').innerHTML=
+      `${esc(DAYLABEL[dk])}${esc(DAYNOTE[dk])?'（'+esc(DAYNOTE[dk])+'）':''} 单日视图：全品牌 ${D.meta.storeCount} 家门店，13 位大店长分管。BP 行按巡店 / 支援安排填写。`;
+  }
+  document.getElementById('calTable').innerHTML=h;
+}
+let CAL_EDIT=null;
+function openCalModal(mgr,dk){
+  CAL_EDIT={mgr:mgr,dk:dk};
+  document.getElementById('calTitle').textContent=`${mgr} · ${DAYLABEL[dk]} 行事历卡岗`;
+  const sel=document.getElementById('calStore');
+  let opts='<option value="机动支援">机动支援（巡店 / 跨区支援）</option>';
+  MGR_STORES[mgr].forEach(s=>{ opts+=`<option value="${esc(s)}">${esc(shortStore(s))}</option>`; });
+  sel.innerHTML=opts;
+  const c=calGet(mgr,dk);
+  if(c&&c.store!=='机动支援'&&MGR_STORES[mgr].indexOf(c.store)<0) opts+=`<option value="${esc(c.store)}">${esc(shortStore(c.store))}（原填写）</option>`;
+  sel.value=c?c.store:'机动支援';
+  document.getElementById('calNote').value=c?(c.note||''):'';
+  document.getElementById('calSub').textContent=CAL_EXTRA.indexOf(mgr)>=0
+    ?`填写后全员可见。${mgr}（BP）当日巡店 / 跨区支援的走访与行程安排。`
+    :`填写后全员可见。该日 ${mgr} 分管 ${MGR_STORES[mgr].length} 家门店的走访与行程安排。`;
+  document.getElementById('calMask').classList.add('show');
+}
+function closeCalModal(){ document.getElementById('calMask').classList.remove('show'); CAL_EDIT=null; }
+function submitCalCell(){
+  if(!CAL_EDIT) return;
+  const store=document.getElementById('calStore').value;
+  const note=document.getElementById('calNote').value.trim();
+  if(!store){ alert('请选择走访门店'); return; }
+  commit({t:'cal.set',k:calKey(CAL_EDIT.mgr,CAL_EDIT.dk),v:{store:store,note:note,by:CAL_EDIT.mgr,at:new Date().toISOString()}});
+  closeCalModal(); renderCal();
+}
+function clearCalCell(){
+  if(!CAL_EDIT) return;
+  commit({t:'cal.del',k:calKey(CAL_EDIT.mgr,CAL_EDIT.dk)});
+  closeCalModal(); renderCal();
+}
+function exportCalCsv(){
+  const rows=[['大店长/BP','日期','走访门店','行事历安排']];
+  CAL_ALL.forEach(m=>DAYKEYS.forEach(k=>{
+    const c=calGet(m,k);
+    if(c) rows.push([m,DAYLABEL[k],c.store,c.note||'']);
+  }));
+  downloadCsv('大店长行事历卡岗安排',rows);
+}
+
+/* ============ 徽标 ============ */
+function updateBadges(){
+  const planTodo=D.plan.filter((p,i)=>planStatus(i)!=='已完成').length;
+  setBadge('tabBadgePlan',planTodo);
+  const prTodo=STORE_ROWS.filter(s=>!stOf(s.store).done).length;
+  setBadge('tabBadgePromo',prTodo);
+  const supTodo=SUP_STORES.filter(x=>!spState(x.store).box).length;
+  setBadge('tabBadgeSup',supTodo);
+  const hrTodo=(CLOUD.loans||[]).filter(l=>l.status!=='已确认').length;
+  setBadge('tabBadgeHr',hrTodo);
+}
+function setBadge(id,v){
+  const el=document.getElementById(id);
+  if(!el) return;
+  el.textContent=v;
+  el.style.display=v>0?'':'none';
+}
+
+/* ============ 工具 ============ */
+function downloadCsv(name,rows){
+  const csv=rows.map(r=>r.map(c=>{const s=String(c==null?'':c);return /[",\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;}).join(',')).join('\n');
+  const blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob); a.download=name+'.csv'; a.click();
+  URL.revokeObjectURL(a.href);
+}
+let ASK_CB=null;
+function askConfirm(msg,cb){
+  document.getElementById('askMsg').textContent=msg;
+  ASK_CB=cb;
+  document.getElementById('askMask').classList.add('show');
+}
+function closeAsk(ok){
+  document.getElementById('askMask').classList.remove('show');
+  if(ok&&ASK_CB) ASK_CB();
+  ASK_CB=null;
+}
+
+/* ============ 初始化 ============ */
+function fillSelect(id,list,label){
+  const el=document.getElementById(id);
+  if(!el) return;
+  el.innerHTML='<option value="all">'+label+'</option>'+list.map(m=>`<option value="${esc(m)}">${esc(m)}</option>`).join('');
+}
+function fillDaySelect(id){
+  const el=document.getElementById(id);
+  el.innerHTML=DAYKEYS.map(k=>`<option value="${k}">${esc(DAYLABEL[k])}</option>`).join('');
+}
+(async function init(){
+  fillDaySelect('calDay'); fillDaySelect('loanDate');
+  fillSelect('prMgr',MGRS,'全部大店长');
+  fillSelect('spMgr',MGRS,'全部大店长');
+  fillSelect('mechMgr',MGRS.concat(['大店长','全体','各 BP','训练','李当']),'全部');
+  const cats=D.mechCats;
+  document.getElementById('mechCat').innerHTML='<option value="all">全部</option>'+cats.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join('');
+  const lines=Array.from(new Set(D.plan.map(p=>p.line)));
+  document.getElementById('planLine').innerHTML='<option value="all">全部</option>'+lines.map(l=>`<option value="${esc(l)}">${esc(l)}</option>`).join('');
+  ['prRegion','spRegion','hrRegion'].forEach(id=>{
+    const el=document.getElementById(id);
+    el.innerHTML='<option value="all">全部</option>'+REGION_LIST.map(r=>`<option value="${esc(r)}">${esc(r)}</option>`).join('');
+  });
+  await loadCloud();
+  // 动态回填门店口径（避免门店增减后文案数字失真）
+  ['planReadyCount','footStoreCount'].forEach(id=>{
+    const el=document.getElementById(id); if(el) el.textContent=D.meta.storeCount;
+  });
+  const fc={footMgrCount:D.meta.mgrCount,footRegionCount:D.meta.regionCount};
+  Object.keys(fc).forEach(id=>{
+    const el=document.getElementById(id); if(el) el.textContent=fc[id];
+  });
+  renderOverview();
+  switchTab('overview');
+  document.getElementById('promoMask').addEventListener('click',function(e){ if(e.target===this) this.classList.remove('show'); });
+  document.getElementById('calMask').addEventListener('click',function(e){ if(e.target===this) closeCalModal(); });
+  document.getElementById('loanMask').addEventListener('click',function(e){ if(e.target===this) closeLoanModal(); });
+  document.getElementById('spMask').addEventListener('click',function(e){ if(e.target===this) closeSupModal(); });
+  document.getElementById('storeMask').addEventListener('click',function(e){ if(e.target===this) closeStoreModal(); });
+  document.getElementById('imgMask').addEventListener('click',function(e){ if(e.target===this) e.target.classList.remove('show'); });
+  document.getElementById('askMask').addEventListener('click',function(e){ if(e.target===this) closeAsk(false); });
+  setInterval(function(){ if(PENDING.length&&!syncing) flushPending(); },60000);
+  window.addEventListener('online',function(){ flushPending(); loadCloud().then(rerenderCurrent); });
+  document.addEventListener('visibilitychange',function(){
+    if(document.hidden) return;
+    loadCloud().then(function(){ if(!document.querySelector('.modal-mask.show')) rerenderCurrent(); });
+  });
+})();
+</script>
+</body>
+</html>

@@ -327,12 +327,6 @@ select.cell-input{padding:4px 6px;}
       </div>
     </div>
     <div class="filter-bar">
-      <label>阶段：</label>
-      <select id="planPhase" onchange="renderPlan()"><option value="all">全部</option><option value="前">前（节前）</option><option value="中">中（节中）</option><option value="后">后（节后）</option></select>
-      <label>战线：</label>
-      <select id="planLine" onchange="renderPlan()"><option value="all">全部</option></select>
-      <label>状态：</label>
-      <select id="planStatus" onchange="renderPlan()"><option value="all">全部</option><option value="未开始">未开始</option><option value="进行中">进行中</option><option value="已完成">已完成</option></select>
       <div class="spacer"></div>
       <button class="btn btn-ghost" onclick="exportPlanCsv()">导出 CSV</button>
     </div>
@@ -976,16 +970,10 @@ const STATUS_LIST=['未开始','进行中','已完成'];
 const STATUS_CLS={'未开始':'todo','进行中':'doing','已完成':'done'};
 function planStatus(i){ return CLOUD.plan['p'+i]||D.plan[i].status||'未开始'; }
 function renderPlan(){
-  const ph=document.getElementById('planPhase').value;
-  const ln=document.getElementById('planLine').value;
-  const st=document.getElementById('planStatus').value;
   let h=`<thead><tr><th>阶段</th><th>战线</th><th>时间</th><th>动作（What / How）</th><th>交付物</th><th>验收标准 / 风险预警</th><th>责任人</th><th>完成进度</th></tr></thead><tbody>`;
   let shown=0;
   D.plan.forEach((p,i)=>{
     const s=planStatus(i);
-    if(ph!=='all'&&p.phase!==ph) return;
-    if(ln!=='all'&&p.line!==ln) return;
-    if(st!=='all'&&s!==st) return;
     shown++;
     h+=`<tr>
       <td><span class="badge ${p.phase==='前'?'badge-blue':(p.phase==='中'?'badge-orange':'badge-green')}">${esc(p.phase)}</span></td>
@@ -1765,8 +1753,6 @@ function fillDaySelect(id){
   fillSelect('mechMgr',MGRS.concat(['大店长','全体','各 BP','训练','李当']),'全部');
   const cats=D.mechCats;
   document.getElementById('mechCat').innerHTML='<option value="all">全部</option>'+cats.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join('');
-  const lines=Array.from(new Set(D.plan.map(p=>p.line)));
-  document.getElementById('planLine').innerHTML='<option value="all">全部</option>'+lines.map(l=>`<option value="${esc(l)}">${esc(l)}</option>`).join('');
   ['prRegion','spRegion','hrRegion'].forEach(id=>{
     const el=document.getElementById(id);
     el.innerHTML='<option value="all">全部</option>'+REGION_LIST.map(r=>`<option value="${esc(r)}">${esc(r)}</option>`).join('');

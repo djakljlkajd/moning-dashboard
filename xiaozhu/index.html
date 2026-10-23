@@ -279,7 +279,6 @@ select.cell-input{padding:4px 6px;}
     <div class="logic-tags">
       <span class="logic-tag tag-info" id="tagMgrs">大店长 —</span>
       <span class="logic-tag tag-info" id="tagStores">门店 —</span>
-      <span class="logic-tag tag-info" id="tagRegion">大店区 —</span>
       <span class="logic-tag tag-bad" id="tagCutoff"></span>
       <span class="logic-tag tag-warn" id="tagWeight"></span>
       <span class="logic-tag tag-ok">11.21 24:00 数据截止</span>
@@ -307,7 +306,7 @@ select.cell-input{padding:4px 6px;}
     <div class="section-header">小主节执行总览<span class="sub" id="ovSub"></span></div>
     <div class="cards-row" id="ovCards"></div>
 
-    <div class="section-header">大店区宣发完成情况<span class="sub">按大店长分列，已发布 / 未发布门店数；点击卡片可跳转宣发记录</span></div>
+    <div class="section-header">大店长宣发完成情况<span class="sub">按大店长分列，已发布 / 未发布门店数</span></div>
     <div class="chart-box" id="ovChart"></div>
 
     <div class="section-header">门店加权点赞 TOP15<span class="sub">视频 ×1.25、图文 ×1.0；数据截止 11.21 24:00，以截图为准</span></div>
@@ -371,8 +370,6 @@ select.cell-input{padding:4px 6px;}
     </div>
     <div class="section-header" id="prProgress"></div>
     <div class="filter-bar" style="border-top:none">
-      <label>大店区：</label>
-      <select id="prRegion" onchange="renderPromoStores()"><option value="all">全部</option></select>
       <label>大店长：</label>
       <select id="prMgr" onchange="renderPromoStores()"><option value="all">全部</option></select>
       <label>仅看：</label>
@@ -414,8 +411,6 @@ select.cell-input{padding:4px 6px;}
       </div>
     </div>
     <div class="filter-bar">
-      <label>大店区：</label>
-      <select id="spRegion" onchange="renderSupplies()"><option value="all">全部</option></select>
       <label>大店长：</label>
       <select id="spMgr" onchange="renderSupplies()"><option value="all">全部</option></select>
       <label>状态：</label>
@@ -434,13 +429,13 @@ select.cell-input{padding:4px 6px;}
       <div class="description-bar-title">人力保障与支援登记</div>
       <div class="description-list">
         <div class="description-item"><strong>11.19-11.21 高峰人力保障</strong>：无缺岗、无工时超限（单日不超 11H），由大店长 + BP 负责，每日发布情况</div>
-        <div class="description-item">富余门店可向缺员门店临时借调支援，点「＋ 新增支援登记」登记，提交后 <strong>13 位大店长实时互见</strong></div>
+        <div class="description-item">富余门店可向缺员门店临时借调支援，点「＋ 新增支援登记」登记，提交后 <strong>大店长实时互见</strong></div>
         <div class="description-item">每条支援需人工「确认」后生效 —— 确认即锁定 1 人调动，防止一店多借</div>
       </div>
     </div>
     <div class="filter-bar">
-      <label>大店区：</label>
-      <select id="hrRegion" onchange="renderHr()"><option value="all">全部</option></select>
+      <label>大店长：</label>
+      <select id="hrMgr" onchange="renderHr()"><option value="all">全部大店长</option></select>
       <label>类型：</label>
       <select id="hrType" onchange="renderHr()">
         <option value="all">全部类型</option>
@@ -454,7 +449,7 @@ select.cell-input{padding:4px 6px;}
     </div>
     <div class="section-header">支援登记台账<span class="sub" id="loanCount"></span></div>
     <div class="table-wrap"><table id="loanTable"></table></div>
-    <div class="section-header">按大店区汇总<span class="sub">支援发出 / 支援接收</span></div>
+    <div class="section-header">按大店长汇总<span class="sub">支援发出 / 支援接收</span></div>
     <div class="table-wrap"><table id="hrSumTable"></table></div>
     <div class="footnote" id="hrFoot"></div>
   </div>
@@ -464,7 +459,7 @@ select.cell-input{padding:4px 6px;}
     <div class="description-bar">
       <div class="description-bar-title">大店长行事历与走访安排（11.14 - 11.21）</div>
       <div class="description-list">
-        <div class="description-item">13 位大店长 + BP × 8 天，点击格子填写当天走访门店与行事安排，云端实时同步、全员互见</div>
+        <div class="description-item">大店长 + BP × 8 天，点击格子填写当天走访门店与行事安排，云端实时同步、全员互见</div>
         <div class="description-item">走访门店优先从自己分管门店中选择，也可选「机动支援」跨区巡店</div>
       </div>
     </div>
@@ -484,7 +479,7 @@ select.cell-input{padding:4px 6px;}
   </div>
 
   <div class="footnote">
-    本看板数据来自《2026小主节氛围执行方案_1116-1121.xlsx》，覆盖 <span id="footStoreCount">—</span> 家门店 / <span id="footMgrCount">—</span> 位大店长 / <span id="footRegionCount">—</span> 个大店区（已并入 10 月撤店 5 家、新开 1 家）。宣发回传、小药箱确认、人力支援登记、行事历卡岗与进度状态均通过云端实时同步，可多端协作填写。
+    本看板数据来自《2026小主节氛围执行方案_1116-1121.xlsx》，覆盖 <span id="footStoreCount">—</span> 家门店 / <span id="footMgrCount">—</span> 位大店长（已并入 10 月撤店 5 家、新开 1 家、王润怡划入 5 家）。宣发回传、小药箱确认、人力支援登记、行事历卡岗与进度状态均通过云端实时同步，可多端协作填写。
   </div>
 </div>
 
@@ -672,7 +667,6 @@ const DAYKEYS = DAYS.map(d=>d.key);
 const DAYLABEL = {}; DAYS.forEach(d=>DAYLABEL[d.key]=d.label);
 const DAYNOTE = {}; DAYS.forEach(d=>DAYNOTE[d.key]=d.note);
 const MGRS = D.mgrs;
-const REGION_LIST = Object.keys(D.regionList);
 const STORE_INFO = {}; D.stores.forEach(s=>STORE_INFO[s.store]=s);
 const STORE_ROWS = D.stores;
 const VW = D.meta.videoWeight, IW = D.meta.imgWeight;
@@ -883,8 +877,7 @@ function renderOverview(){
     (purposes.length?`<strong>开展目的：</strong>${purposes.map((p,i)=>`<div style="margin-top:${i===0?'0':'2px'}">${i+1}. ${esc(p)}</div>`).join('')}`:'')+
     (m.goal?`<strong>达成目标：</strong>${esc(m.goal)}`:'');
   document.getElementById('tagMgrs').textContent='大店长 '+MGRS.length+' 人';
-  document.getElementById('tagStores').textContent='门店 '+m.storeCount+' 家';
-  document.getElementById('tagRegion').textContent='大店区 '+m.regionCount+' 个 · BP '+D.bps.join('/');
+  document.getElementById('tagStores').textContent='门店 '+m.storeCount+' 家 · BP '+D.bps.join('/');
   document.getElementById('tagCutoff').textContent='宣发窗口 11.16-11.21（6 天）';
   document.getElementById('tagWeight').textContent='加权口径 视频×'+VW+' / 图文×'+IW;
   document.getElementById('ovSub').textContent='数据截至 '+m.asOf;
@@ -895,7 +888,7 @@ function renderOverview(){
   const hrPending=(CLOUD.loans||[]).filter(l=>l.status!=='已确认').length;
 
   const cards=[
-    {l:'覆盖门店',v:m.storeCount,u:'家',s:m.mgrCount+' 位大店长 / '+m.regionCount+' 个大店区',hl:false},
+    {l:'覆盖门店',v:m.storeCount,u:'家',s:m.mgrCount+' 位大店长分管',hl:false},
     {l:'宣发完成',v:all.done,u:'家',s:'目标 11.16 发布率 100%',hl:true},
     {l:'话题带齐',v:all.topic,u:'家',s:'双话题带齐率目标 100%',hl:false},
     {l:'数据回传',v:all.fb,u:'家',s:'发布后 24h 内回填点赞',hl:false},
@@ -910,7 +903,7 @@ function renderOverview(){
       <div class="card-sub">${esc(c.s)}</div>
     </div>`).join('');
 
-  // 大店区宣发完成情况（堆叠条）
+  // 大店长宣发完成情况（堆叠条）
   const W=Math.max(680,MGRS.length*74), rowH=30, padT=16, padL=76, padR=58;
   const H=padT+MGRS.length*rowH+26;
   const maxTot=Math.max.apply(null,MGRS.map(m=>STORE_ROWS.filter(s=>s.mgr===m).length).concat([1]));
@@ -922,7 +915,6 @@ function renderOverview(){
     const y=padT+i*rowH;
     const wTot=barMax*list.length/maxTot;
     const wDone=wTot*(st.done/list.length);
-    const region=STORE_ROWS.find(s=>s.mgr===mg).region;
     bars+=`<text x="${padL-8}" y="${y+13}" text-anchor="end" font-size="11.5" fill="#4a4740">${esc(mg)}</text>`;
     bars+=`<rect x="${padL}" y="${y+2}" width="${wTot}" height="15" rx="3" fill="#f0eee9"></rect>`;
     bars+=`<rect x="${padL}" y="${y+2}" width="${wDone}" height="15" rx="3" fill="#e8562a" opacity=".9"></rect>`;
@@ -944,13 +936,13 @@ function renderOverview(){
   const top=STORE_ROWS.map(s=>({s:s,st:stOf(s.store),v:weightedOf(stOf(s.store))}))
     .filter(x=>x.v!==null&&x.v>0)
     .sort((a,b)=>b.v-a.v).slice(0,15);
-  let h=`<thead><tr><th>排名</th><th>门店</th><th>大店区</th><th>大店长</th><th>BP</th><th>内容形式</th><th class="num">实际点赞</th><th class="num">加权点赞</th><th class="num">评论</th><th class="num">收藏</th><th>话题</th><th>笔记链接</th></tr></thead><tbody>`;
-  if(!top.length) h+=`<tr><td colspan="12" style="text-align:center;color:#95a5a6;padding:26px">暂无回传数据 —— 11.16 发布后由各店回填点赞，看板自动计算加权与排名</td></tr>`;
+  let h=`<thead><tr><th>排名</th><th>门店</th><th>大店长</th><th>BP</th><th>内容形式</th><th class="num">实际点赞</th><th class="num">加权点赞</th><th class="num">评论</th><th class="num">收藏</th><th>话题</th><th>笔记链接</th></tr></thead><tbody>`;
+  if(!top.length) h+=`<tr><td colspan="11" style="text-align:center;color:#95a5a6;padding:26px">暂无回传数据 —— 11.16 发布后由各店回填点赞，看板自动计算加权与排名</td></tr>`;
   top.forEach(x=>{
     const r=rk[x.s.store]||'-';
     h+=`<tr><td><span class="${r===1?'rank-1':(r===2?'rank-2':(r===3?'rank-3':''))}">${r}</span></td>`+
       `<td><span class="store-link" onclick="openStoreModal('${esc(x.s.store)}')">${esc(shortStore(x.s.store))}</span></td>`+
-      `<td>${esc(x.s.region)}</td><td>${esc(x.s.mgr)}</td><td>${esc(x.s.bp)}</td>`+
+      `<td>${esc(x.s.mgr)}</td><td>${esc(x.s.bp)}</td>`+
       `<td>${x.st.form?'<span class="badge badge-blue">'+esc(x.st.form)+'</span>':'<span class="badge badge-gray">未填</span>'}</td>`+
       `<td class="num">${n(numOrNull(x.st.likes))}</td><td class="num"><strong>${x.v}</strong></td>`+
       `<td class="num">${n(numOrNull(x.st.comments))}</td><td class="num">${n(numOrNull(x.st.favs))}</td>`+
@@ -1069,11 +1061,10 @@ function exportMechCsv(){
 /* ============ 宣发记录 · 门店回传 ============ */
 let PR_ROWS=[];
 function renderPromoStores(){
-  const rg=document.getElementById('prRegion').value;
   const mgr=document.getElementById('prMgr').value;
   const only=document.getElementById('prOnly').value;
   const q=document.getElementById('prSearch').value.trim();
-  const scope=STORE_ROWS.filter(s=>(rg==='all'||s.region===rg)&&(mgr==='all'||s.mgr===mgr));
+  const scope=STORE_ROWS.filter(s=>(mgr==='all'||s.mgr===mgr));
   PR_ROWS=scope.filter(s=>{
     const st=stOf(s.store);
     if(q&&s.store.indexOf(q)<0&&s.mgr.indexOf(q)<0) return false;
@@ -1083,13 +1074,13 @@ function renderPromoStores(){
     return true;
   });
   const rk=rankMap();
-  let h=`<thead><tr><th>大店区</th><th>大店长</th><th>门店</th><th>BP</th><th style="text-align:center">发布</th><th style="text-align:center">形式</th><th style="text-align:center">话题</th><th class="num">实际点赞</th><th class="num">加权点赞</th><th class="num">排名</th><th>操作</th></tr></thead><tbody>`;
-  if(!PR_ROWS.length) h+=`<tr><td colspan="11" style="text-align:center;color:#95a5a6;padding:24px">无匹配门店</td></tr>`;
+  let h=`<thead><tr><th>大店长</th><th>门店</th><th>BP</th><th style="text-align:center">发布</th><th style="text-align:center">形式</th><th style="text-align:center">话题</th><th class="num">实际点赞</th><th class="num">加权点赞</th><th class="num">排名</th><th>操作</th></tr></thead><tbody>`;
+  if(!PR_ROWS.length) h+=`<tr><td colspan="10" style="text-align:center;color:#95a5a6;padding:24px">无匹配门店</td></tr>`;
   PR_ROWS.forEach((x,i)=>{
     const st=stOf(x.store);
     const w=weightedOf(st);
     h+=`<tr>
-      <td>${esc(x.region)}</td><td>${esc(x.mgr)}</td>
+      <td>${esc(x.mgr)}</td>
       <td><span class="store-link" onclick="openStoreModal('${esc(x.store)}')">${esc(shortStore(x.store))}</span></td>
       <td>${esc(x.bp)}</td>
       <td style="text-align:center"><input type="checkbox" id="prDone_${i}" ${st.done?'checked':''} onchange="quickSavePromo(${i})" style="width:16px;height:16px;accent-color:#e8562a;cursor:pointer"></td>
@@ -1116,7 +1107,7 @@ function renderPromoStores(){
        <div class="bar-track" style="flex:1;max-width:420px;height:9px"><div class="bar-fill" style="width:${pct}%"></div></div>
        <span style="font-size:12.5px;color:var(--brand-d);font-weight:700">${st.done} / ${st.total} 家（${pct}%）</span>
        <span style="font-size:12px;color:var(--ink-2)">话题带齐 ${st.topic} 家 · 已回传 ${st.fb} 家 · 加权点赞合计 ${st.weighted}</span>
-       ${(rg!=='all'||mgr!=='all')?`<span style="font-size:11.5px;color:var(--ink-2)">全品牌 ${all.done} / ${all.total} 家（${all.total?Math.round(all.done/all.total*100):0}%）</span>`:''}
+       ${mgr!=='all'?`<span style="font-size:11.5px;color:var(--ink-2)">全品牌 ${all.done} / ${all.total} 家（${all.total?Math.round(all.done/all.total*100):0}%）</span>`:''}
      </div>`;
 }
 function quickSavePromo(i){
@@ -1135,10 +1126,10 @@ function quickSavePromo(i){
 }
 function exportStoreCsv(){
   const rk=rankMap();
-  const rows=[['大店区','大店长','门店编码','门店名称','BP','发布状态','内容形式','话题带齐','小红书账号','笔记链接','发布时间','实际点赞','评论数','收藏数','加权点赞','排名']];
+  const rows=[['大店长','门店编码','门店名称','BP','发布状态','内容形式','话题带齐','小红书账号','笔记链接','发布时间','实际点赞','评论数','收藏数','加权点赞','排名']];
   STORE_ROWS.forEach(s=>{
     const st=stOf(s.store); const w=weightedOf(st);
-    rows.push([s.region,s.mgr,s.code,s.store,s.bp,st.done?'已发布':'未发布',st.form||'',st.topic?'是':'否',
+    rows.push([s.mgr,s.code,s.store,s.bp,st.done?'已发布':'未发布',st.form||'',st.topic?'是':'否',
       st.account||'',st.link||'',st.pubAt||'',numOrNull(st.likes)??'',numOrNull(st.comments)??'',
       numOrNull(st.favs)??'', w==null?'':w, rk[s.store]||'']);
   });
@@ -1153,7 +1144,7 @@ function openStoreModal(store){
   const st=stOf(store);
   const rk=rankMap();
   document.getElementById('storeTitle').textContent='宣发回填 · '+shortStore(store);
-  let h=`<div class="modal-sub"><strong>${esc(store)}</strong> · 大店区 ${esc(rec.region)} · 大店长 ${esc(rec.mgr)} · BP ${esc(rec.bp)} · 编码 ${rec.code?esc(rec.code):'<span style="color:#c47a00;font-weight:600">待补</span>'}<br>
+  let h=`<div class="modal-sub"><strong>${esc(store)}</strong> · 大店长 ${esc(rec.mgr)} · BP ${esc(rec.bp)} · 编码 ${rec.code?esc(rec.code):'<span style="color:#c47a00;font-weight:600">待补</span>'}<br>
     口径：视频 ×${VW}、图文 ×${IW}；11.16 每店发布 1 篇，可多发以单篇最高加权点赞参与排名；发布后 24h 内完成回填。</div>`;
   h+=`<div class="form-row">
     <div class="form-item"><label>发布状态</label>
@@ -1234,7 +1225,7 @@ function renderPromoRank(){
     return {mgr:m,region:list.length?list[0].region:'',bp:list.length?list[0].bp:'',stat:st};
   }).sort((a,b)=>(b.stat.weighted-a.stat.weighted)||(b.stat.done-a.stat.done));
   const BONUS={'1':3,'2':2,'3':1};
-  let h=`<thead><tr><th>排名</th><th>大店区</th><th>大店长</th><th>BP</th><th class="num">分管门店</th><th class="num">已发布</th><th class="num">发布率</th><th class="num">话题带齐</th><th class="num">加权点赞合计</th><th class="num">执行力加分</th><th>扣分提示</th></tr></thead><tbody>`;
+  let h=`<thead><tr><th>排名</th><th>大店长</th><th>BP</th><th class="num">分管门店</th><th class="num">已发布</th><th class="num">发布率</th><th class="num">话题带齐</th><th class="num">加权点赞合计</th><th class="num">执行力加分</th><th>扣分提示</th></tr></thead><tbody>`;
   rows.forEach((r,i)=>{
     const no=r.i=i+1;
     const rate=r.stat.total?Math.round(r.stat.done/r.stat.total*100):0;
@@ -1242,7 +1233,7 @@ function renderPromoRank(){
     const bonus=BONUS[String(no)]||0;
     h+=`<tr>
       <td><span class="${no===1?'rank-1':(no===2?'rank-2':(no===3?'rank-3':''))}">${no}</span></td>
-      <td>${esc(r.region)}</td><td><strong>${esc(r.mgr)}</strong></td><td>${esc(r.bp)}</td>
+      <td><strong>${esc(r.mgr)}</strong></td><td>${esc(r.bp)}</td>
       <td class="num">${r.stat.total}</td><td class="num">${r.stat.done}</td>
       <td class="num ${rate===100?'cell-pos':(rate<50?'cell-neg':'')}">${rate}%</td>
       <td class="num">${r.stat.topic}</td>
@@ -1252,7 +1243,7 @@ function renderPromoRank(){
     </tr>`;
   });
   const tot=pubStats(STORE_ROWS);
-  h+=`<tr class="total-row"><td colspan="4">全品牌合计</td><td class="num">${tot.total}</td><td class="num">${tot.done}</td>`+
+  h+=`<tr class="total-row"><td colspan="3">全品牌合计</td><td class="num">${tot.total}</td><td class="num">${tot.done}</td>`+
     `<td class="num">${tot.total?Math.round(tot.done/tot.total*100):0}%</td><td class="num">${tot.topic}</td>`+
     `<td class="num">${tot.weighted}</td><td class="num">+6 分</td><td>扣分上限 ${tot.total-tot.done}</td></tr>`;
   h+='</tbody>';
@@ -1310,10 +1301,9 @@ function supBadge(done,hasImg){
        +(hasImg?' <span class="badge badge-blue" title="已上传照片">📷</span>':'');
 }
 function renderSupplies(){
-  const rg=document.getElementById('spRegion').value;
   const mgr=document.getElementById('spMgr').value;
   const only=document.getElementById('spOnly').value;
-  const scope=SUP_STORES.filter(x=>(rg==='all'||x.region===rg)&&(mgr==='all'||x.mgr===mgr));
+  const scope=SUP_STORES.filter(x=>(mgr==='all'||x.mgr===mgr));
   let doneAll=0;
   SUP_STORES.forEach(x=>{ if(spState(x.store).box) doneAll++; });
   let done=0;
@@ -1324,12 +1314,12 @@ function renderSupplies(){
     if(only==='todo') return !ok;
     return true;
   });
-  let h=`<thead><tr><th>大店区</th><th>大店长</th><th>门店</th><th>BP</th><th style="text-align:center">小药箱</th><th>缺项说明 / 整改</th><th>确认人</th><th>确认日期</th><th style="text-align:center">抽查</th><th>状态</th><th>操作</th></tr></thead><tbody>`;
-  if(!rows.length) h+=`<tr><td colspan="11" style="text-align:center;color:#95a5a6;padding:24px">无匹配门店</td></tr>`;
+  let h=`<thead><tr><th>大店长</th><th>门店</th><th>BP</th><th style="text-align:center">小药箱</th><th>缺项说明 / 整改</th><th>确认人</th><th>确认日期</th><th style="text-align:center">抽查</th><th>状态</th><th>操作</th></tr></thead><tbody>`;
+  if(!rows.length) h+=`<tr><td colspan="10" style="text-align:center;color:#95a5a6;padding:24px">无匹配门店</td></tr>`;
   rows.forEach(x=>{
     const st=spState(x.store);
     h+=`<tr>
-      <td>${esc(x.region)}</td><td>${esc(x.mgr)}</td><td>${esc(shortStore(x.store))}</td><td>${esc(x.bp)}</td>
+      <td>${esc(x.mgr)}</td><td>${esc(shortStore(x.store))}</td><td>${esc(x.bp)}</td>
       <td style="text-align:center">${supBadge(st.box,st.boxImg)}</td>
       <td style="white-space:normal;max-width:200px">${esc(st.fix||'-')}</td>
       <td>${esc(checkerOf(x.mgr))}</td><td>${esc(st.date||'-')}</td>
@@ -1343,11 +1333,11 @@ function renderSupplies(){
   document.getElementById('supTotal').textContent=scope.length;
   const pct=scope.length?Math.round(done/scope.length*100):0;
   document.getElementById('supProgress').innerHTML=
-    `小药箱闭环进度<span class="sub">11.10 前需 100% 闭环${(rg!=='all'||mgr!=='all')?' · 当前只看 '+esc(rg!=='all'?mgr:rg):''}</span>
+    `小药箱闭环进度<span class="sub">11.10 前需 100% 闭环${mgr!=='all'?' · 当前只看 '+esc(mgr):''}</span>
      <div style="margin-top:8px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
        <div class="bar-track" style="flex:1;max-width:420px;height:9px"><div class="bar-fill" style="width:${pct}%"></div></div>
        <span style="font-size:12.5px;color:var(--brand-d);font-weight:700">${done} / ${scope.length} 家（${pct}%）</span>
-       ${(rg!=='all'||mgr!=='all')?`<span style="font-size:11.5px;color:var(--ink-2)">全品牌 ${doneAll} / ${SUP_STORES.length} 家（${Math.round(doneAll/SUP_STORES.length*100)}%）</span>`:''}
+       ${mgr!=='all'?`<span style="font-size:11.5px;color:var(--ink-2)">全品牌 ${doneAll} / ${SUP_STORES.length} 家（${Math.round(doneAll/SUP_STORES.length*100)}%）</span>`:''}
      </div>`;
 }
 
@@ -1361,7 +1351,7 @@ async function openSupModal(store){
   const st=spState(store);
   document.getElementById('spTitle').textContent='物资跟进 · '+shortStore(store);
   document.getElementById('spSub').innerHTML=
-    `<strong>${esc(store)}</strong> · 大店区 ${esc(rec.region)} · 大店长 ${esc(rec.mgr)} · 确认人 <strong>${esc(checkerOf(rec.mgr))}</strong>（按大店长自动匹配）<br>
+    `<strong>${esc(store)}</strong> · 大店长 ${esc(rec.mgr)} · 确认人 <strong>${esc(checkerOf(rec.mgr))}</strong>（按大店长自动匹配）<br>
      需齐全：创口贴 / 花露水 / 烫伤膏 / 云南白药 / 棉签 / 碘酒 / 红糖姜茶；本季为冬季保暖口径（保暖物资 + 及时伞）。`;
   document.getElementById('spBox').checked=st.box;
   document.getElementById('spDate').value=st.date||todayStr();
@@ -1468,22 +1458,22 @@ function submitSup(){
   renderSupplies();
 }
 function exportSupCsv(){
-  const rows=[['大店区','大店长','门店','BP','小药箱齐全','照片','缺项说明','确认人','确认日期','抽查结果']];
+  const rows=[['大店长','门店','BP','小药箱齐全','照片','缺项说明','确认人','确认日期','抽查结果']];
   SUP_STORES.forEach(x=>{ const st=spState(x.store);
-    rows.push([x.region,x.mgr,x.store,x.bp,st.box?'已齐全':'待补齐',st.boxImg?'有':'',st.fix||'',checkerOf(x.mgr),st.date,st.inspect||'未抽查']); });
+    rows.push([x.mgr,x.store,x.bp,st.box?'已齐全':'待补齐',st.boxImg?'有':'',st.fix||'',checkerOf(x.mgr),st.date,st.inspect||'未抽查']); });
   downloadCsv('小主节暖心物资跟进',rows);
 }
 
 /* ============ 人力保障 ============ */
 function loanDateLabel(dk){ return DAYLABEL[dk]||dk; }
 function renderHr(){
-  const rg=document.getElementById('hrRegion').value;
+  const mg=document.getElementById('hrMgr').value;
   const tp=document.getElementById('hrType').value;
   const q=document.getElementById('hrSearch').value.trim();
   const all=(CLOUD.loans||[]).slice();
   const rows=all.filter(l=>{
     const f=STORE_INFO[l.from]||{}, t=STORE_INFO[l.to]||{};
-    if(rg!=='all'&&f.region!==rg&&t.region!==rg) return false;
+    if(mg!=='all'&&f.mgr!==mg&&t.mgr!==mg) return false;
     if(tp==='待确认'&&l.status==='已确认') return false;
     if(tp==='已确认'&&l.status!=='已确认') return false;
     if(q&&[l.from,l.to,l.name,l.owner].join(' ').indexOf(q)<0) return false;
@@ -1512,18 +1502,19 @@ function renderHr(){
   h+='</tbody>';
   document.getElementById('loanTable').innerHTML=h;
 
-  // 按大店区汇总
-  let sh=`<thead><tr><th>大店区</th><th class="num">支援发出</th><th class="num">支援接收</th><th class="num">净流入</th><th class="num">待确认</th></tr></thead><tbody>`;
-  REGION_LIST.forEach(rg2=>{
+  // 按大店长汇总
+  let sh=`<thead><tr><th>大店长</th><th class="num">分管门店</th><th class="num">支援发出</th><th class="num">支援接收</th><th class="num">净流入</th><th class="num">待确认</th></tr></thead><tbody>`;
+  MGRS.forEach(mg2=>{
     let out=0,inN=0,pend=0;
     all.forEach(l=>{
       const f=STORE_INFO[l.from]||{}, t=STORE_INFO[l.to]||{};
-      if(f.region===rg2) out++;
-      if(t.region===rg2) inN++;
-      if(l.status!=='已确认'&&(f.region===rg2||t.region===rg2)) pend++;
+      if(f.mgr===mg2) out++;
+      if(t.mgr===mg2) inN++;
+      if(l.status!=='已确认'&&(f.mgr===mg2||t.mgr===mg2)) pend++;
     });
+    const cnt=STORE_ROWS.filter(s=>s.mgr===mg2).length;
     const net=inN-out;
-    sh+=`<tr><td>${esc(rg2)}</td><td class="num">${out}</td><td class="num">${inN}</td>`+
+    sh+=`<tr><td><strong>${esc(mg2)}</strong></td><td class="num">${cnt}</td><td class="num">${out}</td><td class="num">${inN}</td>`+
       `<td class="num ${net>0?'cell-pos':(net<0?'cell-neg':'cell-zero')}">${net>0?'+':''}${net}</td>`+
       `<td class="num ${pend?'cell-neg':'cell-zero'}">${pend}</td></tr>`;
   });
@@ -1563,7 +1554,7 @@ function openLoanModal(){
   fromSel.innerHTML=STORE_ROWS.map(s=>`<option value="${esc(s.store)}">${esc(shortStore(s.store))}（${esc(s.mgr)}）</option>`).join('');
   toSel.innerHTML=STORE_ROWS.map(s=>`<option value="${esc(s.store)}">${esc(shortStore(s.store))}（${esc(s.mgr)}）</option>`).join('');
   document.getElementById('loanSub').innerHTML=
-    `11.19-11.21 为高峰人力保障期：需保证 <strong>无缺岗、工时不超 11H</strong>。富余门店可向缺员门店登记支援，提交后 13 位大店长实时互见，需人工确认后生效。`;
+    `11.19-11.21 为高峰人力保障期：需保证 <strong>无缺岗、工时不超 11H</strong>。富余门店可向缺员门店登记支援，提交后大店长实时互见，需人工确认后生效。`;
   document.getElementById('loanMask').classList.add('show');
 }
 let OWNER_MANUAL=false;
@@ -1571,10 +1562,10 @@ function onLoanFromChange(){
   const f=document.getElementById('loanFrom').value;
   const rec=STORE_INFO[f];
   if(rec&&!OWNER_MANUAL) document.getElementById('loanOwner').value=rec.mgr;
-  document.getElementById('loanFromHint').textContent=rec?`大店区 ${rec.region} · 大店长 ${rec.mgr} · BP ${rec.bp}`:'';
+  document.getElementById('loanFromHint').textContent=rec?`大店长 ${rec.mgr} · BP ${rec.bp}`:'';
   const t=document.getElementById('loanTo').value;
   const trec=STORE_INFO[t];
-  document.getElementById('loanToHint').textContent=trec?`大店区 ${trec.region} · 大店长 ${trec.mgr} · BP ${trec.bp}`:'';
+  document.getElementById('loanToHint').textContent=trec?`大店长 ${trec.mgr} · BP ${trec.bp}`:'';
 }
 function closeLoanModal(){ document.getElementById('loanMask').classList.remove('show'); }
 function submitLoan(){
@@ -1654,7 +1645,7 @@ function renderCal(){
     });
     h+='</tbody>';
     document.getElementById('calFoot').innerHTML=
-      `${esc(DAYLABEL[dk])}${esc(DAYNOTE[dk])?'（'+esc(DAYNOTE[dk])+'）':''} 单日视图：全品牌 ${D.meta.storeCount} 家门店，13 位大店长分管。BP 行按巡店 / 支援安排填写。`;
+      `${esc(DAYLABEL[dk])}${esc(DAYNOTE[dk])?'（'+esc(DAYNOTE[dk])+'）':''} 单日视图：全品牌 ${D.meta.storeCount} 家门店，${MGRS.length} 位大店长分管。BP 行按巡店 / 支援安排填写。`;
   }
   document.getElementById('calTable').innerHTML=h;
 }
@@ -1753,16 +1744,13 @@ function fillDaySelect(id){
   fillSelect('mechMgr',MGRS.concat(['大店长','全体','各 BP','训练','李当']),'全部');
   const cats=D.mechCats;
   document.getElementById('mechCat').innerHTML='<option value="all">全部</option>'+cats.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join('');
-  ['prRegion','spRegion','hrRegion'].forEach(id=>{
-    const el=document.getElementById(id);
-    el.innerHTML='<option value="all">全部</option>'+REGION_LIST.map(r=>`<option value="${esc(r)}">${esc(r)}</option>`).join('');
-  });
+  fillSelect('hrMgr',MGRS,'全部大店长');
   await loadCloud();
   // 动态回填门店口径（避免门店增减后文案数字失真）
   ['planReadyCount','footStoreCount'].forEach(id=>{
     const el=document.getElementById(id); if(el) el.textContent=D.meta.storeCount;
   });
-  const fc={footMgrCount:D.meta.mgrCount,footRegionCount:D.meta.regionCount};
+  const fc={footMgrCount:D.meta.mgrCount};
   Object.keys(fc).forEach(id=>{
     const el=document.getElementById(id); if(el) el.textContent=fc[id];
   });

@@ -296,7 +296,6 @@ select.cell-input{padding:4px 6px;}
     <button class="tab-btn active" data-tab="overview" onclick="switchTab('overview')">总览</button>
     <button class="tab-btn" data-tab="plan" onclick="switchTab('plan')">计划推进<span class="tab-badge" id="tabBadgePlan" style="display:none">0</span></button>
     <button class="tab-btn" data-tab="mech" onclick="switchTab('mech')">机制总表</button>
-    <button class="tab-btn" data-tab="target" onclick="switchTab('target')">充值目标</button>
     <button class="tab-btn" data-tab="promo" onclick="switchTab('promo')">宣发记录<span class="tab-badge" id="tabBadgePromo" style="display:none">0</span></button>
     <button class="tab-btn" data-tab="supplies" onclick="switchTab('supplies')">暖心物资<span class="tab-badge" id="tabBadgeSup" style="display:none">0</span></button>
     <button class="tab-btn" data-tab="hr" onclick="switchTab('hr')">人力保障<span class="tab-badge" id="tabBadgeHr" style="display:none">0</span></button>
@@ -363,43 +362,6 @@ select.cell-input{padding:4px 6px;}
     <div class="section-header" id="mechCount"></div>
     <div class="table-wrap"><table id="mechTable"></table></div>
     <div class="footnote" id="mechFoot"></div>
-  </div>
-
-  <!-- ================= 充值目标 ================= -->
-  <div class="panel" id="panel-target">
-    <div class="description-bar">
-      <div class="description-bar-title">充值目标</div>
-      <div class="description-list">
-        <div class="description-item"><strong>联合门店 81 家</strong>：茶颜、鸳央、墨柠开在一起的多品牌联合门店，目标为三品牌合并计算，目标值更高，单独展示</div>
-        <div class="description-item"><strong>独立门店 26 家</strong>：单一墨柠门店，目标为墨柠自身口径。页头「保底 645.55 万 / 冲刺 664.92 万」即 26 家独立门店合计</div>
-        <div class="description-item">金额单位：元；订单 = 400档+200档+100档充值单数合计；标「已撤店」的为 10 月已撤门店</div>
-      </div>
-    </div>
-    <div class="section-header">充值目标汇总<span class="sub" id="tgSumSub"></span></div>
-    <div class="cards-row" id="tgCards"></div>
-    <div class="filter-bar">
-      <label>类型：</label>
-      <select id="tgType" onchange="renderTarget()">
-        <option value="all">全部（联合+独立）</option>
-        <option value="joint">联合门店</option>
-        <option value="solo">独立门店</option>
-      </select>
-      <label>大店区：</label>
-      <select id="tgRegion" onchange="renderTarget()"><option value="all">全部</option></select>
-      <label>大店长：</label>
-      <select id="tgMgr" onchange="renderTarget()"><option value="all">全部</option></select>
-      <label>仅看：</label>
-      <select id="tgOnly" onchange="renderTarget()">
-        <option value="all">全部门店</option>
-        <option value="closed">已撤店</option>
-      </select>
-      <input type="text" id="tgSearch" placeholder="搜索门店 / 联合门店名称" oninput="renderTarget()">
-      <div class="spacer"></div>
-      <button class="btn btn-ghost" onclick="exportTargetCsv()">导出 CSV</button>
-    </div>
-    <div class="section-header">门店充值目标明细<span class="sub" id="tgCount"></span></div>
-    <div class="table-wrap"><table id="tgTable"></table></div>
-    <div class="footnote" id="tgFoot"></div>
   </div>
 
   <!-- ================= 宣发记录 ================= -->
@@ -864,7 +826,6 @@ function switchTab(name){
   if(name==='overview') renderOverview();
   if(name==='plan') renderPlan();
   if(name==='mech') renderMech();
-  if(name==='target') renderTarget();
   if(name==='promo'){ renderPromoStores(); renderPromoRank(); renderPromo(); }
   if(name==='supplies') renderSupplies();
   if(name==='hr') renderHr();
@@ -1115,86 +1076,6 @@ function renderMech(){
 function exportMechCsv(){
   const rows=[['类目','机制项','规则/内容','责任人','加减分/口径']].concat(D.mech);
   downloadCsv('小主节机制总表',rows);
-}
-
-/* ============ 充值目标 ============ */
-function wan(v){ return v>=10000?(v/10000).toFixed(2)+'万':String(v); }
-function tgAll(){
-  return (D.targetJoint||[]).map(x=>({type:'联合',grp:x.grp,name:x.name,code:'',region:x.region,mgr:x.mgr,
-      bOrders:x.bOrders,bAmount:x.bAmount,sOrders:x.sOrders,sAmount:x.sAmount,closed:x.closed}))
-    .concat((D.targetSolo||[]).map(x=>({type:'独立',grp:'',name:x.name,code:x.code,region:x.region,mgr:x.mgr,
-      bOrders:x.bOrders,bAmount:x.bAmount,sOrders:x.sOrders,sAmount:x.sAmount,closed:x.closed})));
-}
-function renderTarget(){
-  const type=document.getElementById('tgType').value;
-  const rg=document.getElementById('tgRegion').value;
-  const mgr=document.getElementById('tgMgr').value;
-  const only=document.getElementById('tgOnly').value;
-  const q=document.getElementById('tgSearch').value.trim();
-  const all=tgAll();
-  const rows=all.filter(x=>{
-    if(type==='joint'&&x.type!=='联合') return false;
-    if(type==='solo'&&x.type!=='独立') return false;
-    if(rg!=='all'&&x.region!==rg) return false;
-    if(mgr!=='all'&&x.mgr!==mgr) return false;
-    if(only==='closed'&&!x.closed) return false;
-    if(q&&x.name.indexOf(q)<0&&(x.grp||'').indexOf(q)<0) return false;
-    return true;
-  });
-
-  // 汇总卡片
-  const jc=D.targetJoint||[], sc=D.targetSolo||[];
-  const jB=jc.reduce((t,x)=>t+x.bAmount,0), jS=jc.reduce((t,x)=>t+x.sAmount,0);
-  const sB=sc.reduce((t,x)=>t+x.bAmount,0), sS=sc.reduce((t,x)=>t+x.sAmount,0);
-  const sBO=sc.reduce((t,x)=>t+x.bOrders,0), sSO=sc.reduce((t,x)=>t+x.sOrders,0);
-  const cards=[
-    {l:'联合门店（三品牌合并）',v:jc.length,u:'家',s:'保底 '+wan(jB)+' / 冲刺 '+wan(jS),hl:false},
-    {l:'独立门店（墨柠口径）',v:sc.length,u:'家',s:'保底 '+wan(sB)+' / 冲刺 '+wan(sS),hl:false},
-    {l:'保底目标（墨柠独立）',v:wan(sB),u:'',s:'订单 '+sBO+' 单',hl:true},
-    {l:'冲刺目标（墨柠独立）',v:wan(sS),u:'',s:'订单 '+sSO+' 单',hl:true},
-  ];
-  document.getElementById('tgCards').innerHTML=cards.map(c=>`
-    <div class="metric-card${c.hl?' highlight':''}">
-      <div class="card-label">${esc(c.l)}</div>
-      <div class="card-value${c.hl?' brand':''}">${c.v}<span class="card-unit">${c.u}</span></div>
-      <div class="card-sub">${esc(c.s)}</div>
-    </div>`).join('');
-  document.getElementById('tgSumSub').textContent='联合 '+jc.length+' 家 + 独立 '+sc.length+' 家 = '+(jc.length+sc.length)+' 家';
-
-  // 明细表
-  let h=`<thead><tr><th>类型</th><th>多品牌门店（联合）</th><th>门店名称</th><th>门店编码</th><th>大店区</th><th>大店长</th><th class="num">保底目标(元)</th><th class="num">冲刺目标(元)</th><th class="num">保底订单</th><th class="num">冲刺订单</th></tr></thead><tbody>`;
-  if(!rows.length) h+=`<tr><td colspan="10" style="text-align:center;color:#95a5a6;padding:24px">无匹配门店</td></tr>`;
-  rows.sort((a,b)=>b.bAmount-a.bAmount).forEach(x=>{
-    h+=`<tr>
-      <td><span class="badge ${x.type==='联合'?'badge-blue':'badge-green'}">${x.type}</span>${x.closed?' <span class="badge badge-red">已撤店</span>':''}</td>
-      <td>${x.type==='联合'?esc(x.grp||'-'):'<span class="cell-zero">-</span>'}</td>
-      <td>${esc(shortStore(x.name))}</td>
-      <td>${esc(x.code||'-')}</td>
-      <td>${esc(x.region)}</td><td>${esc(x.mgr)}</td>
-      <td class="num">${x.bAmount.toLocaleString()}</td>
-      <td class="num">${x.sAmount.toLocaleString()}</td>
-      <td class="num">${x.bOrders}</td>
-      <td class="num">${x.sOrders}</td>
-    </tr>`;
-  });
-  const totB=rows.reduce((t,x)=>t+x.bAmount,0), totS=rows.reduce((t,x)=>t+x.sAmount,0);
-  const totBO=rows.reduce((t,x)=>t+x.bOrders,0), totSO=rows.reduce((t,x)=>t+x.sOrders,0);
-  if(rows.length) h+=`<tr class="total-row"><td colspan="6">显示 ${rows.length} 家合计</td>`+
-    `<td class="num">${totB.toLocaleString()}</td><td class="num">${totS.toLocaleString()}</td>`+
-    `<td class="num">${totBO}</td><td class="num">${totSO}</td></tr>`;
-  h+='</tbody>';
-  document.getElementById('tgTable').innerHTML=h;
-  document.getElementById('tgCount').innerHTML=`共 ${rows.length} 家<span class="sub">联合 ${rows.filter(x=>x.type==='联合').length} / 独立 ${rows.filter(x=>x.type==='独立').length}</span>`;
-  const closedN=all.filter(x=>x.closed).length;
-  document.getElementById('tgFoot').innerHTML=
-    `页头口径 = 墨柠<strong>独立门店 26 家</strong>合计：保底 645.55 万 / 22,650 单，冲刺 664.92 万 / 23,326 单。`+
-    `联合门店目标为三品牌（茶颜+鸳央+墨柠）合并计算，故金额更高、单列为「联合」。`+
-    (closedN?` <span style="color:#c62828">当前有 ${closedN} 家目标门店已于 10 月撤店（地科家园一楼店、湘腾广场拐角店），目标仍计入源表合计。</span>`:'');
-}
-function exportTargetCsv(){
-  const rows=[['类型','多品牌门店','门店名称','门店编码','大店区','大店长','保底目标(元)','冲刺目标(元)','保底订单','冲刺订单','是否撤店']];
-  tgAll().forEach(x=>rows.push([x.type,x.grp||'',x.name,x.code||'',x.region,x.mgr,x.bAmount,x.sAmount,x.bOrders,x.sOrders,x.closed?'已撤店':'在营']));
-  downloadCsv('小主节充值目标明细',rows);
 }
 
 /* ============ 宣发记录 · 门店回传 ============ */
@@ -1882,8 +1763,6 @@ function fillDaySelect(id){
   fillSelect('prMgr',MGRS,'全部大店长');
   fillSelect('spMgr',MGRS,'全部大店长');
   fillSelect('mechMgr',MGRS.concat(['大店长','全体','各 BP','训练','李当']),'全部');
-  fillSelect('tgMgr',MGRS,'全部大店长');
-  document.getElementById('tgRegion').innerHTML='<option value="all">全部</option>'+REGION_LIST.map(r=>`<option value="${esc(r)}">${esc(r)}</option>`).join('');
   const cats=D.mechCats;
   document.getElementById('mechCat').innerHTML='<option value="all">全部</option>'+cats.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join('');
   const lines=Array.from(new Set(D.plan.map(p=>p.line)));

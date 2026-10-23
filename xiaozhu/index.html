@@ -297,7 +297,7 @@ select.cell-input{padding:4px 6px;}
     <button class="tab-btn" data-tab="mech" onclick="switchTab('mech')">机制总表</button>
     <button class="tab-btn" data-tab="promo" onclick="switchTab('promo')">宣发记录<span class="tab-badge" id="tabBadgePromo" style="display:none">0</span></button>
     <button class="tab-btn" data-tab="supplies" onclick="switchTab('supplies')">暖心物资<span class="tab-badge" id="tabBadgeSup" style="display:none">0</span></button>
-    <button class="tab-btn" data-tab="hr" onclick="switchTab('hr')">人力保障<span class="tab-badge" id="tabBadgeHr" style="display:none">0</span></button>
+    <button class="tab-btn" data-tab="audit" onclick="switchTab('audit')">抽查表</button>
     <button class="tab-btn" data-tab="cal" onclick="switchTab('cal')">行事历卡岗</button>
   </div>
 
@@ -423,50 +423,50 @@ select.cell-input{padding:4px 6px;}
     <div class="footnote">物资按门店维度跟进，共 <span id="supTotal"></span> 家门店。物资未闭环将限期整改并通报（各 BP 主责）。</div>
   </div>
 
-  <!-- ================= 人力保障 ================= -->
-  <div class="panel" id="panel-hr">
+  <!-- ================= 抽查表 ================= -->
+  <div class="panel" id="panel-audit">
     <div class="description-bar">
-      <div class="description-bar-title">人力保障与支援登记</div>
+      <div class="description-bar-title">目标抽查</div>
       <div class="description-list">
-        <div class="description-item"><strong>11.19-11.21 高峰人力保障</strong>：无缺岗、无工时超限（单日不超 11H），由大店长 + BP 负责，每日发布情况</div>
-        <div class="description-item">富余门店可向缺员门店临时借调支援，点「＋ 新增支援登记」登记，提交后 <strong>大店长实时互见</strong></div>
-        <div class="description-item">每条支援需人工「确认」后生效 —— 确认即锁定 1 人调动，防止一店多借</div>
+        <div class="description-item">抽查店长与伙伴<strong>当日目标</strong>与<strong>充值总目标</strong>，以门店为单位，目标下沉到人</div>
+        <div class="description-item">抽查人：HRBP（戴嘉伟 / 周丽 / 杨梦琳）· 抽查时间 <strong>11.06 - 11.10</strong>，每人每天约 8 家、共约 40 家</div>
+        <div class="description-item">已随机分配门店到抽查人与日期，点击「记录抽查」填写当日目标与充值总目标掌握情况，全员实时同步</div>
       </div>
     </div>
-    <div class="filter-bar">
-      <label>大店长：</label>
-      <select id="hrMgr" onchange="renderHr()"><option value="all">全部大店长</option></select>
-      <label>类型：</label>
-      <select id="hrType" onchange="renderHr()">
-        <option value="all">全部类型</option>
-        <option value="待确认">待确认</option>
-        <option value="已确认">已确认</option>
+    <div class="section-header" id="auditProgress"></div>
+    <div class="filter-bar" style="border-top:none">
+      <label>抽查人：</label>
+      <select id="auAuditor" onchange="renderAudit()"><option value="all">全部</option></select>
+      <label>日期：</label>
+      <select id="auDate" onchange="renderAudit()"><option value="all">全部</option></select>
+      <label>状态：</label>
+      <select id="auOnly" onchange="renderAudit()">
+        <option value="all">全部门店</option>
+        <option value="done">已抽查</option>
+        <option value="todo">待抽查</option>
       </select>
-      <input type="text" id="hrSearch" placeholder="搜索门店 / 伙伴姓名" oninput="renderHr()">
+      <input type="text" id="auSearch" placeholder="搜索门店" oninput="renderAudit()">
       <div class="spacer"></div>
-      <button class="btn" onclick="openLoanModal(null)">＋ 新增支援登记</button>
-      <button class="btn btn-ghost" onclick="exportHrCsv()">导出 CSV</button>
+      <button class="btn btn-ghost" onclick="exportAuditCsv()">导出 CSV</button>
     </div>
-    <div class="section-header">支援登记台账<span class="sub" id="loanCount"></span></div>
-    <div class="table-wrap"><table id="loanTable"></table></div>
-    <div class="section-header">按大店长汇总<span class="sub">支援发出 / 支援接收</span></div>
-    <div class="table-wrap"><table id="hrSumTable"></table></div>
-    <div class="footnote" id="hrFoot"></div>
+    <div class="section-header">抽查明细<span class="sub" id="auCount"></span></div>
+    <div class="table-wrap"><table id="auTable"></table></div>
+    <div class="footnote" id="auFoot"></div>
   </div>
 
   <!-- ================= 行事历卡岗 ================= -->
   <div class="panel" id="panel-cal">
     <div class="description-bar">
-      <div class="description-bar-title">大店长行事历与走访安排（11.14 - 11.21）</div>
+      <div class="description-bar-title">大店长行事历与走访安排（11.14 - 11.15 充值日）</div>
       <div class="description-list">
-        <div class="description-item">大店长 + BP × 8 天，点击格子填写当天走访门店与行事安排，云端实时同步、全员互见</div>
+        <div class="description-item">大店长 + BP × 2 天（11.14 / 11.15），点击格子填写当天走访门店与行事安排，云端实时同步、全员互见</div>
         <div class="description-item">走访门店优先从自己分管门店中选择，也可选「机动支援」跨区巡店</div>
       </div>
     </div>
     <div class="filter-bar">
       <label>视图：</label>
       <select id="calView" onchange="renderCal()">
-        <option value="matrix">8 天矩阵视图</option>
+        <option value="matrix">2 天矩阵视图</option>
         <option value="day">单日视图</option>
       </select>
       <select id="calDay" onchange="renderCal()" style="display:none"></select>
@@ -479,7 +479,7 @@ select.cell-input{padding:4px 6px;}
   </div>
 
   <div class="footnote">
-    本看板数据来自《2026小主节氛围执行方案_1116-1121.xlsx》，覆盖 <span id="footStoreCount">—</span> 家门店 / <span id="footMgrCount">—</span> 位大店长（已并入 10 月撤店 5 家、新开 1 家、王润怡划入 5 家）。宣发回传、小药箱确认、人力支援登记、行事历卡岗与进度状态均通过云端实时同步，可多端协作填写。
+    本看板数据来自《2026小主节氛围执行方案_1116-1121.xlsx》，覆盖 <span id="footStoreCount">—</span> 家门店 / <span id="footMgrCount">—</span> 位大店长（已并入 10 月撤店 5 家、新开 1 家、王润怡划入 5 家）。宣发回传、小药箱确认、目标抽查、行事历卡岗与进度状态均通过云端实时同步，可多端协作填写。
   </div>
 </div>
 
@@ -491,55 +491,6 @@ select.cell-input{padding:4px 6px;}
     <div class="modal-foot">
       <button class="btn btn-ghost" onclick="closeStoreModal()">关闭</button>
       <button class="btn" id="storeSubmit" onclick="submitStoreModal()">保存回填</button>
-    </div>
-  </div>
-</div>
-
-<!-- 支援登记弹窗 -->
-<div class="modal-mask" id="loanMask">
-  <div class="modal">
-    <div class="modal-head"><span id="loanTitle">人力支援登记</span><button class="modal-close" onclick="closeLoanModal()">×</button></div>
-    <div class="modal-body">
-      <div class="modal-sub" id="loanSub"></div>
-      <div class="form-row">
-        <div class="form-item">
-          <label>支援日期</label>
-          <select id="loanDate"></select>
-          <div class="form-hint">11.19-11.21 为高峰人力保障期，请优先选择该区间日期</div>
-        </div>
-        <div class="form-item">
-          <label>支援伙伴姓名</label>
-          <input type="text" id="loanName" placeholder="如：谭雅琪">
-          <div class="form-hint">填写具体到人，便于核对工时合规</div>
-        </div>
-      </div>
-      <div class="form-row">
-        <div class="form-item">
-          <label>支援发出门店</label>
-          <select id="loanFrom" onchange="onLoanFromChange()"></select>
-          <div class="form-hint" id="loanFromHint"></div>
-        </div>
-        <div class="form-item">
-          <label>支援接收门店</label>
-          <select id="loanTo"></select>
-          <div class="form-hint" id="loanToHint"></div>
-        </div>
-      </div>
-      <div class="form-row">
-        <div class="form-item">
-          <label>对接大店长</label>
-          <input type="text" id="loanOwner" placeholder="自动匹配发出门店大店长" oninput="OWNER_MANUAL=true">
-          <div class="form-hint">默认自动匹配支援发出门店的大店长，可手动调整</div>
-        </div>
-        <div class="form-item">
-          <label>支援时段 / 备注（可选）</label>
-          <input type="text" id="loanNote" placeholder="如：高峰时段 14:00-22:00">
-        </div>
-      </div>
-    </div>
-    <div class="modal-foot">
-      <button class="btn btn-ghost" onclick="closeLoanModal()">取消</button>
-      <button class="btn" onclick="submitLoan()">提交登记</button>
     </div>
   </div>
 </div>
@@ -638,6 +589,47 @@ select.cell-input{padding:4px 6px;}
   </div>
 </div>
 
+<!-- 抽查记录弹窗 -->
+<div class="modal-mask" id="auMask">
+  <div class="modal">
+    <div class="modal-head"><span id="auTitle">记录抽查</span><button class="modal-close" onclick="closeAuditModal()">×</button></div>
+    <div class="modal-body">
+      <div class="modal-sub" id="auSub"></div>
+      <div class="form-row">
+        <div class="form-item">
+          <label>当日目标是否清晰</label>
+          <select id="auGoal">
+            <option value="">未抽查</option>
+            <option value="清晰">清晰</option>
+            <option value="不清晰">不清晰</option>
+          </select>
+          <div class="form-hint">店长与伙伴是否清楚当日目标</div>
+        </div>
+        <div class="form-item">
+          <label>充值总目标是否清晰</label>
+          <select id="auTotal">
+            <option value="">未抽查</option>
+            <option value="清晰">清晰</option>
+            <option value="不清晰">不清晰</option>
+          </select>
+          <div class="form-hint">是否清楚本次充值总目标</div>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-item">
+          <label>备注（可选）</label>
+          <input type="text" id="auNote" placeholder="如：店长清楚、伙伴不清楚">
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="clearAudit()">清除记录</button>
+      <button class="btn btn-ghost" onclick="closeAuditModal()">取消</button>
+      <button class="btn" onclick="submitAudit()">保存抽查</button>
+    </div>
+  </div>
+</div>
+
 <!-- 通用确认弹窗 -->
 <div class="modal-mask" id="askMask" style="z-index:220">
   <div class="modal" style="max-width:430px">
@@ -700,6 +692,7 @@ function normalizeCloud(d){
     promo:Array.isArray(d.promo)?d.promo:[],
     supplies:(d.supplies&&typeof d.supplies==='object')?d.supplies:{},
     cal:(d.cal&&typeof d.cal==='object')?d.cal:{},
+    audits:(d.audits&&typeof d.audits==='object')?d.audits:{},
     stores:(d.stores&&typeof d.stores==='object')?d.stores:{}
   };
 }
@@ -724,6 +717,10 @@ function applyOp(c,op){
     c.cal=c.cal||{}; c.cal[op.k]=op.v;
   }else if(op.t==='cal.del'){
     c.cal=c.cal||{}; delete c.cal[op.k];
+  }else if(op.t==='audit.set'){
+    c.audits=c.audits||{}; c.audits[op.k]=Object.assign({},c.audits[op.k]||{},op.v);
+  }else if(op.t==='audit.del'){
+    c.audits=c.audits||{}; delete c.audits[op.k];
   }else if(op.t==='store.set'){
     // 字段级合并：不同人分别填不同字段时互不覆盖
     c.stores=c.stores||{}; c.stores[op.k]=Object.assign({},c.stores[op.k]||{},op.v);
@@ -816,7 +813,7 @@ function switchTab(name){
   if(name==='mech') renderMech();
   if(name==='promo'){ renderPromoStores(); renderPromoRank(); renderPromo(); }
   if(name==='supplies') renderSupplies();
-  if(name==='hr') renderHr();
+  if(name==='audit') renderAudit();
   if(name==='cal') renderCal();
   updateBadges();
 }
@@ -885,7 +882,6 @@ function renderOverview(){
   const all=pubStats(STORE_ROWS);
   const planDone=D.plan.filter((p,i)=>planStatus(i)==='已完成').length;
   const supAll=SUP_STORES.filter(x=>spState(x.store).box).length;
-  const hrPending=(CLOUD.loans||[]).filter(l=>l.status!=='已确认').length;
 
   const cards=[
     {l:'覆盖门店',v:m.storeCount,u:'家',s:m.mgrCount+' 位大店长分管',hl:false},
@@ -1464,134 +1460,98 @@ function exportSupCsv(){
   downloadCsv('小主节暖心物资跟进',rows);
 }
 
-/* ============ 人力保障 ============ */
-function loanDateLabel(dk){ return DAYLABEL[dk]||dk; }
-function renderHr(){
-  const mg=document.getElementById('hrMgr').value;
-  const tp=document.getElementById('hrType').value;
-  const q=document.getElementById('hrSearch').value.trim();
-  const all=(CLOUD.loans||[]).slice();
-  const rows=all.filter(l=>{
-    const f=STORE_INFO[l.from]||{}, t=STORE_INFO[l.to]||{};
-    if(mg!=='all'&&f.mgr!==mg&&t.mgr!==mg) return false;
-    if(tp==='待确认'&&l.status==='已确认') return false;
-    if(tp==='已确认'&&l.status!=='已确认') return false;
-    if(q&&[l.from,l.to,l.name,l.owner].join(' ').indexOf(q)<0) return false;
+/* ============ 抽查表（目标抽查） ============ */
+const AUDITS = D.auditAssign||[];
+const AUDIT_INFO={}; AUDITS.forEach(a=>AUDIT_INFO[a.store]=a);
+function auState(store){
+  const c=(CLOUD.audits||{})[store];
+  if(c) return {goal:c.goal||'',total:c.total||'',note:c.note||'',at:c.at||''};
+  return {goal:'',total:'',note:'',at:''};
+}
+function renderAudit(){
+  const auditor=document.getElementById('auAuditor').value;
+  const date=document.getElementById('auDate').value;
+  const only=document.getElementById('auOnly').value;
+  const q=document.getElementById('auSearch').value.trim();
+  const scope=AUDITS.filter(a=>(auditor==='all'||a.auditor===auditor)&&(date==='all'||a.date===date));
+  const rows=scope.filter(a=>{
+    const st=auState(a.store);
+    const done=!!(st.goal||st.total);
+    if(only==='done') return done;
+    if(only==='todo') return !done;
+    if(q&&a.store.indexOf(q)<0&&a.mgr.indexOf(q)<0) return false;
     return true;
   });
-  let h=`<thead><tr><th>支援日期</th><th>伙伴姓名</th><th>支援发出门店</th><th>大店长</th><th>支援接收门店</th><th>大店长</th><th>对接大店长</th><th>时段 / 备注</th><th>状态</th><th>登记时间</th><th>操作</th></tr></thead><tbody>`;
-  if(!rows.length) h+=`<tr><td colspan="11" style="text-align:center;color:#95a5a6;padding:26px">暂无支援登记 —— 11.19-11.21 高峰期如需跨店支援，点「＋ 新增支援登记」</td></tr>`;
-  rows.forEach(l=>{
-    const f=STORE_INFO[l.from]||{}, t=STORE_INFO[l.to]||{};
-    const ok=l.status==='已确认';
+  let h=`<thead><tr><th>抽查人</th><th>日期</th><th>大店长</th><th>门店</th><th>BP</th><th style="text-align:center">当日目标</th><th style="text-align:center">充值总目标</th><th>备注</th><th>操作</th></tr></thead><tbody>`;
+  if(!rows.length) h+=`<tr><td colspan="9" style="text-align:center;color:#95a5a6;padding:24px">无匹配门店</td></tr>`;
+  rows.forEach(a=>{
+    const st=auState(a.store);
+    const badge=v=>v==='清晰'?'<span class="badge badge-green">清晰</span>':(v==='不清晰'?'<span class="badge badge-red">不清晰</span>':'<span class="badge badge-gray">未抽查</span>');
     h+=`<tr>
-      <td><strong>${esc(loanDateLabel(l.date))}</strong></td>
-      <td><strong>${esc(l.name||'-')}</strong></td>
-      <td>${esc(shortStore(l.from))}</td><td>${esc(f.mgr||'-')}</td>
-      <td>${esc(shortStore(l.to))}</td><td>${esc(t.mgr||'-')}</td>
-      <td>${esc(l.owner||'-')}</td>
-      <td style="white-space:normal;max-width:180px">${esc(l.note||'-')}</td>
-      <td>${ok?'<span class="badge badge-green">✓ 已确认</span>':'<span class="badge badge-orange">待确认</span>'}</td>
-      <td>${esc((l.ts||'').replace('T',' ').slice(0,16)||'-')}</td>
-      <td style="white-space:nowrap">
-        ${ok?'':`<button class="mini-btn" onclick="confirmLoan('${esc(l.key)}')">确认</button> `}
-        <button class="mini-btn danger" onclick="delLoan('${esc(l.key)}')">删除</button>
-      </td>
+      <td><strong>${esc(a.auditor)}</strong></td><td>${esc(a.date)}</td>
+      <td>${esc(a.mgr)}</td><td>${esc(shortStore(a.store))}</td><td>${esc(a.bp)}</td>
+      <td style="text-align:center">${badge(st.goal)}</td>
+      <td style="text-align:center">${badge(st.total)}</td>
+      <td style="white-space:normal;max-width:200px">${esc(st.note||'-')}</td>
+      <td><button class="mini-btn" onclick="openAuditModal('${esc(a.store)}')">记录抽查</button></td>
     </tr>`;
   });
   h+='</tbody>';
-  document.getElementById('loanTable').innerHTML=h;
-
-  // 按大店长汇总
-  let sh=`<thead><tr><th>大店长</th><th class="num">分管门店</th><th class="num">支援发出</th><th class="num">支援接收</th><th class="num">净流入</th><th class="num">待确认</th></tr></thead><tbody>`;
-  MGRS.forEach(mg2=>{
-    let out=0,inN=0,pend=0;
-    all.forEach(l=>{
-      const f=STORE_INFO[l.from]||{}, t=STORE_INFO[l.to]||{};
-      if(f.mgr===mg2) out++;
-      if(t.mgr===mg2) inN++;
-      if(l.status!=='已确认'&&(f.mgr===mg2||t.mgr===mg2)) pend++;
-    });
-    const cnt=STORE_ROWS.filter(s=>s.mgr===mg2).length;
-    const net=inN-out;
-    sh+=`<tr><td><strong>${esc(mg2)}</strong></td><td class="num">${cnt}</td><td class="num">${out}</td><td class="num">${inN}</td>`+
-      `<td class="num ${net>0?'cell-pos':(net<0?'cell-neg':'cell-zero')}">${net>0?'+':''}${net}</td>`+
-      `<td class="num ${pend?'cell-neg':'cell-zero'}">${pend}</td></tr>`;
+  document.getElementById('auTable').innerHTML=h;
+  // 进度
+  const doneAll=AUDITS.filter(a=>{const st=auState(a.store);return !!(st.goal||st.total);}).length;
+  const doneCur=scope.filter(a=>{const st=auState(a.store);return !!(st.goal||st.total);}).length;
+  const pct=scope.length?Math.round(doneCur/scope.length*100):0;
+  const filtered=auditor!=='all'||date!=='all';
+  document.getElementById('auditProgress').innerHTML=
+    `目标抽查进度<span class="sub">11.06-11.10 · 每人每天约 8 家${filtered?' · 当前只看 '+(auditor!=='all'?auditor:date):''}</span>
+     <div style="margin-top:8px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+       <div class="bar-track" style="flex:1;max-width:420px;height:9px"><div class="bar-fill" style="width:${pct}%"></div></div>
+       <span style="font-size:12.5px;color:var(--brand-d);font-weight:700">${doneCur} / ${scope.length} 家（${pct}%）</span>
+       ${filtered?`<span style="font-size:11.5px;color:var(--ink-2)">全品牌 ${doneAll} / ${AUDITS.length} 家（${Math.round(doneAll/AUDITS.length*100)}%）</span>`:''}
+     </div>`;
+  document.getElementById('auCount').innerHTML=`共 ${rows.length} 家门店`;
+  document.getElementById('auFoot').innerHTML=`抽查口径：店长与伙伴是否清楚<strong>当日目标</strong>与<strong>充值总目标</strong>；每人每天随机抽查约 8 家、共约 40 家。`;
+}
+let AU_EDIT=null;
+function openAuditModal(store){
+  AU_EDIT=store;
+  const a=AUDIT_INFO[store]||{};
+  const st=auState(store);
+  document.getElementById('auTitle').textContent='记录抽查 · '+shortStore(store);
+  document.getElementById('auSub').innerHTML=
+    `<strong>${esc(store)}</strong> · 大店长 ${esc(a.mgr||'')} · BP ${esc(a.bp||'')} · 抽查人 <strong>${esc(a.auditor||'')}</strong>（${esc(a.date||'')}）`;
+  document.getElementById('auGoal').value=st.goal;
+  document.getElementById('auTotal').value=st.total;
+  document.getElementById('auNote').value=st.note;
+  document.getElementById('auMask').classList.add('show');
+}
+function closeAuditModal(){ document.getElementById('auMask').classList.remove('show'); AU_EDIT=null; }
+function submitAudit(){
+  if(!AU_EDIT) return;
+  const v={
+    goal:document.getElementById('auGoal').value,
+    total:document.getElementById('auTotal').value,
+    note:document.getElementById('auNote').value.trim(),
+    at:new Date().toISOString()
+  };
+  commit({t:'audit.set',k:AU_EDIT,v:v});
+  closeAuditModal();
+  renderAudit();
+}
+function clearAudit(){
+  if(!AU_EDIT) return;
+  commit({t:'audit.del',k:AU_EDIT});
+  closeAuditModal();
+  renderAudit();
+}
+function exportAuditCsv(){
+  const rows=[['抽查人','日期','大店长','门店','BP','当日目标','充值总目标','备注','抽查时间']];
+  AUDITS.forEach(a=>{
+    const st=auState(a.store);
+    rows.push([a.auditor,a.date,a.mgr,a.store,a.bp,st.goal||'未抽查',st.total||'未抽查',st.note||'',(st.at||'').replace('T',' ').slice(0,16)]);
   });
-  sh+='</tbody>';
-  document.getElementById('hrSumTable').innerHTML=sh;
-
-  const pendN=all.filter(l=>l.status!=='已确认').length;
-  document.getElementById('loanCount').innerHTML=all.length?`共 ${all.length} 条 · 待确认 ${pendN} 条 · 已确认 ${all.length-pendN} 条`:'';
-  document.getElementById('hrFoot').innerHTML=
-    `11.19-11.21 高峰人力保障要求：<strong>无缺岗、无工时超限</strong>（单日不超 11H），由大店长 + BP 每日发布情况。`+
-    `确认即锁定 1 人调动，防止一店多借；11.22-11.28 每人至少休 1 天为硬指标，未落实每店扣 1 分。`;
-}
-function confirmLoan(key){
-  askConfirm('确认这条支援登记？确认后即锁定 1 人调动。',()=>{
-    commit({t:'loan.confirm',k:key,at:new Date().toISOString()});
-    renderHr();
-  });
-}
-function delLoan(key){
-  askConfirm('删除这条支援登记？',()=>{
-    commit({t:'loan.del',k:key});
-    renderHr();
-  });
-}
-function openLoanModal(){
-  SP_EDIT=null;
-  document.getElementById('loanTitle').textContent='新增人力支援登记';
-  const dateSel=document.getElementById('loanDate');
-  dateSel.innerHTML=DAYKEYS.map(k=>`<option value="${k}">${esc(DAYLABEL[k])}${esc(DAYNOTE[k])?'（'+esc(DAYNOTE[k])+'）':''}</option>`).join('');
-  dateSel.value='d1119';
-  document.getElementById('loanName').value='';
-  document.getElementById('loanNote').value='';
-  document.getElementById('loanOwner').value='';
-  OWNER_MANUAL=false;
-  const fromSel=document.getElementById('loanFrom');
-  const toSel=document.getElementById('loanTo');
-  fromSel.innerHTML=STORE_ROWS.map(s=>`<option value="${esc(s.store)}">${esc(shortStore(s.store))}（${esc(s.mgr)}）</option>`).join('');
-  toSel.innerHTML=STORE_ROWS.map(s=>`<option value="${esc(s.store)}">${esc(shortStore(s.store))}（${esc(s.mgr)}）</option>`).join('');
-  document.getElementById('loanSub').innerHTML=
-    `11.19-11.21 为高峰人力保障期：需保证 <strong>无缺岗、工时不超 11H</strong>。富余门店可向缺员门店登记支援，提交后大店长实时互见，需人工确认后生效。`;
-  document.getElementById('loanMask').classList.add('show');
-}
-let OWNER_MANUAL=false;
-function onLoanFromChange(){
-  const f=document.getElementById('loanFrom').value;
-  const rec=STORE_INFO[f];
-  if(rec&&!OWNER_MANUAL) document.getElementById('loanOwner').value=rec.mgr;
-  document.getElementById('loanFromHint').textContent=rec?`大店长 ${rec.mgr} · BP ${rec.bp}`:'';
-  const t=document.getElementById('loanTo').value;
-  const trec=STORE_INFO[t];
-  document.getElementById('loanToHint').textContent=trec?`大店长 ${trec.mgr} · BP ${trec.bp}`:'';
-}
-function closeLoanModal(){ document.getElementById('loanMask').classList.remove('show'); }
-function submitLoan(){
-  const from=document.getElementById('loanFrom').value;
-  const to=document.getElementById('loanTo').value;
-  const name=document.getElementById('loanName').value.trim();
-  const date=document.getElementById('loanDate').value;
-  const note=document.getElementById('loanNote').value.trim();
-  const owner=document.getElementById('loanOwner').value.trim();
-  if(!from||!to){ alert('请选择支援发出与接收门店'); return; }
-  if(from===to){ alert('发出与接收门店不能相同'); return; }
-  if(!name){ alert('请填写支援伙伴姓名'); return; }
-  const v={from:from,to:to,name:name,date:date,note:note,owner:owner||((STORE_INFO[from]||{}).mgr||''),
-    status:'待确认',ts:new Date().toISOString()};
-  v.key=loanKey(v);
-  commit({t:'loan.add',v:v});
-  closeLoanModal();
-  renderHr();
-}
-function exportHrCsv(){
-  const rows=[['支援日期','伙伴姓名','支援发出门店','大店长','支援接收门店','大店长','对接大店长','时段/备注','状态','登记时间']];
-  (CLOUD.loans||[]).forEach(l=>{
-    const f=STORE_INFO[l.from]||{}, t=STORE_INFO[l.to]||{};
-    rows.push([loanDateLabel(l.date),l.name,l.from,f.mgr||'',l.to,t.mgr||'',l.owner||'',l.note||'',l.status||'待确认',(l.ts||'').replace('T',' ').slice(0,16)]);
-  });
-  downloadCsv('小主节人力支援登记',rows);
+  downloadCsv('小主节目标抽查表',rows);
 }
 
 /* ============ 行事历卡岗 ============ */
@@ -1697,8 +1657,6 @@ function updateBadges(){
   setBadge('tabBadgePromo',prTodo);
   const supTodo=SUP_STORES.filter(x=>!spState(x.store).box).length;
   setBadge('tabBadgeSup',supTodo);
-  const hrTodo=(CLOUD.loans||[]).filter(l=>l.status!=='已确认').length;
-  setBadge('tabBadgeHr',hrTodo);
 }
 function setBadge(id,v){
   const el=document.getElementById(id);
@@ -1738,13 +1696,14 @@ function fillDaySelect(id){
   el.innerHTML=DAYKEYS.map(k=>`<option value="${k}">${esc(DAYLABEL[k])}</option>`).join('');
 }
 (async function init(){
-  fillDaySelect('calDay'); fillDaySelect('loanDate');
+  fillDaySelect('calDay');
   fillSelect('prMgr',MGRS,'全部大店长');
   fillSelect('spMgr',MGRS,'全部大店长');
   fillSelect('mechMgr',MGRS.concat(['大店长','全体','各 BP','训练','李当']),'全部');
   const cats=D.mechCats;
   document.getElementById('mechCat').innerHTML='<option value="all">全部</option>'+cats.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join('');
-  fillSelect('hrMgr',MGRS,'全部大店长');
+  fillSelect('auAuditor',D.auditors,'全部');
+  document.getElementById('auDate').innerHTML='<option value="all">全部</option>'+D.auditDates.map(d=>`<option value="${esc(d)}">${esc(d)}</option>`).join('');
   await loadCloud();
   // 动态回填门店口径（避免门店增减后文案数字失真）
   ['planReadyCount','footStoreCount'].forEach(id=>{
@@ -1758,7 +1717,7 @@ function fillDaySelect(id){
   switchTab('overview');
   document.getElementById('promoMask').addEventListener('click',function(e){ if(e.target===this) this.classList.remove('show'); });
   document.getElementById('calMask').addEventListener('click',function(e){ if(e.target===this) closeCalModal(); });
-  document.getElementById('loanMask').addEventListener('click',function(e){ if(e.target===this) closeLoanModal(); });
+  document.getElementById('auMask').addEventListener('click',function(e){ if(e.target===this) closeAuditModal(); });
   document.getElementById('spMask').addEventListener('click',function(e){ if(e.target===this) closeSupModal(); });
   document.getElementById('storeMask').addEventListener('click',function(e){ if(e.target===this) closeStoreModal(); });
   document.getElementById('imgMask').addEventListener('click',function(e){ if(e.target===this) e.target.classList.remove('show'); });

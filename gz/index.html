@@ -466,8 +466,8 @@ body{font-family:-apple-system,'PingFang SC','Helvetica Neue',sans-serif;backgro
   </div>
 </div>
 
-<script src="historical_data.js?v=1793002643"></script>
-<script src="dashboard_data.js?v=1793002643"></script>
+<script src="historical_data.js?v=1793005240"></script>
+<script src="dashboard_data.js?v=1793005240"></script>
 <script>
 /* 全局错误捕获：直接显示到页面，方便定位 */
 function showDebug(msg){
@@ -990,13 +990,13 @@ function showAlertDetail(type){
   if(type==='over13'){
     const ndNote=ndRelaxNote(currentMonth||(D.stat_month||M.date_to.substring(0,7)));
     title.textContent='单日超11小时人员名单'+ndNote;
-    const data=(activeData.over13||[]).filter(filt);
+    const data=applyHoursSort((activeData.over13||[]).filter(filt));
     cnt=data.length;
     count.innerHTML=`当前范围共 <b>${cnt}</b> 人单日工时超过11小时${ndNote}，请点击「单日 >11h 预警」指标卡查看`;
     hh='<th style="width:82px">大店长</th><th style="width:140px">门店</th>'+
        '<th style="width:66px">工号</th><th style="width:78px">姓名</th>'+
        '<th style="width:200px">违规原因<div style="font-size:10px;color:rgba(255,255,255,.75);font-weight:400;margin-top:2px">大店长填写</div></th>'+
-       '<th style="width:64px">总工时</th><th style="width:48px">日均</th>'+
+       ''+hoursTh(64)+'<th style="width:46px">公休</th><th style="width:48px">日均</th>'+
        M.date_strs.map(d=>`<th style="min-width:48px;width:48px">${d}</th>`).join('');
     data.forEach(p=>{
       const dc=M.date_strs.map(d=>{
@@ -1009,17 +1009,17 @@ function showAlertDetail(type){
         <td class="col-name">${p['大店长']}</td><td class="col-name">${p['门店']}</td>
         <td>${p['工号']}</td><td>${p['姓名']}</td>
         <td class="col-name">${reasonHtml}</td>
-        <td>${p['总工时']}</td><td>${p['日均工时']}</td>${dc}</tr>`;
+        <td>${p['总工时']}</td><td>${p['公休天数']??0}天</td><td>${p['日均工时']}</td>${dc}</tr>`;
     });
   } else if(type==='consec8'){
     title.textContent='连续出勤超8天人员名单';
-    const data=(activeData.warn7||[]).filter(filt).filter(p=>(p['当月最大连续']>=9));
+    const data=applyHoursSort((activeData.warn7||[]).filter(filt).filter(p=>(p['当月最大连续']>=9)));
     cnt=data.length;
     count.innerHTML=`当前范围共 <b>${cnt}</b> 人连续出勤超过8天（当月最大连续≥9天），请点击「全月内>8天」指标卡查看`;
     hh='<th style="width:82px">大店长</th><th style="width:140px">门店</th>'+
        '<th style="width:66px">工号</th><th style="width:78px">姓名</th>'+
        '<th style="width:200px">违规原因<div style="font-size:10px;color:rgba(255,255,255,.75);font-weight:400;margin-top:2px">大店长填写</div></th>'+
-       '<th style="width:50px">出勤/休</th><th style="width:60px">总工时</th><th style="width:48px">日均</th>'+
+       '<th style="width:50px">出勤/休</th>'+hoursTh(60)+'<th style="width:46px">公休</th><th style="width:48px">日均</th>'+
        '<th style="width:62px" class="c-red">最大连续</th>'+
        '<th style="width:130px" class="c-red">连续日期<div style="font-size:10px;color:rgba(255,255,255,.75);font-weight:400;margin-top:2px">当月最长连续段</div></th>'+
        '<th style="width:62px" class="c-amber">尾段连续</th>'+
@@ -1033,7 +1033,7 @@ function showAlertDetail(type){
         <td class="col-name">${p['大店长']}</td><td class="col-name">${p['门店']}</td>
         <td>${p['工号']}</td><td>${p['姓名']}</td>
         <td class="col-name">${reasonHtml}</td>
-        <td>${p['出勤天数']}d/${p['休息天数']}d</td><td>${p['总工时']}</td><td>${p['日均工时']}</td>
+        <td>${p['出勤天数']}d/${p['休息天数']}d</td><td>${p['总工时']}</td><td>${p['公休天数']??0}天</td><td>${p['日均工时']}</td>
         <td class="${isRed?'c-red':''}" style="font-weight:600">${maxC}天</td>
         <td class="${isRed?'c-red':''}" style="font-weight:600;font-size:13px">${p['连续段']||'-'}</td>
         <td class="${isTailWarn?'c-amber':''}" style="font-weight:600">${tailC}天</td>
@@ -1041,12 +1041,12 @@ function showAlertDetail(type){
     });
   } else if(type==='consec7'){
     title.textContent='连续出勤7天预警人员名单';
-    const data=(activeData.warn7||[]).filter(filt).filter(p=>p['尾段连续未休']>=7).sort((a,b)=>b['尾段连续未休']-a['尾段连续未休']);
+    const data=applyHoursSort((activeData.warn7||[]).filter(filt).filter(p=>p['尾段连续未休']>=7).sort((a,b)=>b['尾段连续未休']-a['尾段连续未休']));
     cnt=data.length;
     count.innerHTML=`当前范围共 <b>${cnt}</b> 人尾段连续出勤≥7天，需尽快排休`;
     hh='<th style="width:82px">大店长</th><th style="width:88px">门店</th>'+
        '<th style="width:66px">工号</th><th style="width:78px">姓名</th><th style="width:72px">职级</th>'+
-       '<th style="width:50px">出勤/休</th><th style="width:60px">总工时</th><th style="width:48px">日均</th>'+
+       '<th style="width:50px">出勤/休</th>'+hoursTh(60)+'<th style="width:46px">公休</th><th style="width:48px">日均</th>'+
        '<th style="width:62px" class="c-red">最大连续</th><th style="width:62px" class="c-amber">尾段连续</th>'+
        _cds.map(d=>`<th style="min-width:42px;width:42px">${d}</th>`).join('');
     data.forEach(p=>{
@@ -1059,7 +1059,7 @@ function showAlertDetail(type){
       bb+=`<tr style="${isTailRed?'background:rgba(234,75,74,.05)':isTailAmber?'background:rgba(186,117,23,.04)':''}">
         <td class="col-name">${p['大店长']}</td><td class="col-name">${p['门店']}</td>
         <td>${p['工号']}</td><td>${p['姓名']}</td><td>${p['职级']}</td>
-        <td>${p['出勤天数']}d/${p['休息天数']}d</td><td>${p['总工时']}</td><td>${p['日均工时']}</td>
+        <td>${p['出勤天数']}d/${p['休息天数']}d</td><td>${p['总工时']}</td><td>${p['公休天数']??0}天</td><td>${p['日均工时']}</td>
         <td style="font-weight:600">${maxC}天</td>
         <td class="${isTailRed?'c-red':isTailAmber?'c-amber':''}" style="font-weight:600">${tailC}天</td>${dc}</tr>`;
     });
@@ -1086,14 +1086,14 @@ function showAlertDetail(type){
   } else if(type==='hour_split'){
     const payCfg=(activeData.summary&&activeData.summary.pay_structure)||{daily_std_hours:8,monthly_ot_cap:36,monthly_total_cap:202,regular_base_hours:165.4};
     title.textContent='全职工时四类拆分（标准工时制）';
-    const data=(activeData.full_detail||[]).filter(filt)
-      .sort((a,b)=>(b['工作日加班']+b['休息日加班']+b['法定加班'])-(a['工作日加班']+a['休息日加班']+a['法定加班']));
+    const data=applyHoursSort((activeData.full_detail||[]).filter(filt)
+      .sort((a,b)=>(b['工作日加班']+b['休息日加班']+b['法定加班'])-(a['工作日加班']+a['休息日加班']+a['法定加班'])));
     cnt=data.length;
     const holStr=(payCfg.statutory_holidays||[]).map(d=>d.substring(5).replace('-','/')).join('、');
     count.innerHTML=`当前范围共 <b>${cnt}</b> 名全职。常规=总工时−三类加班（封顶${payCfg.regular_base_hours}h）；工作日加班=排班日超${payCfg.daily_std_hours}h部分；法定加班=法定节假日（${holStr||'未配置'}）当天全部工时；学生不参与拆分`;
     hh='<th style="width:82px">大店长</th><th style="width:140px">门店</th>'+
        '<th style="width:66px">工号</th><th style="width:78px">姓名</th><th style="width:72px">职级</th>'+
-       '<th style="width:64px">总工时</th><th style="width:64px">常规工时</th>'+
+       ''+hoursTh(64)+'<th style="width:64px">常规工时</th>'+
        '<th style="width:72px" class="c-amber">工作日加班</th>'+
        '<th style="width:72px" class="c-red">休息日加班</th>'+
        '<th style="width:64px" style="color:#534AB7">法定加班</th>'+
@@ -1861,6 +1861,22 @@ function renderTable(){
 
 /* ========== 第三排：明细 Tab ========== */
 let curTab='warn7';
+/* 总工时排序：0=默认 1=降序 2=升序；点明细表「总工时」表头切换 */
+let hoursSortMode=0;
+function toggleHoursSort(){
+  hoursSortMode=(hoursSortMode+1)%3;
+  renderDetail();
+  const modal=document.getElementById('alertModal');
+  if(modal&&modal.style.display==='flex'&&typeof currentAlertType!=='undefined'&&currentAlertType)showAlertDetail(currentAlertType);
+}
+function applyHoursSort(data){
+  if(!hoursSortMode)return data;
+  return [...data].sort((a,b)=>hoursSortMode===1?(b['总工时']||0)-(a['总工时']||0):(a['总工时']||0)-(b['总工时']||0));
+}
+function hoursTh(width){
+  const arrow=hoursSortMode===1?' ▼':hoursSortMode===2?' ▲':' ⇅';
+  return `<th style="width:${width||60}px;cursor:pointer;user-select:none" onclick="toggleHoursSort()" title="点击按总工时排序">总工时${arrow}</th>`;
+}
 let detailSearch='';
 function switchTab(t,btn){
   curTab=t;
@@ -1901,7 +1917,7 @@ function renderDetail(){
   const filt=getDetailFilterFn();
 
   if(curTab==='warn7'){
-    const data=(activeData.warn7||[]).filter(filt).filter(matchesDetailSearch);
+    const data=applyHoursSort((activeData.warn7||[]).filter(filt).filter(matchesDetailSearch));
     searchResultCount=data.length;
     document.getElementById('detailCount').innerHTML=
       `<span class="badge b-red">最大&ge;9天 ${data.filter(x=>x['当月最大连续']>=9).length}人</span>`+
@@ -1909,7 +1925,7 @@ function renderDetail(){
       ` <span class="badge b-amber">尾段&ge;7天 ${data.filter(x=>x['尾段连续未休']>=7).length}人</span> 共${data.length}人`;
     hh='<th style="width:92px">大店长</th><th style="width:180px">门店</th>'+
        '<th style="width:68px">工号</th><th style="width:52px">姓名</th><th style="width:52px">职级</th>'+
-       '<th style="width:50px">出勤/休</th><th style="width:60px">总工时</th><th style="width:48px">日均</th>'+
+       '<th style="width:50px">出勤/休</th>'+hoursTh(60)+'<th style="width:46px">公休</th><th style="width:48px">日均</th>'+
        '<th style="width:52px" class="c-red">最大<br>连续</th><th style="width:52px" class="c-amber">尾段<br>连续</th>'+
        _cds.map(d=>`<th style="min-width:42px;width:42px">${d}</th>`).join('');
     data.forEach(p=>{
@@ -1923,20 +1939,20 @@ function renderDetail(){
       bb+=`<tr style="${isRed?'background:rgba(234,75,74,.05)':isOran?'background:rgba(186,117,23,.04)':''}">
         <td class="col-name">${p['大店长']}</td><td class="col-name">${p['门店']}</td>
         <td>${p['工号']}</td><td>${p['姓名']}</td><td>${p['职级']}</td>
-        <td>${p['出勤天数']}d/${p['休息天数']}d</td><td>${p['总工时']}</td><td>${p['日均工时']}</td>
+        <td>${p['出勤天数']}d/${p['休息天数']}d</td><td>${p['总工时']}</td><td>${p['公休天数']??0}天</td><td>${p['日均工时']}</td>
         <td class="${isRed?'c-red':isOran?'c-amber':''}" style="font-weight:600">${maxC}天</td>
         <td class="${isTailWarn?'c-amber':''}" style="font-weight:600">${tailC}天</td>${dc}</tr>`;
     });
   } else if(curTab==='tailWarn'){
     const allFull=(activeData.warn7||[]).filter(filt).filter(matchesDetailSearch);
-    const data=allFull.filter(x=>x['尾段连续未休']>=5).sort((a,b)=>b['尾段连续未休']-a['尾段连续未休']);
+    const data=applyHoursSort(allFull.filter(x=>x['尾段连续未休']>=5).sort((a,b)=>b['尾段连续未休']-a['尾段连续未休']));
     searchResultCount=data.length;
     document.getElementById('detailCount').innerHTML=
       `<span class="badge b-red">尾段&ge;8天 ${data.filter(x=>x['尾段连续未休']>=8).length}人</span>`+
       ` <span class="badge b-amber">5~7天 ${data.filter(x=>x['尾段连续未休']>=5&&x['尾段连续未休']<8).length}人</span> 共${data.length}人`;
-    hh='<th style="width:92px">大店长</th><th style="width:180px">门店">'+
+    hh='<th style="width:92px">大店长</th><th style="width:180px">门店</th>'+
        '<th style="width:68px">工号</th><th style="width:52px">姓名</th><th style="width:52px">职级</th>'+
-       '<th style="width:50px">出勤/休</th><th style="width:60px">总工时</th><th style="width:48px">日均</th>'+
+       '<th style="width:50px">出勤/休</th>'+hoursTh(60)+'<th style="width:46px">公休</th><th style="width:48px">日均</th>'+
        '<th style="width:52px" class="c-amber">尾段<br>连续</th><th style="width:52px" class="c-red">最大<br>连续</th>'+
        '<th style="width:120px">距红线还剩</th>'+
        _cds.map(d=>`<th style="min-width:42px;width:42px">${d}</th>`).join('');
@@ -1951,7 +1967,7 @@ function renderDetail(){
       bb+=`<tr style="${isTailRed?'background:rgba(234,75,74,.05)':isTailAmber?'background:#FFF8E1':''}">
         <td class="col-name">${p['大店长']}</td><td class="col-name">${p['门店']}</td>
         <td>${p['工号']}</td><td>${p['姓名']}</td><td>${p['职级']}</td>
-        <td>${p['出勤天数']}d/${p['休息天数']}d</td><td>${p['总工时']}</td><td>${p['日均工时']}</td>
+        <td>${p['出勤天数']}d/${p['休息天数']}d</td><td>${p['总工时']}</td><td>${p['公休天数']??0}天</td><td>${p['日均工时']}</td>
         <td class="${isTailRed?'c-red':isTailAmber?'c-amber':''}" style="font-weight:600">${tailC}天</td>
         <td>${maxC}天</td>
         <td style="${remain<=2?'color:var(--red);font-weight:600':''}">${remain}天</td>${dc}</tr>`;
@@ -1981,12 +1997,12 @@ function renderDetail(){
     });
   } else if(curTab==='over13'){
     const base=activeData.over13||[];
-    const data=base.filter(filt).filter(matchesDetailSearch);
+    const data=applyHoursSort(base.filter(filt).filter(matchesDetailSearch));
     searchResultCount=data.length;
     document.getElementById('detailCount').innerHTML=`<span class="badge b-red">红线预警 共${data.length}人</span>`;
     hh='<th style="width:92px">大店长</th><th style="width:180px">门店</th>'+
        '<th style="width:68px">工号</th><th style="width:52px">姓名</th><th style="width:52px">职级</th>'+
-       '<th style="width:64px">总工时</th><th style="width:48px">日均</th>'+
+       ''+hoursTh(64)+'<th style="width:46px">公休</th><th style="width:48px">日均</th>'+
        M.date_strs.map(d=>`<th style="min-width:48px;width:48px">${d}</th>`).join('');
     data.forEach(p=>{
       const dc=M.date_strs.map(d=>{
@@ -1996,18 +2012,18 @@ function renderDetail(){
       bb+=`<tr style="background:rgba(234,75,74,.04)">
         <td class="col-name">${p['大店长']}</td><td class="col-name">${p['门店']}</td>
         <td>${p['工号']}</td><td>${p['姓名']}</td><td>${p['职级']}</td>
-        <td>${p['总工时']}</td><td>${p['日均工时']}</td>${dc}</tr>`;
+        <td>${p['总工时']}</td><td>${p['公休天数']??0}天</td><td>${p['日均工时']}</td>${dc}</tr>`;
     });
   } else if(curTab==='full_detail'||curTab==='student_detail'){
     const isFull=curTab==='full_detail';
     const base=isFull?(activeData.full_detail||[]):(activeData.student_detail||[]);
-    const data=base.filter(filt).filter(matchesDetailSearch);
+    const data=applyHoursSort(base.filter(filt).filter(matchesDetailSearch));
     searchResultCount=data.length;
     const label=isFull?'全职':'学生';
     document.getElementById('detailCount').innerHTML=`${label}全量明细 共${data.length}人`;
     hh='<th style="width:90px">大店长</th><th style="width:180px">门店</th>'+
        '<th style="width:70px">工号</th><th style="width:52px">姓名</th><th style="width:52px">职级</th>'+
-       '<th style="width:50px">出勤/休</th><th style="width:60px">总工时</th><th style="width:48px">日均</th>'+
+       '<th style="width:50px">出勤/休</th>'+hoursTh(60)+'<th style="width:46px">公休</th><th style="width:48px">日均</th>'+
        '<th style="width:72px">预估月度工时</th><th style="width:42px">0工时</th>'+
        '<th style="width:52px">最大连续</th><th style="width:52px">尾段连续</th>'+
        M.date_strs.map(d=>`<th style="min-width:42px;width:42px">${d}</th>`).join('');
@@ -2019,7 +2035,7 @@ function renderDetail(){
       bb+=`<tr style="${p['0工时']?'background:rgba(186,117,23,.05)':''}">
         <td class="col-name">${p['大店长']}</td><td class="col-name">${p['门店']}</td>
         <td>${p['工号']}</td><td>${p['姓名']}</td><td>${p['职级']}</td>
-        <td>${p['出勤天数']}d/${p['休息天数']}d</td><td>${p['总工时']}</td><td>${p['日均工时']}</td>
+        <td>${p['出勤天数']}d/${p['休息天数']}d</td><td>${p['总工时']}</td><td>${p['公休天数']??0}天</td><td>${p['日均工时']}</td>
         <td>${p['预估月度工时']}</td><td>${p['0工时']?'是':''}</td>
         <td>${p['最大连续']}</td><td>${p['尾段连续']}</td>${dc}</tr>`;
     });
@@ -2053,13 +2069,13 @@ async function exportDetail(){
   if(curTab==='warn7'){
     tabName='月内连续出勤≥7天';
     const data=(activeData.warn7||[]).filter(filt).filter(matchesDetailSearch);
-    headers=['区域','大店长','门店','工号','姓名','职级','出勤天数','休息天数','总工时','日均工时','当月最大连续','尾段连续未休',...dateCols];
-    rows=data.map(p=>[fmt(p['区域']),fmt(p['大店长']),fmt(p['门店']),fmt(p['工号']),fmt(p['姓名']),fmt(p['职级']),fmt(p['出勤天数']),fmt(p['休息天数']),fmt(p['总工时']),fmt(p['日均工时']),fmt(p['当月最大连续']),fmt(p['尾段连续未休']),...dateCols.map(d=>fmt(p['每日工时']&&p['每日工时'][d]))]);
+    headers=['区域','大店长','门店','工号','姓名','职级','出勤天数','休息天数','总工时','公休天数','日均工时','当月最大连续','尾段连续未休',...dateCols];
+    rows=data.map(p=>[fmt(p['区域']),fmt(p['大店长']),fmt(p['门店']),fmt(p['工号']),fmt(p['姓名']),fmt(p['职级']),fmt(p['出勤天数']),fmt(p['休息天数']),fmt(p['总工时']),fmt(p['公休天数']),fmt(p['日均工时']),fmt(p['当月最大连续']),fmt(p['尾段连续未休']),...dateCols.map(d=>fmt(p['每日工时']&&p['每日工时'][d]))]);
   } else if(curTab==='tailWarn'){
     tabName='连续出勤≥7天';
     const data=(activeData.warn7||[]).filter(filt).filter(matchesDetailSearch).filter(x=>x['尾段连续未休']>=5).sort((a,b)=>b['尾段连续未休']-a['尾段连续未休']);
-    headers=['区域','大店长','门店','工号','姓名','职级','出勤天数','休息天数','总工时','日均工时','尾段连续未休','当月最大连续','距红线还剩',...dateCols];
-    rows=data.map(p=>{const tail=p['尾段连续未休']; return [fmt(p['区域']),fmt(p['大店长']),fmt(p['门店']),fmt(p['工号']),fmt(p['姓名']),fmt(p['职级']),fmt(p['出勤天数']),fmt(p['休息天数']),fmt(p['总工时']),fmt(p['日均工时']),fmt(tail),fmt(p['当月最大连续']),Math.max(0,9-tail),...dateCols.map(d=>fmt(p['每日工时']&&p['每日工时'][d]))];});
+    headers=['区域','大店长','门店','工号','姓名','职级','出勤天数','休息天数','总工时','公休天数','日均工时','尾段连续未休','当月最大连续','距红线还剩',...dateCols];
+    rows=data.map(p=>{const tail=p['尾段连续未休']; return [fmt(p['区域']),fmt(p['大店长']),fmt(p['门店']),fmt(p['工号']),fmt(p['姓名']),fmt(p['职级']),fmt(p['出勤天数']),fmt(p['休息天数']),fmt(p['总工时']),fmt(p['公休天数']),fmt(p['日均工时']),fmt(tail),fmt(p['当月最大连续']),Math.max(0,9-tail),...dateCols.map(d=>fmt(p['每日工时']&&p['每日工时'][d]))];});
   } else if(curTab==='zeros_full'){
     tabName='0工时全职';
     const data=(activeData.zeros_full||[]).filter(filt).filter(matchesDetailSearch);
@@ -2073,15 +2089,15 @@ async function exportDetail(){
   } else if(curTab==='over13'){
     tabName='单日超11h预警';
     const data=(activeData.over13||[]).filter(filt).filter(matchesDetailSearch);
-    headers=['区域','大店长','门店','工号','姓名','职级','总工时','日均工时',...dateCols];
-    rows=data.map(p=>[fmt(p['区域']),fmt(p['大店长']),fmt(p['门店']),fmt(p['工号']),fmt(p['姓名']),fmt(p['职级']),fmt(p['总工时']),fmt(p['日均工时']),...dateCols.map(d=>fmt(p['超时详情']&&p['超时详情'][d]))]);
+    headers=['区域','大店长','门店','工号','姓名','职级','总工时','公休天数','日均工时',...dateCols];
+    rows=data.map(p=>[fmt(p['区域']),fmt(p['大店长']),fmt(p['门店']),fmt(p['工号']),fmt(p['姓名']),fmt(p['职级']),fmt(p['总工时']),fmt(p['公休天数']),fmt(p['日均工时']),...dateCols.map(d=>fmt(p['超时详情']&&p['超时详情'][d]))]);
   } else if(curTab==='full_detail'||curTab==='student_detail'){
     const isFull=curTab==='full_detail';
     tabName=isFull?'全职明细数据':'学生明细数据';
     const base=isFull?(activeData.full_detail||[]):(activeData.student_detail||[]);
-    const data=base.filter(filt).filter(matchesDetailSearch);
-    headers=['区域','大店长','门店','工号','姓名','职级','用工类型','出勤天数','休息天数','总工时','日均工时','预估月度工时','0工时','最大连续','尾段连续',...dateCols];
-    rows=data.map(p=>[fmt(p['区域']),fmt(p['大店长']),fmt(p['门店']),fmt(p['工号']),fmt(p['姓名']),fmt(p['职级']),fmt(p['用工类型']),fmt(p['出勤天数']),fmt(p['休息天数']),fmt(p['总工时']),fmt(p['日均工时']),fmt(p['预估月度工时']),p['0工时']?'是':'否',fmt(p['最大连续']),fmt(p['尾段连续']),...dateCols.map(d=>fmt(p['每日工时']&&p['每日工时'][d]))]);
+    const data=applyHoursSort(base.filter(filt).filter(matchesDetailSearch));
+    headers=['区域','大店长','门店','工号','姓名','职级','用工类型','出勤天数','休息天数','总工时','公休天数','日均工时','预估月度工时','0工时','最大连续','尾段连续',...dateCols];
+    rows=data.map(p=>[fmt(p['区域']),fmt(p['大店长']),fmt(p['门店']),fmt(p['工号']),fmt(p['姓名']),fmt(p['职级']),fmt(p['用工类型']),fmt(p['出勤天数']),fmt(p['休息天数']),fmt(p['总工时']),fmt(p['公休天数']),fmt(p['日均工时']),fmt(p['预估月度工时']),p['0工时']?'是':'否',fmt(p['最大连续']),fmt(p['尾段连续']),...dateCols.map(d=>fmt(p['每日工时']&&p['每日工时'][d]))]);
   }
 
   if(rows.length===0){alert('当前筛选范围暂无数据，无需导出');return;}

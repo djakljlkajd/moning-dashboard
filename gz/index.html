@@ -466,8 +466,8 @@ body{font-family:-apple-system,'PingFang SC','Helvetica Neue',sans-serif;backgro
   </div>
 </div>
 
-<script src="historical_data.js?v=1793005510"></script>
-<script src="dashboard_data.js?v=1793005510"></script>
+<script src="historical_data.js?v=1793006235"></script>
+<script src="dashboard_data.js?v=1793006235"></script>
 <script>
 /* 全局错误捕获：直接显示到页面，方便定位 */
 function showDebug(msg){
@@ -2024,7 +2024,7 @@ function renderDetail(){
     hh='<th style="width:90px">大店长</th><th style="width:180px">门店</th>'+
        '<th style="width:70px">工号</th><th style="width:52px">姓名</th><th style="width:52px">职级</th>'+
        '<th style="width:50px">出勤/休</th>'+hoursTh(60)+'<th style="width:46px">公休</th><th style="width:48px">日均</th>'+
-       '<th style="width:72px">预估月度工时</th><th style="width:42px">0工时</th>'+
+       '<th style="width:72px">预估月度工时</th><th style="width:60px">可用工时</th><th style="width:42px">0工时</th>'+
        '<th style="width:52px">最大连续</th><th style="width:52px">尾段连续</th>'+
        M.date_strs.map(d=>`<th style="min-width:42px;width:42px">${d}</th>`).join('');
     data.forEach(p=>{
@@ -2036,7 +2036,7 @@ function renderDetail(){
         <td class="col-name">${p['大店长']}</td><td class="col-name">${p['门店']}</td>
         <td>${p['工号']}</td><td>${p['姓名']}</td><td>${p['职级']}</td>
         <td>${p['出勤天数']}d/${p['休息天数']}d</td><td>${p['总工时']}</td><td>${p['公休天数']??0}天</td><td>${p['日均工时']}</td>
-        <td>${p['预估月度工时']}</td><td>${p['0工时']?'是':''}</td>
+        <td>${p['预估月度工时']}</td><td class="${(p['可用工时']??0)<0?'c-red':''}" style="font-weight:600">${p['可用工时']??'-'}</td><td>${p['0工时']?'是':''}</td>
         <td>${p['最大连续']}</td><td>${p['尾段连续']}</td>${dc}</tr>`;
     });
   }
@@ -2096,8 +2096,8 @@ async function exportDetail(){
     tabName=isFull?'全职明细数据':'学生明细数据';
     const base=isFull?(activeData.full_detail||[]):(activeData.student_detail||[]);
     const data=applyHoursSort(base.filter(filt).filter(matchesDetailSearch));
-    headers=['区域','大店长','门店','工号','姓名','职级','用工类型','出勤天数','休息天数','总工时','公休天数','日均工时','预估月度工时','0工时','最大连续','尾段连续',...dateCols];
-    rows=data.map(p=>[fmt(p['区域']),fmt(p['大店长']),fmt(p['门店']),fmt(p['工号']),fmt(p['姓名']),fmt(p['职级']),fmt(p['用工类型']),fmt(p['出勤天数']),fmt(p['休息天数']),fmt(p['总工时']),fmt(p['公休天数']),fmt(p['日均工时']),fmt(p['预估月度工时']),p['0工时']?'是':'否',fmt(p['最大连续']),fmt(p['尾段连续']),...dateCols.map(d=>fmt(p['每日工时']&&p['每日工时'][d]))]);
+    headers=['区域','大店长','门店','工号','姓名','职级','用工类型','出勤天数','休息天数','总工时','公休天数','日均工时','预估月度工时','可用工时','0工时','最大连续','尾段连续',...dateCols];
+    rows=data.map(p=>[fmt(p['区域']),fmt(p['大店长']),fmt(p['门店']),fmt(p['工号']),fmt(p['姓名']),fmt(p['职级']),fmt(p['用工类型']),fmt(p['出勤天数']),fmt(p['休息天数']),fmt(p['总工时']),fmt(p['公休天数']),fmt(p['日均工时']),fmt(p['预估月度工时']),fmt(p['可用工时']),p['0工时']?'是':'否',fmt(p['最大连续']),fmt(p['尾段连续']),...dateCols.map(d=>fmt(p['每日工时']&&p['每日工时'][d]))]);
   }
 
   if(rows.length===0){alert('当前筛选范围暂无数据，无需导出');return;}

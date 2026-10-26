@@ -1,0 +1,2626 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>古德墨柠 10月离职数据看板</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+            background: #f0f2f5;
+            color: #333;
+            padding: 20px;
+        }
+        .container { max-width: 1400px; margin: 0 auto; }
+
+        /* ===== 标题栏（蓝色主题） ===== */
+        .header-bar {
+            background: linear-gradient(135deg, #0d47a1 0%, #1565c0 50%, #1e88e5 100%);
+            border-radius: 8px 8px 0 0;
+            padding: 14px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header-left { display: flex; align-items: center; gap: 16px; }
+        .header-title { font-size: 18px; font-weight: bold; color: #fff; }
+        .header-date { font-size: 12px; color: rgba(255,255,255,0.85); font-weight: 500; }
+        .header-right { display: flex; align-items: center; gap: 10px; }
+        .switch-label { font-size: 12px; color: rgba(255,255,255,0.8); }
+        .switch-select {
+            padding: 6px 28px 6px 12px; border: none; border-radius: 5px; font-size: 12.5px;
+            background: rgba(255,255,255,0.95); color: #0d47a1; font-weight: 600; cursor: pointer; outline: none;
+            appearance: none; -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%230d47a1' stroke-width='3'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+            background-repeat: no-repeat; background-position: right 8px center;
+        }
+
+        /* ===== 逻辑说明区 ===== */
+        .logic-bar {
+            background: linear-gradient(90deg, #e3f2fd 0%, #bbdefb 100%);
+            border-bottom: 2px solid #90caf9;
+            padding: 12px 24px;
+            font-size: 12.5px;
+            color: #0d47a1;
+            line-height: 1.6;
+        }
+        .logic-tags { margin-top: 4px; }
+        .logic-tag {
+            display: inline-block; padding: 2px 8px; border-radius: 3px; font-size: 11px; margin-right: 6px; font-weight: 600;
+        }
+        .tag-low { background: #ffcdd2; color: #c62828; }
+        .tag-ok { background: #c8e6c9; color: #2e7d32; }
+        .tag-high { background: #fff9c4; color: #f57f17; }
+        .tag-critical { background: #f8bbd0; color: #ad1457; }
+
+        /* ===== 看板说明 ===== */
+        .description-bar {
+            background: linear-gradient(90deg, #e3f2fd 0%, #d4e9fc 100%);
+            border-bottom: 2px solid #90caf9;
+            padding: 12px 24px;
+            font-size: 12.5px; color: #0d47a1; line-height: 1.85;
+            display: flex; gap: 12px; align-items: flex-start;
+        }
+        .description-bar-title {
+            font-weight: bold; color: #0d47a1; font-size: 13.5px;
+            white-space: nowrap; padding-top: 1px;
+        }
+        .description-list { flex: 1; }
+        .description-item { margin-bottom: 2px; }
+        .description-item strong { color: #c62828; font-weight: 600; margin-right: 4px; }
+
+        /* ===== 全局筛选栏 ===== */
+        .global-filter-bar {
+            background: #fff; padding: 12px 24px; display: flex; gap: 16px; flex-wrap: wrap; align-items: center;
+            border-bottom: 2px solid #e3f2fd;
+        }
+        .global-filter-bar label { font-size: 13px; color: #0d47a1; font-weight: bold; }
+        .filter-select {
+            padding: 6px 28px 6px 12px; border: 1px solid #90caf9; border-radius: 5px; font-size: 13px;
+            outline: none; color: #0d47a1; font-weight: 500; cursor: pointer;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%231565c0' stroke-width='3'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+            background-repeat: no-repeat; background-position: right 8px center;
+            appearance: none; -webkit-appearance: none; min-width: 140px;
+        }
+        .filter-select:disabled { background-color: #f5f5f5; color: #aaa; }
+        .btn-reset-global {
+            padding: 6px 16px; border: 1px solid #90caf9; border-radius: 5px; font-size: 12.5px; cursor: pointer;
+            font-weight: 500; background: #e3f2fd; color: #0d47a1; transition: all 0.2s;
+        }
+        .btn-reset-global:hover { background: #bbdefb; }
+        .filter-info { font-size: 12px; color: #888; margin-left: auto; }
+
+        /* ===== 重点关注模块 ===== */
+        .focus-block {
+            background: linear-gradient(135deg, #fff8e1 0%, #fff 100%);
+            border-left: 4px solid #e65100;
+            padding: 16px 20px 18px;
+            margin-top: 2px;
+        }
+        .focus-title {
+            font-size: 16px; font-weight: bold;
+            background: linear-gradient(90deg, #c62828, #e65100);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: flex; align-items: center; gap: 8px;
+            margin-bottom: 6px;
+        }
+        .focus-title .badge {
+            background: #c62828; color: #fff; font-size: 11px;
+            padding: 2px 8px; border-radius: 10px; font-weight: 500;
+            -webkit-text-fill-color: #fff;
+        }
+        .focus-meta { font-size: 12px; color: #666; margin-bottom: 12px; }
+        .focus-meta strong { color: #c62828; }
+        .focus-canvas-wrap { position: relative; height: 320px; background: #fff; border-radius: 6px; padding: 12px; }
+        .focus-legend {
+            display: flex; gap: 22px; flex-wrap: wrap;
+            font-size: 13px; color: #333; padding: 0 4px;
+            margin-bottom: 4px;
+        }
+        .focus-legend-item { display: flex; align-items: center; gap: 6px; }
+        .focus-legend-dot { width: 14px; height: 14px; border-radius: 3px; }
+
+        /* ===== Section 标题 ===== */
+        .section-header {
+            background: #fff; padding: 8px 20px 6px;
+            border-bottom: 1px solid #eee; font-weight: bold; font-size: 13px; color: #0d47a1;
+            margin-top: 2px;
+        }
+
+        /* ===== KPI 卡片 ===== */
+        .cards-row {
+            display: grid; grid-template-columns: repeat(7, 1fr); gap: 0;
+            background: #fff; padding: 15px 20px;
+        }
+        .metric-card {
+            background: #fafafa; border: 1px solid #e8e8e8; border-radius: 6px;
+            padding: 16px 10px; text-align: center;
+            transition: all 0.25s ease; position: relative; overflow: hidden;
+            margin: 0 3px; cursor: default;
+        }
+        .metric-card.clickable { cursor: pointer; }
+        .metric-card.clickable:hover {
+            transform: translateY(-3px); box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+        }
+        .metric-card::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+            background: linear-gradient(90deg, #0d47a1, #1e88e5);
+        }
+        .metric-card.highlight::before { background: linear-gradient(90deg, #d32f2f, #f44336); }
+        .metric-card.danger { background: #fff5f5; border-color: #ffcdd2; }
+        .metric-card.danger::before { background: linear-gradient(90deg, #c62828, #f44336); }
+        .metric-card.info::before { background: linear-gradient(90deg, #1565c0, #42a5f5); }
+        .metric-card.success::before { background: linear-gradient(90deg, #2e7d32, #66bb6a); }
+        .card-label { font-size: 11.5px; color: #546e7a; margin-bottom: 6px; line-height: 1.35; }
+        .card-label-sub { font-size: 10px; color: #90a4ae; }
+        .card-value { font-size: 28px; font-weight: bold; color: #263238; line-height: 1.2; }
+        .card-value.red { color: #c62828; }
+        .card-value.blue { color: #1565c0; }
+        .card-value.green { color: #2e7d32; }
+        .card-unit { font-size: 12px; color: #90a4ae; margin-left: 2px; }
+        .card-sub-text { font-size: 11px; color: #90a4ae; margin-top: 4px; }
+        .card-detail-btn {
+            display: inline-block; margin-top: 6px; padding: 3px 12px;
+            background: #c62828; color: #fff; border-radius: 12px; font-size: 11px; font-weight: 600;
+            cursor: pointer; transition: all 0.2s;
+        }
+        .card-detail-btn:hover { background: #d32f2f; transform: scale(1.05); }
+        .card-detail-btn.blue { background: #1565c0; }
+        .card-detail-btn.blue:hover { background: #1976d2; }
+
+        /* ===== 图表区域 ===== */
+        .chart-row {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 0;
+            background: #fff; padding: 10px 20px;
+        }
+        .chart-box {
+            background: #fafafa; border: 1px solid #e8e8e8; border-radius: 6px;
+            padding: 10px; margin: 0 3px;
+        }
+        .chart-title { font-size: 12px; font-weight: bold; color: #0d47a1; margin-bottom: 6px; }
+        .chart-canvas-wrap { position: relative; height: 180px; }
+
+        /* ===== 二八分析图表行 ===== */
+        .analysis-row {
+            display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 0;
+            background: #fff; padding: 10px 20px;
+        }
+        .analysis-box {
+            background: #fafafa; border: 1px solid #e8e8e8; border-radius: 6px;
+            padding: 10px; margin: 0 3px;
+        }
+        .analysis-title { font-size: 12px; font-weight: bold; color: #0d47a1; margin-bottom: 6px; }
+        .analysis-canvas-wrap { position: relative; height: 150px; }
+
+        /* ===== 筛选栏（第四排） ===== */
+        .filter-bar {
+            background: #fff; padding: 12px 20px; display: flex; gap: 12px; flex-wrap: wrap; align-items: center;
+            border-bottom: 1px solid #e8e8e8;
+        }
+        .tab-group { display: flex; gap: 0; border: 1px solid #90caf9; border-radius: 6px; overflow: hidden; }
+        .tab-btn {
+            padding: 7px 18px; font-size: 13px; cursor: pointer; border: none; background: #e3f2fd;
+            color: #0d47a1; transition: all 0.2s; font-weight: 500;
+        }
+        .tab-btn.active { background: #1565c0; color: #fff; }
+        .search-box {
+            display: flex; align-items: center; border: 1px solid #ddd; border-radius: 5px; padding: 5px 10px; margin-left: auto;
+        }
+        .search-box input { border: none; outline: none; font-size: 13px; width: 160px; }
+        .action-btn {
+            padding: 6px 16px; border: none; border-radius: 5px; font-size: 12.5px; cursor: pointer;
+            font-weight: 500; transition: all 0.2s;
+        }
+        .btn-reset { background: #eceff1; color: #455a64; }
+        .btn-reset:hover { background: #cfd8dc; }
+
+        /* ===== 表格区 ===== */
+        .table-wrapper { background: #fff; overflow-x: auto; }
+        .table-wrapper::-webkit-scrollbar { height: 10px; }
+        .table-wrapper::-webkit-scrollbar-track { background: #f0f0f0; border-radius: 5px; }
+        .table-wrapper::-webkit-scrollbar-thumb { background: #90caf9; border-radius: 5px; }
+        .table-wrapper::-webkit-scrollbar-thumb:hover { background: #1565c0; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; table-layout: fixed; }
+        .panel table { min-width: 1200px; }
+        .store-table-wrap table { min-width: 1400px; table-layout: auto; }
+        .store-table-wrap td { white-space: nowrap; }
+        thead th {
+            background: linear-gradient(180deg, #0d47a1 0%, #1565c0 100%);
+            color: #fff; padding: 11px 8px; text-align: center; font-weight: 600; font-size: 12.5px;
+            white-space: nowrap; letter-spacing: 0.3px;
+        }
+        tbody td {
+            padding: 10px 8px; text-align: center; border-bottom: 1px solid #f0f0f0; color: #333;
+        }
+        tbody tr:nth-child(even) { background: #f5f9ff; }
+        tbody tr:hover { background: #e3f2fd; }
+        .text-left { text-align: left !important; padding-left: 16px !important; }
+        .val-red { color: #c62828; font-weight: bold; }
+        .val-green { color: #2e7d32; font-weight: bold; }
+        .val-highlight { color: #c62828; font-weight: bold; font-size: 14px; background: #fff5f5; }
+
+        tfoot td {
+            background: linear-gradient(180deg, #e3f2fd 0%, #bbdefb 100%);
+            font-weight: bold; padding: 12px 8px; color: #0d47a1; font-size: 13px;
+        }
+        tfoot .total-note { font-size: 11.5px; color: #546e7a; font-weight: normal; }
+
+        .panel { display: none; }
+        .panel.active { display: block; }
+
+        /* ===== 明细表 ===== */
+        .store-table-wrap { max-height: 500px; overflow-y: auto; }
+        .store-table-wrap thead th { position: sticky; top: 0; z-index: 2; }
+
+        /* ===== 弹窗 ===== */
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5); z-index: 100; justify-content: center; align-items: center;
+            padding: 20px;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal-box {
+            background: #fff; border-radius: 8px; width: 100%; max-width: 95vw; max-height: 85vh;
+            display: flex; flex-direction: column; box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+            animation: modalIn 0.25s ease;
+        }
+        @media (min-width: 1400px) {
+            .modal-box { max-width: 1600px; }
+        }
+        @keyframes modalIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .modal-header {
+            background: linear-gradient(135deg, #0d47a1 0%, #1565c0 100%);
+            color: #fff; padding: 14px 20px; display: flex; justify-content: space-between; align-items: center;
+            border-radius: 8px 8px 0 0;
+        }
+        .modal-title { font-size: 15px; font-weight: bold; }
+        .modal-close {
+            background: rgba(255,255,255,0.2); border: none; color: #fff; width: 28px; height: 28px;
+            border-radius: 50%; font-size: 18px; cursor: pointer; line-height: 1;
+        }
+        .modal-close:hover { background: rgba(255,255,255,0.35); }
+        .modal-body { padding: 0; overflow: auto; flex: 1; }
+        .modal-table-wrap { overflow: auto; width: 100%; }
+        .modal-table-wrap table { width: max-content; min-width: 100%; font-size: 12.5px; border-collapse: separate; border-spacing: 0; }
+        .modal-table-wrap th,
+        .modal-table-wrap td { white-space: nowrap; }
+        .modal-table-wrap th { position: sticky; top: 0; z-index: 1; }
+        .modal-table-wrap .col-detail { min-width: 220px; max-width: 360px; overflow: visible; text-overflow: clip; white-space: normal; line-height: 1.5; }
+        .modal-table-wrap .col-edit { min-width: 110px; max-width: 220px; overflow: visible; text-overflow: clip; white-space: normal; line-height: 1.5; font-size: 11.5px; color: #666; }
+        .modal-table-wrap .col-edit-time { min-width: 80px; white-space: nowrap; }
+        .modal-body thead th { background: linear-gradient(180deg, #1565c0 0%, #1e88e5 100%); }
+        .modal-body tbody td { padding: 9px 8px; }
+        .modal-empty { padding: 40px 20px; text-align: center; color: #888; font-size: 14px; }
+
+        /* ===== 离职原因在线填写 ===== */
+        .reason-edit {
+            display: inline-block; padding: 2px 8px; border-radius: 4px;
+            background: #fff3e0; color: #e65100; font-size: 12px;
+            cursor: pointer; transition: all 0.2s; border: 1px dashed #ffb74d; line-height: 1.4;
+        }
+        .reason-edit:hover { background: #ffe0b2; border-color: #f57c00; }
+        .reason-edit.filled {
+            background: transparent; color: #666; border: none; padding: 0;
+            cursor: pointer; font-size: 11.5px;
+        }
+        .reason-edit.filled:hover { color: #0d47a1; text-decoration: underline; }
+        /* 编辑弹窗 */
+        .edit-modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5); z-index: 200; justify-content: center; align-items: center;
+            padding: 20px;
+        }
+        .edit-modal-overlay.active { display: flex; }
+        .edit-modal-box {
+            background: #fff; border-radius: 8px; width: 100%; max-width: 760px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.25); animation: modalIn 0.25s ease;
+            display: flex; flex-direction: column; max-height: 90vh;
+        }
+        .edit-modal-body { padding: 20px; flex: 1; overflow: auto; min-height: 0; }
+        .edit-modal-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 14px 20px;
+        }
+        .edit-modal-grid .full-width { grid-column: 1 / -1; }
+        .edit-modal-info {
+            background: #e3f2fd; border-radius: 6px; padding: 12px 14px;
+            margin-bottom: 16px; font-size: 13px; color: #0d47a1; line-height: 1.7;
+        }
+        .edit-modal-info strong { color: #c62828; }
+        .edit-modal-label {
+            font-size: 13px; color: #546e7a; margin-bottom: 6px; font-weight: 600;
+        }
+        .edit-modal-textarea {
+            width: 100%; min-height: 120px; border: 1px solid #90caf9; border-radius: 6px;
+            padding: 10px 12px; font-size: 13px; line-height: 1.6; resize: vertical; outline: none;
+        }
+        .edit-modal-textarea:focus { border-color: #1565c0; }
+        .edit-modal-input {
+            width: 100%; border: 1px solid #90caf9; border-radius: 6px;
+            padding: 8px 12px; font-size: 13px; outline: none; margin-bottom: 16px;
+        }
+        .edit-modal-actions {
+            display: flex; justify-content: flex-end; gap: 10px; margin-top: 0;
+            padding: 12px 20px; border-top: 1px solid #e3f2fd; background: #fff;
+            border-radius: 0 0 8px 8px;
+        }
+        .edit-modal-actions button {
+            padding: 8px 18px; border: none; border-radius: 5px; font-size: 13px;
+            cursor: pointer; font-weight: 500; transition: all 0.2s;
+        }
+        .edit-modal-actions .btn-cancel { background: #eceff1; color: #455a64; }
+        .edit-modal-actions .btn-cancel:hover { background: #cfd8dc; }
+        .edit-modal-actions .btn-save { background: #1565c0; color: #fff; }
+        .edit-modal-actions .btn-save:hover { background: #0d47a1; }
+        .auto-save-indicator {
+            font-size: 11px; color: #4caf50; opacity: 0; transition: opacity 0.3s;
+            margin-left: auto; margin-right: 12px; font-weight: 500;
+            white-space: nowrap;
+        }
+        .auto-save-indicator.visible { opacity: 1; }
+        .edit-modal-hint {
+            font-size: 11.5px; color: #78909c; margin-top: 8px; line-height: 1.5;
+        }
+
+        /* ===== 离职原因标签 ===== */
+        .reason-badge {
+            display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 600;
+        }
+        .reason-fazhan { background: #e3f2fd; color: #1565c0; }
+        .reason-shenti { background: #fff3e0; color: #e65100; }
+        .reason-geren { background: #f3e5f5; color: #7b1fa2; }
+        .reason-qita { background: #fce4ec; color: #c62828; }
+        .reason-nengli { background: #e8f5e9; color: #2e7d32; }
+
+        /* ===== 响应式 ===== */
+        @media (max-width: 1200px) {
+            .cards-row { grid-template-columns: repeat(3, 1fr); }
+            .chart-row, .analysis-row { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 768px) {
+            .cards-row { grid-template-columns: repeat(2, 1fr); }
+            .filter-bar { flex-direction: column; align-items: stretch; }
+            .search-box { margin-left: 0; }
+            .header-bar { flex-direction: column; gap: 10px; align-items: flex-start; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+<!-- ===== 标题栏 ===== -->
+<style>
+.save-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px;vertical-align:middle;}
+.save-dot.ok{background:#7cb342;box-shadow:0 0 4px #7cb342;}
+.save-dot.local{background:#ff9800;box-shadow:0 0 4px #ff9800;}
+.save-dot.error{background:#e53935;box-shadow:0 0 4px #e53935;animation:saveblink 1s infinite;}
+@keyframes saveblink{50%{opacity:.3;}}
+</style>
+<div class="header-bar">
+    <div class="header-left">
+        <div class="header-title" id="hdr-title">● 古德墨柠 10月离职数据看板</div>
+        <div class="header-date" id="hdr-date"></div>
+    </div>
+    <div class="header-right">
+        <span class="switch-label">切换看板：</span>
+        <select class="switch-select" id="dashboard-switch" onchange="switchDashboard(this.value)">
+            <option value="current">📋 离职数据看板（当前）</option>
+            <option value="worktime">⏰ 工时墨柠看板</option>
+            <option value="hc">👥 HC招募缺口看板</option>
+        </select>
+    </div>
+</div>
+
+<!-- ===== 逻辑说明区 ===== -->
+<div class="logic-bar">
+    🎯 <strong>数据逻辑：</strong>当月离职率 = 当期离职人数 / ((期初在职人数 + 期末在职人数) / 2) × 100%
+    <div class="logic-tags">
+        <span class="logic-tag tag-ok">达标 ≤ 5%</span>
+        <span class="logic-tag tag-high">预警 5%~8%</span>
+        <span class="logic-tag tag-low">超标 &gt; 8%</span>
+        <span class="logic-tag tag-critical">严重 &gt; 10%</span>
+    </div>
+</div>
+
+<!-- ===== 看板说明 ===== -->
+<div class="description-bar">
+    <div class="description-bar-title">📋 看板说明</div>
+    <div class="description-list">
+        <div class="description-item">1、<strong>统计周期：</strong>10月1日 - 10月15日</div>
+        <div class="description-item">2、<strong>数据范围：</strong>古德墨柠品牌全职人员，含14位大店长管辖门店</div>
+        <div class="description-item">3、<strong>离职类型：</strong>目标主动离职率 ≤ 5%</div>
+        <div class="description-item">4、<strong>筛选联动：</strong>顶部「大店区」筛选可联动第一、二、三排数据，点击红色/蓝色卡片可查看对应人员明细</div>
+        <div class="description-item">5、<strong>更新节奏：</strong>月中15号更新半月度数据，月末25日更新全月数据；链路：伙伴提出离职 → 中训/带店以下职级大店长3个工作日内完成沟通和离职报备 → 离职原因需反馈至区域BP → 戴嘉伟收口刷新离职看板和分析报告</div>
+        <div class="description-item">6、<strong>原因填写：</strong>点击第一排「主动离职人数」或第五排明细表，缺失离职详情的伙伴显示「待填写」，点击即可在线补充，数据实时同步到云端</div>
+    </div>
+</div>
+
+<!-- ===== 【重点关注】大店长区域离职分析（双轴折线图） ===== -->
+<div class="focus-block">
+    <div class="focus-title">🔥 重点关注：大店长区域离职分析 <span class="badge">首要</span></div>
+    <div class="focus-meta" id="focus-meta"></div>
+    <div class="focus-legend">
+        <div class="focus-legend-item"><span class="focus-legend-dot" style="background:#c62828;"></span>离职人数（左轴，单位：人）</div>
+        <div class="focus-legend-item"><span class="focus-legend-dot" style="background:#1565c0;"></span>离职率（右轴，单位：%）</div>
+        <div class="focus-legend-item" style="margin-left:auto;color:#888;font-size:12px;">点击折线节点可查看大店长区域下属人员明细</div>
+    </div>
+    <div class="focus-canvas-wrap"><canvas id="chart-dc-focus"></canvas></div>
+</div>
+
+<!-- ===== 全局筛选栏 ===== -->
+<div class="global-filter-bar">
+    <label>🔍 数据筛选：</label>
+    <select class="filter-select" id="global-dadianchang" onchange="onGlobalFilterChange()">
+        <option value="all">大店区：全部</option>
+    </select>
+    <button class="btn-reset-global" onclick="resetGlobalFilter()">🔄 重置筛选</button>
+    <span class="filter-info" id="filter-info"></span>
+</div>
+
+<!-- ===== 第一排：核心KPI ===== -->
+<div class="section-header" style="display:flex;align-items:center;justify-content:space-between;">
+    <span>【第一排】核心指标总览 - 古德墨柠 7月离职情况</span>
+    <button class="action-btn" style="background:#1565c0;color:#fff;padding:6px 16px;font-size:13px;" onclick="openPreTurnoverEditModal()">+ 新增预离职人员</button>
+</div>
+<div class="cards-row" id="cards-row"></div>
+
+<!-- ===== 第二排：趋势图表 ===== -->
+<div class="section-header">【第二排】离职率趋势分析 - 古德墨柠 4-7月</div>
+<div class="chart-row">
+    <div class="chart-box">
+        <div class="chart-title">📈 古德墨柠 月度主动离职率趋势 (4-7月)</div>
+        <div class="chart-canvas-wrap"><canvas id="chart-monthly"></canvas></div>
+    </div>
+    <div class="chart-box">
+        <div class="chart-title">📊 各月离职人数对比 (4-7月)</div>
+        <div class="chart-canvas-wrap"><canvas id="chart-monthly-count"></canvas></div>
+    </div>
+</div>
+
+<!-- ===== 第三排：二八分析 ===== -->
+<div class="section-header">【第三排】二八定律分析 - 关键问题识别</div>
+<div class="analysis-row">
+    <div class="analysis-box">
+        <div class="analysis-title">职级分布</div>
+        <div class="analysis-canvas-wrap"><canvas id="chart-zhiji"></canvas></div>
+    </div>
+    <div class="analysis-box">
+        <div class="analysis-title">工龄分布</div>
+        <div class="analysis-canvas-wrap"><canvas id="chart-gongling"></canvas></div>
+    </div>
+    <div class="analysis-box">
+        <div class="analysis-title">离职原因分布</div>
+        <div class="analysis-canvas-wrap"><canvas id="chart-reason"></canvas></div>
+    </div>
+    <div class="analysis-box">
+        <div class="analysis-title">大店长离职人数排名</div>
+        <div class="analysis-canvas-wrap"><canvas id="chart-dadianchang"></canvas></div>
+    </div>
+</div>
+
+<!-- ===== 第四排：大店长维度表格 ===== -->
+<div class="section-header">【第四排】大店长维度离职数据明细</div>
+<div class="filter-bar">
+    <div class="search-box">
+        🔍<input type="text" placeholder="搜索姓名..." oninput="searchTable(this.value)">
+    </div>
+    <button class="action-btn btn-reset" onclick="resetTableFilter()">🔄 重置</button>
+</div>
+
+<!-- 大店长面板 -->
+<div id="panel-dadianchang" class="panel active table-wrapper">
+    <table>
+        <colgroup>
+            <col style="width:8%"><col style="width:10%"><col style="width:7%"><col style="width:7%">
+            <col style="width:8%"><col style="width:6.67%"><col style="width:6.67%"><col style="width:6.67%">
+            <col style="width:6.67%"><col style="width:6.67%"><col style="width:6.67%"><col style="width:6.67%">
+            <col style="width:6.67%"><col style="width:6.67%">
+        </colgroup>
+        <thead><tr id="dadianchang-head"></tr></thead>
+        <tbody id="dadianchang-tbody"></tbody>
+        <tfoot><tr id="dadianchang-foot"></tr></tfoot>
+    </table>
+</div>
+
+<!-- ===== 第五排：离职人员明细 ===== -->
+<div class="section-header">【第五排】离职人员明细 - 完整信息</div>
+<div class="filter-bar">
+    <div style="font-size:13px;color:#0d47a1;font-weight:bold;">筛选：</div>
+    <select class="filter-select" id="emp-reason-filter" onchange="filterEmployees()">
+        <option value="all">离职原因：全部</option>
+    </select>
+    <div class="search-box">
+        🔍<input id="emp-search" type="text" placeholder="搜索姓名/门店..." oninput="filterEmployees()">
+    </div>
+    <button class="action-btn btn-reset" onclick="resetEmpFilter()">🔄 重置</button>
+</div>
+<div class="table-wrapper store-table-wrap">
+    <table>
+        <colgroup>
+            <col style="width:3%"><col style="width:6%"><col style="width:6%"><col style="width:8%">
+            <col style="width:5%"><col style="width:6%"><col style="width:6%"><col style="width:6%">
+            <col style="width:5%"><col style="width:6%"><col style="width:6%"><col style="width:6%">
+            <col style="width:9%">
+            <col style="width:6%"><col style="width:7%"><col style="width:7%"><col style="width:6%">
+            <col style="width:7%"><col style="width:6%"><col style="width:7%">
+        </colgroup>
+        <thead><tr id="emp-head"></tr></thead>
+        <tbody id="emp-tbody"></tbody>
+    </table>
+</div>
+
+<!-- ===== 弹窗 ===== -->
+<div class="modal-overlay" id="detail-modal" onclick="closeModal(event)">
+    <div class="modal-box" onclick="event.stopPropagation()">
+        <div class="modal-header">
+            <span class="modal-title" id="modal-title">明细</span>
+            <button class="modal-close" onclick="closeModal()">×</button>
+        </div>
+        <div class="modal-body" id="modal-body">
+            <div class="modal-empty">暂无数据</div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== 离职原因编辑弹窗 ===== -->
+<div class="edit-modal-overlay" id="reason-edit-modal" onclick="closeReasonEdit(event)">
+    <div class="edit-modal-box" onclick="event.stopPropagation()">
+        <div class="modal-header">
+            <span class="modal-title">填写离职原因</span>
+            <span class="auto-save-indicator" id="reason-edit-saved-indicator">✓ 已保存</span>
+            <button class="modal-close" onclick="closeReasonEdit()">×</button>
+        </div>
+        <div class="edit-modal-body">
+            <div class="edit-modal-info" id="reason-edit-info"></div>
+            <div class="edit-modal-grid">
+                <div class="full-width">
+                    <div class="edit-modal-label">详情</div>
+                    <textarea class="edit-modal-textarea" id="reason-edit-text" placeholder="请填写该伙伴的离职详情…" style="min-height:120px;" oninput="autoSaveReasonEdit()"></textarea>
+                </div>
+            </div>
+            <div class="edit-modal-hint">⚡ 输入停止 0.6 秒后自动保存到云端，关闭弹窗也不会丢失。</div>
+        </div>
+        <div class="edit-modal-actions">
+            <button class="btn-cancel" onclick="closeReasonEdit()">关闭</button>
+            <button class="btn-save" onclick="confirmReasonEdit()">立即保存</button>
+        </div>
+    </div>
+</div>
+
+<!-- ===== 预离职人员新增/编辑弹窗 ===== -->
+<div class="edit-modal-overlay" id="pre-turnover-edit-modal">
+    <div class="edit-modal-box" style="max-width:780px;" onclick="event.stopPropagation()">
+        <div class="modal-header">
+            <span class="modal-title" id="pre-turnover-edit-title">新增预离职人员</span>
+            <button class="modal-close" onclick="closePreTurnoverEdit()">×</button>
+        </div>
+        <div class="edit-modal-body">
+            <input type="hidden" id="pre-edit-qujing" value="">
+            <div class="edit-modal-grid">
+                <div style="position:relative;">
+                    <div class="edit-modal-label">姓名 <span style="color:#c62828;">*</span> <span style="color:#888;font-size:11px;font-weight:normal;">（输入 1-2 字自动检索期初人员，可手动修改所有字段）</span></div>
+                    <input type="text" class="edit-modal-input" id="pre-edit-name" placeholder="例如：张三" style="margin-bottom:0;" autocomplete="off" oninput="onPreNameInput()" onfocus="onPreNameInput()">
+                    <div id="pre-name-suggest" style="display:none;position:absolute;top:62px;left:0;right:0;background:#fff;border:1px solid #ccc;border-radius:4px;max-height:180px;overflow-y:auto;z-index:1000;box-shadow:0 4px 8px rgba(0,0,0,0.1);"></div>
+                </div>
+                <div style="position:relative;">
+                    <div class="edit-modal-label">工号 <span style="color:#888;font-size:11px;font-weight:normal;">（输入工号自动检索期初人员，可手动修改所有字段）</span></div>
+                    <input type="text" class="edit-modal-input" id="pre-edit-emp-id" placeholder="自动填充（可手动修改）" style="margin-bottom:0;" autocomplete="off" oninput="onPreEmpIdInput()" onfocus="onPreEmpIdInput()">
+                    <div id="pre-empid-suggest" style="display:none;position:absolute;top:62px;left:0;right:0;background:#fff;border:1px solid #ccc;border-radius:4px;max-height:180px;overflow-y:auto;z-index:1000;box-shadow:0 4px 8px rgba(0,0,0,0.1);"></div>
+                </div>
+                <div>
+                    <div class="edit-modal-label">大店长 <span style="color:#c62828;">*</span></div>
+                    <select class="edit-modal-input" id="pre-edit-dadianchang" style="margin-bottom:0;">
+                        <option value="">请选择大店长</option>
+                        <option value="何海云">何海云</option><option value="刘旺林">刘旺林</option><option value="周思凡">周思凡</option><option value="廖灿">廖灿</option><option value="徐宇辉">徐宇辉</option><option value="旷瑶">旷瑶</option><option value="易彪">易彪</option><option value="李奔">李奔</option><option value="李鼎">李鼎</option><option value="杜强">杜强</option><option value="童璐">童璐</option><option value="赵思洁">赵思洁</option><option value="邵宝生">邵宝生</option><option value="钟天祥">钟天祥</option>
+                    </select>
+                </div>
+                <div>
+                    <div class="edit-modal-label">门店 <span style="color:#c62828;">*</span></div>
+                    <input type="text" class="edit-modal-input" id="pre-edit-store" list="store-options" placeholder="自动填充（可手动修改）" style="margin-bottom:0;" oninput="onPreStoreInput()">
+                    <datalist id="store-options"></datalist>
+                </div>
+                <div>
+                    <div class="edit-modal-label">职位</div>
+                    <input type="text" class="edit-modal-input" id="pre-edit-position" placeholder="自动填充（可手动修改）" style="margin-bottom:0;">
+                </div>
+                <div>
+                    <div class="edit-modal-label">入职日期</div>
+                    <input type="text" class="edit-modal-input" id="pre-edit-hire-date" placeholder="自动填充（可手动修改）" style="margin-bottom:0;">
+                </div>
+                <div>
+                    <div class="edit-modal-label">预计离职日期</div>
+                    <input type="text" class="edit-modal-input" id="pre-edit-resign-date" placeholder="如：2026-10-31" style="margin-bottom:0;">
+                </div>
+                <div>
+                    <div class="edit-modal-label">工龄区间</div>
+                    <select class="edit-modal-input" id="pre-edit-gongling" style="margin-bottom:0;">
+                        <option value="">请选择</option>
+                        <option value="6个月内">6个月内</option>
+                        <option value="6-12个月">6-12个月</option>
+                        <option value="1-3年">1-3年</option>
+                        <option value="3年以上">3年以上</option>
+                    </select>
+                </div>
+                <div>
+                    <div class="edit-modal-label">原因标签</div>
+                    <select class="edit-modal-input" id="pre-edit-reason-tag" style="margin-bottom:0;">
+                        <option value="">请选择</option>
+                        <option value="发展原因">发展原因</option>
+                        <option value="身体原因">身体原因</option>
+                        <option value="个人原因">个人原因</option>
+                        <option value="其他原因">其他原因</option>
+                        <option value="个人能力">个人能力</option>
+                    </select>
+                </div>
+                <div class="full-width">
+                    <div class="edit-modal-label">离职原因</div>
+                    <textarea class="edit-modal-input" id="pre-edit-reason1" placeholder="手动填写离职原因（可粘贴较长的具体原因描述）" style="margin-bottom:0;min-height:64px;resize:vertical;font-family:inherit;"></textarea>
+                </div>
+            </div>
+            <div class="edit-modal-hint">输入姓名后自动从期初人员表中检索建议填充，所有字段均支持手动修改，保存后自动同步云端。</div>
+        </div>
+        <div class="edit-modal-actions">
+            <button class="btn-cancel" onclick="closePreTurnoverEdit()">取消</button>
+            <button class="btn-save" onclick="confirmPreTurnoverEdit()">保存</button>
+        </div>
+    </div>
+</div>
+
+</div><!-- end container -->
+
+<script src="data.js?v=20261020b"></script>
+    <script src="roster.js?v=20261020b"></script>
+<script>
+// ===== 全局错误捕获（显示在页面顶部红色条，方便用户看到 JS 错误） =====
+window.addEventListener('error',function(e){
+    var div=document.createElement('div');
+    div.style.cssText='position:fixed;top:0;left:0;right:0;background:#e74c3c;color:#fff;padding:8px 16px;font-size:13px;z-index:99999;font-family:monospace;white-space:pre-wrap;';
+    div.textContent='JS错误: '+e.message+' (行:'+e.lineno+':'+e.colno+')  →  请截图发给技术';
+    document.body.appendChild(div);
+    setTimeout(function(){div.remove();},15000);
+});
+window.addEventListener('unhandledrejection',function(e){
+    var div=document.createElement('div');
+    div.style.cssText='position:fixed;top:40px;left:0;right:0;background:#e67e22;color:#fff;padding:8px 16px;font-size:13px;z-index:99999;font-family:monospace;white-space:pre-wrap;';
+    var msg=e.reason&&e.reason.message?e.reason.message:String(e.reason);
+    div.textContent='Promise错误: '+msg+'  →  请截图发给技术';
+    document.body.appendChild(div);
+    setTimeout(function(){div.remove();},15000);
+});
+const STORE_DATA={
+dadianchang:["何海云", "刘旺林", "周思凡", "廖灿", "徐宇辉", "旷瑶", "易彪", "李奔", "杜强", "童璐", "赵思洁", "邵宝生", "钟天祥"],
+stores:["古德墨柠7mallM层店", "古德墨柠7mall外街店", "古德墨柠IFS国金中心LG层店", "古德墨柠万家丽一楼南门店", "古德墨柠万家丽一楼店", "古德墨柠万家丽家居广场店", "古德墨柠万家丽负一楼店", "古德墨柠东庆街店", "古德墨柠东怡外国店", "古德墨柠中山亭店", "古德墨柠中心广场楼梯口店", "古德墨柠丰盈西里店", "古德墨柠九龙仓四楼店", "古德墨柠云玺潮汇北广场店", "古德墨柠五一平和堂负一楼店", "古德墨柠五一广场新大新店", "古德墨柠人间草木店", "古德墨柠仰天湖公交站店", "古德墨柠佳兆业广场店", "古德墨柠保利时光汇一楼店", "古德墨柠北辰三角洲站1号口店", "古德墨柠北辰三角洲站2号口店", "古德墨柠协信星光PARK店", "古德墨柠南门口联成百货大楼店", "古德墨柠友阿百货人民路店", "古德墨柠吉联Mall西广场店", "古德墨柠后湖小区店", "古德墨柠和而不同店", "古德墨柠嘉顿新天地一楼店", "古德墨柠四方坪商贸城南门店", "古德墨柠国金街B层12号口店", "古德墨柠地科家园一楼店", "古德墨柠城市生活家店", "古德墨柠太平粮仓店", "古德墨柠太平街148号店", "古德墨柠太平街新胜村口店", "古德墨柠太平街解放路口店", "古德墨柠奥林匹克店", "古德墨柠开福万达广场一楼店", "古德墨柠德思勤L1层店", "古德墨柠德思勤四季汇店", "古德墨柠德思勤苹果街店", "古德墨柠悦方一楼店", "古德墨柠悦麓汇美食地标店", "古德墨柠惠农大厦东门店", "古德墨柠惠农大厦店", "古德墨柠招商蛇口花园店", "古德墨柠新大陆银座店", "古德墨柠新时空大厦店", "古德墨柠方圆荟G层店", "古德墨柠旭辉里一楼店", "古德墨柠星月楼西北角店", "古德墨柠星沙万象汇内街店", "古德墨柠星沙吾悦外街店", "古德墨柠星沙天虹一楼店", "古德墨柠星沙永旺梦乐城店", "古德墨柠望城永旺梦乐城店", "古德墨柠机场T1B5店", "古德墨柠机场T2A安检店", "古德墨柠机场T2D44店", "古德墨柠杉杉奥特莱斯店", "古德墨柠林科大后街店", "古德墨柠树木岭新梁仓店", "古德墨柠步行街B区店", "古德墨柠步行街E区店", "古德墨柠步行街中心广场东北角店", "古德墨柠河西王府井负一楼店", "古德墨柠河西通程店", "古德墨柠泉塘店", "古德墨柠海信二楼店", "古德墨柠涉外美食街店", "古德墨柠渔湾市公交车站店", "古德墨柠温尔登超市店", "古德墨柠湖南大剧院一楼店", "古德墨柠湖南省博物馆四楼店", "古德墨柠湘腾广场拐角店", "古德墨柠溪悦荟店", "古德墨柠潮宗街文化街店", "古德墨柠潮宗街水道巷店", "古德墨柠牛车水美食城店", "古德墨柠王府井桃花源店", "古德墨柠登隆街内街店", "古德墨柠百联奥特莱斯店", "古德墨柠砂之船一楼外街店", "古德墨柠科佳电脑城店", "古德墨柠突兀店", "古德墨柠粉巢一楼店", "古德墨柠育英街店", "古德墨柠芙蓉广场亭子店", "古德墨柠荷花路店", "古德墨柠蝴蝶大厦店", "古德墨柠裕园小区店", "古德墨柠西中心T3写字楼店", "古德墨柠解放路世纪情店", "古德墨柠谢子龙艺术馆一楼店", "古德墨柠都正街内街店", "古德墨柠金茂三楼店", "古德墨柠长郡中学门口店", "古德墨柠阜埠河地铁1号口店", "古德墨柠雨花亭凯德二楼店", "古德墨柠音乐学院对面店", "古德墨柠高铁B24对面店", "古德墨柠高铁东广场美食城店", "古德墨柠高铁南站A8二楼店", "古德墨柠高铁南站西广场F15店", "古德墨柠高铁吾悦广场外街店", "古德墨柠麓山南路公交站店", "古德墨柠黄兴步行街F区一楼店", "古德墨柠龙塘小区店", "古德墨柠龙湖月亮岛天街店", "古德墨柠龙湖长沙芙蓉天街店"],
+mapping:{
+"古德墨柠7mallM层店":{dadianchang:"徐宇辉"},
+"古德墨柠7mall外街店":{dadianchang:"徐宇辉"},
+"古德墨柠IFS国金中心LG层店":{dadianchang:"邵宝生"},
+"古德墨柠万家丽一楼南门店":{dadianchang:"童璐"},
+"古德墨柠万家丽一楼店":{dadianchang:"童璐"},
+"古德墨柠万家丽家居广场店":{dadianchang:"童璐"},
+"古德墨柠万家丽负一楼店":{dadianchang:"童璐"},
+"古德墨柠东庆街店":{dadianchang:"徐宇辉"},
+"古德墨柠东怡外国店":{dadianchang:"廖灿"},
+"古德墨柠中山亭店":{dadianchang:"何海云"},
+"古德墨柠中心广场楼梯口店":{dadianchang:"李奔"},
+"古德墨柠丰盈西里店":{dadianchang:"童璐"},
+"古德墨柠九龙仓四楼店":{dadianchang:"邵宝生"},
+"古德墨柠云玺潮汇北广场店":{dadianchang:"杜强"},
+"古德墨柠五一平和堂负一楼店":{dadianchang:"徐宇辉"},
+"古德墨柠五一广场新大新店":{dadianchang:"周思凡"},
+"古德墨柠人间草木店":{dadianchang:"旷瑶"},
+"古德墨柠仰天湖公交站店":{dadianchang:"廖灿"},
+"古德墨柠佳兆业广场店":{dadianchang:"徐宇辉"},
+"古德墨柠保利时光汇一楼店":{dadianchang:"杜强"},
+"古德墨柠北辰三角洲站1号口店":{dadianchang:"何海云"},
+"古德墨柠北辰三角洲站2号口店":{dadianchang:"何海云"},
+"古德墨柠协信星光PARK店":{dadianchang:"杜强"},
+"古德墨柠南门口联成百货大楼店":{dadianchang:"赵思洁"},
+"古德墨柠友阿百货人民路店":{dadianchang:"钟天祥"},
+"古德墨柠吉联Mall西广场店":{dadianchang:"钟天祥"},
+"古德墨柠后湖小区店":{dadianchang:"李奔"},
+"古德墨柠和而不同店":{dadianchang:"杜强"},
+"古德墨柠嘉顿新天地一楼店":{dadianchang:"何海云"},
+"古德墨柠四方坪商贸城南门店":{dadianchang:"何海云"},
+"古德墨柠国金街B层12号口店":{dadianchang:"邵宝生"},
+"古德墨柠地科家园一楼店":{dadianchang:"邵宝生"},
+"古德墨柠城市生活家店":{dadianchang:"邵宝生"},
+"古德墨柠太平粮仓店":{dadianchang:"周思凡"},
+"古德墨柠太平街148号店":{dadianchang:"周思凡"},
+"古德墨柠太平街新胜村口店":{dadianchang:"周思凡"},
+"古德墨柠太平街解放路口店":{dadianchang:"周思凡"},
+"古德墨柠奥林匹克店":{dadianchang:"刘旺林"},
+"古德墨柠开福万达广场一楼店":{dadianchang:"何海云"},
+"古德墨柠德思勤L1层店":{dadianchang:"廖灿"},
+"古德墨柠德思勤四季汇店":{dadianchang:"廖灿"},
+"古德墨柠德思勤苹果街店":{dadianchang:"廖灿"},
+"古德墨柠悦方一楼店":{dadianchang:"杜强"},
+"古德墨柠悦麓汇美食地标店":{dadianchang:"赵思洁"},
+"古德墨柠惠农大厦东门店":{dadianchang:"邵宝生"},
+"古德墨柠惠农大厦店":{dadianchang:"邵宝生"},
+"古德墨柠招商蛇口花园店":{dadianchang:"杜强"},
+"古德墨柠新大陆银座店":{dadianchang:"赵思洁"},
+"古德墨柠新时空大厦店":{dadianchang:"廖灿"},
+"古德墨柠方圆荟G层店":{dadianchang:"何海云"},
+"古德墨柠旭辉里一楼店":{dadianchang:"廖灿"},
+"古德墨柠星月楼西北角店":{dadianchang:"杜强"},
+"古德墨柠星沙万象汇内街店":{dadianchang:"旷瑶"},
+"古德墨柠星沙吾悦外街店":{dadianchang:"旷瑶"},
+"古德墨柠星沙天虹一楼店":{dadianchang:"旷瑶"},
+"古德墨柠星沙永旺梦乐城店":{dadianchang:"易彪"},
+"古德墨柠望城永旺梦乐城店":{dadianchang:"刘旺林"},
+"古德墨柠机场T1B5店":{dadianchang:"易彪"},
+"古德墨柠机场T2A安检店":{dadianchang:"易彪"},
+"古德墨柠机场T2D44店":{dadianchang:"易彪"},
+"古德墨柠杉杉奥特莱斯店":{dadianchang:"旷瑶"},
+"古德墨柠林科大后街店":{dadianchang:"廖灿"},
+"古德墨柠树木岭新梁仓店":{dadianchang:"钟天祥"},
+"古德墨柠步行街B区店":{dadianchang:"李奔"},
+"古德墨柠步行街E区店":{dadianchang:"李奔"},
+"古德墨柠步行街中心广场东北角店":{dadianchang:"李奔"},
+"古德墨柠河西王府井负一楼店":{dadianchang:"刘旺林"},
+"古德墨柠河西通程店":{dadianchang:"赵思洁"},
+"古德墨柠泉塘店":{dadianchang:"易彪"},
+"古德墨柠海信二楼店":{dadianchang:"杜强"},
+"古德墨柠涉外美食街店":{dadianchang:"刘旺林"},
+"古德墨柠渔湾市公交车站店":{dadianchang:"赵思洁"},
+"古德墨柠温尔登超市店":{dadianchang:"钟天祥"},
+"古德墨柠湖南大剧院一楼店":{dadianchang:"邵宝生"},
+"古德墨柠湖南省博物馆四楼店":{dadianchang:"何海云"},
+"古德墨柠湘腾广场拐角店":{dadianchang:"刘旺林"},
+"古德墨柠溪悦荟店":{dadianchang:"易彪"},
+"古德墨柠潮宗街文化街店":{dadianchang:"何海云"},
+"古德墨柠潮宗街水道巷店":{dadianchang:"周思凡"},
+"古德墨柠牛车水美食城店":{dadianchang:"周思凡"},
+"古德墨柠王府井桃花源店":{dadianchang:"徐宇辉"},
+"古德墨柠登隆街内街店":{dadianchang:"童璐"},
+"古德墨柠百联奥特莱斯店":{dadianchang:"易彪"},
+"古德墨柠砂之船一楼外街店":{dadianchang:"刘旺林"},
+"古德墨柠科佳电脑城店":{dadianchang:"钟天祥"},
+"古德墨柠突兀店":{dadianchang:"徐宇辉"},
+"古德墨柠粉巢一楼店":{dadianchang:"周思凡"},
+"古德墨柠育英街店":{dadianchang:"李奔"},
+"古德墨柠芙蓉广场亭子店":{dadianchang:"徐宇辉"},
+"古德墨柠荷花路店":{dadianchang:"童璐"},
+"古德墨柠蝴蝶大厦店":{dadianchang:"徐宇辉"},
+"古德墨柠裕园小区店":{dadianchang:"李奔"},
+"古德墨柠西中心T3写字楼店":{dadianchang:"刘旺林"},
+"古德墨柠解放路世纪情店":{dadianchang:"周思凡"},
+"古德墨柠谢子龙艺术馆一楼店":{dadianchang:"李奔"},
+"古德墨柠都正街内街店":{dadianchang:"童璐"},
+"古德墨柠金茂三楼店":{dadianchang:"刘旺林"},
+"古德墨柠长郡中学门口店":{dadianchang:"赵思洁"},
+"古德墨柠阜埠河地铁1号口店":{dadianchang:"赵思洁"},
+"古德墨柠雨花亭凯德二楼店":{dadianchang:"廖灿"},
+"古德墨柠音乐学院对面店":{dadianchang:"李奔"},
+"古德墨柠高铁B24对面店":{dadianchang:"旷瑶"},
+"古德墨柠高铁东广场美食城店":{dadianchang:"钟天祥"},
+"古德墨柠高铁南站A8二楼店":{dadianchang:"旷瑶"},
+"古德墨柠高铁南站西广场F15店":{dadianchang:"钟天祥"},
+"古德墨柠高铁吾悦广场外街店":{dadianchang:"钟天祥"},
+"古德墨柠麓山南路公交站店":{dadianchang:"赵思洁"},
+"古德墨柠黄兴步行街F区一楼店":{dadianchang:"杜强"},
+"古德墨柠龙塘小区店":{dadianchang:"旷瑶"},
+"古德墨柠龙湖月亮岛天街店":{dadianchang:"刘旺林"},
+"古德墨柠龙湖长沙芙蓉天街店":{dadianchang:"易彪"},
+}
+};
+
+// ===== 期初人员花名册（用于姓名自动检索填充） =====
+let ROSTER_DATA=[];
+function loadRosterData(){
+    if(window.ROSTER && Array.isArray(window.ROSTER)){
+        ROSTER_DATA=window.ROSTER;
+        console.log('花名册已加载:', ROSTER_DATA.length, '人');
+    }else{
+        console.warn('roster.js 未加载或 ROSTER 数据为空');
+    }
+}
+
+// ===== 姓名输入自动检索 =====
+function onPreEmpIdInput(){
+    const input=document.getElementById('pre-edit-emp-id');
+    const sugBox=document.getElementById('pre-empid-suggest');
+    const val=(input.value||'').trim();
+    if(!ROSTER_DATA.length || val.length<1){
+        sugBox.style.display='none';
+        return;
+    }
+    const matches=ROSTER_DATA.filter(r=>r.empId && r.empId.toLowerCase().indexOf(val.toLowerCase())>=0).slice(0,12);
+    if(!matches.length){
+        sugBox.style.display='none';
+        return;
+    }
+    sugBox.innerHTML=matches.map((r,idx)=>{
+        const safeId=(r.empId||'').replace(/'/g,"\\'").replace(/"/g,"&quot;");
+        const safeName=(r.name||'').replace(/'/g,"\\'").replace(/"/g,"&quot;");
+        return `<div data-idx="${idx}" style="padding:8px 12px;cursor:pointer;border-bottom:1px solid #f0f0f0;font-size:13px;display:flex;justify-content:space-between;align-items:center;"
+                     onmouseover="this.style.background='#f0f7ff'" onmouseout="this.style.background='#fff'"
+                     onclick="onPreEmpIdPick('${safeId}')">
+            <div><span style="color:#0d47a1;font-weight:600;">${r.empId||''}</span> <span style="color:#888;font-size:12px;margin-left:4px;">${r.name||''}</span></div>
+            <div style="color:#666;font-size:12px;">${r.store||''} · ${r.position||''}</div>
+        </div>`;
+    }).join('');
+    sugBox.style.display='block';
+    setTimeout(()=>{
+        const handler=(e)=>{
+            if(!sugBox.contains(e.target) && e.target!==input){
+                sugBox.style.display='none';
+                document.removeEventListener('click',handler);
+            }
+        };
+        document.addEventListener('click',handler);
+    },50);
+}
+
+function onPreEmpIdPick(empId){
+    const input=document.getElementById('pre-edit-emp-id');
+    const sugBox=document.getElementById('pre-empid-suggest');
+    input.value=empId;
+    sugBox.style.display='none';
+    const matches=ROSTER_DATA.filter(r=>r.empId===empId);
+    if(matches.length===1){
+        applyRosterPick(matches[0]);
+        // 工号唯一，自动把姓名也带出来
+        document.getElementById('pre-edit-name').value=matches[0].name||'';
+    }else if(matches.length>1){
+        applyRosterPick(matches[0]);
+        showTip(`检测到 ${matches.length} 位工号"${empId}"相同，已自动填入第一位，可手动调整`);
+    }
+}
+
+function onPreNameInput(){
+    const input=document.getElementById('pre-edit-name');
+    const sugBox=document.getElementById('pre-name-suggest');
+    const val=(input.value||'').trim();
+    if(!ROSTER_DATA.length || val.length<1){
+        sugBox.style.display='none';
+        return;
+    }
+    const matches=ROSTER_DATA.filter(r=>r.name && r.name.indexOf(val)>=0).slice(0,12);
+    if(!matches.length){
+        sugBox.style.display='none';
+        return;
+    }
+    sugBox.innerHTML=matches.map((r,idx)=>{
+        const safeName=(r.name||'').replace(/'/g,"\\'").replace(/"/g,"&quot;");
+        return `<div data-idx="${idx}" style="padding:8px 12px;cursor:pointer;border-bottom:1px solid #f0f0f0;font-size:13px;display:flex;justify-content:space-between;align-items:center;" 
+                     onmouseover="this.style.background='#f0f7ff'" onmouseout="this.style.background='#fff'"
+                     onclick="onPreNamePick('${safeName}')">
+            <div><span style="color:#0d47a1;font-weight:600;">${r.name}</span> <span style="color:#888;font-size:11px;margin-left:4px;">${r.empId||''}</span></div>
+            <div style="color:#666;font-size:12px;">${r.store||''} · ${r.position||''}</div>
+        </div>`;
+    }).join('');
+    sugBox.style.display='block';
+    // 同时挂全局点击事件，点击弹窗其他位置时关闭
+    setTimeout(()=>{
+        const handler=(e)=>{
+            if(!sugBox.contains(e.target) && e.target!==input){
+                sugBox.style.display='none';
+                document.removeEventListener('click',handler);
+            }
+        };
+        document.addEventListener('click',handler);
+    },50);
+}
+
+function onPreNamePick(name){
+    const input=document.getElementById('pre-edit-name');
+    const sugBox=document.getElementById('pre-name-suggest');
+    input.value=name;
+    sugBox.style.display='none';
+    // 检索匹配的员工
+    const matches=ROSTER_DATA.filter(r=>r.name===name);
+    if(matches.length===1){
+        applyRosterPick(matches[0]);
+    }else if(matches.length>1){
+        // 重名：在下拉框里也展示，但已经选择第一个，弹个提示
+        applyRosterPick(matches[0]);
+        const tip=`检测到 ${matches.length} 位重名"${name}"，已自动填入第一位，如需更换请手动调整门店/大店长`;
+        showTip(tip);
+    }
+}
+
+function applyRosterPick(r){
+    if(!r)return;
+    document.getElementById('pre-edit-emp-id').value=r.empId||'';
+    document.getElementById('pre-edit-dadianchang').value=r.dadianchang||'';
+    document.getElementById('pre-edit-store').value=r.store||'';
+    document.getElementById('pre-edit-position').value=r.position||'';
+    document.getElementById('pre-edit-hire-date').value=r.hireDate||'';
+    onPreStoreInput();
+}
+
+function showTip(msg){
+    const t=document.createElement('div');
+    t.textContent=msg;
+    t.style.cssText='position:fixed;top:80px;left:50%;transform:translateX(-50%);background:#fff3cd;border:1px solid #ffe69c;padding:8px 16px;border-radius:4px;font-size:13px;color:#856404;z-index:9999;box-shadow:0 2px 8px rgba(0,0,0,0.1);';
+    document.body.appendChild(t);
+    setTimeout(()=>t.remove(),3500);
+}
+
+const D = window.DASHBOARD_DATA;
+
+// 看板跳转地址
+const DASHBOARD_URLS = {
+    worktime: 'https://djakljlkajd.github.io/moning-dashboard/',
+    hc: 'https://djakljlkajd.github.io/moning-dashboard/hc/',
+};
+function switchDashboard(v) {
+    if (v === 'current') return;
+    if (DASHBOARD_URLS[v]) window.location.href = DASHBOARD_URLS[v];
+}
+
+// ===== 工具函数 =====
+function pct(v) { return (v * 100).toFixed(2) + '%'; }
+function pct1(v) { return (v * 100).toFixed(1) + '%'; }
+function rateColor(rate) {
+    if (rate > 0.10) return 'val-red';
+    if (rate > 0.05) return 'val-red';
+    return 'val-green';
+}
+function rateBadge(rate) {
+    if (rate > 0.10) return '<span class="reason-badge reason-qita">严重</span>';
+    if (rate > 0.08) return '<span class="reason-badge reason-shenti">超标</span>';
+    if (rate > 0.05) return '<span class="reason-badge reason-geren">预警</span>';
+    return '<span class="reason-badge reason-nengli">达标</span>';
+}
+function reasonClass(reason) {
+    const map = {
+        '发展原因': 'reason-fazhan', '身体原因': 'reason-shenti',
+        '个人原因': 'reason-geren', '其他原因': 'reason-qita', '个人能力': 'reason-nengli'
+    };
+    return map[reason] || 'reason-qita';
+}
+
+// ===== 标题/日期 =====
+document.getElementById('hdr-title').textContent = '● ' + D.meta.title;
+document.getElementById('hdr-date').textContent = '数据截止: ' + D.meta.asOf + ' | 统计周期: ' + D.meta.period;
+
+// ===== 全局筛选状态 =====
+let globalDadianchang = 'all';
+
+// 获取筛选后的员工列表
+function getFilteredEmployees() {
+    let list = D.employees.concat(onlineResignList||[]);
+    if (globalDadianchang !== 'all') {
+        list = list.filter(e => e.dadianchang === globalDadianchang);
+    }
+    return list;
+}
+
+// 获取筛选后的期初/期末人数
+function getFilteredBeginEnd() {
+    if (globalDadianchang !== 'all') {
+        const dd = D.dadianchang.find(x => x.name === globalDadianchang);
+        if (dd) return { begin: dd.beginCount, end: dd.endCount };
+        return { begin: 0, end: 0 };
+    }
+    return { begin: D.overview.beginCount, end: D.overview.endCount };
+}
+
+// 计算筛选后的聚合指标
+function getFilteredStats() {
+    const emps = getFilteredEmployees();
+    const { begin } = getFilteredBeginEnd();
+    const resignCount = emps.length;
+    const end = begin - resignCount;
+    const avgCount = (begin + end) / 2;
+    const resignRate = avgCount > 0 ? resignCount / avgCount : 0;
+
+
+    // 职级分布
+    const zhiJi = { '店长': 0, '中级训练员': 0, '初级训练员': 0, '服务员': 0, '见习生': 0 };
+    emps.forEach(e => {
+        const pos = e.position || '';
+        if (pos.indexOf('店长') >= 0) zhiJi['店长']++;
+        else if (pos.indexOf('中级') >= 0) zhiJi['中级训练员']++;
+        else if (pos.indexOf('初级') >= 0 || pos.indexOf('练习') >= 0) zhiJi['初级训练员']++;
+        else if (pos.indexOf('见习') >= 0) zhiJi['见习生']++;
+        else zhiJi['服务员']++;
+    });
+
+    // 工龄分布
+    const gongLing = { '6个月内': 0, '6-12个月': 0, '1-3年': 0, '3年以上': 0 };
+    emps.forEach(e => {
+        const g = e.gongLingQuJian || '';
+        if (g.indexOf('6个月') >= 0 && g.indexOf('6-12') < 0) gongLing['6个月内']++;
+        else if (g.indexOf('6-12') >= 0) gongLing['6-12个月']++;
+        else if (g.indexOf('1-3') >= 0) gongLing['1-3年']++;
+        else if (g.indexOf('3年') >= 0) gongLing['3年以上']++;
+    });
+
+    // 店长职级离职人数
+    const dianZhangCount = emps.filter(e => (e.position || '').indexOf('店长') >= 0).length;
+    // 入职年限>3年离职人数
+    const over3YearsCount = emps.filter(e => (e.gongLingQuJian || '').indexOf('3年以上') >= 0).length;
+
+    // 离职原因分布
+    const reasonCount = {};
+    emps.forEach(e => {
+        const r = e.reasonTag || e.reason1 || '未知';
+        reasonCount[r] = (reasonCount[r] || 0) + 1;
+    });
+
+    return { emps, begin, end, resignCount, resignRate, zhiJi, gongLing, dianZhangCount, over3YearsCount, reasonCount };
+}
+
+// ===== 动态汇总每个大店长的真实离职数（合并 D.dadianchang 静态期初/期末 + onlineResignList 动态明细）=====
+function computeDcStats(){
+    return (D.dadianchang||[]).map(function(dc){
+        var live=(onlineResignList||[]).filter(function(e){return e.dadianchang===dc.name && !e.isPre;});
+        var staticCnt=dc.resignCount||0;
+        var liveCnt=live.length;
+        var totalCnt=staticCnt+liveCnt;
+        var eEnd=dc.endCount-Math.max(0,totalCnt-staticCnt);
+        var avg=(dc.beginCount+eEnd)/2;
+        var rate=avg>0? totalCnt/avg : 0;
+        return Object.assign({},dc,{
+            resignCount:totalCnt,
+            endCount:eEnd<0?0:eEnd,
+            resignRate:rate,
+            _liveCount:liveCnt,
+            _staticCount:staticCnt
+        });
+    });
+}
+
+// 月度趋势兜底（如果 data.js 没 monthlyTrend 字段，按 onlineResignList 动态聚合最近6个月）
+function computeMonthlyTrend(){
+    if(D.monthlyTrend && D.monthlyTrend.labels && D.monthlyTrend.labels.length){
+        return Object.assign({_isPercentage:true},D.monthlyTrend);
+    }
+    var buckets={};
+    (onlineResignList||[]).forEach(function(e){
+        if(!e.resignDate) return;
+        var ym=(e.resignDate+'').slice(0,7);
+        buckets[ym]=(buckets[ym]||0)+1;
+    });
+    var labels=[];
+    var vals=[];
+    var today=new Date();
+    for(var i=5;i>=0;i--){
+        var d=new Date(today.getFullYear(),today.getMonth()-i,1);
+        var key=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
+        labels.push((d.getMonth()+1)+'月');
+        vals.push(buckets[key]||0);
+    }
+    return {labels:labels,brands:{'古德墨柠':vals},_isPercentage:false};
+}
+
+// ===== 全局筛选器初始化 =====
+function initGlobalFilters() {
+    updateDadianchangOptions();
+}
+
+function updateDadianchangOptions() {
+    const dSel = document.getElementById('global-dadianchang');
+    dSel.innerHTML = '<option value="all">大店区：全部</option>';
+    D.dadianchang.forEach(d => dSel.add(new Option(d.name, d.name)));
+}
+
+function onGlobalFilterChange() {
+    globalDadianchang = document.getElementById('global-dadianchang').value;
+    refreshAll();
+}
+
+function resetGlobalFilter() {
+    globalDadianchang = 'all';
+    document.getElementById('global-dadianchang').value = 'all';
+    updateDadianchangOptions();
+    refreshAll();
+}
+
+function updateFilterInfo() {
+    const info = document.getElementById('filter-info');
+    if (globalDadianchang !== 'all') {
+        info.textContent = '当前范围：' + globalDadianchang + ' 大店区';
+    } else {
+        info.textContent = '当前范围：古德墨柠全量';
+    }
+}
+
+// ===== 刷新所有数据 =====
+let chartMonthly = null, chartMonthlyCount = null, chartZhiJi = null, chartGongLing = null, chartReason = null, chartDadianchang = null, chartDcFocus = null;
+
+function refreshAll() {
+    updateFilterInfo();
+    renderCards();
+    renderTables();
+    renderEmpTable();
+    renderAnalysisCharts();
+    renderDcFocus();
+    renderMonthlyChart();
+    renderMonthlyCountChart();
+}
+
+// ===== KPI 卡片 =====
+function renderCards() {
+    const stats = getFilteredStats();
+    const isOnTarget = stats.resignRate <= 0.05;
+    const cards = [
+        { label: '期初全职人数', sub: '(10月1日)', value: stats.begin, unit: '人', cls: '' },
+        { label: '期末全职人数', sub: '(10月15日)', value: stats.end, unit: '人', cls: '' },
+        { label: '主动离职人数', sub: '(10月)', value: stats.resignCount, unit: '人', cls: 'danger clickable', valColor: 'red',
+          detailBtn: '<span class="card-detail-btn" onclick="event.stopPropagation();openAllResignModal()">▶ 详情</span>',
+          onclick: 'openAllResignModal()' },
+        { label: '预离职人员填写', sub: '实时补充名单', value: preTurnoverList.length, unit: '人', cls: 'info clickable', valColor: 'blue',
+          detailBtn: '<span class="card-detail-btn blue" onclick="event.stopPropagation();openPreTurnoverModal()">▶ 填写</span>',
+          onclick: 'openPreTurnoverModal()' },
+        { label: '主动离职率', sub: '目标 ≤ 5%', value: pct(stats.resignRate), unit: '', cls: isOnTarget ? 'success' : 'highlight', valColor: isOnTarget ? 'green' : 'red',
+          subText: isOnTarget ? '✅ 达标' : '⚠️ 需关注' },
+        { label: '店长职级离职人数', sub: '店长岗位', value: stats.dianZhangCount, unit: '人', cls: 'info clickable', valColor: 'blue',
+          detailBtn: '<span class="card-detail-btn blue" onclick="event.stopPropagation();openDianZhangModal()">▶ 详情</span>',
+          onclick: 'openDianZhangModal()' },
+        { label: '入职年限>3年离职人���', sub: '资深员工', value: stats.over3YearsCount, unit: '人', cls: 'info clickable', valColor: 'blue',
+          detailBtn: '<span class="card-detail-btn blue" onclick="event.stopPropagation();openOver3YearsModal()">▶ 详情</span>',
+          onclick: 'openOver3YearsModal()' },
+    ];
+    const row = document.getElementById('cards-row');
+    row.innerHTML = '';
+    cards.forEach(c => {
+        const div = document.createElement('div');
+        div.className = 'metric-card ' + c.cls;
+        if (c.onclick) div.setAttribute('onclick', c.onclick);
+        div.innerHTML =
+            '<div class="card-label">' + c.label + '<br><span class="card-label-sub">' + c.sub + '</span></div>' +
+            '<div class="card-value ' + (c.valColor || '') + '">' + c.value + (c.unit ? '<span class="card-unit">' + c.unit + '</span>' : '') + '</div>' +
+            (c.detailBtn || '') +
+            (c.subText ? '<div class="card-sub-text">' + c.subText + '</div>' : '');
+        row.appendChild(div);
+    });
+}
+
+// ===== 月度趋势图（4-7月，古德墨柠） =====
+function renderMonthlyChart() {
+    const ctx = document.getElementById('chart-monthly').getContext('2d');
+    const t = computeMonthlyTrend();
+    const vals = t.brands['古德墨柠'] || [];
+    const isPercentage = t._isPercentage !== false; // 默认是百分比（data.js静态），dynamic 时是人数
+    if (chartMonthly) chartMonthly.destroy();
+    chartMonthly = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: t.labels,
+            datasets: [{
+                label: '古德墨柠',
+                data: isPercentage ? vals.map(v => +(v * 100).toFixed(2)) : vals,
+                borderColor: '#1565c0',
+                backgroundColor: 'rgba(21,101,192,0.12)',
+                borderWidth: 3.5,
+                tension: 0.35,
+                pointRadius: 6,
+                pointHoverRadius: 9,
+                pointBackgroundColor: '#0d47a1',
+                fill: true,
+            }]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 }, padding: 8 } },
+                tooltip: { callbacks: { label: ctx => isPercentage ? ('古德墨柠: ' + ctx.parsed.y.toFixed(2) + '%') : ('古德墨柠: ' + ctx.parsed.y + '人') } },
+                annotation: {}
+            },
+            scales: {
+                y: {
+                    ticks: { callback: v => isPercentage ? (v + '%') : (v + '人'), font: { size: 10 } },
+                    grid: { color: 'rgba(0,0,0,0.05)' },
+                    suggestedMax: isPercentage ? 6 : undefined,
+                    beginAtZero: true,
+                },
+                x: { ticks: { font: { size: 12, weight: 'bold' } } }
+            }
+        }
+    });
+}
+
+// ===== 月度离职人数对比柱状图 =====
+function renderMonthlyCountChart() {
+    const ctx = document.getElementById('chart-monthly-count').getContext('2d');
+    const t = computeMonthlyTrend();
+    let counts;
+    if(t.resignCounts && t.resignCounts.length === t.labels.length){
+        counts = t.resignCounts;
+    }else{
+        // 动态：用 vals（人数）
+        counts = t.brands['古德墨柠'] || [];
+    }
+    if (chartMonthlyCount) chartMonthlyCount.destroy();
+    chartMonthlyCount = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: t.labels,
+            datasets: [{
+                label: '离职人数',
+                data: counts,
+                backgroundColor: ['#1e88e5', '#42a5f5', '#1565c0', '#0d47a1'],
+                borderRadius: 6,
+                barPercentage: 0.6,
+            }]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: { callbacks: { label: ctx => ctx.parsed.y + '人' } }
+            },
+            scales: {
+                y: { ticks: { font: { size: 10 }, stepSize: 5 }, grid: { color: 'rgba(0,0,0,0.05)' } },
+                x: { ticks: { font: { size: 12, weight: 'bold' } } }
+            }
+        }
+    });
+}
+
+// ===== 二八分析图表 =====
+function renderAnalysisCharts() {
+    const stats = getFilteredStats();
+
+    // 职级分布
+    const ctx1 = document.getElementById('chart-zhiji').getContext('2d');
+    if (chartZhiJi) chartZhiJi.destroy();
+    const zKeys = Object.keys(stats.zhiJi);
+    chartZhiJi = new Chart(ctx1, {
+        type: 'doughnut',
+        data: {
+            labels: zKeys,
+            datasets: [{
+                data: zKeys.map(k => stats.zhiJi[k]),
+                backgroundColor: ['#c62828', '#1565c0', '#f57f17', '#42a5f5', '#90a4ae'],
+                borderWidth: 2, borderColor: '#fff'
+            }]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'right', labels: { boxWidth: 12, font: { size: 11 }, padding: 8 } },
+                tooltip: { callbacks: { label: ctx => ctx.label + ': ' + ctx.parsed + '人' } }
+            }
+        }
+    });
+
+    // 工龄分布
+    const ctx2 = document.getElementById('chart-gongling').getContext('2d');
+    if (chartGongLing) chartGongLing.destroy();
+    const gKeys = Object.keys(stats.gongLing);
+    chartGongLing = new Chart(ctx2, {
+        type: 'doughnut',
+        data: {
+            labels: gKeys,
+            datasets: [{
+                data: gKeys.map(k => stats.gongLing[k]),
+                backgroundColor: ['#c62828', '#f57f17', '#1565c0', '#2e7d32'],
+                borderWidth: 2, borderColor: '#fff'
+            }]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'right', labels: { boxWidth: 12, font: { size: 11 }, padding: 8 } },
+                tooltip: { callbacks: { label: ctx => ctx.label + ': ' + ctx.parsed + '人' } }
+            }
+        }
+    });
+
+    // 离职原因分布
+    const ctx3 = document.getElementById('chart-reason').getContext('2d');
+    if (chartReason) chartReason.destroy();
+    const rKeys = Object.keys(stats.reasonCount);
+    const rColors = rKeys.map(l => {
+        const map = { '发展原因': '#1565c0', '身体原因': '#e65100', '个人原因': '#7b1fa2', '其他原因': '#c62828', '个人能力': '#2e7d32' };
+        return map[l] || '#757575';
+    });
+    chartReason = new Chart(ctx3, {
+        type: 'bar',
+        data: { labels: rKeys, datasets: [{ data: rKeys.map(k => stats.reasonCount[k]), backgroundColor: rColors, borderRadius: 4 }] },
+        options: {
+            indexAxis: 'y',
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ctx.parsed.x + '人' } } },
+            scales: {
+                x: { ticks: { font: { size: 10 }, stepSize: 1 }, grid: { color: 'rgba(0,0,0,0.05)' } },
+                y: { ticks: { font: { size: 11 } } }
+            }
+        }
+    });
+
+    // 大店长离职排名（第三排小卡）
+    const ctx4 = document.getElementById('chart-dadianchang').getContext('2d');
+    if (chartDadianchang) chartDadianchang.destroy();
+    const sortedDc = computeDcStats().slice().sort((a, b) => b.resignCount - a.resignCount || b.resignRate - a.resignRate);
+    if (sortedDc.every(d => d.resignCount === 0)) sortedDc.reverse();
+    chartDadianchang = buildDcChartConfig(ctx4, sortedDc);
+}
+
+// 构建大店长区域双轴折线图配置
+function buildDcChartConfig(ctx, sorted) {
+    return new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: sorted.map(d => d.name),
+            datasets: [
+                {
+                    type: 'bar',
+                    label: '离职人数',
+                    data: sorted.map(d => d.resignCount),
+                    backgroundColor: sorted.map(d => d.resignCount >= 3 ? '#c62828' : d.resignCount >= 2 ? '#f57f17' : '#42a5f5'),
+                    borderRadius: 4,
+                    yAxisID: 'yCount',
+                    order: 2
+                },
+                {
+                    type: 'line',
+                    label: '离职率',
+                    data: sorted.map(d => +(d.resignRate * 100).toFixed(2)),
+                    borderColor: '#1565c0',
+                    backgroundColor: '#1565c0',
+                    pointBackgroundColor: '#1565c0',
+                    pointRadius: 5,
+                    pointHoverRadius: 7,
+                    tension: 0.3,
+                    borderWidth: 2.5,
+                    fill: false,
+                    yAxisID: 'yRate',
+                    order: 1
+                }
+            ]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            interaction: { mode: 'index', intersect: false },
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: ctx => {
+                            const d = sorted[ctx.dataIndex];
+                            if (ctx.dataset.label === '离职人数') return '离职人数：' + d.resignCount + '人';
+                            return '离职率：' + (d.resignRate * 100).toFixed(1) + '%（期初' + d.beginCount + '人 / 期末' + d.endCount + '人）';
+                        }
+                    }
+                }
+            },
+            scales: {
+                yCount: {
+                    type: 'linear', position: 'left',
+                    beginAtZero: true, ticks: { font: { size: 11 }, stepSize: 1, precision: 0 },
+                    grid: { color: 'rgba(0,0,0,0.05)' },
+                    title: { display: true, text: '离职人数(人)', color: '#c62828', font: { size: 12, weight: 'bold' } }
+                },
+                yRate: {
+                    type: 'linear', position: 'right',
+                    beginAtZero: true, ticks: { font: { size: 11 }, callback: v => v + '%' },
+                    grid: { drawOnChartArea: false },
+                    title: { display: true, text: '离职率(%)', color: '#1565c0', font: { size: 12, weight: 'bold' } }
+                },
+                x: { ticks: { font: { size: 11 } }, grid: { color: 'rgba(0,0,0,0.05)' } }
+            },
+            onClick: (evt, items) => {
+                if (!items || !items.length) return;
+                const idx = items[0].index;
+                const dc = sorted[idx];
+                if (dc && globalDadianchang !== dc.name) {
+                    globalDadianchang = dc.name;
+                    onGlobalFilterChange();
+                }
+            }
+        }
+    });
+}
+
+// 重点关注区大店长折线图
+function renderDcFocus() {
+    const ctx = document.getElementById('chart-dc-focus');
+    if (!ctx) return;
+    if (chartDcFocus) chartDcFocus.destroy();
+    const sorted = computeDcStats().slice().sort((a, b) => b.resignCount - a.resignCount || b.resignRate - a.resignRate);
+    if (sorted.every(d => d.resignCount === 0)) sorted.reverse(); // 全0时保持原顺序展示
+
+    // 摘要
+    const total = sorted.reduce((s, d) => s + d.resignCount, 0);
+    const maxDc = sorted[0];
+    const meta = document.getElementById('focus-meta');
+    if (meta) {
+        meta.innerHTML = (total > 0 && maxDc && maxDc.resignCount > 0)
+            ? '本期共离职 <strong>' + total + '</strong> 人 · 最高：<strong>' + maxDc.name + '</strong>（' + maxDc.resignCount + '人 / ' + (maxDc.resignRate * 100).toFixed(1) + '%）· 点击折线节点可联动下方【第四排】大店长数据明细'
+            : '本期暂无离职记录';
+    }
+    chartDcFocus = buildDcChartConfig(ctx.getContext('2d'), sorted);
+}
+
+// ===== 大店长表格 =====
+function renderTables() {
+    renderDadianchangTable();
+}
+
+// ===== 大店长表格 =====
+function renderDadianchangTable() {
+    const head = ['大店长', '期初人数', '期末人数', '主动离职<br>人数', '主动离职率', '店长', '中级<br>训练员', '初级<br>训练员', '服务员', '见习生', '6个月内', '1-3年', '3年以上'];
+    document.getElementById('dadianchang-head').innerHTML = head.map(h => '<th>' + h + '</th>').join('');
+
+    const tb = document.getElementById('dadianchang-tbody');
+    tb.innerHTML = '';
+    let dList = computeDcStats();
+    if (globalDadianchang !== 'all') dList = dList.filter(d => d.name === globalDadianchang);
+    dList.forEach(r => {
+        const tr = document.createElement('tr');
+        tr.dataset.name = r.name;
+        tr.innerHTML =
+            '<td class="text-left"><strong>' + r.name + '</strong></td>' +
+            '<td>' + r.beginCount + '</td>' +
+            '<td>' + r.endCount + '</td>' +
+            '<td class="val-highlight">' + r.resignCount + '</td>' +
+            '<td class="' + rateColor(r.resignRate) + '">' + (r.resignRate > 0 ? pct(r.resignRate) : '--') + (r.resignRate > 0 ? ' ' + rateBadge(r.resignRate) : '') + '</td>' +
+            '<td>' + r.zhiJi['店长'] + '</td>' +
+            '<td>' + r.zhiJi['中级训练员'] + '</td>' +
+            '<td>' + r.zhiJi['初级训练员'] + '</td>' +
+            '<td>' + r.zhiJi['服务员'] + '</td>' +
+            '<td>' + r.zhiJi['见习生'] + '</td>' +
+            '<td>' + r.gongLing['6个月内'] + '</td>' +
+            '<td>' + r.gongLing['1-3年'] + '</td>' +
+            '<td>' + r.gongLing['3年以上'] + '</td>';
+        tr.onclick = function() { openEmpModalByFilter(r.name + ' 大店长 - 离职人员明细', e => e.dadianchang === r.name); };
+        tr.style.cursor = 'pointer';
+        tb.appendChild(tr);
+    });
+}
+
+// ===== 离职人员明细表 =====
+function renderEmpTable() {
+    const head = ['序号', '大店长', '门店', '姓名', '职位', '入职日期', '离职日期', '在职月数', '工龄区间', '离职原因', '原因标签', '离职详情'];
+    document.getElementById('emp-head').innerHTML = head.map(h => '<th>' + h + '</th>').join('');
+
+    const tb = document.getElementById('emp-tbody');
+    tb.innerHTML = '';
+    const emps = getFilteredEmployees();
+    emps.forEach((e, idx) => {
+        const tr = document.createElement('tr');
+        tr.dataset.reason = e.reasonTag || e.reason1;
+        tr.dataset.name = (e.name + ' ' + e.store);
+        const months = e.hireMonth || 0;
+        tr.innerHTML =
+            '<td>' + (idx + 1) + '</td>' +
+            '<td>' + e.dadianchang + '</td>' +
+            '<td class="text-left">' + e.store + '</td>' +
+            '<td><strong>' + e.name + '</strong></td>' +
+            '<td>' + e.position + '</td>' +
+            '<td>' + e.hireDate + '</td>' +
+            '<td>' + e.resignDate + '</td>' +
+            '<td>' + months + '个月</td>' +
+            '<td>' + (e.gongLingQuJian || '') + '</td>' +
+            '<td>' + (e.reason1 || '') + '</td>' +
+            '<td><span class="reason-badge ' + reasonClass(e.reasonTag || e.reason1) + '">' + (e.reasonTag || e.reason1) + '</span></td>' +
+            '<td class="text-left col-detail">' + getReasonEditHtml(e, 'reason', '离职详情') + '</td>';
+        tb.appendChild(tr);
+    });
+
+    // 填充离职原因筛选器
+    const rSel = document.getElementById('emp-reason-filter');
+    const curR = rSel.value;
+    rSel.innerHTML = '<option value="all">离职原因：全部</option>';
+    [...new Set(D.employees.map(e => e.reasonTag || e.reason1))].forEach(r => {
+        rSel.add(new Option(r, r));
+    });
+    rSel.value = curR;
+}
+
+// ===== Tab切换 =====
+let currentTab = 'dadianchang';
+function switchTab(tab) {
+    currentTab = tab;
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('panel-' + tab).classList.add('active');
+    if (tab === 'dadianchang') renderDadianchangTable();
+}
+
+function searchTable(kw) {
+    const k = kw.toLowerCase();
+    const activePanel = document.querySelector('.panel.active');
+    activePanel.querySelectorAll('tbody tr').forEach(row => {
+        row.style.display = (!k || row.textContent.toLowerCase().includes(k)) ? '' : 'none';
+    });
+}
+
+function resetTableFilter() {
+    document.querySelector('.filter-bar .search-box input').value = '';
+    document.querySelectorAll('.panel').forEach(p => {
+        p.querySelectorAll('tbody tr').forEach(row => row.style.display = '');
+    });
+}
+
+function filterEmployees() {
+    const r = document.getElementById('emp-reason-filter').value;
+    const k = (document.getElementById('emp-search').value || '').toLowerCase();
+    document.querySelectorAll('#emp-tbody tr').forEach(row => {
+        const okR = r === 'all' || row.dataset.reason === r;
+        const okK = !k || (row.dataset.name || '').toLowerCase().includes(k);
+        row.style.display = (okR && okK) ? '' : 'none';
+    });
+}
+
+function resetEmpFilter() {
+    document.getElementById('emp-reason-filter').value = 'all';
+    document.getElementById('emp-search').value = '';
+    document.querySelectorAll('#emp-tbody tr').forEach(row => row.style.display = '');
+}
+
+// ===== 弹窗 =====
+function openAllResignModal() {
+    const emps = getFilteredEmployees();
+    const { begin } = getFilteredBeginEnd();
+    const end = begin - emps.length;
+    const title = '主动离职人员明细 - 共' + emps.length + '人 (期初' + begin + ' 期末' + end + ')';
+    showEmpModal(title, emps);
+}
+
+function openDianZhangModal() {
+    const emps = getFilteredEmployees().filter(e => (e.position || '').indexOf('店长') >= 0);
+    showEmpModal('店长职级离职人员明细 - 共' + emps.length + '人', emps);
+}
+
+function openOver3YearsModal() {
+    const emps = getFilteredEmployees().filter(e => (e.gongLingQuJian || '').indexOf('3年以上') >= 0);
+    showEmpModal('入职年限>3年离职人员明细 - 共' + emps.length + '人', emps);
+}
+
+function openEmpModalByFilter(title, filterFn) {
+    const list = getFilteredEmployees().filter(filterFn);
+    showEmpModal(title + ' (' + list.length + '人)', list);
+}
+
+let currentModalTitle = '';
+let currentModalList = [];
+let currentModalMode = 'resign';
+
+function showEmpModal(title, list) {
+    currentModalMode = 'resign';
+    currentModalTitle = title;
+    currentModalList = list;
+    document.getElementById('modal-title').textContent = title;
+    const body = document.getElementById('modal-body');
+    const toolbar='<div style="padding:12px 20px;display:flex;justify-content:space-between;align-items:center;"><button class="action-btn" style="background:#c62828;color:#fff;" onclick="openResignEditModal()">+ 新增离职人员</button><span style="font-size:12px;color:#666;">支持即辞人员快速新增</span></div>';
+    if (list.length === 0) {
+        body.innerHTML = toolbar+'<div class="modal-empty">该维度暂无离职人员，可点击上方按钮新增</div>';
+    } else {
+        const cols = ['序号', '大店长', '姓名', '职位', '门店', '入职日期', '离职日期', '工龄', '原因标签', '离职原因', '操作'];
+        body.innerHTML = toolbar +
+            '<div class="modal-table-wrap"><table><thead><tr>' + cols.map(h => '<th>' + h + '</th>').join('') + '</tr></thead>' +
+            '<tbody>' + list.map((e, i) =>
+                '<tr>' +
+                '<td>' + (i + 1) + '</td>' +
+                '<td>' + e.dadianchang + '</td>' +
+                '<td><strong>' + e.name + '</strong></td>' +
+                '<td>' + e.position + '</td>' +
+                '<td class="text-left">' + e.store + '</td>' +
+                '<td>' + e.hireDate + '</td>' +
+                '<td>' + e.resignDate + '</td>' +
+                '<td>' + (e.gongLingQuJian || '') + '</td>' +
+                '<td><span class="reason-badge ' + reasonClass(e.reasonTag || e.reason1) + '">' + (e.reasonTag || e.reason1) + '</span></td>' +
+                '<td class="text-left col-detail">' + getReasonEditHtml(e, 'reason', '离职原因') + '</td>' +
+                '<td><button class="action-btn" style="background:#e3f2fd;color:#1565c0;padding:3px 8px;font-size:11px;margin-right:4px;" onclick="event.stopPropagation();openResignEditModal(\''+e.empId+'\')">编辑</button>'+(e._isOnline?'<button class="action-btn" style="background:#ffcdd2;color:#c62828;padding:3px 8px;font-size:11px;" onclick="event.stopPropagation();deleteOnlineResign(\''+e.empId+'\')">删除</button>':'')+'</td>' +
+                '</tr>'
+            ).join('') + '</tbody></table></div>';
+    }
+    document.getElementById('detail-modal').classList.add('active');
+}
+
+function closeModal(event) {
+    if (!event || event.target.id === 'detail-modal' || event.target.className === 'modal-close') {
+        document.getElementById('detail-modal').classList.remove('active');
+    }
+}
+
+// ===== 离职原因在线填写（Supabase 共享数据库） =====
+const SUPA_URL='https://tclfmnfvlrlxquiojjya.supabase.co';
+const SUPA_KEY='sb_publishable_6sa-Pz6dX0BSlTJX3gNiRA_CbtZkf_b';
+const SUPA_TABLE='violation_data';
+let turnoverReasons={};
+let turnoverRowId=null;
+let turnoverSyncTimer=null;
+let turnoverWriteLock=false;
+let currentEditEmpId=null;
+
+let preTurnoverList=[];
+let preTurnoverRowId=null;
+let preTurnoverSyncTimer=null;
+let preTurnoverWriteLock=false;
+let currentEditPreId=null;
+
+let onlineResignList=[];
+let onlineResignRowId=null;
+let onlineResignSyncTimer=null;
+let onlineResignWriteLock=false;
+let editModalMode='pre'; // 'pre' or 'resign'
+let autoTransferTimer=null;
+
+function escapeHtml(str){
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ================== 多副本 localStorage 防丢失机制 ==================
+function writeMultiKey(primary, secondary, tertiary, data){
+    try{
+        const json=JSON.stringify(data);
+        localStorage.setItem(primary,json);
+        localStorage.setItem(secondary,json);
+        localStorage.setItem(tertiary,json);
+        // sessionStorage 也存一份（关浏览器不丢，但清理时容易丢）
+        try{ sessionStorage.setItem(primary,json);}catch(e){}
+    }catch(e){console.error('writeMultiKey failed',e);}
+}
+function readMultiKey(primary, secondary, tertiary){
+    for(const k of [primary,secondary,tertiary,primary+'_v2',secondary+'_v2',tertiary+'_v2']){
+        try{
+            const raw=localStorage.getItem(k);
+            if(raw){return JSON.parse(raw);}
+        }catch(e){}
+    }
+    try{
+        const raw=sessionStorage.getItem(primary);
+        if(raw)return JSON.parse(raw);
+    }catch(e){}
+    return null;
+}
+// 标记最后保存时间（页面顶部显示）
+function updateSaveStatus(type, status, msg){
+    const el=document.getElementById('save-status-'+type);
+    if(!el)return;
+    const now=new Date();
+    const hh=String(now.getHours()).padStart(2,'0');
+    const mm=String(now.getMinutes()).padStart(2,'0');
+    const ss=String(now.getSeconds()).padStart(2,'0');
+    el.dataset.ts=now.getTime();
+    el.innerHTML='<span class="save-dot '+status+'"></span>最后保存 '+hh+':'+mm+':'+ss+(msg?' · '+msg:'');
+    el.title=now.toLocaleString();
+}
+
+function backupTurnoverToLocal(){
+    try{
+        const data={reasons:turnoverReasons,rowId:turnoverRowId,ts:Date.now()};
+        writeMultiKey('turnoverReasonsBackup','turnoverReasonsBackup_b','turnoverReasonsBackup_c',data);
+        updateSaveStatus('turnover','local','本地多副本已存');
+    }catch(e){console.error('backupTurnoverToLocal failed',e);}
+}
+function restoreTurnoverFromLocal(){
+    try{
+        const data=readMultiKey('turnoverReasonsBackup','turnoverReasonsBackup_b','turnoverReasonsBackup_c');
+        if(!data)return false;
+        turnoverReasons=data.reasons||{};
+        if(!turnoverRowId)turnoverRowId=data.rowId||null;
+        return true;
+    }catch(e){return false;}
+}
+
+function backupPreTurnoverToLocal(){
+    try{
+        const data={list:preTurnoverList,rowId:preTurnoverRowId,ts:Date.now()};
+        writeMultiKey('preTurnoverBackup','preTurnoverBackup_b','preTurnoverBackup_c',data);
+        updateSaveStatus('pre','local','本地多副本已存');
+    }catch(e){console.error('backupPreTurnoverToLocal failed',e);}
+}
+function restorePreTurnoverFromLocal(){
+    try{
+        const data=readMultiKey('preTurnoverBackup','preTurnoverBackup_b','preTurnoverBackup_c');
+        if(!data)return false;
+        preTurnoverList=data.list||[];
+        if(!preTurnoverRowId)preTurnoverRowId=data.rowId||null;
+        return true;
+    }catch(e){return false;}
+}
+
+function backupOnlineResignToLocal(){
+    try{
+        const data={list:onlineResignList,rowId:onlineResignRowId,ts:Date.now()};
+        writeMultiKey('onlineResignBackup','onlineResignBackup_b','onlineResignBackup_c',data);
+        updateSaveStatus('online','local','本地'+onlineResignList.length+'条·多副本已存');
+    }catch(e){console.error('backupOnlineResignToLocal failed',e);}
+}
+function restoreOnlineResignFromLocal(){
+    try{
+        const data=readMultiKey('onlineResignBackup','onlineResignBackup_b','onlineResignBackup_c');
+        if(!data)return false;
+        onlineResignList=data.list||[];
+        if(!onlineResignRowId)onlineResignRowId=data.rowId||null;
+        return true;
+    }catch(e){return false;}
+}
+
+// 导出一份全量数据 .json 到本地（防止云端+本地同时失效）
+function exportAllBackup(){
+    const payload={
+        meta: D&&D.meta||{},
+        overview: D&&D.overview||{},
+        dadianchang: D&&D.dadianchang||[],
+        qujing: D&&D.qujing||[],
+        employees: D&&D.employees||[],
+        preTurnoverList,
+        onlineResignList,
+        turnoverReasons,
+        _exportedAt: new Date().toISOString(),
+        _version: '20261020b'
+    };
+    const json=JSON.stringify(payload,null,2);
+    const blob=new Blob([json],{type:'application/json'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    const ts=new Date();
+    const stamp=ts.getFullYear()+String(ts.getMonth()+1).padStart(2,'0')+String(ts.getDate()).padStart(2,'0')+'_'+String(ts.getHours()).padStart(2,'0')+String(ts.getMinutes()).padStart(2,'0');
+    a.href=url;
+    a.download='turnover_backup_'+stamp+'.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast('已下载备份文件：'+a.download);
+}
+// 把当前所有 localStorage 备份打包导出
+function exportAllLocalStorage(){
+    const all={};
+    for(let i=0;i<localStorage.length;i++){
+        const k=localStorage.key(i);
+        try{all[k]=JSON.parse(localStorage.getItem(k));}
+        catch(e){all[k]=localStorage.getItem(k);}
+    }
+    const json=JSON.stringify(all,null,2);
+    const blob=new Blob([json],{type:'application/json'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    const ts=new Date();
+    const stamp=ts.getFullYear()+String(ts.getMonth()+1).padStart(2,'0')+String(ts.getDate()).padStart(2,'0')+'_'+String(ts.getHours()).padStart(2,'0')+String(ts.getMinutes()).padStart(2,'0');
+    a.href=url;
+    a.download='turnover_localstorage_'+stamp+'.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast('已下载 localStorage 全量备份：'+a.download);
+}
+
+async function loadTurnoverData(){
+    restoreTurnoverFromLocal();
+    try{
+        const res=await fetch(SUPA_URL+'/rest/v1/'+SUPA_TABLE+'?select=id,data&order=id.asc',{
+            headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY}
+        });
+        if(!res.ok)throw new Error('supabase '+res.status);
+        const rows=await res.json();
+        const row=(rows||[]).find(r=>{
+            const d=r&&r.data||{};
+            return d._type==='turnover_reasons';
+        });
+        if(row){
+            turnoverRowId=row.id;
+            const cloud=row.data&&row.data.turnover_reasons||{};
+            const cloudEmpty=Object.keys(cloud).length===0;
+            const localHasData=Object.keys(turnoverReasons).length>0;
+            if(cloudEmpty&&localHasData){
+                // 云端为空但本地有数据（云端丢失）→ 保留本地并回传云端
+                console.log('cloud turnover_reasons empty but local has',Object.keys(turnoverReasons).length,'→ push back');
+                syncTurnoverData();
+            }else{
+                turnoverReasons=cloud;
+            }
+            backupTurnoverToLocal();
+            refreshTurnoverDisplays();
+        }else{
+            await createTurnoverRow();
+        }
+    }catch(e){
+        console.error('loadTurnoverData failed',e);
+        restoreTurnoverFromLocal();
+    }
+}
+
+async function createTurnoverRow(){
+    try{
+        const res=await fetch(SUPA_URL+'/rest/v1/'+SUPA_TABLE,{
+            method:'POST',
+            headers:{
+                'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY,
+                'Content-Type':'application/json','Prefer':'return=representation'
+            },
+            body:JSON.stringify({id:2,data:{_type:'turnover_reasons',turnover_reasons:{}}})
+        });
+        if(!res.ok)throw new Error('create turnover row '+res.status);
+        const rows=await res.json();
+        if(rows&&rows.length){
+            turnoverRowId=rows[0].id;
+            // 保留本地已有数据，不清空
+            backupTurnoverToLocal();
+        }
+    }catch(e){console.error('createTurnoverRow failed',e);}
+}
+
+async function loadPreTurnoverData(){
+    restorePreTurnoverFromLocal();
+    try{
+        const res=await fetch(SUPA_URL+'/rest/v1/'+SUPA_TABLE+'?select=id,data&order=id.asc',{
+            headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY}
+        });
+        if(!res.ok)throw new Error('supabase '+res.status);
+        const rows=await res.json();
+        const row=(rows||[]).find(r=>{
+            const d=r&&r.data||{};
+            return d._type==='pre_turnover';
+        });
+        if(row){
+            preTurnoverRowId=row.id;
+            const cloud=row.data&&row.data.pre_turnover||[];
+            const cloudEmpty=cloud.length===0;
+            const localHasData=preTurnoverList.length>0;
+            if(cloudEmpty&&localHasData){
+                // 云端为空但本地有数据 → 保留本地并回传云端
+                console.log('cloud pre_turnover empty but local has',preTurnoverList.length,'→ push back');
+                syncPreTurnoverData();
+            }else{
+                preTurnoverList=cloud;
+            }
+            backupPreTurnoverToLocal();
+            refreshPreTurnoverDisplays();
+        }else{
+            await createPreTurnoverRow();
+        }
+    }catch(e){
+        console.error('loadPreTurnoverData failed',e);
+        restorePreTurnoverFromLocal();
+    }
+}
+
+async function createPreTurnoverRow(){
+    try{
+        const res=await fetch(SUPA_URL+'/rest/v1/'+SUPA_TABLE,{
+            method:'POST',
+            headers:{
+                'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY,
+                'Content-Type':'application/json','Prefer':'return=representation'
+            },
+            body:JSON.stringify({id:3,data:{_type:'pre_turnover',pre_turnover:[]}})
+        });
+        if(!res.ok)throw new Error('create pre turnover row '+res.status);
+        const rows=await res.json();
+        if(rows&&rows.length){
+            preTurnoverRowId=rows[0].id;
+            // 保留本地已有数据，不清空
+            backupPreTurnoverToLocal();
+        }
+    }catch(e){console.error('createPreTurnoverRow failed',e);}
+}
+
+// ===== 在线离职人员存储 (Supabase id=4) =====
+async function loadOnlineResignData(retry){
+    retry = retry || 0;
+    restoreOnlineResignFromLocal();
+    refreshAll();  // 任何分支都要刷新，包括 local 兜底
+    updateSaveStatus('online','loading','云端拉取中...('+(retry+1)+'/3)');
+    try{
+        const res=await fetch(SUPA_URL+'/rest/v1/'+SUPA_TABLE+'?select=id,data&order=id.asc',{
+            headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY}
+        });
+        if(!res.ok)throw new Error('Supabase HTTP '+res.status);
+        const rows=await res.json();
+        const row=(rows||[]).find(r=>{
+            const d=r&&r.data||{};
+            return d._type==='online_resigns';
+        });
+        if(row){
+            onlineResignRowId=row.id;
+            const cloud=row.data&&row.data.online_resigns||[];
+            // 🔥 核心策略：云端是真相源（避免时序竞争覆盖用户新增）
+            if(cloud.length>0){
+                onlineResignList=cloud;
+                updateSaveStatus('online','ok','云端已恢复·'+cloud.length+'条');
+            }else if(onlineResignList.length>0){
+                console.log('load: cloud empty, local has',onlineResignList.length,'→ push back');
+                syncOnlineResignData();
+                updateSaveStatus('online','local','云端空·已用本地'+onlineResignList.length+'条');
+            }else{
+                updateSaveStatus('online','ok','云端本地均为空');
+            }
+            backupOnlineResignToLocal();
+            refreshAll();
+        }else{
+            await createOnlineResignRow();
+            refreshAll();
+            updateSaveStatus('online','ok','新建云端行');
+        }
+    }catch(e){
+        console.error('loadOnlineResignData failed',e);
+        restoreOnlineResignFromLocal();
+        refreshAll();
+        // 自动重试 3 次（间隔 1s）
+        if(retry<2){
+            updateSaveStatus('online','error','云端失败 1s后重试... '+e.message);
+            await new Promise(r=>setTimeout(r,1000));
+            return loadOnlineResignData(retry+1);
+        }
+        updateSaveStatus('online','warn','云端拉取失败·仅本地'+onlineResignList.length+'条 '+(e.message||''));
+    }
+}
+
+// 用户主动从云端拉取最新数据（重置本地）
+async function forceLoadFromCloud(){
+    console.log('forceLoadFromCloud called');
+    updateSaveStatus('online','loading','🔄 强制从云端拉取...');
+    try{
+        const res=await fetch(SUPA_URL+'/rest/v1/'+SUPA_TABLE+'?select=id,data',{
+            headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY,'Cache-Control':'no-cache'}
+        });
+        console.log('forceLoadFromCloud fetch status:',res.status);
+        if(!res.ok)throw new Error('Supabase HTTP '+res.status);
+        const rows=await res.json();
+        console.log('forceLoadFromCloud rows:',rows.length);
+        const row=(rows||[]).find(r=>{
+            const d=r&&r.data||{};
+            return d._type==='online_resigns';
+        });
+        if(row){
+            onlineResignRowId=row.id;
+            const cloud=row.data&&row.data.online_resigns||[];
+            console.log('forceLoadFromCloud cloud data:',cloud.length,'items');
+            onlineResignList=cloud;
+            backupOnlineResignToLocal();
+            refreshAll();
+            updateSaveStatus('online','ok','🔄 已从云端拉取·'+cloud.length+'条');
+            alert('✅ 已从云端拉取 '+cloud.length+' 条离职明细，看板已刷新');
+            return cloud.length;
+        }else{
+            updateSaveStatus('online','warn','云端无 online_resigns 行');
+            alert('⚠️ 云端无离职明细数据行');
+            return 0;
+        }
+    }catch(e){
+        console.error('forceLoadFromCloud failed',e);
+        updateSaveStatus('online','error','拉取失败: '+e.message);
+        alert('❌ 拉取失败: '+e.message+'\n请截图此错误发给技术');
+        return -1;
+    }
+}
+
+async function createOnlineResignRow(){
+    // 注意：id=4 已被金点子模块(idea_data)占用，不再硬编码 id，
+    // 从 5 开始逐个尝试可用 id，并把当前本地数据一并写入（不丢数据）
+    for(let tryId=5;tryId<=30;tryId++){
+        try{
+            const res=await fetch(SUPA_URL+'/rest/v1/'+SUPA_TABLE,{
+                method:'POST',
+                headers:{
+                    'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY,
+                    'Content-Type':'application/json','Prefer':'return=representation'
+                },
+                body:JSON.stringify({
+                    id:tryId,
+                    data:{_type:'online_resigns',online_resigns:onlineResignList||[]},
+                    updated_at:new Date().toISOString()
+                })
+            });
+            if(res.ok){
+                const rows=await res.json();
+                if(rows&&rows.length){
+                    onlineResignRowId=rows[0].id;
+                    // 保留本地已有数据，不清空
+                    backupOnlineResignToLocal();
+                    updateSaveStatus('online','ok','云端已同步');
+                    console.log('online_resigns row created at id',onlineResignRowId);
+                    return;
+                }
+            }
+            // id 冲突或失败 → 尝试下一个 id
+        }catch(e){}
+    }
+    console.error('createOnlineResignRow failed: no available id 5-30');
+}
+
+async function syncOnlineResignData(opts){
+    opts = opts || {};
+    if(onlineResignWriteLock)return;
+    // 关键修复：rowId 不存在时先建再同步（之前直接 return 是数据丢失根因）
+    if(!onlineResignRowId){
+        await createOnlineResignRow();
+        if(!onlineResignRowId){
+            updateSaveStatus('online','error','未连接云端·仅本地');
+            return;
+        }
+    }
+    onlineResignWriteLock=true;
+    try{
+        backupOnlineResignToLocal();
+        let res=null, lastErr='';
+        for(let attempt=1;attempt<=3;attempt++){
+            // 🔥 关键：keepalive:true 让请求在浏览器关闭后仍能完成（解决"立刻关页面导致 PATCH 丢失"）
+            res=await fetch(SUPA_URL+'/rest/v1/'+SUPA_TABLE+'?id=eq.'+onlineResignRowId,{
+                method:'PATCH',
+                keepalive: true,  // ← 关键：关页面也能完成
+                headers:{
+                    'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY,
+                    'Content-Type':'application/json','Prefer':'return=minimal'
+                },
+                body:JSON.stringify({
+                    data:{_type:'online_resigns',online_resigns:onlineResignList},
+                    updated_at:new Date().toISOString()
+                })
+            });
+            if(res.ok)break;
+            lastErr='HTTP '+res.status;
+            await new Promise(r=>setTimeout(r,400*attempt));
+        }
+        if(!res||!res.ok){
+            updateSaveStatus('online','error','云端失败·本地'+onlineResignList.length+'条 '+(lastErr||'unknown'));
+            console.error('syncOnlineResignData failed after 3 retries', lastErr);
+        }else{
+            updateSaveStatus('online','ok','云端已同步·'+onlineResignList.length+'条');
+            // 同步成功后立即 verify：从云端拉一次确认是否一致
+            try{
+                const v=await fetch(SUPA_URL+'/rest/v1/'+SUPA_TABLE+'?id=eq.'+onlineResignRowId+'&select=data',{
+                    headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY}
+                });
+                if(v.ok){
+                    const arr=await v.json();
+                    const cloudList=arr[0]&&arr[0].data&&arr[0].data.online_resigns||[];
+                    if(cloudList.length!==onlineResignList.length){
+                        updateSaveStatus('online','warn','云端条数不一致 本地'+onlineResignList.length+'/云'+cloudList.length);
+                    }
+                }
+            }catch(e){}
+        }
+    }catch(e){
+        console.error('syncOnlineResignData failed',e);
+        updateSaveStatus('online','error','云端失败·仅本地');
+    }
+    onlineResignWriteLock=false;
+}
+// 强制立即全量同步（不防抖、不锁），用于用户点击"立即保存"按钮
+async function forceSyncOnlineResignData(){
+    if(onlineResignSyncTimer){clearTimeout(onlineResignSyncTimer);onlineResignSyncTimer=null;}
+    await syncOnlineResignData();
+    // 同步预离职和离职原因
+    if(typeof syncPreTurnoverData==='function') await syncPreTurnoverData();
+    if(typeof syncTurnoverData==='function') await syncTurnoverData();
+    updateSaveStatus('online','ok','已强制同步');
+}
+function scheduleOnlineResignSync(){
+    if(onlineResignSyncTimer)clearTimeout(onlineResignSyncTimer);
+    // 缩短防抖：300ms 而非 800ms，减少用户关页面时丢数据的窗口
+    onlineResignSyncTimer=setTimeout(()=>{syncOnlineResignData();},300);
+}
+
+// 页面关闭/隐藏时立即同步（keepalive:true 已确保 PATCH 能完成）
+window.addEventListener('beforeunload',()=>{
+    try{
+        if(onlineResignSyncTimer){clearTimeout(onlineResignSyncTimer);onlineResignSyncTimer=null;}
+        if(typeof syncOnlineResignData==='function') syncOnlineResignData();
+    }catch(e){}
+});
+window.addEventListener('pagehide',()=>{
+    try{
+        if(typeof syncOnlineResignData==='function') syncOnlineResignData();
+    }catch(e){}
+});
+
+// ===== 预离职自动转移逻辑 =====
+function parseResignDate(str){
+    if(!str)return null;
+    str=String(str).trim();
+    let m=str.match(/(\d{4})[-\/.](\d{1,2})[-\/.](\d{1,2})/);
+    if(m)return new Date(parseInt(m[1]),parseInt(m[2])-1,parseInt(m[3]));
+    m=str.match(/(\d{1,2})月(\d{1,2})[日号]/);
+    if(m){
+        const year=new Date().getFullYear();
+        return new Date(year,parseInt(m[1])-1,parseInt(m[2]));
+    }
+    return null;
+}
+
+function shouldTransferToResign(resignDateStr){
+    const d=parseResignDate(resignDateStr);
+    if(!d)return false;
+    const today=new Date();
+    today.setHours(23,59,59,999);
+    return d<=today;
+}
+
+async function autoTransferPreTurnover(){
+    if(!preTurnoverList||preTurnoverList.length===0)return;
+    const toTransfer=preTurnoverList.filter(p=>shouldTransferToResign(p.resignDate));
+    if(toTransfer.length===0)return;
+    console.log('Auto-transferring',toTransfer.length,'pre-turnover to online resigns');
+    for(const emp of toTransfer){
+        emp._isOnline=true;
+        emp._transferredFromPre=true;
+        emp.transferredAt=new Date().toISOString();
+        onlineResignList.push(emp);
+    }
+    const transferredIds=new Set(toTransfer.map(p=>p.empId));
+    preTurnoverList=preTurnoverList.filter(p=>!transferredIds.has(p.empId));
+    schedulePreTurnoverSync();
+    scheduleOnlineResignSync();
+    refreshAll();
+    const modal=document.getElementById('detail-modal');
+    if(modal.classList.contains('active')){
+        if(currentModalMode==='pre')openPreTurnoverModal();
+        else if(currentModalList.length)showEmpModal(currentModalTitle,currentModalList);
+    }
+}
+
+async function syncPreTurnoverData(){
+    if(preTurnoverWriteLock||!preTurnoverRowId)return;
+    preTurnoverWriteLock=true;
+    try{
+        backupPreTurnoverToLocal();
+        const res=await fetch(SUPA_URL+'/rest/v1/'+SUPA_TABLE+'?id=eq.'+preTurnoverRowId,{
+            method:'PATCH',
+            headers:{
+                'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY,
+                'Content-Type':'application/json','Prefer':'return=minimal'
+            },
+            body:JSON.stringify({
+                data:{_type:'pre_turnover',pre_turnover:preTurnoverList},
+                updated_at:new Date().toISOString()
+            })
+        });
+        if(!res.ok){
+            const txt=await res.text();
+            console.error('syncPreTurnoverData failed',res.status,txt);
+            updateSaveStatus('pre','error','云端失败·仅本地 ('+res.status+')');
+        }else{
+            updateSaveStatus('pre','ok','云端已同步');
+        }
+    }catch(e){
+        console.error('syncPreTurnoverData failed',e);
+        updateSaveStatus('pre','error','云端失败·仅本地');
+    }
+    preTurnoverWriteLock=false;
+}
+function schedulePreTurnoverSync(){
+    if(preTurnoverSyncTimer)clearTimeout(preTurnoverSyncTimer);
+    preTurnoverSyncTimer=setTimeout(()=>{syncPreTurnoverData();},800);
+}
+
+async function syncTurnoverData(){
+    if(turnoverWriteLock||!turnoverRowId)return;
+    turnoverWriteLock=true;
+    try{
+        backupTurnoverToLocal();
+        const res=await fetch(SUPA_URL+'/rest/v1/'+SUPA_TABLE+'?id=eq.'+turnoverRowId,{
+            method:'PATCH',
+            headers:{
+                'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY,
+                'Content-Type':'application/json','Prefer':'return=minimal'
+            },
+            body:JSON.stringify({
+                data:{_type:'turnover_reasons',turnover_reasons:turnoverReasons},
+                updated_at:new Date().toISOString()
+            })
+        });
+        if(!res.ok){
+            const txt=await res.text();
+            console.error('syncTurnoverData failed',res.status,txt);
+            updateSaveStatus('turnover','error','云端失败·仅本地 ('+res.status+')');
+        }else{
+            updateSaveStatus('turnover','ok','云端已同步');
+        }
+    }catch(e){
+        console.error('syncTurnoverData failed',e);
+        updateSaveStatus('turnover','error','云端失败·仅本地');
+    }
+    turnoverWriteLock=false;
+}
+function scheduleTurnoverSync(){
+    if(turnoverSyncTimer)clearTimeout(turnoverSyncTimer);
+    turnoverSyncTimer=setTimeout(()=>{syncTurnoverData();},800);
+}
+
+function getTurnoverReason(empId){
+    const r=turnoverReasons[empId];
+    return r&&r.reason?r.reason:'';
+}
+
+function getEffectiveReasonDetail(emp){
+    // 优先读取表单填写的 reason1（新增/编辑弹窗字段）
+    if(emp.reason1&&emp.reason1.trim())return emp.reason1.trim();
+    // 然后是在线详情弹窗填写的 reason
+    if(emp.reason&&emp.reason.trim())return emp.reason.trim();
+    // 兼容旧字段 reasonDetail
+    if(emp.reasonDetail&&emp.reasonDetail.trim())return emp.reasonDetail.trim();
+    // 主动离职最后尝试 turnoverReasons
+    if(!emp._isPre) return getTurnoverReason(emp.empId);
+    return '';
+}
+
+function findPreTurnoverById(empId){
+    return (preTurnoverList||[]).find(p=>p.empId===empId);
+}
+
+function getTurnoverField(empId, field){
+    const r=turnoverReasons[empId]||{};
+    if(field==='reason'){
+        return r.reason||getTurnoverReason(empId);
+    }
+    if(r[field])return r[field];
+    const pre=findPreTurnoverById(empId);
+    return pre?pre[field]||'':'';
+}
+
+function getReasonEditHtml(emp, field, label){
+    let detail='';
+    if(field==='reason'){
+        detail=getEffectiveReasonDetail(emp);
+    }else{
+        detail=getTurnoverField(emp.empId, field);
+    }
+    if(detail){
+        return '<span class="reason-edit filled" title="'+escapeHtml(label)+'：'+escapeHtml(detail)+'" onclick="openReasonEdit(\''+emp.empId+'\')">'+escapeHtml(detail)+'</span>';
+    }
+    return '<span class="reason-edit" onclick="openReasonEdit(\''+emp.empId+'\')">待填写</span>';
+}
+
+function findEmployeeById(empId){
+    return (D.employees||[]).find(e=>e.empId===empId) || findPreTurnoverById(empId);
+}
+
+function openReasonEdit(empId){
+    currentEditEmpId=empId;
+    const emp=findEmployeeById(empId);
+    if(!emp){alert('未找到该员工');return;}
+    const info=document.getElementById('reason-edit-info');
+    info.innerHTML='姓名：<strong>'+escapeHtml(emp.name)+'</strong>　工号：<strong>'+escapeHtml(emp.empId)+'</strong><br>门店：'+escapeHtml(emp.store)+'　职位：'+escapeHtml(emp.position);
+    const r=turnoverReasons[empId]||{};
+    document.getElementById('reason-edit-text').value=r.reason||emp.reason1||'';
+    document.getElementById('reason-edit-modal').classList.add('active');
+}
+
+function closeReasonEdit(event){
+    if(!event || event.target.id==='reason-edit-modal' || event.target.className==='modal-close'){
+        if(autoSaveTimer){
+            clearTimeout(autoSaveTimer);
+            autoSaveTimer=null;
+            saveReasonEditNow();
+            if(turnoverSyncTimer){clearTimeout(turnoverSyncTimer);turnoverSyncTimer=null;}
+            syncTurnoverData();
+        }else{
+            if(turnoverRowId && turnoverReasons[currentEditEmpId]){
+                syncTurnoverData();
+            }
+        }
+        document.getElementById('reason-edit-modal').classList.remove('active');
+        currentEditEmpId=null;
+    }
+}
+
+function confirmReasonEdit(){
+    saveReasonEditNow();
+    closeReasonEdit();
+}
+
+let autoSaveTimer=null;
+let lastAutoSaveAt=0;
+
+function autoSaveReasonEdit(){
+    if(!currentEditEmpId)return;
+    if(autoSaveTimer)clearTimeout(autoSaveTimer);
+    autoSaveTimer=setTimeout(()=>{saveReasonEditNow();autoSaveTimer=null;},600);
+}
+
+function saveReasonEditNow(){
+    if(!currentEditEmpId)return;
+    const reason=(document.getElementById('reason-edit-text')||{}).value||'';
+    const reasonVal=reason.trim();
+    const payload={
+        reason:reasonVal,
+        reason1:reasonVal,
+        updated_at:new Date().toISOString()
+    };
+    const pre=findPreTurnoverById(currentEditEmpId);
+    if(pre){
+        Object.assign(pre,payload);
+        schedulePreTurnoverSync();
+    }else{
+        // 主动离职人员：同时更新 onlineResignList 中的 reason1，保证列表显示一致
+        const online=(onlineResignList||[]).find(p=>p.empId===currentEditEmpId);
+        if(online){online.reason1=reasonVal;online.reason=reasonVal;online.updated_at=payload.updated_at;}
+        turnoverReasons[currentEditEmpId]=payload;
+        scheduleTurnoverSync();
+    }
+    lastAutoSaveAt=Date.now();
+    const indicator=document.getElementById('reason-edit-saved-indicator');
+    if(indicator){
+        const time=new Date().toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+        indicator.textContent='✓ 已自动保存 '+time;
+        indicator.classList.add('visible');
+    }
+    refreshTurnoverDisplays();
+}
+
+function refreshTurnoverDisplays(){
+    renderEmpTable();
+    renderCards();
+    const modal=document.getElementById('detail-modal');
+    if(!modal.classList.contains('active')) return;
+    if(currentModalMode==='pre'){
+        openPreTurnoverModal();
+    }else if(currentModalList.length){
+        showEmpModal(currentModalTitle, currentModalList);
+    }
+}
+
+// ===== 预离职人员弹窗 =====
+function openPreTurnoverModal(){
+    currentModalMode='pre';
+    const title='预离职人员填写 - 共'+preTurnoverList.length+'人';
+    document.getElementById('modal-title').textContent=title;
+    const body=document.getElementById('modal-body');
+    const toolbar='<div style="padding:12px 20px;"><button class="action-btn" style="background:#1565c0;color:#fff;" onclick="openPreTurnoverEditModal()">+ 新增预离职人员</button></div>';
+    if(preTurnoverList.length===0){
+        body.innerHTML=toolbar+'<div class="modal-empty">暂无预离职人员，请点击上方「新增」按钮添加</div>';
+    }else{
+        const cols=['序号','大店长','姓名','职位','门店','入职日期','预计离职日期','工龄','原因标签','离职原因','操作'];
+        body.innerHTML=toolbar+'<div class="modal-table-wrap"><table><thead><tr>'+cols.map(h=>'<th>'+h+'</th>').join('')+'</tr></thead><tbody>'+preTurnoverList.map((e,i)=>
+            '<tr>'+
+            '<td>'+(i+1)+'</td>'+
+            '<td>'+escapeHtml(e.dadianchang||'')+'</td>'+
+            '<td><strong>'+escapeHtml(e.name||'')+'</strong></td>'+
+            '<td>'+escapeHtml(e.position||'')+'</td>'+
+            '<td class="text-left">'+escapeHtml(e.store||'')+'</td>'+
+            '<td>'+escapeHtml(e.hireDate||'')+'</td>'+
+            '<td>'+escapeHtml(e.resignDate||'')+'</td>'+
+            '<td>'+escapeHtml(e.gongLingQuJian||'')+'</td>'+
+            '<td>'+escapeHtml(e.reasonTag||e.reason1||'')+'</td>'+
+            '<td class="text-left col-detail">'+getReasonEditHtml(e,'reason','离职原因')+'</td>'+
+            '<td><button class="action-btn" style="background:#e3f2fd;color:#1565c0;padding:3px 10px;font-size:12px;" onclick="event.stopPropagation();openPreTurnoverEditModal(\''+e.empId+'\')">编辑</button> <button class="action-btn" style="background:#ffcdd2;color:#c62828;padding:3px 10px;font-size:12px;" onclick="event.stopPropagation();deletePreTurnover(\''+e.empId+'\')">删除</button></td>'+
+            '</tr>'
+        ).join('')+'</tbody></table></div>';
+    }
+    document.getElementById('detail-modal').classList.add('active');
+}
+
+function onPreStoreInput(){
+    const input=document.getElementById('pre-edit-store');
+    const val=input.value.trim();
+    const dl=document.getElementById('store-options');
+    let list;
+    if(!val){
+        list=STORE_DATA.stores;
+    }else{
+        list=STORE_DATA.stores.filter(s=>s.indexOf(val)>=0);
+    }
+    if(list.length>60) list=list.slice(0,60);
+    dl.innerHTML=list.map(s=>'<option value="'+s+'">').join('');
+    if(STORE_DATA.mapping[val]){
+        const m=STORE_DATA.mapping[val];
+        document.getElementById('pre-edit-dadianchang').value=m.dadianchang;
+    }
+}
+
+function openPreTurnoverEditModal(empId){
+    editModalMode='pre';
+    currentEditPreId=empId||null;
+    const isNew=!currentEditPreId;
+    document.getElementById('pre-turnover-edit-title').textContent=isNew?'新增预离职人员':'编辑预离职人员';
+    const emp=isNew?{}:findPreTurnoverById(currentEditPreId)||{};
+    document.getElementById('pre-edit-name').value=emp.name||'';
+    document.getElementById('pre-edit-emp-id').value=isNew?'':(emp.empId||'');
+    document.getElementById('pre-edit-qujing').value=emp.qujing||'';
+    document.getElementById('pre-edit-dadianchang').value=emp.dadianchang||'';
+    document.getElementById('pre-edit-store').value=emp.store||'';
+    document.getElementById('pre-edit-position').value=emp.position||'';
+    document.getElementById('pre-edit-hire-date').value=emp.hireDate||'';
+    document.getElementById('pre-edit-resign-date').value=emp.resignDate||'';
+    document.getElementById('pre-edit-gongling').value=emp.gongLingQuJian||'';
+    document.getElementById('pre-edit-reason-tag').value=emp.reasonTag||'';
+    document.getElementById('pre-edit-reason1').value=emp.reason1||'';
+    onPreStoreInput();
+    document.getElementById('pre-turnover-edit-modal').classList.add('active');
+}
+
+function closePreTurnoverEdit(){
+    document.getElementById('pre-turnover-edit-modal').classList.remove('active');
+    currentEditPreId=null;
+}
+
+function openResignEditModal(empId){
+    editModalMode='resign';
+    currentEditPreId=empId||null;
+    const isNew=!currentEditPreId;
+    document.getElementById('pre-turnover-edit-title').textContent=isNew?'新增离职人员':'编辑离职人员';
+    const emp=isNew?{}:(onlineResignList.find(p=>p.empId===currentEditPreId)||{});
+    document.getElementById('pre-edit-name').value=emp.name||'';
+    document.getElementById('pre-edit-emp-id').value=isNew?'':(emp.empId||'');
+    document.getElementById('pre-edit-qujing').value=emp.qujing||'';
+    document.getElementById('pre-edit-dadianchang').value=emp.dadianchang||'';
+    document.getElementById('pre-edit-store').value=emp.store||'';
+    document.getElementById('pre-edit-position').value=emp.position||'';
+    document.getElementById('pre-edit-hire-date').value=emp.hireDate||'';
+    document.getElementById('pre-edit-resign-date').value=emp.resignDate||'';
+    document.getElementById('pre-edit-gongling').value=emp.gongLingQuJian||'';
+    document.getElementById('pre-edit-reason-tag').value=emp.reasonTag||'';
+    document.getElementById('pre-edit-reason1').value=emp.reason1||'';
+    onPreStoreInput();
+    document.getElementById('pre-turnover-edit-modal').classList.add('active');
+}
+
+function confirmPreTurnoverEdit(){
+    const name=document.getElementById('pre-edit-name').value.trim();
+    const qujing=document.getElementById('pre-edit-qujing').value.trim();
+    const dadianchang=document.getElementById('pre-edit-dadianchang').value.trim();
+    const store=document.getElementById('pre-edit-store').value.trim();
+    const position=document.getElementById('pre-edit-position').value.trim();
+    // 不限制必填：所有字段均可自由提交（仅做软提示，不阻塞）
+    if(!name){
+        if(!confirm('姓名为空，仍要保存吗？')){return;}
+    }
+    const empIdInput=document.getElementById('pre-edit-emp-id').value.trim();
+    const isNew=!currentEditPreId;
+    let empId=isNew?(editModalMode==='resign'?('resign_'+Date.now()):('pre_'+Date.now())):currentEditPreId;
+    if(isNew && empIdInput){
+        if(editModalMode==='resign'){
+            if(onlineResignList.some(p=>p.empId===empIdInput)){
+                alert('该工号/ID已存在，请更换');return;
+            }
+        }else{
+            if(preTurnoverList.some(p=>p.empId===empIdInput)){
+                alert('该工号/ID已存在，请更换');return;
+            }
+        }
+        empId=empIdInput;
+    }
+    const record={
+        empId:empId,
+        name:name,
+        qujing:qujing,
+        dadianchang:dadianchang,
+        store:store,
+        position:position,
+        hireDate:document.getElementById('pre-edit-hire-date').value.trim(),
+        resignDate:document.getElementById('pre-edit-resign-date').value.trim(),
+        gongLingQuJian:document.getElementById('pre-edit-gongling').value.trim(),
+        reasonTag:document.getElementById('pre-edit-reason-tag').value.trim(),
+        reason1:document.getElementById('pre-edit-reason1').value.trim(),
+        updated_at:new Date().toISOString()
+    };
+    if(editModalMode==='resign'){
+        record._isOnline=true;
+        if(isNew){
+            onlineResignList.push(record);
+        }else{
+            const idx=onlineResignList.findIndex(p=>p.empId===currentEditPreId);
+            if(idx>=0) onlineResignList[idx]=record;
+        }
+        scheduleOnlineResignSync();
+        closePreTurnoverEdit();
+        refreshAll();
+        openAllResignModal();
+    }else{
+        record._isPre=true;
+        if(isNew){
+            preTurnoverList.push(record);
+        }else{
+            const idx=preTurnoverList.findIndex(p=>p.empId===currentEditPreId);
+            if(idx>=0) preTurnoverList[idx]=record;
+        }
+        schedulePreTurnoverSync();
+        closePreTurnoverEdit();
+        renderCards();
+        openPreTurnoverModal();
+    }
+}
+
+function deletePreTurnover(empId){
+    if(!confirm('确定删除该预离职人员吗？'))return;
+    preTurnoverList=preTurnoverList.filter(p=>p.empId!==empId);
+    schedulePreTurnoverSync();
+    renderCards();
+    openPreTurnoverModal();
+}
+
+function deleteOnlineResign(empId){
+    if(!confirm('确定删除该离职人员记录吗？'))return;
+    onlineResignList=onlineResignList.filter(p=>p.empId!==empId);
+    scheduleOnlineResignSync();
+    refreshAll();
+    openAllResignModal();
+}
+
+function refreshPreTurnoverDisplays(){
+    renderCards();
+    const modal=document.getElementById('detail-modal');
+    if(modal.classList.contains('active') && currentModalMode==='pre'){
+        openPreTurnoverModal();
+    }
+}
+
+// ===== 初始化 =====
+// 🔥 关键修复：每个 init 函数都 try-catch，确保一个出错不影响后续（特别是 loadOnlineResignData 必须执行）
+try{initGlobalFilters();}catch(e){console.error('initGlobalFilters failed',e);}
+try{renderCards();}catch(e){console.error('renderCards failed',e);}
+try{renderDcFocus();}catch(e){console.error('renderDcFocus failed',e);}
+try{renderMonthlyChart();}catch(e){console.error('renderMonthlyChart failed',e);}
+try{renderMonthlyCountChart();}catch(e){console.error('renderMonthlyCountChart failed',e);}
+try{renderAnalysisCharts();}catch(e){console.error('renderAnalysisCharts failed',e);}
+try{renderTables();}catch(e){console.error('renderTables failed',e);}
+try{renderEmpTable();}catch(e){console.error('renderEmpTable failed',e);}
+try{switchTab('qujing');}catch(e){console.error('switchTab failed',e);}
+try{loadTurnoverData();}catch(e){console.error('loadTurnoverData failed',e);}
+
+// 🔥 核心修复：loadOnlineResignData 必须被调用，不依赖 loadPreTurnoverData 成功
+// 之前：loadPreTurnoverData().then(() => loadOnlineResignData())
+// 如果 loadPreTurnoverData reject 了，loadOnlineResignData 永远不会被调用！
+loadPreTurnoverData().catch(e=>{console.error('loadPreTurnoverData failed',e);}).then(()=>{
+    return loadOnlineResignData().catch(e=>{console.error('loadOnlineResignData failed',e);});
+}).then(()=>{
+    try{loadRosterData();}catch(e){console.error('loadRosterData failed',e);}
+    try{autoTransferPreTurnover();}catch(e){console.error('autoTransferPreTurnover failed',e);}
+    autoTransferTimer=setInterval(()=>{try{autoTransferPreTurnover();}catch(e){}},600000);
+    // ===== URL参数快捷入口 =====
+    const params=new URLSearchParams(window.location.search);
+    if(params.get('preTurnoverAdd')==='1'){
+        setTimeout(()=>{
+            try{openPreTurnoverModal();}catch(e){console.error(e);}
+            setTimeout(()=>{try{openPreTurnoverEditModal();}catch(e){console.error(e);}},120);
+        },300);
+    }
+}).catch(e=>{console.error('init chain failed',e);});
+
+// ===== 页面关闭/刷新前强制写本地备份（防抖窗口兜底） =====
+window.addEventListener('beforeunload',()=>{
+    try{
+        backupTurnoverToLocal();
+        backupPreTurnoverToLocal();
+        backupOnlineResignToLocal();
+    }catch(e){}
+});
+// 每60秒自动滚动备份一次（即使无操作也保持最新副本）
+setInterval(()=>{
+    try{
+        backupTurnoverToLocal();
+        backupPreTurnoverToLocal();
+        backupOnlineResignToLocal();
+    }catch(e){}
+},60000);
+// 每 90s 自动强同步到云端（关键：之前只本地备份，没真正上传）
+setInterval(()=>{
+    try{
+        if(typeof syncOnlineResignData==='function') syncOnlineResignData();
+        if(typeof syncPreTurnoverData==='function') syncPreTurnoverData();
+        if(typeof syncTurnoverData==='function') syncTurnoverData();
+    }catch(e){}
+},90000);
+// ===== 页面关闭/刷新前用 keepalive 强同步一次（确保最后一份数据落到云端） =====
+window.addEventListener('beforeunload',()=>{
+    try{
+        // 先本地兜底（保证不丢）
+        backupTurnoverToLocal();
+        backupPreTurnoverToLocal();
+        backupOnlineResignToLocal();
+        // 再尝试 keepalive 同步到云端（即使页面立刻关闭，浏览器会后台发送）
+        if(onlineResignRowId){
+            try{
+                fetch(SUPA_URL+'/rest/v1/'+SUPA_TABLE+'?id=eq.'+onlineResignRowId,{
+                    method:'PATCH',
+                    headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
+                    body:JSON.stringify({data:{_type:'online_resigns',online_resigns:onlineResignList},updated_at:new Date().toISOString()}),
+                    keepalive:true
+                });
+            }catch(e){}
+        }else{
+            // rowId 还没建出来，最后一次尝试建 + 写本地内容
+            try{
+                fetch(SUPA_URL+'/rest/v1/'+SUPA_TABLE,{
+                    method:'POST',
+                    headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
+                    body:JSON.stringify({id:5,data:{_type:'online_resigns',online_resigns:onlineResignList},updated_at:new Date().toISOString()}),
+                    keepalive:true
+                });
+            }catch(e){}
+        }
+    }catch(e){}
+});
+</script>
+</body>
+</html>

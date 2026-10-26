@@ -3,7 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>古德墨柠 7月离职数据看板</title>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>古德墨柠 10月离职数据看板</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -394,9 +397,16 @@
 <div class="container">
 
 <!-- ===== 标题栏 ===== -->
+<style>
+.save-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px;vertical-align:middle;}
+.save-dot.ok{background:#7cb342;box-shadow:0 0 4px #7cb342;}
+.save-dot.local{background:#ff9800;box-shadow:0 0 4px #ff9800;}
+.save-dot.error{background:#e53935;box-shadow:0 0 4px #e53935;animation:saveblink 1s infinite;}
+@keyframes saveblink{50%{opacity:.3;}}
+</style>
 <div class="header-bar">
     <div class="header-left">
-        <div class="header-title" id="hdr-title">● 古德墨柠 7月离职数据看板</div>
+        <div class="header-title" id="hdr-title">● 古德墨柠 10月离职数据看板</div>
         <div class="header-date" id="hdr-date"></div>
     </div>
     <div class="header-right">
@@ -424,7 +434,7 @@
 <div class="description-bar">
     <div class="description-bar-title">📋 看板说明</div>
     <div class="description-list">
-        <div class="description-item">1、<strong>统计周期：</strong>9月1日 - 9月8日</div>
+        <div class="description-item">1、<strong>统计周期：</strong>10月1日 - 10月15日</div>
         <div class="description-item">2、<strong>数据范围：</strong>古德墨柠品牌全职人员，含14位大店长管辖门店</div>
         <div class="description-item">3、<strong>离职类型：</strong>目标主动离职率 ≤ 5%</div>
         <div class="description-item">4、<strong>筛选联动：</strong>顶部「大店区」筛选可联动第一、二、三排数据，点击红色/蓝色卡片可查看对应人员明细</div>
@@ -572,47 +582,11 @@
             <div class="edit-modal-info" id="reason-edit-info"></div>
             <div class="edit-modal-grid">
                 <div class="full-width">
-                    <div class="edit-modal-label">离职原因 / 详情</div>
-                    <textarea class="edit-modal-textarea" id="reason-edit-text" placeholder="请填写该伙伴的离职原因或详情…" style="min-height:80px;" oninput="autoSaveReasonEdit()"></textarea>
-                </div>
-                <div>
-                    <div class="edit-modal-label">沟通时间</div>
-                    <input type="text" class="edit-modal-input" id="reason-edit-communication-time" placeholder="如：6月8日" style="margin-bottom:0;" oninput="autoSaveReasonEdit()" onblur="autoSaveReasonEdit()">
-                </div>
-                <div>
-                    <div class="edit-modal-label">运营判定离职原因</div>
-                    <input type="text" class="edit-modal-input" id="reason-edit-operation-reason" placeholder="" style="margin-bottom:0;" oninput="autoSaveReasonEdit()" onblur="autoSaveReasonEdit()">
-                </div>
-                <div class="full-width">
-                    <div class="edit-modal-label">BP沟通离职原因填写</div>
-                    <textarea class="edit-modal-textarea" id="reason-edit-bp-reason" placeholder="" style="min-height:70px;" oninput="autoSaveReasonEdit()"></textarea>
-                </div>
-                <div>
-                    <div class="edit-modal-label">BP沟通时间</div>
-                    <input type="text" class="edit-modal-input" id="reason-edit-bp-time" placeholder="如：6月8日" style="margin-bottom:0;" oninput="autoSaveReasonEdit()" onblur="autoSaveReasonEdit()">
-                </div>
-                <div>
-                    <div class="edit-modal-label">BP判定离职原因打标</div>
-                    <input type="text" class="edit-modal-input" id="reason-edit-bp-tag" placeholder="" style="margin-bottom:0;" oninput="autoSaveReasonEdit()" onblur="autoSaveReasonEdit()">
-                </div>
-                <div>
-                    <div class="edit-modal-label">和运营是否一致</div>
-                    <select class="edit-modal-input" id="reason-edit-is-consistent" style="margin-bottom:0;" onchange="autoSaveReasonEdit()">
-                        <option value="">请选择</option>
-                        <option value="一致">一致</option>
-                        <option value="不一致">不一致</option>
-                    </select>
-                </div>
-                <div>
-                    <div class="edit-modal-label">不一致情况说明</div>
-                    <input type="text" class="edit-modal-input" id="reason-edit-inconsistency" placeholder="" style="margin-bottom:0;" oninput="autoSaveReasonEdit()" onblur="autoSaveReasonEdit()">
-                </div>
-                <div>
-                    <div class="edit-modal-label">填写人（选填）</div>
-                    <input type="text" class="edit-modal-input" id="reason-edit-by" placeholder="例如：张三" style="margin-bottom:0;" oninput="autoSaveReasonEdit()" onblur="autoSaveReasonEdit()">
+                    <div class="edit-modal-label">详情</div>
+                    <textarea class="edit-modal-textarea" id="reason-edit-text" placeholder="请填写该伙伴的离职详情…" style="min-height:120px;" oninput="autoSaveReasonEdit()"></textarea>
                 </div>
             </div>
-            <div class="edit-modal-hint">⚡ 字段失焦或停止输入 0.6 秒后自动保存到云端，关闭弹窗也不会丢失。</div>
+            <div class="edit-modal-hint">⚡ 输入停止 0.6 秒后自动保存到云端，关闭弹窗也不会丢失。</div>
         </div>
         <div class="edit-modal-actions">
             <button class="btn-cancel" onclick="closeReasonEdit()">关闭</button>
@@ -622,7 +596,7 @@
 </div>
 
 <!-- ===== 预离职人员新增/编辑弹窗 ===== -->
-<div class="edit-modal-overlay" id="pre-turnover-edit-modal" onclick="closePreTurnoverEdit(event)">
+<div class="edit-modal-overlay" id="pre-turnover-edit-modal">
     <div class="edit-modal-box" style="max-width:780px;" onclick="event.stopPropagation()">
         <div class="modal-header">
             <span class="modal-title" id="pre-turnover-edit-title">新增预离职人员</span>
@@ -632,37 +606,38 @@
             <input type="hidden" id="pre-edit-qujing" value="">
             <div class="edit-modal-grid">
                 <div style="position:relative;">
-                    <div class="edit-modal-label">姓名 <span style="color:#c62828;">*</span> <span style="color:#888;font-size:11px;font-weight:normal;">（输入 2 字自动检索期初人员）</span></div>
+                    <div class="edit-modal-label">姓名 <span style="color:#c62828;">*</span> <span style="color:#888;font-size:11px;font-weight:normal;">（输入 1-2 字自动检索期初人员，可手动修改所有字段）</span></div>
                     <input type="text" class="edit-modal-input" id="pre-edit-name" placeholder="例如：张三" style="margin-bottom:0;" autocomplete="off" oninput="onPreNameInput()" onfocus="onPreNameInput()">
                     <div id="pre-name-suggest" style="display:none;position:absolute;top:62px;left:0;right:0;background:#fff;border:1px solid #ccc;border-radius:4px;max-height:180px;overflow-y:auto;z-index:1000;box-shadow:0 4px 8px rgba(0,0,0,0.1);"></div>
                 </div>
-                <div>
-                    <div class="edit-modal-label">工号</div>
-                    <input type="text" class="edit-modal-input" id="pre-edit-emp-id" placeholder="自动填充" style="margin-bottom:0;background:#f5f5f5;" readonly>
+                <div style="position:relative;">
+                    <div class="edit-modal-label">工号 <span style="color:#888;font-size:11px;font-weight:normal;">（输入工号自动检索期初人员，可手动修改所有字段）</span></div>
+                    <input type="text" class="edit-modal-input" id="pre-edit-emp-id" placeholder="自动填充（可手动修改）" style="margin-bottom:0;" autocomplete="off" oninput="onPreEmpIdInput()" onfocus="onPreEmpIdInput()">
+                    <div id="pre-empid-suggest" style="display:none;position:absolute;top:62px;left:0;right:0;background:#fff;border:1px solid #ccc;border-radius:4px;max-height:180px;overflow-y:auto;z-index:1000;box-shadow:0 4px 8px rgba(0,0,0,0.1);"></div>
                 </div>
                 <div>
                     <div class="edit-modal-label">大店长 <span style="color:#c62828;">*</span></div>
                     <select class="edit-modal-input" id="pre-edit-dadianchang" style="margin-bottom:0;">
                         <option value="">请选择大店长</option>
-                        <option value="何海云">何海云</option><option value="刘旺林">刘旺林</option><option value="周思凡">周思凡</option><option value="廖灿">廖灿</option><option value="徐宇辉">徐宇辉</option><option value="旷瑶">旷瑶</option><option value="易彪">易彪</option><option value="李奔">李奔</option><option value="杜强">杜强</option><option value="童璐">童璐</option><option value="赵思洁">赵思洁</option><option value="邵宝生">邵宝生</option><option value="钟天祥">钟天祥</option>
+                        <option value="何海云">何海云</option><option value="刘旺林">刘旺林</option><option value="周思凡">周思凡</option><option value="廖灿">廖灿</option><option value="徐宇辉">徐宇辉</option><option value="旷瑶">旷瑶</option><option value="易彪">易彪</option><option value="李奔">李奔</option><option value="李鼎">李鼎</option><option value="杜强">杜强</option><option value="童璐">童璐</option><option value="赵思洁">赵思洁</option><option value="邵宝生">邵宝生</option><option value="钟天祥">钟天祥</option>
                     </select>
                 </div>
                 <div>
                     <div class="edit-modal-label">门店 <span style="color:#c62828;">*</span></div>
-                    <input type="text" class="edit-modal-input" id="pre-edit-store" list="store-options" placeholder="自动填充" style="margin-bottom:0;" oninput="onPreStoreInput()">
+                    <input type="text" class="edit-modal-input" id="pre-edit-store" list="store-options" placeholder="自动填充（可手动修改）" style="margin-bottom:0;" oninput="onPreStoreInput()">
                     <datalist id="store-options"></datalist>
                 </div>
                 <div>
                     <div class="edit-modal-label">职位</div>
-                    <input type="text" class="edit-modal-input" id="pre-edit-position" placeholder="自动填充" style="margin-bottom:0;background:#f5f5f5;" readonly>
+                    <input type="text" class="edit-modal-input" id="pre-edit-position" placeholder="自动填充（可手动修改）" style="margin-bottom:0;">
                 </div>
                 <div>
                     <div class="edit-modal-label">入职日期</div>
-                    <input type="text" class="edit-modal-input" id="pre-edit-hire-date" placeholder="自动填充" style="margin-bottom:0;background:#f5f5f5;" readonly>
+                    <input type="text" class="edit-modal-input" id="pre-edit-hire-date" placeholder="自动填充（可手动修改）" style="margin-bottom:0;">
                 </div>
                 <div>
                     <div class="edit-modal-label">预计离职日期</div>
-                    <input type="text" class="edit-modal-input" id="pre-edit-resign-date" placeholder="如：2026-09-15" style="margin-bottom:0;">
+                    <input type="text" class="edit-modal-input" id="pre-edit-resign-date" placeholder="如：2026-10-31" style="margin-bottom:0;">
                 </div>
                 <div>
                     <div class="edit-modal-label">工龄区间</div>
@@ -687,17 +662,10 @@
                 </div>
                 <div class="full-width">
                     <div class="edit-modal-label">离职原因</div>
-                    <select class="edit-modal-input" id="pre-edit-reason1" style="margin-bottom:0;">
-                        <option value="">请选择</option>
-                        <option value="发展原因">发展原因</option>
-                        <option value="其他原因">其他原因</option>
-                        <option value="身体原因">身体原因</option>
-                        <option value="个人能力">个人能力</option>
-                        <option value="个人原因">个人原因</option>
-                    </select>
+                    <textarea class="edit-modal-input" id="pre-edit-reason1" placeholder="手动填写离职原因（可粘贴较长的具体原因描述）" style="margin-bottom:0;min-height:64px;resize:vertical;font-family:inherit;"></textarea>
                 </div>
             </div>
-            <div class="edit-modal-hint">输入姓名后自动从期初人员表中检索填充，保存后自动同步云端。</div>
+            <div class="edit-modal-hint">输入姓名后自动从期初人员表中检索建议填充，所有字段均支持手动修改，保存后自动同步云端。</div>
         </div>
         <div class="edit-modal-actions">
             <button class="btn-cancel" onclick="closePreTurnoverEdit()">取消</button>
@@ -708,9 +676,25 @@
 
 </div><!-- end container -->
 
-<script src="data.js?v=20260908a"></script>
-<script src="roster.js?v=20260908a"></script>
+<script src="data.js?v=20261020b"></script>
+    <script src="roster.js?v=20261020b"></script>
 <script>
+// ===== 全局错误捕获（显示在页面顶部红色条，方便用户看到 JS 错误） =====
+window.addEventListener('error',function(e){
+    var div=document.createElement('div');
+    div.style.cssText='position:fixed;top:0;left:0;right:0;background:#e74c3c;color:#fff;padding:8px 16px;font-size:13px;z-index:99999;font-family:monospace;white-space:pre-wrap;';
+    div.textContent='JS错误: '+e.message+' (行:'+e.lineno+':'+e.colno+')  →  请截图发给技术';
+    document.body.appendChild(div);
+    setTimeout(function(){div.remove();},15000);
+});
+window.addEventListener('unhandledrejection',function(e){
+    var div=document.createElement('div');
+    div.style.cssText='position:fixed;top:40px;left:0;right:0;background:#e67e22;color:#fff;padding:8px 16px;font-size:13px;z-index:99999;font-family:monospace;white-space:pre-wrap;';
+    var msg=e.reason&&e.reason.message?e.reason.message:String(e.reason);
+    div.textContent='Promise错误: '+msg+'  →  请截图发给技术';
+    document.body.appendChild(div);
+    setTimeout(function(){div.remove();},15000);
+});
 const STORE_DATA={
 dadianchang:["何海云", "刘旺林", "周思凡", "廖灿", "徐宇辉", "旷瑶", "易彪", "李奔", "杜强", "童璐", "赵思洁", "邵宝生", "钟天祥"],
 stores:["古德墨柠7mallM层店", "古德墨柠7mall外街店", "古德墨柠IFS国金中心LG层店", "古德墨柠万家丽一楼南门店", "古德墨柠万家丽一楼店", "古德墨柠万家丽家居广场店", "古德墨柠万家丽负一楼店", "古德墨柠东庆街店", "古德墨柠东怡外国店", "古德墨柠中山亭店", "古德墨柠中心广场楼梯口店", "古德墨柠丰盈西里店", "古德墨柠九龙仓四楼店", "古德墨柠云玺潮汇北广场店", "古德墨柠五一平和堂负一楼店", "古德墨柠五一广场新大新店", "古德墨柠人间草木店", "古德墨柠仰天湖公交站店", "古德墨柠佳兆业广场店", "古德墨柠保利时光汇一楼店", "古德墨柠北辰三角洲站1号口店", "古德墨柠北辰三角洲站2号口店", "古德墨柠协信星光PARK店", "古德墨柠南门口联成百货大楼店", "古德墨柠友阿百货人民路店", "古德墨柠吉联Mall西广场店", "古德墨柠后湖小区店", "古德墨柠和而不同店", "古德墨柠嘉顿新天地一楼店", "古德墨柠四方坪商贸城南门店", "古德墨柠国金街B层12号口店", "古德墨柠地科家园一楼店", "古德墨柠城市生活家店", "古德墨柠太平粮仓店", "古德墨柠太平街148号店", "古德墨柠太平街新胜村口店", "古德墨柠太平街解放路口店", "古德墨柠奥林匹克店", "古德墨柠开福万达广场一楼店", "古德墨柠德思勤L1层店", "古德墨柠德思勤四季汇店", "古德墨柠德思勤苹果街店", "古德墨柠悦方一楼店", "古德墨柠悦麓汇美食地标店", "古德墨柠惠农大厦东门店", "古德墨柠惠农大厦店", "古德墨柠招商蛇口花园店", "古德墨柠新大陆银座店", "古德墨柠新时空大厦店", "古德墨柠方圆荟G层店", "古德墨柠旭辉里一楼店", "古德墨柠星月楼西北角店", "古德墨柠星沙万象汇内街店", "古德墨柠星沙吾悦外街店", "古德墨柠星沙天虹一楼店", "古德墨柠星沙永旺梦乐城店", "古德墨柠望城永旺梦乐城店", "古德墨柠机场T1B5店", "古德墨柠机场T2A安检店", "古德墨柠机场T2D44店", "古德墨柠杉杉奥特莱斯店", "古德墨柠林科大后街店", "古德墨柠树木岭新梁仓店", "古德墨柠步行街B区店", "古德墨柠步行街E区店", "古德墨柠步行街中心广场东北角店", "古德墨柠河西王府井负一楼店", "古德墨柠河西通程店", "古德墨柠泉塘店", "古德墨柠海信二楼店", "古德墨柠涉外美食街店", "古德墨柠渔湾市公交车站店", "古德墨柠温尔登超市店", "古德墨柠湖南大剧院一楼店", "古德墨柠湖南省博物馆四楼店", "古德墨柠湘腾广场拐角店", "古德墨柠溪悦荟店", "古德墨柠潮宗街文化街店", "古德墨柠潮宗街水道巷店", "古德墨柠牛车水美食城店", "古德墨柠王府井桃花源店", "古德墨柠登隆街内街店", "古德墨柠百联奥特莱斯店", "古德墨柠砂之船一楼外街店", "古德墨柠科佳电脑城店", "古德墨柠突兀店", "古德墨柠粉巢一楼店", "古德墨柠育英街店", "古德墨柠芙蓉广场亭子店", "古德墨柠荷花路店", "古德墨柠蝴蝶大厦店", "古德墨柠裕园小区店", "古德墨柠西中心T3写字楼店", "古德墨柠解放路世纪情店", "古德墨柠谢子龙艺术馆一楼店", "古德墨柠都正街内街店", "古德墨柠金茂三楼店", "古德墨柠长郡中学门口店", "古德墨柠阜埠河地铁1号口店", "古德墨柠雨花亭凯德二楼店", "古德墨柠音乐学院对面店", "古德墨柠高铁B24对面店", "古德墨柠高铁东广场美食城店", "古德墨柠高铁南站A8二楼店", "古德墨柠高铁南站西广场F15店", "古德墨柠高铁吾悦广场外街店", "古德墨柠麓山南路公交站店", "古德墨柠黄兴步行街F区一楼店", "古德墨柠龙塘小区店", "古德墨柠龙湖月亮岛天街店", "古德墨柠龙湖长沙芙蓉天街店"],
@@ -841,6 +825,57 @@ function loadRosterData(){
 }
 
 // ===== 姓名输入自动检索 =====
+function onPreEmpIdInput(){
+    const input=document.getElementById('pre-edit-emp-id');
+    const sugBox=document.getElementById('pre-empid-suggest');
+    const val=(input.value||'').trim();
+    if(!ROSTER_DATA.length || val.length<1){
+        sugBox.style.display='none';
+        return;
+    }
+    const matches=ROSTER_DATA.filter(r=>r.empId && r.empId.toLowerCase().indexOf(val.toLowerCase())>=0).slice(0,12);
+    if(!matches.length){
+        sugBox.style.display='none';
+        return;
+    }
+    sugBox.innerHTML=matches.map((r,idx)=>{
+        const safeId=(r.empId||'').replace(/'/g,"\\'").replace(/"/g,"&quot;");
+        const safeName=(r.name||'').replace(/'/g,"\\'").replace(/"/g,"&quot;");
+        return `<div data-idx="${idx}" style="padding:8px 12px;cursor:pointer;border-bottom:1px solid #f0f0f0;font-size:13px;display:flex;justify-content:space-between;align-items:center;"
+                     onmouseover="this.style.background='#f0f7ff'" onmouseout="this.style.background='#fff'"
+                     onclick="onPreEmpIdPick('${safeId}')">
+            <div><span style="color:#0d47a1;font-weight:600;">${r.empId||''}</span> <span style="color:#888;font-size:12px;margin-left:4px;">${r.name||''}</span></div>
+            <div style="color:#666;font-size:12px;">${r.store||''} · ${r.position||''}</div>
+        </div>`;
+    }).join('');
+    sugBox.style.display='block';
+    setTimeout(()=>{
+        const handler=(e)=>{
+            if(!sugBox.contains(e.target) && e.target!==input){
+                sugBox.style.display='none';
+                document.removeEventListener('click',handler);
+            }
+        };
+        document.addEventListener('click',handler);
+    },50);
+}
+
+function onPreEmpIdPick(empId){
+    const input=document.getElementById('pre-edit-emp-id');
+    const sugBox=document.getElementById('pre-empid-suggest');
+    input.value=empId;
+    sugBox.style.display='none';
+    const matches=ROSTER_DATA.filter(r=>r.empId===empId);
+    if(matches.length===1){
+        applyRosterPick(matches[0]);
+        // 工号唯一，自动把姓名也带出来
+        document.getElementById('pre-edit-name').value=matches[0].name||'';
+    }else if(matches.length>1){
+        applyRosterPick(matches[0]);
+        showTip(`检测到 ${matches.length} 位工号"${empId}"相同，已自动填入第一位，可手动调整`);
+    }
+}
+
 function onPreNameInput(){
     const input=document.getElementById('pre-edit-name');
     const sugBox=document.getElementById('pre-name-suggest');
@@ -980,6 +1015,7 @@ function getFilteredStats() {
     const avgCount = (begin + end) / 2;
     const resignRate = avgCount > 0 ? resignCount / avgCount : 0;
 
+
     // 职级分布
     const zhiJi = { '店长': 0, '中级训练员': 0, '初级训练员': 0, '服务员': 0, '见习生': 0 };
     emps.forEach(e => {
@@ -1014,6 +1050,49 @@ function getFilteredStats() {
     });
 
     return { emps, begin, end, resignCount, resignRate, zhiJi, gongLing, dianZhangCount, over3YearsCount, reasonCount };
+}
+
+// ===== 动态汇总每个大店长的真实离职数（合并 D.dadianchang 静态期初/期末 + onlineResignList 动态明细）=====
+function computeDcStats(){
+    return (D.dadianchang||[]).map(function(dc){
+        var live=(onlineResignList||[]).filter(function(e){return e.dadianchang===dc.name && !e.isPre;});
+        var staticCnt=dc.resignCount||0;
+        var liveCnt=live.length;
+        var totalCnt=staticCnt+liveCnt;
+        var eEnd=dc.endCount-Math.max(0,totalCnt-staticCnt);
+        var avg=(dc.beginCount+eEnd)/2;
+        var rate=avg>0? totalCnt/avg : 0;
+        return Object.assign({},dc,{
+            resignCount:totalCnt,
+            endCount:eEnd<0?0:eEnd,
+            resignRate:rate,
+            _liveCount:liveCnt,
+            _staticCount:staticCnt
+        });
+    });
+}
+
+// 月度趋势兜底（如果 data.js 没 monthlyTrend 字段，按 onlineResignList 动态聚合最近6个月）
+function computeMonthlyTrend(){
+    if(D.monthlyTrend && D.monthlyTrend.labels && D.monthlyTrend.labels.length){
+        return Object.assign({_isPercentage:true},D.monthlyTrend);
+    }
+    var buckets={};
+    (onlineResignList||[]).forEach(function(e){
+        if(!e.resignDate) return;
+        var ym=(e.resignDate+'').slice(0,7);
+        buckets[ym]=(buckets[ym]||0)+1;
+    });
+    var labels=[];
+    var vals=[];
+    var today=new Date();
+    for(var i=5;i>=0;i--){
+        var d=new Date(today.getFullYear(),today.getMonth()-i,1);
+        var key=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
+        labels.push((d.getMonth()+1)+'月');
+        vals.push(buckets[key]||0);
+    }
+    return {labels:labels,brands:{'古德墨柠':vals},_isPercentage:false};
 }
 
 // ===== 全局筛选器初始化 =====
@@ -1057,6 +1136,9 @@ function refreshAll() {
     renderTables();
     renderEmpTable();
     renderAnalysisCharts();
+    renderDcFocus();
+    renderMonthlyChart();
+    renderMonthlyCountChart();
 }
 
 // ===== KPI 卡片 =====
@@ -1064,9 +1146,9 @@ function renderCards() {
     const stats = getFilteredStats();
     const isOnTarget = stats.resignRate <= 0.05;
     const cards = [
-        { label: '期初全职人数', sub: '(8月1日)', value: stats.begin, unit: '人', cls: '' },
-        { label: '期末全职人数', sub: '(8月至今)', value: stats.end, unit: '人', cls: '' },
-        { label: '主动离职人数', sub: '(8月)', value: stats.resignCount, unit: '人', cls: 'danger clickable', valColor: 'red',
+        { label: '期初全职人数', sub: '(10月1日)', value: stats.begin, unit: '人', cls: '' },
+        { label: '期末全职人数', sub: '(10月15日)', value: stats.end, unit: '人', cls: '' },
+        { label: '主动离职人数', sub: '(10月)', value: stats.resignCount, unit: '人', cls: 'danger clickable', valColor: 'red',
           detailBtn: '<span class="card-detail-btn" onclick="event.stopPropagation();openAllResignModal()">▶ 详情</span>',
           onclick: 'openAllResignModal()' },
         { label: '预离职人员填写', sub: '实时补充名单', value: preTurnoverList.length, unit: '人', cls: 'info clickable', valColor: 'blue',
@@ -1099,8 +1181,9 @@ function renderCards() {
 // ===== 月度趋势图（4-7月，古德墨柠） =====
 function renderMonthlyChart() {
     const ctx = document.getElementById('chart-monthly').getContext('2d');
-    const t = D.monthlyTrend;
+    const t = computeMonthlyTrend();
     const vals = t.brands['古德墨柠'] || [];
+    const isPercentage = t._isPercentage !== false; // 默认是百分比（data.js静态），dynamic 时是人数
     if (chartMonthly) chartMonthly.destroy();
     chartMonthly = new Chart(ctx, {
         type: 'line',
@@ -1108,7 +1191,7 @@ function renderMonthlyChart() {
             labels: t.labels,
             datasets: [{
                 label: '古德墨柠',
-                data: vals.map(v => +(v * 100).toFixed(2)),
+                data: isPercentage ? vals.map(v => +(v * 100).toFixed(2)) : vals,
                 borderColor: '#1565c0',
                 backgroundColor: 'rgba(21,101,192,0.12)',
                 borderWidth: 3.5,
@@ -1123,14 +1206,15 @@ function renderMonthlyChart() {
             responsive: true, maintainAspectRatio: false,
             plugins: {
                 legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 }, padding: 8 } },
-                tooltip: { callbacks: { label: ctx => '古德墨柠: ' + ctx.parsed.y.toFixed(2) + '%' } },
+                tooltip: { callbacks: { label: ctx => isPercentage ? ('古德墨柠: ' + ctx.parsed.y.toFixed(2) + '%') : ('古德墨柠: ' + ctx.parsed.y + '人') } },
                 annotation: {}
             },
             scales: {
                 y: {
-                    ticks: { callback: v => v + '%', font: { size: 10 } },
+                    ticks: { callback: v => isPercentage ? (v + '%') : (v + '人'), font: { size: 10 } },
                     grid: { color: 'rgba(0,0,0,0.05)' },
-                    suggestedMax: 6,
+                    suggestedMax: isPercentage ? 6 : undefined,
+                    beginAtZero: true,
                 },
                 x: { ticks: { font: { size: 12, weight: 'bold' } } }
             }
@@ -1141,9 +1225,14 @@ function renderMonthlyChart() {
 // ===== 月度离职人数对比柱状图 =====
 function renderMonthlyCountChart() {
     const ctx = document.getElementById('chart-monthly-count').getContext('2d');
-    const t = D.monthlyTrend;
-    // 4-7月离职人数，默认兜底，优先读取 data.js 中的 resignCounts
-    const counts = (t.resignCounts && t.resignCounts.length === t.labels.length) ? t.resignCounts : [20, 9, 13, 11];
+    const t = computeMonthlyTrend();
+    let counts;
+    if(t.resignCounts && t.resignCounts.length === t.labels.length){
+        counts = t.resignCounts;
+    }else{
+        // 动态：用 vals（人数）
+        counts = t.brands['古德墨柠'] || [];
+    }
     if (chartMonthlyCount) chartMonthlyCount.destroy();
     chartMonthlyCount = new Chart(ctx, {
         type: 'bar',
@@ -1246,7 +1335,7 @@ function renderAnalysisCharts() {
     // 大店长离职排名（第三排小卡）
     const ctx4 = document.getElementById('chart-dadianchang').getContext('2d');
     if (chartDadianchang) chartDadianchang.destroy();
-    const sortedDc = D.dadianchang.slice().sort((a, b) => b.resignCount - a.resignCount || b.resignRate - a.resignRate);
+    const sortedDc = computeDcStats().slice().sort((a, b) => b.resignCount - a.resignCount || b.resignRate - a.resignRate);
     if (sortedDc.every(d => d.resignCount === 0)) sortedDc.reverse();
     chartDadianchang = buildDcChartConfig(ctx4, sortedDc);
 }
@@ -1332,7 +1421,7 @@ function renderDcFocus() {
     const ctx = document.getElementById('chart-dc-focus');
     if (!ctx) return;
     if (chartDcFocus) chartDcFocus.destroy();
-    const sorted = D.dadianchang.slice().sort((a, b) => b.resignCount - a.resignCount || b.resignRate - a.resignRate);
+    const sorted = computeDcStats().slice().sort((a, b) => b.resignCount - a.resignCount || b.resignRate - a.resignRate);
     if (sorted.every(d => d.resignCount === 0)) sorted.reverse(); // 全0时保持原顺序展示
 
     // 摘要
@@ -1359,7 +1448,7 @@ function renderDadianchangTable() {
 
     const tb = document.getElementById('dadianchang-tbody');
     tb.innerHTML = '';
-    let dList = D.dadianchang;
+    let dList = computeDcStats();
     if (globalDadianchang !== 'all') dList = dList.filter(d => d.name === globalDadianchang);
     dList.forEach(r => {
         const tr = document.createElement('tr');
@@ -1501,7 +1590,7 @@ function showEmpModal(title, list) {
     if (list.length === 0) {
         body.innerHTML = toolbar+'<div class="modal-empty">该维度暂无离职人员，可点击上方按钮新增</div>';
     } else {
-        const cols = ['序号', '大店长', '姓名', '职位', '门店', '入职日期', '离职日期', '工龄', '离职原因', '详情', '操作'];
+        const cols = ['序号', '大店长', '姓名', '职位', '门店', '入职日期', '离职日期', '工龄', '原因标签', '离职原因', '操作'];
         body.innerHTML = toolbar +
             '<div class="modal-table-wrap"><table><thead><tr>' + cols.map(h => '<th>' + h + '</th>').join('') + '</tr></thead>' +
             '<tbody>' + list.map((e, i) =>
@@ -1515,8 +1604,8 @@ function showEmpModal(title, list) {
                 '<td>' + e.resignDate + '</td>' +
                 '<td>' + (e.gongLingQuJian || '') + '</td>' +
                 '<td><span class="reason-badge ' + reasonClass(e.reasonTag || e.reason1) + '">' + (e.reasonTag || e.reason1) + '</span></td>' +
-                '<td class="text-left col-detail">' + getReasonEditHtml(e, 'reason', '离职详情') + '</td>' +
-                '<td>'+(e._isOnline?'<button class="action-btn" style="background:#ffcdd2;color:#c62828;padding:3px 8px;font-size:11px;" onclick="event.stopPropagation();deleteOnlineResign(\''+e.empId+'\')">删除</button>':'')+'</td>' +
+                '<td class="text-left col-detail">' + getReasonEditHtml(e, 'reason', '离职原因') + '</td>' +
+                '<td><button class="action-btn" style="background:#e3f2fd;color:#1565c0;padding:3px 8px;font-size:11px;margin-right:4px;" onclick="event.stopPropagation();openResignEditModal(\''+e.empId+'\')">编辑</button>'+(e._isOnline?'<button class="action-btn" style="background:#ffcdd2;color:#c62828;padding:3px 8px;font-size:11px;" onclick="event.stopPropagation();deleteOnlineResign(\''+e.empId+'\')">删除</button>':'')+'</td>' +
                 '</tr>'
             ).join('') + '</tbody></table></div>';
     }
@@ -1556,18 +1645,54 @@ function escapeHtml(str){
     return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
+// ================== 多副本 localStorage 防丢失机制 ==================
+function writeMultiKey(primary, secondary, tertiary, data){
+    try{
+        const json=JSON.stringify(data);
+        localStorage.setItem(primary,json);
+        localStorage.setItem(secondary,json);
+        localStorage.setItem(tertiary,json);
+        // sessionStorage 也存一份（关浏览器不丢，但清理时容易丢）
+        try{ sessionStorage.setItem(primary,json);}catch(e){}
+    }catch(e){console.error('writeMultiKey failed',e);}
+}
+function readMultiKey(primary, secondary, tertiary){
+    for(const k of [primary,secondary,tertiary,primary+'_v2',secondary+'_v2',tertiary+'_v2']){
+        try{
+            const raw=localStorage.getItem(k);
+            if(raw){return JSON.parse(raw);}
+        }catch(e){}
+    }
+    try{
+        const raw=sessionStorage.getItem(primary);
+        if(raw)return JSON.parse(raw);
+    }catch(e){}
+    return null;
+}
+// 标记最后保存时间（页面顶部显示）
+function updateSaveStatus(type, status, msg){
+    const el=document.getElementById('save-status-'+type);
+    if(!el)return;
+    const now=new Date();
+    const hh=String(now.getHours()).padStart(2,'0');
+    const mm=String(now.getMinutes()).padStart(2,'0');
+    const ss=String(now.getSeconds()).padStart(2,'0');
+    el.dataset.ts=now.getTime();
+    el.innerHTML='<span class="save-dot '+status+'"></span>最后保存 '+hh+':'+mm+':'+ss+(msg?' · '+msg:'');
+    el.title=now.toLocaleString();
+}
+
 function backupTurnoverToLocal(){
     try{
-        localStorage.setItem('turnoverReasonsBackup',JSON.stringify({
-            reasons:turnoverReasons, rowId:turnoverRowId, ts:Date.now()
-        }));
-    }catch(e){}
+        const data={reasons:turnoverReasons,rowId:turnoverRowId,ts:Date.now()};
+        writeMultiKey('turnoverReasonsBackup','turnoverReasonsBackup_b','turnoverReasonsBackup_c',data);
+        updateSaveStatus('turnover','local','本地多副本已存');
+    }catch(e){console.error('backupTurnoverToLocal failed',e);}
 }
 function restoreTurnoverFromLocal(){
     try{
-        const raw=localStorage.getItem('turnoverReasonsBackup');
-        if(!raw)return false;
-        const data=JSON.parse(raw);
+        const data=readMultiKey('turnoverReasonsBackup','turnoverReasonsBackup_b','turnoverReasonsBackup_c');
+        if(!data)return false;
         turnoverReasons=data.reasons||{};
         if(!turnoverRowId)turnoverRowId=data.rowId||null;
         return true;
@@ -1576,16 +1701,15 @@ function restoreTurnoverFromLocal(){
 
 function backupPreTurnoverToLocal(){
     try{
-        localStorage.setItem('preTurnoverBackup',JSON.stringify({
-            list:preTurnoverList, rowId:preTurnoverRowId, ts:Date.now()
-        }));
-    }catch(e){}
+        const data={list:preTurnoverList,rowId:preTurnoverRowId,ts:Date.now()};
+        writeMultiKey('preTurnoverBackup','preTurnoverBackup_b','preTurnoverBackup_c',data);
+        updateSaveStatus('pre','local','本地多副本已存');
+    }catch(e){console.error('backupPreTurnoverToLocal failed',e);}
 }
 function restorePreTurnoverFromLocal(){
     try{
-        const raw=localStorage.getItem('preTurnoverBackup');
-        if(!raw)return false;
-        const data=JSON.parse(raw);
+        const data=readMultiKey('preTurnoverBackup','preTurnoverBackup_b','preTurnoverBackup_c');
+        if(!data)return false;
         preTurnoverList=data.list||[];
         if(!preTurnoverRowId)preTurnoverRowId=data.rowId||null;
         return true;
@@ -1594,26 +1718,76 @@ function restorePreTurnoverFromLocal(){
 
 function backupOnlineResignToLocal(){
     try{
-        localStorage.setItem('onlineResignBackup',JSON.stringify({
-            list:onlineResignList, rowId:onlineResignRowId, ts:Date.now()
-        }));
-    }catch(e){}
+        const data={list:onlineResignList,rowId:onlineResignRowId,ts:Date.now()};
+        writeMultiKey('onlineResignBackup','onlineResignBackup_b','onlineResignBackup_c',data);
+        updateSaveStatus('online','local','本地'+onlineResignList.length+'条·多副本已存');
+    }catch(e){console.error('backupOnlineResignToLocal failed',e);}
 }
 function restoreOnlineResignFromLocal(){
     try{
-        const raw=localStorage.getItem('onlineResignBackup');
-        if(!raw)return false;
-        const data=JSON.parse(raw);
+        const data=readMultiKey('onlineResignBackup','onlineResignBackup_b','onlineResignBackup_c');
+        if(!data)return false;
         onlineResignList=data.list||[];
         if(!onlineResignRowId)onlineResignRowId=data.rowId||null;
         return true;
     }catch(e){return false;}
 }
 
+// 导出一份全量数据 .json 到本地（防止云端+本地同时失效）
+function exportAllBackup(){
+    const payload={
+        meta: D&&D.meta||{},
+        overview: D&&D.overview||{},
+        dadianchang: D&&D.dadianchang||[],
+        qujing: D&&D.qujing||[],
+        employees: D&&D.employees||[],
+        preTurnoverList,
+        onlineResignList,
+        turnoverReasons,
+        _exportedAt: new Date().toISOString(),
+        _version: '20261020b'
+    };
+    const json=JSON.stringify(payload,null,2);
+    const blob=new Blob([json],{type:'application/json'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    const ts=new Date();
+    const stamp=ts.getFullYear()+String(ts.getMonth()+1).padStart(2,'0')+String(ts.getDate()).padStart(2,'0')+'_'+String(ts.getHours()).padStart(2,'0')+String(ts.getMinutes()).padStart(2,'0');
+    a.href=url;
+    a.download='turnover_backup_'+stamp+'.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast('已下载备份文件：'+a.download);
+}
+// 把当前所有 localStorage 备份打包导出
+function exportAllLocalStorage(){
+    const all={};
+    for(let i=0;i<localStorage.length;i++){
+        const k=localStorage.key(i);
+        try{all[k]=JSON.parse(localStorage.getItem(k));}
+        catch(e){all[k]=localStorage.getItem(k);}
+    }
+    const json=JSON.stringify(all,null,2);
+    const blob=new Blob([json],{type:'application/json'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    const ts=new Date();
+    const stamp=ts.getFullYear()+String(ts.getMonth()+1).padStart(2,'0')+String(ts.getDate()).padStart(2,'0')+'_'+String(ts.getHours()).padStart(2,'0')+String(ts.getMinutes()).padStart(2,'0');
+    a.href=url;
+    a.download='turnover_localstorage_'+stamp+'.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast('已下载 localStorage 全量备份：'+a.download);
+}
+
 async function loadTurnoverData(){
     restoreTurnoverFromLocal();
     try{
-        const res=await fetch(SUPA_URL+'/rest/v1/'+SUPA_TABLE+'?select=id,data',{
+        const res=await fetch(SUPA_URL+'/rest/v1/'+SUPA_TABLE+'?select=id,data&order=id.asc',{
             headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY}
         });
         if(!res.ok)throw new Error('supabase '+res.status);
@@ -1624,7 +1798,16 @@ async function loadTurnoverData(){
         });
         if(row){
             turnoverRowId=row.id;
-            turnoverReasons=row.data&&row.data.turnover_reasons||{};
+            const cloud=row.data&&row.data.turnover_reasons||{};
+            const cloudEmpty=Object.keys(cloud).length===0;
+            const localHasData=Object.keys(turnoverReasons).length>0;
+            if(cloudEmpty&&localHasData){
+                // 云端为空但本地有数据（云端丢失）→ 保留本地并回传云端
+                console.log('cloud turnover_reasons empty but local has',Object.keys(turnoverReasons).length,'→ push back');
+                syncTurnoverData();
+            }else{
+                turnoverReasons=cloud;
+            }
             backupTurnoverToLocal();
             refreshTurnoverDisplays();
         }else{
@@ -1650,7 +1833,7 @@ async function createTurnoverRow(){
         const rows=await res.json();
         if(rows&&rows.length){
             turnoverRowId=rows[0].id;
-            turnoverReasons={};
+            // 保留本地已有数据，不清空
             backupTurnoverToLocal();
         }
     }catch(e){console.error('createTurnoverRow failed',e);}
@@ -1659,7 +1842,7 @@ async function createTurnoverRow(){
 async function loadPreTurnoverData(){
     restorePreTurnoverFromLocal();
     try{
-        const res=await fetch(SUPA_URL+'/rest/v1/'+SUPA_TABLE+'?select=id,data',{
+        const res=await fetch(SUPA_URL+'/rest/v1/'+SUPA_TABLE+'?select=id,data&order=id.asc',{
             headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY}
         });
         if(!res.ok)throw new Error('supabase '+res.status);
@@ -1670,7 +1853,16 @@ async function loadPreTurnoverData(){
         });
         if(row){
             preTurnoverRowId=row.id;
-            preTurnoverList=row.data&&row.data.pre_turnover||[];
+            const cloud=row.data&&row.data.pre_turnover||[];
+            const cloudEmpty=cloud.length===0;
+            const localHasData=preTurnoverList.length>0;
+            if(cloudEmpty&&localHasData){
+                // 云端为空但本地有数据 → 保留本地并回传云端
+                console.log('cloud pre_turnover empty but local has',preTurnoverList.length,'→ push back');
+                syncPreTurnoverData();
+            }else{
+                preTurnoverList=cloud;
+            }
             backupPreTurnoverToLocal();
             refreshPreTurnoverDisplays();
         }else{
@@ -1696,20 +1888,23 @@ async function createPreTurnoverRow(){
         const rows=await res.json();
         if(rows&&rows.length){
             preTurnoverRowId=rows[0].id;
-            preTurnoverList=[];
+            // 保留本地已有数据，不清空
             backupPreTurnoverToLocal();
         }
     }catch(e){console.error('createPreTurnoverRow failed',e);}
 }
 
 // ===== 在线离职人员存储 (Supabase id=4) =====
-async function loadOnlineResignData(){
+async function loadOnlineResignData(retry){
+    retry = retry || 0;
     restoreOnlineResignFromLocal();
+    refreshAll();  // 任何分支都要刷新，包括 local 兜底
+    updateSaveStatus('online','loading','云端拉取中...('+(retry+1)+'/3)');
     try{
-        const res=await fetch(SUPA_URL+'/rest/v1/'+SUPA_TABLE+'?select=id,data',{
+        const res=await fetch(SUPA_URL+'/rest/v1/'+SUPA_TABLE+'?select=id,data&order=id.asc',{
             headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY}
         });
-        if(!res.ok)throw new Error('supabase '+res.status);
+        if(!res.ok)throw new Error('Supabase HTTP '+res.status);
         const rows=await res.json();
         const row=(rows||[]).find(r=>{
             const d=r&&r.data||{};
@@ -1717,65 +1912,197 @@ async function loadOnlineResignData(){
         });
         if(row){
             onlineResignRowId=row.id;
-            onlineResignList=row.data&&row.data.online_resigns||[];
+            const cloud=row.data&&row.data.online_resigns||[];
+            // 🔥 核心策略：云端是真相源（避免时序竞争覆盖用户新增）
+            if(cloud.length>0){
+                onlineResignList=cloud;
+                updateSaveStatus('online','ok','云端已恢复·'+cloud.length+'条');
+            }else if(onlineResignList.length>0){
+                console.log('load: cloud empty, local has',onlineResignList.length,'→ push back');
+                syncOnlineResignData();
+                updateSaveStatus('online','local','云端空·已用本地'+onlineResignList.length+'条');
+            }else{
+                updateSaveStatus('online','ok','云端本地均为空');
+            }
             backupOnlineResignToLocal();
             refreshAll();
         }else{
             await createOnlineResignRow();
+            refreshAll();
+            updateSaveStatus('online','ok','新建云端行');
         }
     }catch(e){
         console.error('loadOnlineResignData failed',e);
         restoreOnlineResignFromLocal();
+        refreshAll();
+        // 自动重试 3 次（间隔 1s）
+        if(retry<2){
+            updateSaveStatus('online','error','云端失败 1s后重试... '+e.message);
+            await new Promise(r=>setTimeout(r,1000));
+            return loadOnlineResignData(retry+1);
+        }
+        updateSaveStatus('online','warn','云端拉取失败·仅本地'+onlineResignList.length+'条 '+(e.message||''));
+    }
+}
+
+// 用户主动从云端拉取最新数据（重置本地）
+async function forceLoadFromCloud(){
+    console.log('forceLoadFromCloud called');
+    updateSaveStatus('online','loading','🔄 强制从云端拉取...');
+    try{
+        const res=await fetch(SUPA_URL+'/rest/v1/'+SUPA_TABLE+'?select=id,data',{
+            headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY,'Cache-Control':'no-cache'}
+        });
+        console.log('forceLoadFromCloud fetch status:',res.status);
+        if(!res.ok)throw new Error('Supabase HTTP '+res.status);
+        const rows=await res.json();
+        console.log('forceLoadFromCloud rows:',rows.length);
+        const row=(rows||[]).find(r=>{
+            const d=r&&r.data||{};
+            return d._type==='online_resigns';
+        });
+        if(row){
+            onlineResignRowId=row.id;
+            const cloud=row.data&&row.data.online_resigns||[];
+            console.log('forceLoadFromCloud cloud data:',cloud.length,'items');
+            onlineResignList=cloud;
+            backupOnlineResignToLocal();
+            refreshAll();
+            updateSaveStatus('online','ok','🔄 已从云端拉取·'+cloud.length+'条');
+            alert('✅ 已从云端拉取 '+cloud.length+' 条离职明细，看板已刷新');
+            return cloud.length;
+        }else{
+            updateSaveStatus('online','warn','云端无 online_resigns 行');
+            alert('⚠️ 云端无离职明细数据行');
+            return 0;
+        }
+    }catch(e){
+        console.error('forceLoadFromCloud failed',e);
+        updateSaveStatus('online','error','拉取失败: '+e.message);
+        alert('❌ 拉取失败: '+e.message+'\n请截图此错误发给技术');
+        return -1;
     }
 }
 
 async function createOnlineResignRow(){
-    try{
-        const res=await fetch(SUPA_URL+'/rest/v1/'+SUPA_TABLE,{
-            method:'POST',
-            headers:{
-                'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY,
-                'Content-Type':'application/json','Prefer':'return=representation'
-            },
-            body:JSON.stringify({id:4,data:{_type:'online_resigns',online_resigns:[]}})
-        });
-        if(!res.ok)throw new Error('create online resign row '+res.status);
-        const rows=await res.json();
-        if(rows&&rows.length){
-            onlineResignRowId=rows[0].id;
-            onlineResignList=[];
-            backupOnlineResignToLocal();
-        }
-    }catch(e){console.error('createOnlineResignRow failed',e);}
+    // 注意：id=4 已被金点子模块(idea_data)占用，不再硬编码 id，
+    // 从 5 开始逐个尝试可用 id，并把当前本地数据一并写入（不丢数据）
+    for(let tryId=5;tryId<=30;tryId++){
+        try{
+            const res=await fetch(SUPA_URL+'/rest/v1/'+SUPA_TABLE,{
+                method:'POST',
+                headers:{
+                    'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY,
+                    'Content-Type':'application/json','Prefer':'return=representation'
+                },
+                body:JSON.stringify({
+                    id:tryId,
+                    data:{_type:'online_resigns',online_resigns:onlineResignList||[]},
+                    updated_at:new Date().toISOString()
+                })
+            });
+            if(res.ok){
+                const rows=await res.json();
+                if(rows&&rows.length){
+                    onlineResignRowId=rows[0].id;
+                    // 保留本地已有数据，不清空
+                    backupOnlineResignToLocal();
+                    updateSaveStatus('online','ok','云端已同步');
+                    console.log('online_resigns row created at id',onlineResignRowId);
+                    return;
+                }
+            }
+            // id 冲突或失败 → 尝试下一个 id
+        }catch(e){}
+    }
+    console.error('createOnlineResignRow failed: no available id 5-30');
 }
 
-async function syncOnlineResignData(){
-    if(onlineResignWriteLock||!onlineResignRowId)return;
+async function syncOnlineResignData(opts){
+    opts = opts || {};
+    if(onlineResignWriteLock)return;
+    // 关键修复：rowId 不存在时先建再同步（之前直接 return 是数据丢失根因）
+    if(!onlineResignRowId){
+        await createOnlineResignRow();
+        if(!onlineResignRowId){
+            updateSaveStatus('online','error','未连接云端·仅本地');
+            return;
+        }
+    }
     onlineResignWriteLock=true;
     try{
         backupOnlineResignToLocal();
-        const res=await fetch(SUPA_URL+'/rest/v1/'+SUPA_TABLE+'?id=eq.'+onlineResignRowId,{
-            method:'PATCH',
-            headers:{
-                'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY,
-                'Content-Type':'application/json','Prefer':'return=minimal'
-            },
-            body:JSON.stringify({
-                data:{_type:'online_resigns',online_resigns:onlineResignList},
-                updated_at:new Date().toISOString()
-            })
-        });
-        if(!res.ok){
-            const txt=await res.text();
-            console.error('syncOnlineResignData failed',res.status,txt);
+        let res=null, lastErr='';
+        for(let attempt=1;attempt<=3;attempt++){
+            // 🔥 关键：keepalive:true 让请求在浏览器关闭后仍能完成（解决"立刻关页面导致 PATCH 丢失"）
+            res=await fetch(SUPA_URL+'/rest/v1/'+SUPA_TABLE+'?id=eq.'+onlineResignRowId,{
+                method:'PATCH',
+                keepalive: true,  // ← 关键：关页面也能完成
+                headers:{
+                    'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY,
+                    'Content-Type':'application/json','Prefer':'return=minimal'
+                },
+                body:JSON.stringify({
+                    data:{_type:'online_resigns',online_resigns:onlineResignList},
+                    updated_at:new Date().toISOString()
+                })
+            });
+            if(res.ok)break;
+            lastErr='HTTP '+res.status;
+            await new Promise(r=>setTimeout(r,400*attempt));
         }
-    }catch(e){console.error('syncOnlineResignData failed',e);}
+        if(!res||!res.ok){
+            updateSaveStatus('online','error','云端失败·本地'+onlineResignList.length+'条 '+(lastErr||'unknown'));
+            console.error('syncOnlineResignData failed after 3 retries', lastErr);
+        }else{
+            updateSaveStatus('online','ok','云端已同步·'+onlineResignList.length+'条');
+            // 同步成功后立即 verify：从云端拉一次确认是否一致
+            try{
+                const v=await fetch(SUPA_URL+'/rest/v1/'+SUPA_TABLE+'?id=eq.'+onlineResignRowId+'&select=data',{
+                    headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY}
+                });
+                if(v.ok){
+                    const arr=await v.json();
+                    const cloudList=arr[0]&&arr[0].data&&arr[0].data.online_resigns||[];
+                    if(cloudList.length!==onlineResignList.length){
+                        updateSaveStatus('online','warn','云端条数不一致 本地'+onlineResignList.length+'/云'+cloudList.length);
+                    }
+                }
+            }catch(e){}
+        }
+    }catch(e){
+        console.error('syncOnlineResignData failed',e);
+        updateSaveStatus('online','error','云端失败·仅本地');
+    }
     onlineResignWriteLock=false;
+}
+// 强制立即全量同步（不防抖、不锁），用于用户点击"立即保存"按钮
+async function forceSyncOnlineResignData(){
+    if(onlineResignSyncTimer){clearTimeout(onlineResignSyncTimer);onlineResignSyncTimer=null;}
+    await syncOnlineResignData();
+    // 同步预离职和离职原因
+    if(typeof syncPreTurnoverData==='function') await syncPreTurnoverData();
+    if(typeof syncTurnoverData==='function') await syncTurnoverData();
+    updateSaveStatus('online','ok','已强制同步');
 }
 function scheduleOnlineResignSync(){
     if(onlineResignSyncTimer)clearTimeout(onlineResignSyncTimer);
-    onlineResignSyncTimer=setTimeout(()=>{syncOnlineResignData();},800);
+    // 缩短防抖：300ms 而非 800ms，减少用户关页面时丢数据的窗口
+    onlineResignSyncTimer=setTimeout(()=>{syncOnlineResignData();},300);
 }
+
+// 页面关闭/隐藏时立即同步（keepalive:true 已确保 PATCH 能完成）
+window.addEventListener('beforeunload',()=>{
+    try{
+        if(onlineResignSyncTimer){clearTimeout(onlineResignSyncTimer);onlineResignSyncTimer=null;}
+        if(typeof syncOnlineResignData==='function') syncOnlineResignData();
+    }catch(e){}
+});
+window.addEventListener('pagehide',()=>{
+    try{
+        if(typeof syncOnlineResignData==='function') syncOnlineResignData();
+    }catch(e){}
+});
 
 // ===== 预离职自动转移逻辑 =====
 function parseResignDate(str){
@@ -1841,8 +2168,14 @@ async function syncPreTurnoverData(){
         if(!res.ok){
             const txt=await res.text();
             console.error('syncPreTurnoverData failed',res.status,txt);
+            updateSaveStatus('pre','error','云端失败·仅本地 ('+res.status+')');
+        }else{
+            updateSaveStatus('pre','ok','云端已同步');
         }
-    }catch(e){console.error('syncPreTurnoverData failed',e);}
+    }catch(e){
+        console.error('syncPreTurnoverData failed',e);
+        updateSaveStatus('pre','error','云端失败·仅本地');
+    }
     preTurnoverWriteLock=false;
 }
 function schedulePreTurnoverSync(){
@@ -1869,8 +2202,14 @@ async function syncTurnoverData(){
         if(!res.ok){
             const txt=await res.text();
             console.error('syncTurnoverData failed',res.status,txt);
+            updateSaveStatus('turnover','error','云端失败·仅本地 ('+res.status+')');
+        }else{
+            updateSaveStatus('turnover','ok','云端已同步');
         }
-    }catch(e){console.error('syncTurnoverData failed',e);}
+    }catch(e){
+        console.error('syncTurnoverData failed',e);
+        updateSaveStatus('turnover','error','云端失败·仅本地');
+    }
     turnoverWriteLock=false;
 }
 function scheduleTurnoverSync(){
@@ -1884,12 +2223,15 @@ function getTurnoverReason(empId){
 }
 
 function getEffectiveReasonDetail(emp){
-    if(emp._isPre){
-        if(emp.reason&&emp.reason.trim())return emp.reason.trim();
-        return (emp.reasonDetail||'').trim();
-    }
+    // 优先读取表单填写的 reason1（新增/编辑弹窗字段）
+    if(emp.reason1&&emp.reason1.trim())return emp.reason1.trim();
+    // 然后是在线详情弹窗填写的 reason
+    if(emp.reason&&emp.reason.trim())return emp.reason.trim();
+    // 兼容旧字段 reasonDetail
     if(emp.reasonDetail&&emp.reasonDetail.trim())return emp.reasonDetail.trim();
-    return getTurnoverReason(emp.empId);
+    // 主动离职最后尝试 turnoverReasons
+    if(!emp._isPre) return getTurnoverReason(emp.empId);
+    return '';
 }
 
 function findPreTurnoverById(empId){
@@ -1930,21 +2272,12 @@ function openReasonEdit(empId){
     const info=document.getElementById('reason-edit-info');
     info.innerHTML='姓名：<strong>'+escapeHtml(emp.name)+'</strong>　工号：<strong>'+escapeHtml(emp.empId)+'</strong><br>门店：'+escapeHtml(emp.store)+'　职位：'+escapeHtml(emp.position);
     const r=turnoverReasons[empId]||{};
-    document.getElementById('reason-edit-text').value=r.reason||'';
-    document.getElementById('reason-edit-communication-time').value=r.communicationTime||'';
-    document.getElementById('reason-edit-operation-reason').value=r.operationReason||'';
-    document.getElementById('reason-edit-bp-reason').value=r.bpReason||'';
-    document.getElementById('reason-edit-bp-time').value=r.bpCommunicationTime||'';
-    document.getElementById('reason-edit-bp-tag').value=r.bpTag||'';
-    document.getElementById('reason-edit-is-consistent').value=r.isConsistent||'';
-    document.getElementById('reason-edit-inconsistency').value=r.inconsistencyNote||'';
-    document.getElementById('reason-edit-by').value=r.updated_by||'';
+    document.getElementById('reason-edit-text').value=r.reason||emp.reason1||'';
     document.getElementById('reason-edit-modal').classList.add('active');
 }
 
 function closeReasonEdit(event){
     if(!event || event.target.id==='reason-edit-modal' || event.target.className==='modal-close'){
-        // 关闭弹窗前，先把还在排队的自动保存立即刷到云端，避免延迟丢数据
         if(autoSaveTimer){
             clearTimeout(autoSaveTimer);
             autoSaveTimer=null;
@@ -1952,7 +2285,6 @@ function closeReasonEdit(event){
             if(turnoverSyncTimer){clearTimeout(turnoverSyncTimer);turnoverSyncTimer=null;}
             syncTurnoverData();
         }else{
-            // 弹窗开着时也可能已有数据没同步，再保险刷一次
             if(turnoverRowId && turnoverReasons[currentEditEmpId]){
                 syncTurnoverData();
             }
@@ -1979,24 +2311,10 @@ function autoSaveReasonEdit(){
 function saveReasonEditNow(){
     if(!currentEditEmpId)return;
     const reason=(document.getElementById('reason-edit-text')||{}).value||'';
-    const communicationTime=(document.getElementById('reason-edit-communication-time')||{}).value||'';
-    const operationReason=(document.getElementById('reason-edit-operation-reason')||{}).value||'';
-    const bpReason=(document.getElementById('reason-edit-bp-reason')||{}).value||'';
-    const bpCommunicationTime=(document.getElementById('reason-edit-bp-time')||{}).value||'';
-    const bpTag=(document.getElementById('reason-edit-bp-tag')||{}).value||'';
-    const isConsistent=(document.getElementById('reason-edit-is-consistent')||{}).value||'';
-    const inconsistencyNote=(document.getElementById('reason-edit-inconsistency')||{}).value||'';
-    const by=(document.getElementById('reason-edit-by')||{}).value||'';
+    const reasonVal=reason.trim();
     const payload={
-        reason:reason.trim(),
-        communicationTime:communicationTime.trim(),
-        operationReason:operationReason.trim(),
-        bpReason:bpReason.trim(),
-        bpCommunicationTime:bpCommunicationTime.trim(),
-        bpTag:bpTag.trim(),
-        isConsistent:isConsistent.trim(),
-        inconsistencyNote:inconsistencyNote.trim(),
-        updated_by:by.trim(),
+        reason:reasonVal,
+        reason1:reasonVal,
         updated_at:new Date().toISOString()
     };
     const pre=findPreTurnoverById(currentEditEmpId);
@@ -2004,6 +2322,9 @@ function saveReasonEditNow(){
         Object.assign(pre,payload);
         schedulePreTurnoverSync();
     }else{
+        // 主动离职人员：同时更新 onlineResignList 中的 reason1，保证列表显示一致
+        const online=(onlineResignList||[]).find(p=>p.empId===currentEditEmpId);
+        if(online){online.reason1=reasonVal;online.reason=reasonVal;online.updated_at=payload.updated_at;}
         turnoverReasons[currentEditEmpId]=payload;
         scheduleTurnoverSync();
     }
@@ -2039,7 +2360,7 @@ function openPreTurnoverModal(){
     if(preTurnoverList.length===0){
         body.innerHTML=toolbar+'<div class="modal-empty">暂无预离职人员，请点击上方「新增」按钮添加</div>';
     }else{
-        const cols=['序号','大店长','姓名','职位','门店','入职日期','预计离职日期','工龄','离职原因','详情','沟通时间','运营判定离职原因','BP沟通离职原因','BP沟通时间','BP判定原因','是否一致','不一致说明','操作'];
+        const cols=['序号','大店长','姓名','职位','门店','入职日期','预计离职日期','工龄','原因标签','离职原因','操作'];
         body.innerHTML=toolbar+'<div class="modal-table-wrap"><table><thead><tr>'+cols.map(h=>'<th>'+h+'</th>').join('')+'</tr></thead><tbody>'+preTurnoverList.map((e,i)=>
             '<tr>'+
             '<td>'+(i+1)+'</td>'+
@@ -2050,15 +2371,8 @@ function openPreTurnoverModal(){
             '<td>'+escapeHtml(e.hireDate||'')+'</td>'+
             '<td>'+escapeHtml(e.resignDate||'')+'</td>'+
             '<td>'+escapeHtml(e.gongLingQuJian||'')+'</td>'+
-            '<td>'+escapeHtml(e.reason1||'')+'</td>'+
-            '<td class="text-left col-detail">'+getReasonEditHtml(e,'reason','离职详情')+'</td>'+
-            '<td class="col-edit col-edit-time">'+getReasonEditHtml(e,'communicationTime','沟通时间')+'</td>'+
-            '<td class="col-edit">'+getReasonEditHtml(e,'operationReason','运营判定离职原因')+'</td>'+
-            '<td class="col-edit">'+getReasonEditHtml(e,'bpReason','BP沟通离职原因')+'</td>'+
-            '<td class="col-edit col-edit-time">'+getReasonEditHtml(e,'bpCommunicationTime','BP沟通时间')+'</td>'+
-            '<td class="col-edit">'+getReasonEditHtml(e,'bpTag','BP判定原因')+'</td>'+
-            '<td class="col-edit">'+getReasonEditHtml(e,'isConsistent','是否一致')+'</td>'+
-            '<td class="col-edit">'+getReasonEditHtml(e,'inconsistencyNote','不一致说明')+'</td>'+
+            '<td>'+escapeHtml(e.reasonTag||e.reason1||'')+'</td>'+
+            '<td class="text-left col-detail">'+getReasonEditHtml(e,'reason','离职原因')+'</td>'+
             '<td><button class="action-btn" style="background:#e3f2fd;color:#1565c0;padding:3px 10px;font-size:12px;" onclick="event.stopPropagation();openPreTurnoverEditModal(\''+e.empId+'\')">编辑</button> <button class="action-btn" style="background:#ffcdd2;color:#c62828;padding:3px 10px;font-size:12px;" onclick="event.stopPropagation();deletePreTurnover(\''+e.empId+'\')">删除</button></td>'+
             '</tr>'
         ).join('')+'</tbody></table></div>';
@@ -2105,11 +2419,9 @@ function openPreTurnoverEditModal(empId){
     document.getElementById('pre-turnover-edit-modal').classList.add('active');
 }
 
-function closePreTurnoverEdit(event){
-    if(!event || event.target.id==='pre-turnover-edit-modal' || event.target.className==='modal-close'){
-        document.getElementById('pre-turnover-edit-modal').classList.remove('active');
-        currentEditPreId=null;
-    }
+function closePreTurnoverEdit(){
+    document.getElementById('pre-turnover-edit-modal').classList.remove('active');
+    currentEditPreId=null;
 }
 
 function openResignEditModal(empId){
@@ -2224,32 +2536,90 @@ function refreshPreTurnoverDisplays(){
 }
 
 // ===== 初始化 =====
-initGlobalFilters();
-renderCards();
-renderDcFocus();
-renderMonthlyChart();
-renderMonthlyCountChart();
-renderAnalysisCharts();
-renderTables();
-renderEmpTable();
-switchTab('qujing');
-loadTurnoverData();
-loadPreTurnoverData().then(()=>{
-    return loadOnlineResignData();
+// 🔥 关键修复：每个 init 函数都 try-catch，确保一个出错不影响后续（特别是 loadOnlineResignData 必须执行）
+try{initGlobalFilters();}catch(e){console.error('initGlobalFilters failed',e);}
+try{renderCards();}catch(e){console.error('renderCards failed',e);}
+try{renderDcFocus();}catch(e){console.error('renderDcFocus failed',e);}
+try{renderMonthlyChart();}catch(e){console.error('renderMonthlyChart failed',e);}
+try{renderMonthlyCountChart();}catch(e){console.error('renderMonthlyCountChart failed',e);}
+try{renderAnalysisCharts();}catch(e){console.error('renderAnalysisCharts failed',e);}
+try{renderTables();}catch(e){console.error('renderTables failed',e);}
+try{renderEmpTable();}catch(e){console.error('renderEmpTable failed',e);}
+try{switchTab('qujing');}catch(e){console.error('switchTab failed',e);}
+try{loadTurnoverData();}catch(e){console.error('loadTurnoverData failed',e);}
+
+// 🔥 核心修复：loadOnlineResignData 必须被调用，不依赖 loadPreTurnoverData 成功
+// 之前：loadPreTurnoverData().then(() => loadOnlineResignData())
+// 如果 loadPreTurnoverData reject 了，loadOnlineResignData 永远不会被调用！
+loadPreTurnoverData().catch(e=>{console.error('loadPreTurnoverData failed',e);}).then(()=>{
+    return loadOnlineResignData().catch(e=>{console.error('loadOnlineResignData failed',e);});
 }).then(()=>{
-    loadRosterData();
-    autoTransferPreTurnover();
-    autoTransferTimer=setInterval(autoTransferPreTurnover,600000);
+    try{loadRosterData();}catch(e){console.error('loadRosterData failed',e);}
+    try{autoTransferPreTurnover();}catch(e){console.error('autoTransferPreTurnover failed',e);}
+    autoTransferTimer=setInterval(()=>{try{autoTransferPreTurnover();}catch(e){}},600000);
     // ===== URL参数快捷入口 =====
-    // ?preTurnoverAdd=1  打开「预离职人员填写」列表 + 新增预离职人员弹窗
     const params=new URLSearchParams(window.location.search);
     if(params.get('preTurnoverAdd')==='1'){
         setTimeout(()=>{
-            openPreTurnoverModal();
-            // 列表modal渲染完成后，再叠加新增表单modal
-            setTimeout(()=>openPreTurnoverEditModal(),120);
+            try{openPreTurnoverModal();}catch(e){console.error(e);}
+            setTimeout(()=>{try{openPreTurnoverEditModal();}catch(e){console.error(e);}},120);
         },300);
     }
+}).catch(e=>{console.error('init chain failed',e);});
+
+// ===== 页面关闭/刷新前强制写本地备份（防抖窗口兜底） =====
+window.addEventListener('beforeunload',()=>{
+    try{
+        backupTurnoverToLocal();
+        backupPreTurnoverToLocal();
+        backupOnlineResignToLocal();
+    }catch(e){}
+});
+// 每60秒自动滚动备份一次（即使无操作也保持最新副本）
+setInterval(()=>{
+    try{
+        backupTurnoverToLocal();
+        backupPreTurnoverToLocal();
+        backupOnlineResignToLocal();
+    }catch(e){}
+},60000);
+// 每 90s 自动强同步到云端（关键：之前只本地备份，没真正上传）
+setInterval(()=>{
+    try{
+        if(typeof syncOnlineResignData==='function') syncOnlineResignData();
+        if(typeof syncPreTurnoverData==='function') syncPreTurnoverData();
+        if(typeof syncTurnoverData==='function') syncTurnoverData();
+    }catch(e){}
+},90000);
+// ===== 页面关闭/刷新前用 keepalive 强同步一次（确保最后一份数据落到云端） =====
+window.addEventListener('beforeunload',()=>{
+    try{
+        // 先本地兜底（保证不丢）
+        backupTurnoverToLocal();
+        backupPreTurnoverToLocal();
+        backupOnlineResignToLocal();
+        // 再尝试 keepalive 同步到云端（即使页面立刻关闭，浏览器会后台发送）
+        if(onlineResignRowId){
+            try{
+                fetch(SUPA_URL+'/rest/v1/'+SUPA_TABLE+'?id=eq.'+onlineResignRowId,{
+                    method:'PATCH',
+                    headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
+                    body:JSON.stringify({data:{_type:'online_resigns',online_resigns:onlineResignList},updated_at:new Date().toISOString()}),
+                    keepalive:true
+                });
+            }catch(e){}
+        }else{
+            // rowId 还没建出来，最后一次尝试建 + 写本地内容
+            try{
+                fetch(SUPA_URL+'/rest/v1/'+SUPA_TABLE,{
+                    method:'POST',
+                    headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
+                    body:JSON.stringify({id:5,data:{_type:'online_resigns',online_resigns:onlineResignList},updated_at:new Date().toISOString()}),
+                    keepalive:true
+                });
+            }catch(e){}
+        }
+    }catch(e){}
 });
 </script>
 </body>

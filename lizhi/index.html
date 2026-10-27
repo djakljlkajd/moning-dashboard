@@ -95,14 +95,14 @@ details p{margin-top:8px;color:var(--ink);line-height:1.7}
 
 <!-- ============ 总览 ============ -->
 <div class="page active" id="page-overview">
-  <div class="note-strip">机制核心：离职申请出现 → 运营 <b>1 小时</b>内通报 BP → BP <b>4 小时</b>内联系本人 → BP <b>24 小时</b>内完成首次面谈。运营不得替代 BP 完成离职沟通。T+0～T+24h 是挽留黄金窗口。</div>
+  <div class="note-strip">机制核心：离职信息出现 → <b>大店长 1~2 天内</b>完成第一轮面对面沟通（直属上级最了解伙伴）→ 沟通后告知对应 HRBP → <b>HRBP 3 天内</b>完成离职沟通（尽量 2 个工作日），BP 辅助大店长深入了解真实原因、协同解决疑难问题。</div>
   <div class="cards-row" id="ovCards"></div>
   <div class="card">
     <h3>三品牌店长底池分布</h3>
     <div id="ovBrand"></div>
   </div>
   <div class="card">
-    <h3>⚠️ 待处理提醒（超时 / 临近 24h 黄金窗口）</h3>
+    <h3>⚠️ 待处理提醒（超时 / 临近时限）</h3>
     <div id="ovTodo"></div>
   </div>
 </div>
@@ -110,25 +110,25 @@ details p{margin-top:8px;color:var(--ink);line-height:1.7}
 <!-- ============ 离职链路 ============ -->
 <div class="page" id="page-flow">
   <div class="card">
-    <h3>核心时效机制（强制执行，不得延误）</h3>
+    <h3>核心时效机制（一线实际链路）</h3>
     <div class="flow-bar">
-      <div class="flow-node"><div class="t">离职申请出现</div><div class="d">T+0</div></div>
-      <div class="flow-node"><div class="t">运营 1h 内通报 BP</div><div class="d">运营看到第一时间转给对应 BP，BP 确认收到</div></div>
-      <div class="flow-node"><div class="t">BP 4h 内联系本人</div><div class="d">联系离职人员，约定面谈时间</div></div>
-      <div class="flow-node"><div class="t">BP 24h 内完成首次面谈</div><div class="d">1v1 挽留面谈，产出结论：能留 / 暂留 / 离职</div></div>
+      <div class="flow-node"><div class="t">离职信息出现</div><div class="d">T+0：伙伴表露离职意向 / 提交离职申请</div></div>
+      <div class="flow-node"><div class="t">大店长 1~2 天内完成第一轮沟通</div><div class="d">直属上级尽量面对面，第一时间了解伙伴真实原因</div></div>
+      <div class="flow-node"><div class="t">大店长告知对应 HRBP</div><div class="d">第一轮沟通结束后，将情况同步给对应 BP</div></div>
+      <div class="flow-node"><div class="t">HRBP 3 天内完成离职沟通</div><div class="d">尽量 2 个工作日内；辅助深入真因，协同大店长解决疑难</div></div>
     </div>
-    <div class="golden">🔑 关键原则：T+0 到 T+24h 这 24 小时是「黄金窗口」。过了这个窗口，挽留成功率断崖式下降。<b>运营不得替代 BP 完成离职沟通。</b></div>
+    <div class="golden">🔑 链路设计逻辑：大店长是店长伙伴的<b>直属上级</b>，最了解伙伴情况——离职发生时由直属上级<b>第一时间面对面</b>沟通，比 BP 直接介入更能摸到真实原因。HRBP 平均一人负责约 <b>50 家门店</b>，工作安排需要统筹，因此介入时限给 3 天（尽量 2 个工作日），不以小时计。</div>
   </div>
 
   <div class="vs-grid">
     <div class="card">
-      <h3>防线 1：运营-BP 前置同频（不等离职发生，提前心中有数）</h3>
+      <h3>防线 1：前置同频（不等离职发生，提前心中有数）</h3>
       <table>
         <tr><th>同频节点</th><th>频率</th><th>同频内容</th><th>形式</th></tr>
-        <tr><td>预警意向同频</td><td>出现信号 24h 内</td><td>出现预警信号（见下表），运营立即通报 BP</td><td>钉钉发送，沟通留痕</td></tr>
-        <tr><td>离职同频</td><td>离职申请出现时</td><td>BP 第一时间接收信息，快速介入（运营端口接收后第一时间转给 BP）</td><td>—</td></tr>
+        <tr><td>预警意向同频</td><td>出现信号后，大店长留意观察</td><td>出现预警信号（见下表），大店长日常留意、提前介入关怀，必要时同步 HRBP</td><td>钉钉留痕</td></tr>
+        <tr><td>离职信息同频</td><td>离职信息出现时</td><td>大店长第一时间接住信息并启动第一轮沟通，沟通后告知对应 HRBP</td><td>—</td></tr>
       </table>
-      <h3 style="margin-top:16px">伙伴状态预警的 6 类触发信号（运营发现后及时同频 BP）</h3>
+      <h3 style="margin-top:16px">伙伴状态预警的 6 类触发信号（大店长 / 运营发现后重点关注）</h3>
       <table>
         <tr><th>信号</th><th>典型表现</th></tr>
         <tr><td>① 主动表达离职意向</td><td>"不想干了""在考虑""有别的机会"</td></tr>
@@ -141,51 +141,52 @@ details p{margin-top:8px;color:var(--ink);line-height:1.7}
     </div>
 
     <div class="card">
-      <h3>防线 2：离职申请出现后的 BP 介入时效标准</h3>
+      <h3>防线 2：离职信息出现后的沟通时效标准</h3>
       <table>
-        <tr><th>节点</th><th>运营动作</th><th>BP 动作</th><th>产出</th></tr>
-        <tr><td><b>T+0</b><br>离职申请出现</td><td>看到第一时间转给对应 BP</td><td>接收后确认收到</td><td>钉钉沟通留痕</td></tr>
-        <tr><td><b>T+12h</b></td><td>配合提供业务背景、近期表现</td><td>联系离职人员本人，约定面谈时间</td><td>约定面谈时间</td></tr>
-        <tr><td><b>T+24h</b></td><td>不主导沟通，配合提供信息</td><td>完成首次 1v1 面谈（挽留面谈）</td><td>面谈结论：能留 / 暂留 / 离职</td></tr>
-        <tr><td><b>T+48h</b></td><td>留 → 配合执行挽留方案；离 → 按流程交接</td><td>留 → 输出挽留方案；离 → 确认离职流程及节点</td><td>挽留方案 或 离职流程启动</td></tr>
-        <tr><td><b>T+7 天</b></td><td>参与复盘</td><td>完成离职面谈（真因提炼）+ 台账归档 + 复盘结论</td><td>台账归档 + 复盘记录</td></tr>
+        <tr><th>节点</th><th>大店长动作</th><th>HRBP 动作</th><th>产出</th></tr>
+        <tr><td><b>T+0</b><br>离职信息出现</td><td>第一时间接住信息，安排面对面沟通</td><td>—</td><td>信息接住的留痕</td></tr>
+        <tr><td><b>T+1~2 天</b></td><td>完成第一轮面对面沟通，了解伙伴真实原因</td><td>—</td><td>第一轮沟通结论</td></tr>
+        <tr><td><b>沟通结束后</b></td><td>将情况告知对应 HRBP（含业务背景、伙伴状态）</td><td>接收信息，确认收到</td><td>情况同步留痕</td></tr>
+        <tr><td><b>告知后 3 天内</b><br><span class="muted">尽量 2 个工作日</span></td><td>需要时协同 BP 一起沟通；能留则配合执行挽留方案，放行则安排交接</td><td>完成离职沟通：辅助大店长深入真实原因；伙伴有大店长解决不了的问题时，协同一起谈</td><td>沟通结论：能留 / 暂留 / 离职</td></tr>
+        <tr><td><b>沟通完成后</b></td><td>参与复盘</td><td>真因提炼 + 台账归档 + 复盘结论</td><td>台账归档 + 复盘记录</td></tr>
       </table>
       <h3 style="margin-top:16px">三个关键问题</h3>
-      <div class="qa"><div class="q">谁先谈？</div>BP 先谈（不是运营先谈）——BP 是人才方负责人，运营先谈会让离职人员"只认运营"。</div>
-      <div class="qa" style="margin-top:8px"><div class="q">谁主导？</div>BP 主导，运营配合提供信息——离职沟通涉及薪酬 / 发展 / 劳动关系，BP 专业对口。</div>
-      <div class="qa" style="margin-top:8px"><div class="q">运营角色？</div>提供业务背景、配合交接，不主导沟通——运营管"事"，BP 管"人"，边界清晰。</div>
+      <div class="qa"><div class="q">谁先谈？</div>大店长先谈——大店长是店长伙伴的直属上级，最了解伙伴情况，第一时间面对面沟通才能摸到真实原因。</div>
+      <div class="qa" style="margin-top:8px"><div class="q">谁主导？</div>大店长主导第一轮沟通；HRBP 辅助深入——伙伴有大店长解决不了的问题时，BP 协同大店长一起完成沟通。</div>
+      <div class="qa" style="margin-top:8px"><div class="q">BP 的角色？</div>辅助大店长把伙伴的真实原因了解得更深入，并在薪酬 / 发展 / 劳动关系等专业问题上兜底；BP 平均负责约 50 家门店，介入时限为告知后 3 天内（尽量 2 个工作日）。</div>
     </div>
   </div>
 
   <div class="vs-grid">
     <div class="card">
-      <h3>BP 介入的监督机制</h3>
+      <h3>沟通时效的监督机制</h3>
       <table>
         <tr><th>监督手段</th><th>怎么做</th><th>频率</th></tr>
-        <tr><td>台账「BP 介入时效」</td><td>看板自动计算从离职申请到 BP 首次面谈的时长，超 24h 自动标红</td><td>实时（本看板沟通台账页）</td></tr>
+        <tr><td>台账「大店长首轮时效」</td><td>看板自动计算 离职信息出现 → 大店长首轮沟通 的时长，超 2 天（48h）自动标红</td><td>实时（本看板沟通台账页）</td></tr>
+        <tr><td>台账「BP 介入时效」</td><td>看板自动计算 大店长告知 BP → BP 完成沟通 的时长，超 3 天（72h）自动标红</td><td>实时（本看板沟通台账页）</td></tr>
         <tr><td>BP 周报</td><td>每周一 BP 汇报本周介入的离职案例（0 也要报，"本周无离职"也要写）</td><td>每周一</td></tr>
-        <tr><td>月度抽查</td><td>HR 每月抽查 3-5 个离职案例，核实 BP 是否真实介入、面谈记录是否完整</td><td>每月</td></tr>
+        <tr><td>月度抽查</td><td>HR 每月抽查 3-5 个离职案例，核实大店长首轮沟通与 BP 介入是否真实完成、记录是否完整</td><td>每月</td></tr>
       </table>
     </div>
     <div class="card">
-      <h3>BP 未介入的后果（递进式）</h3>
+      <h3>角色分工一览</h3>
       <table>
-        <tr><th>次数</th><th>后果</th></tr>
-        <tr><td>首次</td><td>BP 负责人约谈，要求补做面谈 + 补录台账</td></tr>
-        <tr><td>二次</td><td>纳入 BP 绩效考核，当月扣分</td></tr>
-        <tr><td>三次</td><td>岗位调整 / 培训整改</td></tr>
+        <tr><th>角色</th><th>职责</th><th>时限</th></tr>
+        <tr><td><b>大店长</b>（直属上级）</td><td>第一时间面对面沟通、了解真实原因；能解决的当场解决；沟通后告知对应 HRBP；配合挽留方案或交接</td><td>离职信息出现后 <b>1~2 天</b>内完成第一轮沟通</td></tr>
+        <tr><td><b>HRBP</b></td><td>辅助大店长深入了解真实原因；伙伴有大店长解决不了的问题时协同沟通；真因提炼、台账归档、复盘</td><td>被告知后 <b>3 天</b>内完成沟通（尽量 2 个工作日）</td></tr>
       </table>
       <h3 style="margin-top:16px">适用对象</h3>
-      <p style="line-height:1.8">大店长及以上（含大店长、区经理、城市经理、区域负责人）一律算核心人员，全部适用本机制。本看板底池纳管三品牌<b>店长职级</b>（店长 / 练习生店长 / 零售店长 / 零售副店长），共 459 人。普通店员 / 兼职不适用，运营可自行处理。</p>
+      <p style="line-height:1.8">本看板底池纳管三品牌<b>店长职级</b>（店长 / 练习生店长 / 零售店长 / 零售副店长），共 459 人；大店长及以上核心人员同样适用本链路。普通店员 / 兼职不适用，运营自行处理。</p>
     </div>
   </div>
 
   <div class="card">
     <h3>常见问题 FAQ</h3>
-    <details><summary>Q1：运营已经和离职人员谈完了，BP 还要介入吗？</summary><p>要。BP 必须补做离职面谈（真因提炼），否则离职原因无法归因，下次还会招错人。运营"先斩后奏"不影响 BP 介入的必要性，但运营"先斩后奏"本身违反约束，需考核扣分。</p></details>
-    <details><summary>Q2：BP 人不在本地怎么办？</summary><p>视频面谈也算，但必须在 T+24h 内完成，不得以"不在本地"为由延后。如果 BP 负责的区域跨度大，建议按区域配置 BP 对接人。</p></details>
-    <details><summary>Q3：离职人员坚持只和运营谈，不愿和 BP 谈？</summary><p>BP 仍需介入，哪怕只是旁听，否则离职真因无法沉淀。可以运营 + BP 一起面谈，但 BP 必须在场，且面谈记录由 BP 归档。</p></details>
-    <details><summary>Q4：BP 介入后，运营还需要做什么？</summary><p>三件事：① 配合提供业务背景信息；② 如果能留，配合执行挽留方案；③ 如果放行，配合做好工作交接。运营不是"甩手不管"，而是"不越位但配合"。</p></details>
+    <details><summary>Q1：大店长手上有事，没法马上沟通怎么办？</summary><p>机制已预留弹性：离职信息出现后 1~2 天内完成第一轮沟通即可，但<b>尽量面对面</b>，不要用微信文字糊弄。超 2 天未沟通，台账自动标红。</p></details>
+    <details><summary>Q2：为什么是大店长先谈，而不是 HRBP 先谈？</summary><p>大店长是店长伙伴的直属上级，最了解伙伴的近况、状态和诉求，第一时间面对面沟通更容易摸到真实原因。BP 直接介入反而容易让伙伴有距离感。</p></details>
+    <details><summary>Q3：伙伴的问题大店长解决不了怎么办？</summary><p>这正是 BP 介入的场景：大店长告知 BP 后，BP 辅助深入了解真实原因，或与大店长<b>一起</b>完成沟通（薪酬 / 发展 / 劳动关系等专业问题由 BP 兜底）。</p></details>
+    <details><summary>Q4：BP 负责约 50 家门店，来不及沟通怎么办？</summary><p>时限按告知后 3 天（尽量 2 个工作日）设定，本身已考虑 BP 的工作安排。请按区域优先级统筹排期；确实紧张的，先视频沟通也算，超 3 天台账自动标红。</p></details>
+    <details><summary>Q5：沟通完成后还需要做什么？</summary><p>能留 → 大店长配合执行挽留方案；放行 → 大店长安排工作交接；无论结果如何，BP 完成真因提炼并把台账归档，参与复盘。</p></details>
   </div>
 </div>
 
@@ -197,21 +198,21 @@ details p{margin-top:8px;color:var(--ink);line-height:1.7}
       <button class="btn ghost" onclick="exportCSV()">导出 CSV</button>
       <select id="lgBrand" onchange="renderLedger()"><option value="">全部品牌</option><option>茶颜</option><option>鸳央</option><option>墨柠</option></select>
       <select id="lgStatus" onchange="renderLedger()">
-        <option value="">全部状态</option><option>预警中</option><option>已申请离职</option><option>面谈完成</option><option>已挽留</option><option>已离职</option>
+        <option value="">全部状态</option><option>预警中</option><option>大店长沟通中</option><option>BP 沟通中</option><option>已挽留</option><option>已离职</option>
       </select>
-      <label class="muted"><input type="checkbox" id="lgTimeout" onchange="renderLedger()"> 只看超时（&gt;24h 未面谈）</label>
+      <label class="muted"><input type="checkbox" id="lgTimeout" onchange="renderLedger()"> 只看超时（大店长&gt;2天 / BP&gt;3天）</label>
       <span class="muted" id="lgCount"></span>
     </div>
     <div style="overflow:auto">
     <table id="lgTable">
       <thead><tr>
         <th>状态</th><th>品牌</th><th>姓名</th><th>门店</th><th>职位</th><th>预警信号</th>
-        <th>申请时间 T+0</th><th>BP 确认</th><th>首次面谈</th><th>介入时效</th><th>面谈结论</th><th>真因</th><th>录入人</th><th>操作</th>
+        <th>信息出现 T+0</th><th>大店长首轮沟通</th><th>首轮时效</th><th>告知 BP 时间</th><th>BP 完成沟通</th><th>BP 时效</th><th>结论</th><th>真因</th><th>录入人</th><th>操作</th>
       </tr></thead>
       <tbody></tbody>
     </table>
     </div>
-    <p class="muted" style="margin-top:8px">介入时效 = 首次面谈时间（未完成则按当前时间）− 申请时间；超过 24h 整行标红。所有登记云端实时同步，多人可同时填写互不覆盖。</p>
+    <p class="muted" style="margin-top:8px">首轮时效 = 大店长首轮沟通时间（未完成则按当前时间）− 信息出现时间，超 2 天（48h）标红；BP 时效 = BP 完成沟通时间 − 大店长告知时间，超 3 天（72h）标红。所有登记云端实时同步，多人可同时填写互不覆盖。</p>
   </div>
 </div>
 
@@ -254,16 +255,17 @@ details p{margin-top:8px;color:var(--ink);line-height:1.7}
         <option>冲突信号</option><option>情绪异常</option><option>外部信号</option><option>已提交离职申请</option>
       </select></div>
       <div class="fitem"><label>当前状态 *</label><select id="recStatus">
-        <option>预警中</option><option>已申请离职</option><option>面谈完成</option><option>已挽留</option><option>已离职</option>
+        <option>预警中</option><option>大店长沟通中</option><option>BP 沟通中</option><option>已挽留</option><option>已离职</option>
       </select></div>
-      <div class="fitem"><label>离职申请/预警出现时间（T+0）*</label><input type="datetime-local" id="recApply"></div>
-      <div class="fitem"><label>BP 确认收到时间</label><input type="datetime-local" id="recAck"></div>
-      <div class="fitem"><label>首次面谈完成时间</label><input type="datetime-local" id="recTalk"></div>
-      <div class="fitem"><label>面谈结论</label><select id="recConcl">
-        <option value="">（未面谈）</option><option>能留</option><option>暂留</option><option>离职</option>
+      <div class="fitem"><label>离职信息出现时间（T+0）*</label><input type="datetime-local" id="recApply"></div>
+      <div class="fitem"><label>大店长首轮沟通完成时间（时限 1~2 天）</label><input type="datetime-local" id="recLeadTalk"></div>
+      <div class="fitem"><label>大店长告知 BP 时间</label><input type="datetime-local" id="recInform"></div>
+      <div class="fitem"><label>BP 完成沟通时间（告知后 3 天内）</label><input type="datetime-local" id="recBpTalk"></div>
+      <div class="fitem"><label>沟通结论</label><select id="recConcl">
+        <option value="">（未沟通完）</option><option>能留</option><option>暂留</option><option>离职</option>
       </select></div>
-      <div class="fitem full"><label>离职真因 / 备注</label><textarea id="recReason" placeholder="真因提炼、挽留方案要点、交接节点等"></textarea></div>
       <div class="fitem"><label>录入人 *</label><input id="recBy" placeholder="你的名字"></div>
+      <div class="fitem full"><label>真实原因 / 备注</label><textarea id="recReason" placeholder="真因提炼、大店长首轮沟通情况、需 BP 协同的问题、挽留方案要点、交接节点等"></textarea></div>
     </div>
     <div class="foot">
       <button class="btn ghost" onclick="closeRecModal()">取消</button>
@@ -289,14 +291,34 @@ function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g, c=>({'&':'&amp;
 function brandTag(b){ const c=b==='茶颜'?'ty':b==='鸳央'?'yy':'mn'; return '<span class="tag '+c+'">'+esc(b)+'</span>'; }
 function fmtDT(s){ if(!s) return '<span class="muted">—</span>'; return esc(s.replace('T',' ').slice(0,16)); }
 function hoursBetween(a,b){ return (new Date(b)-new Date(a))/36e5; }
-/* 介入时效：申请 → 首次面谈（未完成按现在）；返回 {txt, over} */
-function 介入时效(r){
-  if(!r.applyAt) return {txt:'—', over:false};
-  const end = r.talkAt || new Date().toISOString();
-  const h = hoursBetween(r.applyAt, end);
-  const done = !!r.talkAt;
-  const txt = (done?'':'已计 ')+h.toFixed(1)+'h'+(done?'':'+');
-  return {txt, over: h>24, h, done};
+const LEAD_LIMIT=48;   // 大店长首轮沟通时限：2 天
+const BP_LIMIT=72;     // BP 完成沟通时限：告知后 3 天
+/* 两级时效：
+   lead = T+0 → 大店长首轮沟通（未完成按当前时间），超 48h 超时
+   bp   = 大店长告知 BP → BP 完成沟通（未完成按当前时间），超 72h 超时 */
+function 时效(r){
+  const now=new Date().toISOString();
+  const res={lead:null, bp:null};
+  if(r.applyAt){
+    const h=hoursBetween(r.applyAt, r.leadTalkAt||now);
+    res.lead={h, over:h>LEAD_LIMIT, done:!!r.leadTalkAt};
+  }
+  if(r.informAt){
+    const h=hoursBetween(r.informAt, r.bpTalkAt||now);
+    res.bp={h, over:h>BP_LIMIT, done:!!r.bpTalkAt};
+  }
+  return res;
+}
+function isOver(r){
+  if(r.status==='已挽留'||r.status==='已离职') return false;
+  const t=时效(r);
+  return (t.lead&&t.lead.over&&!t.lead.done)||(t.bp&&t.bp.over&&!t.bp.done);
+}
+function stageCell(t){
+  if(!t) return '<span class="muted">—</span>';
+  const txt=t.h.toFixed(1)+'h';
+  if(t.done) return t.over?'<span class="over24">'+txt+' ⚠️</span>':txt;
+  return t.over?'<span class="over24">已计 '+txt+'+ ⚠️</span>':'已计 '+txt+'+';
 }
 
 /* ================= Supabase 协作 ================= */
@@ -387,37 +409,43 @@ function refreshAll(){
 
 /* ================= 总览 ================= */
 function statusTag(s){
-  const m={'预警中':'warn','已申请离职':'bad','面谈完成':'grey','已挽留':'ok','已离职':'grey'};
+  const m={'预警中':'warn','大店长沟通中':'bad','BP 沟通中':'bad','已挽留':'ok','已离职':'grey'};
   return '<span class="tag '+(m[s]||'grey')+'">'+esc(s)+'</span>';
 }
 function renderOverview(){
   const recs=CLOUD.records;
   const byBrand={}; POOL.forEach(p=>{byBrand[p.brand]=(byBrand[p.brand]||0)+1;});
   const open=recs.filter(r=>r.status!=='已挽留'&&r.status!=='已离职');
-  const timeouts=recs.filter(r=>介入时效(r).over && r.status!=='已挽留' && r.status!=='已离职' && !r.talkAt);
+  const timeouts=open.filter(r=>isOver(r));
   const month=new Date().toISOString().slice(0,7);
   const archived=recs.filter(r=>(r.status==='已挽留'||r.status==='已离职')&&(r.updatedAt||'').slice(0,7)===month);
   document.getElementById('ovCards').innerHTML=
     '<div class="stat"><div class="num">'+POOL.length+'</div><div class="lbl">店长底池（茶颜 '+byBrand['茶颜']+' / 鸳央 '+byBrand['鸳央']+' / 墨柠 '+byBrand['墨柠']+'）</div></div>'+
-    '<div class="stat warn"><div class="num">'+recs.filter(r=>r.status==='预警中').length+'</div><div class="lbl">预警中（出现信号，未提申请）</div></div>'+
-    '<div class="stat"><div class="num">'+open.filter(r=>r.status!=='预警中').length+'</div><div class="lbl">进行中离职沟通</div></div>'+
-    '<div class="stat bad"><div class="num">'+timeouts.length+'</div><div class="lbl">超 24h 未完成首次面谈</div></div>'+
+    '<div class="stat warn"><div class="num">'+recs.filter(r=>r.status==='预警中').length+'</div><div class="lbl">预警中（出现信号，待启动沟通）</div></div>'+
+    '<div class="stat"><div class="num">'+open.filter(r=>r.status!=='预警中').length+'</div><div class="lbl">进行中（大店长沟通中 / BP 沟通中）</div></div>'+
+    '<div class="stat bad"><div class="num">'+timeouts.length+'</div><div class="lbl">已超时（大店长&gt;2天 / BP&gt;3天）</div></div>'+
     '<div class="stat ok"><div class="num">'+archived.length+'</div><div class="lbl">本月已归档（挽留+离职）</div></div>';
-  document.getElementById('ovBrand').innerHTML='<table><tr><th>品牌</th><th>店长底池</th><th>预警中</th><th>已申请离职</th><th>面谈完成</th><th>已挽留</th><th>已离职</th></tr>'+
+  document.getElementById('ovBrand').innerHTML='<table><tr><th>品牌</th><th>店长底池</th><th>预警中</th><th>大店长沟通中</th><th>BP 沟通中</th><th>已挽留</th><th>已离职</th></tr>'+
     ['茶颜','鸳央','墨柠'].map(b=>{
       const rs=recs.filter(r=>r.brand===b);
       const cnt=s=>rs.filter(r=>r.status===s).length;
-      return '<tr><td>'+brandTag(b)+'</td><td>'+byBrand[b]+'</td><td>'+cnt('预警中')+'</td><td>'+cnt('已申请离职')+'</td><td>'+cnt('面谈完成')+'</td><td>'+cnt('已挽留')+'</td><td>'+cnt('已离职')+'</td></tr>';
+      return '<tr><td>'+brandTag(b)+'</td><td>'+byBrand[b]+'</td><td>'+cnt('预警中')+'</td><td>'+cnt('大店长沟通中')+'</td><td>'+cnt('BP 沟通中')+'</td><td>'+cnt('已挽留')+'</td><td>'+cnt('已离职')+'</td></tr>';
     }).join('')+'</table>';
-  const todo=recs.filter(r=>r.applyAt && !r.talkAt && r.status!=='已挽留' && r.status!=='已离职')
-    .map(r=>({r, t:介入时效(r)})).sort((a,b)=>b.t.h-a.t.h);
+  // 待办：未归档且某个环节临近/超时
+  const todo=open.map(r=>{
+    const t=时效(r);
+    if(t.lead&&!t.lead.done) return {r, stage:'大店长首轮沟通', h:t.lead.h, over:t.lead.over, limit:LEAD_LIMIT};
+    if(t.bp&&!t.bp.done) return {r, stage:'BP 完成沟通', h:t.bp.h, over:t.bp.over, limit:BP_LIMIT};
+    if(t.lead&&t.lead.done&&!r.informAt) return {r, stage:'待大店长告知 BP', h:hoursBetween(r.leadTalkAt,new Date().toISOString()), over:false, limit:null};
+    return null;
+  }).filter(Boolean).sort((a,b)=>(b.over-a.over)||(b.h-a.h));
   document.getElementById('ovTodo').innerHTML = todo.length?
-    '<table><tr><th>紧急度</th><th>品牌</th><th>姓名</th><th>门店</th><th>申请时间</th><th>已耗时</th><th>录入人</th></tr>'+
+    '<table><tr><th>紧急度</th><th>待办环节</th><th>品牌</th><th>姓名</th><th>门店</th><th>信息出现 T+0</th><th>该环节已耗时</th><th>录入人</th></tr>'+
     todo.slice(0,20).map(x=>{
-      const urgent=x.t.over, near=!urgent&&x.t.h>20;
-      return '<tr class="'+(urgent?'timeout':'')+'"><td>'+(urgent?'<span class="tag bad">已超时</span>':near?'<span class="tag warn">临近 24h</span>':'<span class="tag grey">窗口内</span>')+'</td><td>'+brandTag(x.r.brand)+'</td><td>'+esc(x.r.name)+'</td><td>'+esc(x.r.store)+'</td><td>'+fmtDT(x.r.applyAt)+'</td><td class="'+(urgent?'over24':'')+'">'+x.t.h.toFixed(1)+'h</td><td>'+esc(x.r.createdBy||'')+'</td></tr>';
+      const near=!x.over&&x.limit&&x.h>x.limit*0.8;
+      return '<tr class="'+(x.over?'timeout':'')+'"><td>'+(x.over?'<span class="tag bad">已超时</span>':near?'<span class="tag warn">临近时限</span>':'<span class="tag grey">时限内</span>')+'</td><td>'+esc(x.stage)+'</td><td>'+brandTag(x.r.brand)+'</td><td>'+esc(x.r.name)+'</td><td>'+esc(x.r.store)+'</td><td>'+fmtDT(x.r.applyAt)+'</td><td class="'+(x.over?'over24':'')+'">'+x.h.toFixed(1)+'h</td><td>'+esc(x.r.createdBy||'')+'</td></tr>';
     }).join('')+'</table>'
-    : '<p class="muted">当前无待面谈人员，黄金窗口无超时 ✅</p>';
+    : '<p class="muted">当前无待办沟通环节，无超时 ✅</p>';
 }
 
 /* ================= 沟通台账 ================= */
@@ -426,19 +454,19 @@ function renderLedger(){
   let recs=CLOUD.records.slice();
   if(fb) recs=recs.filter(r=>r.brand===fb);
   if(fs) recs=recs.filter(r=>r.status===fs);
-  if(ft) recs=recs.filter(r=>介入时效(r).over && !r.talkAt);
+  if(ft) recs=recs.filter(r=>isOver(r));
   recs.sort((a,b)=>(b.applyAt||b.createdAt||'').localeCompare(a.applyAt||a.createdAt||''));
   document.getElementById('lgCount').textContent='共 '+recs.length+' 条';
   document.querySelector('#lgTable tbody').innerHTML=recs.map(r=>{
-    const t=介入时效(r);
-    return '<tr class="'+((t.over&&!r.talkAt)?'timeout':'')+'"><td>'+statusTag(r.status)+'</td><td>'+brandTag(r.brand)+'</td>'+
+    const t=时效(r), over=isOver(r);
+    return '<tr class="'+(over?'timeout':'')+'"><td>'+statusTag(r.status)+'</td><td>'+brandTag(r.brand)+'</td>'+
       '<td>'+esc(r.name)+'</td><td>'+esc(r.store)+'</td><td>'+esc(r.position)+'</td><td>'+esc(r.signal||'')+'</td>'+
-      '<td>'+fmtDT(r.applyAt)+'</td><td>'+fmtDT(r.ackAt)+'</td><td>'+fmtDT(r.talkAt)+'</td>'+
-      '<td class="'+((t.over)?'over24':'')+'">'+t.txt+(t.over?' ⚠️':'')+'</td>'+
+      '<td>'+fmtDT(r.applyAt)+'</td><td>'+fmtDT(r.leadTalkAt)+'</td><td>'+stageCell(t.lead)+'</td>'+
+      '<td>'+fmtDT(r.informAt)+'</td><td>'+fmtDT(r.bpTalkAt)+'</td><td>'+stageCell(t.bp)+'</td>'+
       '<td>'+esc(r.conclusion||'—')+'</td><td>'+esc(r.reason||'')+'</td><td>'+esc(r.createdBy||'')+'</td>'+
       '<td style="white-space:nowrap"><button class="btn sm ghost" onclick="openRecModal(\''+r.id+'\')">编辑</button> '+
       '<button class="btn sm ghost" onclick="delRec(\''+r.id+'\')">删除</button></td></tr>';
-  }).join('') || '<tr><td colspan="14" class="muted" style="text-align:center;padding:20px">暂无登记记录，点击「新增登记」开始</td></tr>';
+  }).join('') || '<tr><td colspan="16" class="muted" style="text-align:center;padding:20px">暂无登记记录，点击「新增登记」开始</td></tr>';
 }
 let curEmp=null;
 function openRecModal(id){
@@ -451,8 +479,9 @@ function openRecModal(id){
   document.getElementById('recSignal').value=r?r.signal:'主动表达离职意向';
   document.getElementById('recStatus').value=r?r.status:'预警中';
   document.getElementById('recApply').value=r?(r.applyAt||''):'';
-  document.getElementById('recAck').value=r?(r.ackAt||''):'';
-  document.getElementById('recTalk').value=r?(r.talkAt||''):'';
+  document.getElementById('recLeadTalk').value=r?(r.leadTalkAt||''):'';
+  document.getElementById('recInform').value=r?(r.informAt||''):'';
+  document.getElementById('recBpTalk').value=r?(r.bpTalkAt||''):'';
   document.getElementById('recConcl').value=r?(r.conclusion||''):'';
   document.getElementById('recReason').value=r?(r.reason||''):'';
   document.getElementById('recBy').value=r?(r.createdBy||''):(localStorage.getItem('lizhi_me')||'');
@@ -480,14 +509,16 @@ function saveRec(){
   if(!curEmp){ alert('请先从底池选择人员'); return; }
   if(!by){ alert('请填写录入人'); return; }
   const apply=document.getElementById('recApply').value;
-  if(!apply){ alert('请填写离职申请/预警出现时间（T+0）'); return; }
+  if(!apply){ alert('请填写离职信息出现时间（T+0）'); return; }
   localStorage.setItem('lizhi_me',by);
   const fields={
     name:curEmp.name, empId:curEmp.empId, brand:curEmp.brand, store:curEmp.store, position:curEmp.position,
     signal:document.getElementById('recSignal').value,
     status:document.getElementById('recStatus').value,
-    applyAt:apply, ackAt:document.getElementById('recAck').value||null,
-    talkAt:document.getElementById('recTalk').value||null,
+    applyAt:apply,
+    leadTalkAt:document.getElementById('recLeadTalk').value||null,
+    informAt:document.getElementById('recInform').value||null,
+    bpTalkAt:document.getElementById('recBpTalk').value||null,
     conclusion:document.getElementById('recConcl').value||null,
     reason:document.getElementById('recReason').value.trim(),
     createdBy:by
@@ -507,8 +538,11 @@ function delRec(id){
   doOp({t:'rec.del', id:id});
 }
 function exportCSV(){
-  const head=['状态','品牌','姓名','工号','门店','职位','预警信号','申请时间','BP确认','首次面谈','介入时效h','面谈结论','真因','录入人','更新时间'];
-  const rows=CLOUD.records.map(r=>[r.status,r.brand,r.name,r.empId,r.store,r.position,r.signal||'',r.applyAt||'',r.ackAt||'',r.talkAt||'',介入时效(r).h?介入时效(r).h.toFixed(1):'',r.conclusion||'',(r.reason||'').replace(/[\r\n,]/g,' '),r.createdBy||'',r.updatedAt||'']);
+  const head=['状态','品牌','姓名','工号','门店','职位','预警信号','信息出现T+0','大店长首轮沟通','首轮时效h','告知BP时间','BP完成沟通','BP时效h','沟通结论','真因','录入人','更新时间'];
+  const rows=CLOUD.records.map(r=>{
+    const t=时效(r);
+    return [r.status,r.brand,r.name,r.empId,r.store,r.position,r.signal||'',r.applyAt||'',r.leadTalkAt||'',t.lead?t.lead.h.toFixed(1):'',r.informAt||'',r.bpTalkAt||'',t.bp?t.bp.h.toFixed(1):'',r.conclusion||'',(r.reason||'').replace(/[\r\n,]/g,' '),r.createdBy||'',r.updatedAt||''];
+  });
   const csv='﻿'+[head].concat(rows).map(r=>r.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(',')).join('\r\n');
   const a=document.createElement('a');
   a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));

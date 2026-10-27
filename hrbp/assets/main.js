@@ -15588,12 +15588,17 @@ async function rest(path, init = {}) {
   }
   return payload;
 }
+function toRows(payload) {
+  if (!payload) return [];
+  return Array.isArray(payload) ? payload : [payload];
+}
 var supabaseBridge = {
   enabled,
   async currentEmployee() {
     if (!enabled) return null;
-    const rows = await rest("/rpc/app_current_employee", { method: "POST", body: "{}" });
-    return rows[0] ? mapEmployee(rows[0]) : null;
+    const payload = await rest("/rpc/app_current_employee", { method: "POST", body: "{}" });
+    const row = toRows(payload)[0];
+    return row && row.id ? mapEmployee(row) : null;
   },
   async restoreAuth() {
     if (!enabled) return null;
@@ -15632,11 +15637,12 @@ var supabaseBridge = {
   },
   async bindWorkNo(workNo, name) {
     if (!enabled) return null;
-    const rows = await rest("/rpc/app_bind_employee", {
+    const payload = await rest("/rpc/app_bind_employee", {
       method: "POST",
       body: JSON.stringify({ p_work_no: workNo, p_name: name })
     });
-    return rows[0] ? mapEmployee(rows[0]) : null;
+    const row = toRows(payload)[0];
+    return row && row.id ? mapEmployee(row) : null;
   },
   async loadPersonnel() {
     const rows = await rest("/hr_personnel?select=*");

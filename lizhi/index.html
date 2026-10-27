@@ -90,6 +90,7 @@ details p{margin-top:8px;color:var(--ink);line-height:1.7}
   <button class="active" data-page="overview" onclick="showPage('overview')">📊 总览</button>
   <button data-page="flow" onclick="showPage('flow')">🔗 离职链路</button>
   <button data-page="ledger" onclick="showPage('ledger')">📝 沟通台账</button>
+  <button data-page="risk" onclick="showPage('risk')">🔎 风险预警</button>
   <button data-page="pool" onclick="showPage('pool')">👥 店长底池</button>
 </nav>
 
@@ -181,6 +182,38 @@ details p{margin-top:8px;color:var(--ink);line-height:1.7}
   </div>
 
   <div class="card">
+    <h3>信息怎么第一时间到 BP（三级通道，不依赖大店长记性）</h3>
+    <table>
+      <tr><th style="width:90px">通道</th><th style="width:150px">做法</th><th>说明</th><th style="width:110px">状态</th></tr>
+      <tr>
+        <td><b>① 审批流</b><br><span class="muted">主通道</span></td>
+        <td>「离职申请」审批抄送对应 HRBP</td>
+        <td>在钉钉 OA 的离职申请审批模板里，把对应 HRBP 设为<b>抄送人</b>（按门店/部门路由到对应 BP）。伙伴一提交申请，BP 手机立刻收到通知，<b>不依赖任何人转述</b>——这是唯一能彻底解决"大店长忘了"的办法。</td>
+        <td><span class="tag warn">待 IT/杨师配置</span></td>
+      </tr>
+      <tr>
+        <td><b>② 看板登记</b></td>
+        <td>BP / 品牌主管收到任何渠道信息后 30 秒登记</td>
+        <td>本看板「沟通台账 → 新增登记」，选人 + 选信号 + 填时间即可，登记后进总览待办并按时限标红。收到风声但不确定真伪时先挂<b>「待核实」</b>状态，核实后再转正式沟通流程。</td>
+        <td><span class="tag ok">已上线</span></td>
+      </tr>
+      <tr>
+        <td><b>③ 数据预警</b></td>
+        <td>每周工时数据自动算疑似离职名单</td>
+        <td>本看板「风险预警」页：连续 0 工时、工时骤降、出勤天数骤降的店长自动进名单，<b>不等人报，系统找人</b>。BP 按名单主动问大店长核实，把早期信号提前捞出来。</td>
+        <td><span class="tag ok">已上线（需每周跑数）</span></td>
+      </tr>
+      <tr>
+        <td><b>④ 周度兜底</b></td>
+        <td>每周一 BP 用看板核对</td>
+        <td>每周一对照「风险预警」名单 + 台账待办，逐条向大店长核实；没有也要在周报写"本周无新增"。</td>
+        <td><span class="tag grey">流程约束</span></td>
+      </tr>
+    </table>
+    <p class="muted" style="margin-top:8px">提示：只有 ① 能根治信息断点，②③④ 是补位。建议把 ① 作为向上反馈项正式提出：离职申请审批流增加 HRBP 抄送节点。</p>
+  </div>
+
+  <div class="card">
     <h3>常见问题 FAQ</h3>
     <details><summary>Q1：大店长手上有事，没法马上沟通怎么办？</summary><p>机制已预留弹性：离职信息出现后 1~2 天内完成第一轮沟通即可，但<b>尽量面对面</b>，不要用微信文字糊弄。超 2 天未沟通，台账自动标红。</p></details>
     <details><summary>Q2：为什么是大店长先谈，而不是 HRBP 先谈？</summary><p>大店长是店长伙伴的直属上级，最了解伙伴的近况、状态和诉求，第一时间面对面沟通更容易摸到真实原因。BP 直接介入反而容易让伙伴有距离感。</p></details>
@@ -198,7 +231,7 @@ details p{margin-top:8px;color:var(--ink);line-height:1.7}
       <button class="btn ghost" onclick="exportCSV()">导出 CSV</button>
       <select id="lgBrand" onchange="renderLedger()"><option value="">全部品牌</option><option>茶颜</option><option>鸳央</option><option>墨柠</option></select>
       <select id="lgStatus" onchange="renderLedger()">
-        <option value="">全部状态</option><option>预警中</option><option>大店长沟通中</option><option>BP 沟通中</option><option>已挽留</option><option>已离职</option>
+        <option value="">全部状态</option><option>待核实</option><option>预警中</option><option>大店长沟通中</option><option>BP 沟通中</option><option>已挽留</option><option>已离职</option>
       </select>
       <label class="muted"><input type="checkbox" id="lgTimeout" onchange="renderLedger()"> 只看超时（大店长&gt;2天 / BP&gt;3天）</label>
       <span class="muted" id="lgCount"></span>
@@ -213,6 +246,28 @@ details p{margin-top:8px;color:var(--ink);line-height:1.7}
     </table>
     </div>
     <p class="muted" style="margin-top:8px">首轮时效 = 大店长首轮沟通时间（未完成则按当前时间）− 信息出现时间，超 2 天（48h）标红；BP 时效 = BP 完成沟通时间 − 大店长告知时间，超 3 天（72h）标红。所有登记云端实时同步，多人可同时填写互不覆盖。</p>
+  </div>
+</div>
+
+<!-- ============ 风险预警 ============ -->
+<div class="page" id="page-risk">
+  <div class="note-strip">这一页解决「大店长没反馈，BP 完全不知道」的问题：不等人报，用工时数据自动找人。每周导入一次工时表跑数更新，重点看<b>高等级</b>信号，由 BP 或大店长核实后转正式登记。</div>
+  <div class="cards-row" id="rkCards"></div>
+  <div class="muted" id="rkCover" style="margin:-8px 0 12px"></div>
+  <div class="card">
+    <div class="toolbar">
+      <select id="rkBrand" onchange="renderRisk()"><option value="">全部品牌</option><option>茶颜</option><option>鸳央</option><option>墨柠</option></select>
+      <select id="rkLevel" onchange="renderRisk()"><option value="">全部等级</option><option>高</option><option>中</option></select>
+      <input id="rkKw" placeholder="搜索 姓名 / 工号 / 门店" oninput="renderRisk()" style="width:200px">
+      <span class="muted" id="rkCount"></span>
+    </div>
+    <div style="overflow:auto">
+    <table id="rkTable">
+      <thead><tr><th>等级</th><th>品牌</th><th>姓名</th><th>工号</th><th>门店</th><th>职位</th><th>大店区</th><th>信号</th><th>数据明细</th><th>建议动作</th><th>操作</th></tr></thead>
+      <tbody></tbody>
+    </table>
+    </div>
+    <p class="muted" style="margin-top:8px">口径：① 近 7 天 0 工时（前 30 天有工时）→ 高；② 近 7 天日均工时 &lt; 前 30 天日均的 50% → 中；③ 近 14 天出勤天数 ≤ 3 天 → 中。数据日期见页首，跑数后刷新。</p>
   </div>
 </div>
 
@@ -255,7 +310,7 @@ details p{margin-top:8px;color:var(--ink);line-height:1.7}
         <option>冲突信号</option><option>情绪异常</option><option>外部信号</option><option>已提交离职申请</option>
       </select></div>
       <div class="fitem"><label>当前状态 *</label><select id="recStatus">
-        <option>预警中</option><option>大店长沟通中</option><option>BP 沟通中</option><option>已挽留</option><option>已离职</option>
+        <option>预警中</option><option>待核实</option><option>大店长沟通中</option><option>BP 沟通中</option><option>已挽留</option><option>已离职</option>
       </select></div>
       <div class="fitem"><label>离职信息出现时间（T+0）*</label><input type="datetime-local" id="recApply"></div>
       <div class="fitem"><label>大店长首轮沟通完成时间（时限 1~2 天）</label><input type="datetime-local" id="recLeadTalk"></div>
@@ -285,6 +340,7 @@ function showPage(p){
   document.querySelectorAll('.page').forEach(d=>d.classList.toggle('active', d.id==='page-'+p));
   if(p==='overview') renderOverview();
   if(p==='ledger') renderLedger();
+  if(p==='risk') renderRisk();
   if(p==='pool') renderPool();
 }
 function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
@@ -310,7 +366,7 @@ function 时效(r){
   return res;
 }
 function isOver(r){
-  if(r.status==='已挽留'||r.status==='已离职') return false;
+  if(r.status==='已挽留'||r.status==='已离职'||r.status==='待核实') return false;
   const t=时效(r);
   return (t.lead&&t.lead.over&&!t.lead.done)||(t.bp&&t.bp.over&&!t.bp.done);
 }
@@ -404,12 +460,13 @@ function refreshAll(){
   const active=document.querySelector('nav button.active').dataset.page;
   if(active==='overview') renderOverview();
   if(active==='ledger') renderLedger();
+  if(active==='risk') renderRisk();
   if(active==='pool') renderPool();
 }
 
 /* ================= 总览 ================= */
 function statusTag(s){
-  const m={'预警中':'warn','大店长沟通中':'bad','BP 沟通中':'bad','已挽留':'ok','已离职':'grey'};
+  const m={'待核实':'grey','预警中':'warn','大店长沟通中':'bad','BP 沟通中':'bad','已挽留':'ok','已离职':'grey'};
   return '<span class="tag '+(m[s]||'grey')+'">'+esc(s)+'</span>';
 }
 function renderOverview(){
@@ -425,14 +482,16 @@ function renderOverview(){
     '<div class="stat"><div class="num">'+open.filter(r=>r.status!=='预警中').length+'</div><div class="lbl">进行中（大店长沟通中 / BP 沟通中）</div></div>'+
     '<div class="stat bad"><div class="num">'+timeouts.length+'</div><div class="lbl">已超时（大店长&gt;2天 / BP&gt;3天）</div></div>'+
     '<div class="stat ok"><div class="num">'+archived.length+'</div><div class="lbl">本月已归档（挽留+离职）</div></div>';
-  document.getElementById('ovBrand').innerHTML='<table><tr><th>品牌</th><th>店长底池</th><th>预警中</th><th>大店长沟通中</th><th>BP 沟通中</th><th>已挽留</th><th>已离职</th></tr>'+
+  document.getElementById('ovBrand').innerHTML='<table><tr><th>品牌</th><th>店长底池</th><th>待核实</th><th>预警中</th><th>大店长沟通中</th><th>BP 沟通中</th><th>已挽留</th><th>已离职</th></tr>'+
     ['茶颜','鸳央','墨柠'].map(b=>{
       const rs=recs.filter(r=>r.brand===b);
       const cnt=s=>rs.filter(r=>r.status===s).length;
-      return '<tr><td>'+brandTag(b)+'</td><td>'+byBrand[b]+'</td><td>'+cnt('预警中')+'</td><td>'+cnt('大店长沟通中')+'</td><td>'+cnt('BP 沟通中')+'</td><td>'+cnt('已挽留')+'</td><td>'+cnt('已离职')+'</td></tr>';
+      return '<tr><td>'+brandTag(b)+'</td><td>'+byBrand[b]+'</td><td>'+cnt('待核实')+'</td><td>'+cnt('预警中')+'</td><td>'+cnt('大店长沟通中')+'</td><td>'+cnt('BP 沟通中')+'</td><td>'+cnt('已挽留')+'</td><td>'+cnt('已离职')+'</td></tr>';
     }).join('')+'</table>';
   // 待办：未归档且某个环节临近/超时
   const todo=open.map(r=>{
+    const now=new Date().toISOString();
+    if(r.status==='待核实') return {r, stage:'待 BP 核实信息', h:r.applyAt?hoursBetween(r.applyAt,now):0, over:false, limit:null};
     const t=时效(r);
     if(t.lead&&!t.lead.done) return {r, stage:'大店长首轮沟通', h:t.lead.h, over:t.lead.over, limit:LEAD_LIMIT};
     if(t.bp&&!t.bp.done) return {r, stage:'BP 完成沟通', h:t.bp.h, over:t.bp.over, limit:BP_LIMIT};
@@ -550,6 +609,35 @@ function exportCSV(){
   a.click();
 }
 
+/* ================= 风险预警 ================= */
+function renderRisk(){
+  const risk=(POOL_DATA.risk||[]);
+  const fb=document.getElementById('rkBrand').value, fl=document.getElementById('rkLevel').value,
+        kw=document.getElementById('rkKw').value.trim().toLowerCase();
+  let list=risk;
+  if(fb) list=list.filter(x=>x.brand===fb);
+  if(fl) list=list.filter(x=>x.level===fl);
+  if(kw) list=list.filter(x=>(x.name+x.empId+x.store).toLowerCase().includes(kw));
+  list=list.slice().sort((a,b)=>(a.level===b.level?0:(a.level==='高'?-1:1)));
+  document.getElementById('rkCount').textContent='共 '+list.length+' 人';
+  const high=risk.filter(x=>x.level==='高').length;
+  document.getElementById('rkCards').innerHTML=
+    '<div class="stat bad"><div class="num">'+high+'</div><div class="lbl">高等级：近 7 天 0 工时</div></div>'+
+    '<div class="stat warn"><div class="num">'+(risk.length-high)+'</div><div class="lbl">中等级：工时/出勤骤降</div></div>'+
+    '<div class="stat"><div class="num">'+risk.length+'</div><div class="lbl">风险名单合计（仅店长职级）</div></div>'+
+    '<div class="stat"><div class="num">'+(POOL_DATA.riskPeriod||'—')+'</div><div class="lbl">数据区间（跑数后更新）</div></div>';
+  const covered=(POOL_DATA.riskCovered||[]).join('、')||'无';
+  const missing=POOL_DATA.riskMissing||[];
+  document.getElementById('rkCover').innerHTML='本期数据覆盖：<b>'+esc(covered)+'</b>'+
+    (missing.length?'　<span class="tag warn">未导入工时表：'+esc(missing.join('、'))+'</span>':'　<span class="tag ok">三品牌全部覆盖</span>')+
+    '　<span class="muted">未导入的品牌显示 0 条 ≠ 无风险，补齐工时表后再看</span>';
+  document.querySelector('#rkTable tbody').innerHTML=list.map(x=>
+    '<tr><td><span class="tag '+(x.level==='高'?'bad':'warn')+'">'+esc(x.level)+'</span></td><td>'+brandTag(x.brand)+'</td>'+
+    '<td><b>'+esc(x.name)+'</b></td><td>'+esc(x.empId)+'</td><td>'+esc(x.store)+'</td><td>'+esc(x.position)+'</td><td>'+esc(x.bigArea)+'</td>'+
+    '<td>'+esc(x.signal)+'</td><td>'+esc(x.detail)+'</td><td>'+esc(x.action)+'</td>'+
+    '<td><button class="btn sm ghost" onclick="regFromPool(\''+x.empId+'\')">登记</button></td></tr>'
+  ).join('')||'<tr><td colspan="11" class="muted" style="text-align:center;padding:20px">暂无风险名单，导入工时表跑数后自动生成（近 7 天 0 工时 / 工时骤降的店长会出现在这里）</td></tr>';
+}
 /* ================= 店长底池 ================= */
 function initPoolFilters(){
   const areas=[...new Set(POOL.map(p=>p.area))].sort();

@@ -1,0 +1,315 @@
+{
+  "importedAt": "2026-10-27T14:31:00+08:00",
+  "mode": "local-only",
+  "sourcePrivacy": "真实人员数据仅保留本地，未写入发布包",
+  "totalRecords": 3799,
+  "duplicateWorkNos": 0,
+  "typeExceptions": [
+    {
+      "workNo": "CY64703",
+      "name": "刘丹",
+      "brand": "茶颜悦色",
+      "rowNumber": 169,
+      "employmentType": "兼职"
+    },
+    {
+      "workNo": "CY64288",
+      "name": "刘嘉颖",
+      "brand": "茶颜悦色",
+      "rowNumber": 203,
+      "employmentType": "兼职"
+    },
+    {
+      "workNo": "CY65106",
+      "name": "刘金晶",
+      "brand": "茶颜悦色",
+      "rowNumber": 331,
+      "employmentType": "兼职"
+    },
+    {
+      "workNo": "CY61874",
+      "name": "吴姝",
+      "brand": "茶颜悦色",
+      "rowNumber": 427,
+      "employmentType": "兼职"
+    },
+    {
+      "workNo": "CY63910",
+      "name": "张小雪",
+      "brand": "茶颜悦色",
+      "rowNumber": 803,
+      "employmentType": "兼职"
+    },
+    {
+      "workNo": "CY63909",
+      "name": "李偲",
+      "brand": "茶颜悦色",
+      "rowNumber": 1197,
+      "employmentType": "兼职"
+    },
+    {
+      "workNo": "CY66644",
+      "name": "李婕妤",
+      "brand": "茶颜悦色",
+      "rowNumber": 1230,
+      "employmentType": "兼职"
+    },
+    {
+      "workNo": "CY66023",
+      "name": "李秧",
+      "brand": "茶颜悦色",
+      "rowNumber": 1334,
+      "employmentType": "兼职"
+    },
+    {
+      "workNo": "CY65105",
+      "name": "杨乐",
+      "brand": "茶颜悦色",
+      "rowNumber": 1401,
+      "employmentType": "兼职"
+    },
+    {
+      "workNo": "CY61872",
+      "name": "熊红霞",
+      "brand": "茶颜悦色",
+      "rowNumber": 1681,
+      "employmentType": "兼职"
+    },
+    {
+      "workNo": "CY64290",
+      "name": "王兵",
+      "brand": "茶颜悦色",
+      "rowNumber": 1703,
+      "employmentType": "兼职"
+    },
+    {
+      "workNo": "CY52410",
+      "name": "王渝",
+      "brand": "茶颜悦色",
+      "rowNumber": 1765,
+      "employmentType": "兼职"
+    },
+    {
+      "workNo": "CY65585",
+      "name": "王静",
+      "brand": "茶颜悦色",
+      "rowNumber": 1801,
+      "employmentType": "兼职"
+    },
+    {
+      "workNo": "CY60325",
+      "name": "胡思琦",
+      "brand": "茶颜悦色",
+      "rowNumber": 2007,
+      "employmentType": "兼职"
+    },
+    {
+      "workNo": "CY66026",
+      "name": "苏佳欣",
+      "brand": "茶颜悦色",
+      "rowNumber": 2053,
+      "employmentType": "兼职"
+    },
+    {
+      "workNo": "CY66643",
+      "name": "董稀",
+      "brand": "茶颜悦色",
+      "rowNumber": 2095,
+      "employmentType": "兼职"
+    },
+    {
+      "workNo": "CY60798",
+      "name": "谢贝尔",
+      "brand": "茶颜悦色",
+      "rowNumber": 2224,
+      "employmentType": "兼职"
+    },
+    {
+      "workNo": "CY52412",
+      "name": "邓聪",
+      "brand": "茶颜悦色",
+      "rowNumber": 2364,
+      "employmentType": "兼职"
+    },
+    {
+      "workNo": "CY53579",
+      "name": "罗蓉",
+      "brand": "鸳央咖啡",
+      "rowNumber": 135,
+      "employmentType": "兼职"
+    },
+    {
+      "workNo": "CY49471",
+      "name": "陈玉宁",
+      "brand": "鸳央咖啡",
+      "rowNumber": 175,
+      "employmentType": "兼职"
+    }
+  ],
+  "byBrand": {
+    "茶颜悦色": {
+      "total": 2823,
+      "fullTime": 1463,
+      "student": 1342,
+      "partTime": 18
+    },
+    "古德墨柠": {
+      "total": 780,
+      "fullTime": 391,
+      "student": 389,
+      "partTime": 0
+    },
+    "鸳央咖啡": {
+      "total": 196,
+      "fullTime": 114,
+      "student": 80,
+      "partTime": 2
+    }
+  },
+  "headerChecks": [
+    {
+      "brand": "茶颜悦色",
+      "file": "在职数据-湖南茶颜.xlsx",
+      "sheet": "明细表",
+      "totalRows": 2823,
+      "headers": {
+        "name": {
+          "column": 1,
+          "expected": "姓名",
+          "actual": "姓名"
+        },
+        "workNo": {
+          "column": 2,
+          "expected": "工号",
+          "actual": "工号"
+        },
+        "employmentType": {
+          "column": 3,
+          "expected": "人员类别",
+          "actual": "人员类别"
+        },
+        "hireDate": {
+          "column": 4,
+          "expected": "入职日期",
+          "actual": "入职日期"
+        },
+        "region": {
+          "column": 10,
+          "expected": "五级部门",
+          "actual": "五级部门"
+        },
+        "district": {
+          "column": 11,
+          "expected": "六级部门",
+          "actual": "六级部门"
+        },
+        "storeName": {
+          "column": 12,
+          "expected": "七级部门",
+          "actual": "七级部门"
+        },
+        "position": {
+          "column": 16,
+          "expected": "职位",
+          "actual": "职位"
+        }
+      }
+    },
+    {
+      "brand": "古德墨柠",
+      "file": "在职数据-古德墨柠-20261027.xlsx",
+      "sheet": "明细表",
+      "totalRows": 780,
+      "headers": {
+        "name": {
+          "column": 1,
+          "expected": "姓名",
+          "actual": "姓名"
+        },
+        "workNo": {
+          "column": 2,
+          "expected": "工号",
+          "actual": "工号"
+        },
+        "employmentType": {
+          "column": 3,
+          "expected": "人员类别",
+          "actual": "人员类别"
+        },
+        "hireDate": {
+          "column": 4,
+          "expected": "入职日期",
+          "actual": "入职日期"
+        },
+        "region": {
+          "column": 10,
+          "expected": "五级部门",
+          "actual": "五级部门"
+        },
+        "district": {
+          "column": 11,
+          "expected": "六级部门",
+          "actual": "六级部门"
+        },
+        "storeName": {
+          "column": 12,
+          "expected": "七级部门",
+          "actual": "七级部门"
+        },
+        "position": {
+          "column": 16,
+          "expected": "职位",
+          "actual": "职位"
+        }
+      }
+    },
+    {
+      "brand": "鸳央咖啡",
+      "file": "在职数据-鸳央咖啡-20261027.xlsx",
+      "sheet": "明细表",
+      "totalRows": 196,
+      "headers": {
+        "name": {
+          "column": 1,
+          "expected": "姓名",
+          "actual": "姓名"
+        },
+        "workNo": {
+          "column": 2,
+          "expected": "工号",
+          "actual": "工号"
+        },
+        "employmentType": {
+          "column": 3,
+          "expected": "人员类别",
+          "actual": "人员类别"
+        },
+        "hireDate": {
+          "column": 4,
+          "expected": "入职日期",
+          "actual": "入职日期"
+        },
+        "region": {
+          "column": 10,
+          "expected": "五级部门",
+          "actual": "五级部门"
+        },
+        "district": {
+          "column": 11,
+          "expected": "六级部门",
+          "actual": "六级部门"
+        },
+        "storeName": {
+          "column": 12,
+          "expected": "七级部门",
+          "actual": "七级部门"
+        },
+        "position": {
+          "column": 16,
+          "expected": "职位",
+          "actual": "职位"
+        }
+      }
+    }
+  ]
+}

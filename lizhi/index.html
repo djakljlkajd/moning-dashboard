@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>茶颜×鸳央×墨柠 店长离职沟通看板</title>
+<style>
+:root{
+  --brand:#c8331f; --brand-dark:#a52818; --brand-light:#fdf0ed;
+  --ink:#2b2b2b; --sub:#777; --line:#e8e2de; --bg:#faf8f6;
+  --ok:#2e8b57; --warn:#d97706; --bad:#d21f1f; --blue:#2563eb;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);font-size:14px}
+header{background:linear-gradient(135deg,#c8331f,#8f2113);color:#fff;padding:18px 28px}
+header h1{font-size:20px;letter-spacing:1px}
+header .meta{margin-top:6px;font-size:12px;opacity:.85}
+.sync-tip{display:inline-block;margin-top:8px;font-size:12px;background:rgba(255,255,255,.15);padding:3px 10px;border-radius:10px}
+.sync-tip.ok{background:rgba(255,255,255,.25)}
+nav{display:flex;gap:4px;background:#fff;border-bottom:1px solid var(--line);padding:0 20px;position:sticky;top:0;z-index:50}
+nav button{border:none;background:none;padding:13px 20px;font-size:14px;cursor:pointer;color:var(--sub);border-bottom:3px solid transparent}
+nav button.active{color:var(--brand);border-bottom-color:var(--brand);font-weight:600}
+.page{display:none;padding:22px 28px;max-width:1460px;margin:0 auto}
+.page.active{display:block}
+.card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:16px 18px;margin-bottom:16px}
+.card h3{font-size:15px;margin-bottom:12px;color:var(--brand-dark)}
+.cards-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:16px}
+.stat{background:#fff;border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+.stat .num{font-size:26px;font-weight:700;color:var(--brand)}
+.stat .lbl{font-size:12px;color:var(--sub);margin-top:2px}
+.stat.bad .num{color:var(--bad)}
+.stat.warn .num{color:var(--warn)}
+.stat.ok .num{color:var(--ok)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{border:1px solid var(--line);padding:7px 9px;text-align:left;vertical-align:top}
+th{background:var(--brand-light);color:var(--brand-dark);white-space:nowrap}
+tr.timeout td{background:#fde8e8}
+.tag{display:inline-block;padding:1px 8px;border-radius:9px;font-size:12px;white-space:nowrap}
+.tag.ty{background:#fde8e8;color:#c8331f}.tag.yy{background:#e8f0fe;color:#2563eb}.tag.mn{background:#e9f7ee;color:#2e8b57}
+.tag.warn{background:#fef3e2;color:var(--warn)}.tag.bad{background:#fde8e8;color:var(--bad)}
+.tag.ok{background:#e9f7ee;color:var(--ok)}.tag.grey{background:#f0eeec;color:var(--sub)}
+.btn{display:inline-block;border:none;border-radius:8px;padding:8px 18px;font-size:13px;cursor:pointer;background:var(--brand);color:#fff}
+.btn.ghost{background:#fff;color:var(--brand);border:1px solid var(--brand)}
+.btn.sm{padding:3px 10px;font-size:12px;border-radius:6px}
+.btn:disabled{opacity:.5;cursor:default}
+.toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:12px}
+.toolbar select,.toolbar input{padding:7px 10px;border:1px solid var(--line);border-radius:8px;font-size:13px;background:#fff}
+.muted{color:var(--sub);font-size:12px}
+/* 链路页 */
+.flow-bar{display:flex;align-items:stretch;gap:0;margin:6px 0 4px;flex-wrap:wrap}
+.flow-node{flex:1;min-width:150px;background:var(--brand-light);border:1px solid #f0c8bf;border-radius:10px;padding:12px;text-align:center;position:relative}
+.flow-node+.flow-node{margin-left:26px}
+.flow-node+.flow-node::before{content:'▶';position:absolute;left:-21px;top:50%;transform:translateY(-50%);color:var(--brand);font-size:13px}
+.flow-node .t{font-weight:700;color:var(--brand-dark);font-size:14px}
+.flow-node .d{font-size:12px;color:var(--sub);margin-top:4px}
+.golden{background:#fff7e6;border:1px solid #f0d9a8;border-radius:10px;padding:12px 16px;color:#8a5a00;font-size:13px;margin:14px 0}
+.vs-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:900px){.vs-grid{grid-template-columns:1fr}}
+.qa{background:var(--brand-light);border-radius:10px;padding:14px 16px}
+.qa .q{font-weight:700;color:var(--brand-dark);margin-bottom:6px}
+details{border:1px solid var(--line);border-radius:8px;padding:10px 14px;margin-bottom:8px;background:#fff}
+summary{cursor:pointer;font-weight:600;color:var(--brand-dark)}
+details p{margin-top:8px;color:var(--ink);line-height:1.7}
+/* 弹窗 */
+.modal-mask{position:fixed;inset:0;background:rgba(0,0,0,.4);display:none;z-index:100;align-items:flex-start;justify-content:center;overflow:auto}
+.modal-mask.show{display:flex}
+.modal{background:#fff;border-radius:12px;padding:22px 24px;width:640px;max-width:94vw;margin:40px auto}
+.modal h3{color:var(--brand-dark);margin-bottom:14px;font-size:16px}
+.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px 14px}
+.fgrid .full{grid-column:1/-1}
+.fitem label{display:block;font-size:12px;color:var(--sub);margin-bottom:4px}
+.fitem input,.fitem select,.fitem textarea{width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:8px;font-size:13px;font-family:inherit}
+.fitem textarea{resize:vertical;min-height:56px}
+.modal .foot{margin-top:16px;text-align:right}
+.modal .foot .btn{margin-left:8px}
+.emp-pick{max-height:180px;overflow:auto;border:1px solid var(--line);border-radius:8px;margin-top:6px;display:none}
+.emp-pick div{padding:6px 10px;cursor:pointer;font-size:13px}
+.emp-pick div:hover{background:var(--brand-light)}
+.over24{color:var(--bad);font-weight:700}
+.note-strip{background:#eef4ff;border:1px solid #cddbff;color:#1e40af;border-radius:10px;padding:10px 16px;font-size:13px;margin-bottom:16px}
+</style>
+</head>
+<body>
+<header>
+  <h1>茶颜 × 鸳央 × 墨柠 · 店长离职沟通看板</h1>
+  <div class="meta">使用范围：三品牌主管 + 杨师 ｜ 底池数据日期：<span id="poolDate"></span> ｜ 口径：店长 / 练习生店长 / 零售店长 / 零售副店长</div>
+  <span class="sync-tip" id="syncTip">正在连接云端…</span>
+</header>
+<nav>
+  <button class="active" data-page="overview" onclick="showPage('overview')">📊 总览</button>
+  <button data-page="flow" onclick="showPage('flow')">🔗 离职链路</button>
+  <button data-page="ledger" onclick="showPage('ledger')">📝 沟通台账</button>
+  <button data-page="pool" onclick="showPage('pool')">👥 店长底池</button>
+</nav>
+
+<!-- ============ 总览 ============ -->
+<div class="page active" id="page-overview">
+  <div class="note-strip">机制核心：离职申请出现 → 运营 <b>1 小时</b>内通报 BP → BP <b>4 小时</b>内联系本人 → BP <b>24 小时</b>内完成首次面谈。运营不得替代 BP 完成离职沟通。T+0～T+24h 是挽留黄金窗口。</div>
+  <div class="cards-row" id="ovCards"></div>
+  <div class="card">
+    <h3>三品牌店长底池分布</h3>
+    <div id="ovBrand"></div>
+  </div>
+  <div class="card">
+    <h3>⚠️ 待处理提醒（超时 / 临近 24h 黄金窗口）</h3>
+    <div id="ovTodo"></div>
+  </div>
+</div>
+
+<!-- ============ 离职链路 ============ -->
+<div class="page" id="page-flow">
+  <div class="card">
+    <h3>核心时效机制（强制执行，不得延误）</h3>
+    <div class="flow-bar">
+      <div class="flow-node"><div class="t">离职申请出现</div><div class="d">T+0</div></div>
+      <div class="flow-node"><div class="t">运营 1h 内通报 BP</div><div class="d">运营看到第一时间转给对应 BP，BP 确认收到</div></div>
+      <div class="flow-node"><div class="t">BP 4h 内联系本人</div><div class="d">联系离职人员，约定面谈时间</div></div>
+      <div class="flow-node"><div class="t">BP 24h 内完成首次面谈</div><div class="d">1v1 挽留面谈，产出结论：能留 / 暂留 / 离职</div></div>
+    </div>
+    <div class="golden">🔑 关键原则：T+0 到 T+24h 这 24 小时是「黄金窗口」。过了这个窗口，挽留成功率断崖式下降。<b>运营不得替代 BP 完成离职沟通。</b></div>
+  </div>
+
+  <div class="vs-grid">
+    <div class="card">
+      <h3>防线 1：运营-BP 前置同频（不等离职发生，提前心中有数）</h3>
+      <table>
+        <tr><th>同频节点</th><th>频率</th><th>同频内容</th><th>形式</th></tr>
+        <tr><td>预警意向同频</td><td>出现信号 24h 内</td><td>出现预警信号（见下表），运营立即通报 BP</td><td>钉钉发送，沟通留痕</td></tr>
+        <tr><td>离职同频</td><td>离职申请出现时</td><td>BP 第一时间接收信息，快速介入（运营端口接收后第一时间转给 BP）</td><td>—</td></tr>
+      </table>
+      <h3 style="margin-top:16px">伙伴状态预警的 6 类触发信号（运营发现后及时同频 BP）</h3>
+      <table>
+        <tr><th>信号</th><th>典型表现</th></tr>
+        <tr><td>① 主动表达离职意向</td><td>"不想干了""在考虑""有别的机会"</td></tr>
+        <tr><td>② 缺勤异常</td><td>连续 2 天以上不正常到岗 / 频繁请假</td></tr>
+        <tr><td>③ 学习/业绩骤降</td><td>进度严重滞后 / 业绩排名骤降</td></tr>
+        <tr><td>④ 冲突信号</td><td>与师傅 / 店长 / 团队发生冲突</td></tr>
+        <tr><td>⑤ 情绪异常</td><td>明显低落、消极配合、沉默寡言</td></tr>
+        <tr><td>⑥ 外部信号</td><td>同事 / 店长反馈"状态不对"</td></tr>
+      </table>
+    </div>
+
+    <div class="card">
+      <h3>防线 2：离职申请出现后的 BP 介入时效标准</h3>
+      <table>
+        <tr><th>节点</th><th>运营动作</th><th>BP 动作</th><th>产出</th></tr>
+        <tr><td><b>T+0</b><br>离职申请出现</td><td>看到第一时间转给对应 BP</td><td>接收后确认收到</td><td>钉钉沟通留痕</td></tr>
+        <tr><td><b>T+12h</b></td><td>配合提供业务背景、近期表现</td><td>联系离职人员本人，约定面谈时间</td><td>约定面谈时间</td></tr>
+        <tr><td><b>T+24h</b></td><td>不主导沟通，配合提供信息</td><td>完成首次 1v1 面谈（挽留面谈）</td><td>面谈结论：能留 / 暂留 / 离职</td></tr>
+        <tr><td><b>T+48h</b></td><td>留 → 配合执行挽留方案；离 → 按流程交接</td><td>留 → 输出挽留方案；离 → 确认离职流程及节点</td><td>挽留方案 或 离职流程启动</td></tr>
+        <tr><td><b>T+7 天</b></td><td>参与复盘</td><td>完成离职面谈（真因提炼）+ 台账归档 + 复盘结论</td><td>台账归档 + 复盘记录</td></tr>
+      </table>
+      <h3 style="margin-top:16px">三个关键问题</h3>
+      <div class="qa"><div class="q">谁先谈？</div>BP 先谈（不是运营先谈）——BP 是人才方负责人，运营先谈会让离职人员"只认运营"。</div>
+      <div class="qa" style="margin-top:8px"><div class="q">谁主导？</div>BP 主导，运营配合提供信息——离职沟通涉及薪酬 / 发展 / 劳动关系，BP 专业对口。</div>
+      <div class="qa" style="margin-top:8px"><div class="q">运营角色？</div>提供业务背景、配合交接，不主导沟通——运营管"事"，BP 管"人"，边界清晰。</div>
+    </div>
+  </div>
+
+  <div class="vs-grid">
+    <div class="card">
+      <h3>BP 介入的监督机制</h3>
+      <table>
+        <tr><th>监督手段</th><th>怎么做</th><th>频率</th></tr>
+        <tr><td>台账「BP 介入时效」</td><td>看板自动计算从离职申请到 BP 首次面谈的时长，超 24h 自动标红</td><td>实时（本看板沟通台账页）</td></tr>
+        <tr><td>BP 周报</td><td>每周一 BP 汇报本周介入的离职案例（0 也要报，"本周无离职"也要写）</td><td>每周一</td></tr>
+        <tr><td>月度抽查</td><td>HR 每月抽查 3-5 个离职案例，核实 BP 是否真实介入、面谈记录是否完整</td><td>每月</td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <h3>BP 未介入的后果（递进式）</h3>
+      <table>
+        <tr><th>次数</th><th>后果</th></tr>
+        <tr><td>首次</td><td>BP 负责人约谈，要求补做面谈 + 补录台账</td></tr>
+        <tr><td>二次</td><td>纳入 BP 绩效考核，当月扣分</td></tr>
+        <tr><td>三次</td><td>岗位调整 / 培训整改</td></tr>
+      </table>
+      <h3 style="margin-top:16px">适用对象</h3>
+      <p style="line-height:1.8">大店长及以上（含大店长、区经理、城市经理、区域负责人）一律算核心人员，全部适用本机制。本看板底池纳管三品牌<b>店长职级</b>（店长 / 练习生店长 / 零售店长 / 零售副店长），共 459 人。普通店员 / 兼职不适用，运营可自行处理。</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>常见问题 FAQ</h3>
+    <details><summary>Q1：运营已经和离职人员谈完了，BP 还要介入吗？</summary><p>要。BP 必须补做离职面谈（真因提炼），否则离职原因无法归因，下次还会招错人。运营"先斩后奏"不影响 BP 介入的必要性，但运营"先斩后奏"本身违反约束，需考核扣分。</p></details>
+    <details><summary>Q2：BP 人不在本地怎么办？</summary><p>视频面谈也算，但必须在 T+24h 内完成，不得以"不在本地"为由延后。如果 BP 负责的区域跨度大，建议按区域配置 BP 对接人。</p></details>
+    <details><summary>Q3：离职人员坚持只和运营谈，不愿和 BP 谈？</summary><p>BP 仍需介入，哪怕只是旁听，否则离职真因无法沉淀。可以运营 + BP 一起面谈，但 BP 必须在场，且面谈记录由 BP 归档。</p></details>
+    <details><summary>Q4：BP 介入后，运营还需要做什么？</summary><p>三件事：① 配合提供业务背景信息；② 如果能留，配合执行挽留方案；③ 如果放行，配合做好工作交接。运营不是"甩手不管"，而是"不越位但配合"。</p></details>
+  </div>
+</div>
+
+<!-- ============ 沟通台账 ============ -->
+<div class="page" id="page-ledger">
+  <div class="card">
+    <div class="toolbar">
+      <button class="btn" onclick="openRecModal()">＋ 新增登记</button>
+      <button class="btn ghost" onclick="exportCSV()">导出 CSV</button>
+      <select id="lgBrand" onchange="renderLedger()"><option value="">全部品牌</option><option>茶颜</option><option>鸳央</option><option>墨柠</option></select>
+      <select id="lgStatus" onchange="renderLedger()">
+        <option value="">全部状态</option><option>预警中</option><option>已申请离职</option><option>面谈完成</option><option>已挽留</option><option>已离职</option>
+      </select>
+      <label class="muted"><input type="checkbox" id="lgTimeout" onchange="renderLedger()"> 只看超时（&gt;24h 未面谈）</label>
+      <span class="muted" id="lgCount"></span>
+    </div>
+    <div style="overflow:auto">
+    <table id="lgTable">
+      <thead><tr>
+        <th>状态</th><th>品牌</th><th>姓名</th><th>门店</th><th>职位</th><th>预警信号</th>
+        <th>申请时间 T+0</th><th>BP 确认</th><th>首次面谈</th><th>介入时效</th><th>面谈结论</th><th>真因</th><th>录入人</th><th>操作</th>
+      </tr></thead>
+      <tbody></tbody>
+    </table>
+    </div>
+    <p class="muted" style="margin-top:8px">介入时效 = 首次面谈时间（未完成则按当前时间）− 申请时间；超过 24h 整行标红。所有登记云端实时同步，多人可同时填写互不覆盖。</p>
+  </div>
+</div>
+
+<!-- ============ 店长底池 ============ -->
+<div class="page" id="page-pool">
+  <div class="card">
+    <div class="toolbar">
+      <select id="plBrand" onchange="renderPool()"><option value="">全部品牌</option><option>茶颜</option><option>鸳央</option><option>墨柠</option></select>
+      <select id="plArea" onchange="renderPool()"><option value="">全部区域</option></select>
+      <select id="plPos" onchange="renderPool()"><option value="">全部职位</option><option>店长</option><option>练习生店长</option><option>零售店长</option><option>零售副店长</option></select>
+      <input id="plKw" placeholder="搜索 姓名 / 工号 / 门店" oninput="renderPool()" style="width:200px">
+      <span class="muted" id="plCount"></span>
+    </div>
+    <div style="overflow:auto">
+    <table id="plTable">
+      <thead><tr>
+        <th>品牌</th><th>姓名</th><th>工号</th><th>用工类型</th><th>入职日期</th><th>工龄(月)</th>
+        <th>区域</th><th>大店区</th><th>门店</th><th>职位</th><th>台账</th><th>操作</th>
+      </tr></thead>
+      <tbody></tbody>
+    </table>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 登记/编辑弹窗 ============ -->
+<div class="modal-mask" id="recMask">
+  <div class="modal">
+    <h3 id="recTitle">新增离职沟通登记</h3>
+    <input type="hidden" id="recId">
+    <div class="fgrid">
+      <div class="fitem full">
+        <label>人员（从店长底池选择，支持搜索姓名 / 工号 / 门店）*</label>
+        <input id="recEmpKw" placeholder="输入关键字检索底池…" oninput="pickEmp()" autocomplete="off">
+        <div class="emp-pick" id="empPick"></div>
+        <div id="recEmpShow" class="muted" style="margin-top:4px"></div>
+      </div>
+      <div class="fitem"><label>预警信号 *</label><select id="recSignal">
+        <option>主动表达离职意向</option><option>缺勤异常</option><option>学习/业绩骤降</option>
+        <option>冲突信号</option><option>情绪异常</option><option>外部信号</option><option>已提交离职申请</option>
+      </select></div>
+      <div class="fitem"><label>当前状态 *</label><select id="recStatus">
+        <option>预警中</option><option>已申请离职</option><option>面谈完成</option><option>已挽留</option><option>已离职</option>
+      </select></div>
+      <div class="fitem"><label>离职申请/预警出现时间（T+0）*</label><input type="datetime-local" id="recApply"></div>
+      <div class="fitem"><label>BP 确认收到时间</label><input type="datetime-local" id="recAck"></div>
+      <div class="fitem"><label>首次面谈完成时间</label><input type="datetime-local" id="recTalk"></div>
+      <div class="fitem"><label>面谈结论</label><select id="recConcl">
+        <option value="">（未面谈）</option><option>能留</option><option>暂留</option><option>离职</option>
+      </select></div>
+      <div class="fitem full"><label>离职真因 / 备注</label><textarea id="recReason" placeholder="真因提炼、挽留方案要点、交接节点等"></textarea></div>
+      <div class="fitem"><label>录入人 *</label><input id="recBy" placeholder="你的名字"></div>
+    </div>
+    <div class="foot">
+      <button class="btn ghost" onclick="closeRecModal()">取消</button>
+      <button class="btn" onclick="saveRec()">保存并同步</button>
+    </div>
+  </div>
+</div>
+
+<script src="data.js"></script>
+<script>
+/* ================= 基础 ================= */
+const POOL = POOL_DATA.pool;
+document.getElementById('poolDate').textContent = POOL_DATA.updated;
+
+function showPage(p){
+  document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('active', b.dataset.page===p));
+  document.querySelectorAll('.page').forEach(d=>d.classList.toggle('active', d.id==='page-'+p));
+  if(p==='overview') renderOverview();
+  if(p==='ledger') renderLedger();
+  if(p==='pool') renderPool();
+}
+function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function brandTag(b){ const c=b==='茶颜'?'ty':b==='鸳央'?'yy':'mn'; return '<span class="tag '+c+'">'+esc(b)+'</span>'; }
+function fmtDT(s){ if(!s) return '<span class="muted">—</span>'; return esc(s.replace('T',' ').slice(0,16)); }
+function hoursBetween(a,b){ return (new Date(b)-new Date(a))/36e5; }
+/* 介入时效：申请 → 首次面谈（未完成按现在）；返回 {txt, over} */
+function 介入时效(r){
+  if(!r.applyAt) return {txt:'—', over:false};
+  const end = r.talkAt || new Date().toISOString();
+  const h = hoursBetween(r.applyAt, end);
+  const done = !!r.talkAt;
+  const txt = (done?'':'已计 ')+h.toFixed(1)+'h'+(done?'':'+');
+  return {txt, over: h>24, h, done};
+}
+
+/* ================= Supabase 协作 ================= */
+const SUPA_URL='https://tclfmnfvlrlxquiojjya.supabase.co';
+const SUPA_KEY='sb_publishable_6sa-Pz6dX0BSlTJX3gNiRA_CbtZkf_b';
+const SUPA_TABLE='violation_data';
+const SUPA_ID=40;   // 三品牌店长离职沟通看板专用行
+const LS_KEY='lizhi_backup', LS_PENDING='lizhi_pending';
+let CLOUD={records:[]}, PENDING=[], cloudOK=false, syncing=false;
+
+function normalizeCloud(d){
+  d=(d&&typeof d==='object')?d:{};
+  return { records: Array.isArray(d.records)?d.records:[] };
+}
+function applyOp(c,op){
+  if(!op||!op.t) return c;
+  if(op.t==='rec.add'){
+    if(!c.records.some(r=>r.id===op.v.id)) c.records=[op.v].concat(c.records);
+  }else if(op.t==='rec.set'){
+    const i=c.records.findIndex(r=>r.id===op.id);
+    if(i>=0) c.records[i]=Object.assign({},c.records[i],op.v,{updatedAt:op.at});
+  }else if(op.t==='rec.del'){
+    c.records=c.records.filter(r=>r.id!==op.id);
+  }
+  return c;
+}
+function backupLocal(){ try{ localStorage.setItem(LS_KEY,JSON.stringify(CLOUD)); }catch(e){} }
+function restoreLocal(){ try{ const raw=localStorage.getItem(LS_KEY); if(raw) CLOUD=normalizeCloud(JSON.parse(raw)); }catch(e){} }
+function loadPending(){ try{ const p=JSON.parse(localStorage.getItem(LS_PENDING)||'[]'); PENDING=Array.isArray(p)?p:[]; }catch(e){ PENDING=[]; } }
+function savePending(){ try{ localStorage.setItem(LS_PENDING,JSON.stringify(PENDING)); }catch(e){} }
+function pendingTip(){ return PENDING.length?` · 本机有 ${PENDING.length} 条改动待同步`:''; }
+function setSync(msg,ok){ const el=document.getElementById('syncTip'); el.textContent=msg; el.className='sync-tip'+(ok?' ok':''); }
+async function fetchCloud(){
+  const res=await fetch(SUPA_URL+'/rest/v1/'+SUPA_TABLE+'?id=eq.'+SUPA_ID+'&select=data',{
+    headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY}});
+  if(!res.ok) throw new Error('supabase '+res.status);
+  const rows=await res.json();
+  return normalizeCloud(rows&&rows.length?rows[0].data:null);
+}
+async function pushCloud(c){
+  const res=await fetch(SUPA_URL+'/rest/v1/'+SUPA_TABLE+'?id=eq.'+SUPA_ID,{
+    method:'PATCH',
+    headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
+    body:JSON.stringify({data:c,updated_at:new Date().toISOString()})
+  });
+  if(!res.ok) throw new Error('supabase '+res.status);
+}
+async function loadCloud(){
+  loadPending();
+  try{
+    let c=await fetchCloud();
+    PENDING.forEach(op=>applyOp(c,op));
+    CLOUD=c; cloudOK=true; backupLocal();
+    setSync('云端协作已连接 · 沟通登记全员实时同步'+pendingTip(),true);
+    if(PENDING.length) flushPending();
+  }catch(e){
+    cloudOK=false; restoreLocal();
+    setSync('云端暂不可用，已切换本地缓存模式（联网后自动补推）'+pendingTip(),false);
+  }
+  refreshAll();
+}
+async function flushPending(){
+  if(syncing||!PENDING.length) return;
+  syncing=true;
+  try{
+    let c=await fetchCloud();
+    PENDING.forEach(op=>applyOp(c,op));
+    await pushCloud(c);
+    CLOUD=c; PENDING=[]; savePending(); backupLocal();
+    setSync('云端协作已连接 · 沟通登记全员实时同步',true);
+  }catch(e){
+    setSync('同步失败，改动已存本机，稍后自动重试'+pendingTip(),false);
+  }
+  syncing=false; refreshAll();
+}
+function doOp(op){
+  applyOp(CLOUD,op);
+  PENDING.push(op); savePending(); backupLocal();
+  refreshAll();
+  if(cloudOK) flushPending(); else setSync('离线模式，改动已存本机'+pendingTip(),false);
+}
+function refreshAll(){
+  const active=document.querySelector('nav button.active').dataset.page;
+  if(active==='overview') renderOverview();
+  if(active==='ledger') renderLedger();
+  if(active==='pool') renderPool();
+}
+
+/* ================= 总览 ================= */
+function statusTag(s){
+  const m={'预警中':'warn','已申请离职':'bad','面谈完成':'grey','已挽留':'ok','已离职':'grey'};
+  return '<span class="tag '+(m[s]||'grey')+'">'+esc(s)+'</span>';
+}
+function renderOverview(){
+  const recs=CLOUD.records;
+  const byBrand={}; POOL.forEach(p=>{byBrand[p.brand]=(byBrand[p.brand]||0)+1;});
+  const open=recs.filter(r=>r.status!=='已挽留'&&r.status!=='已离职');
+  const timeouts=recs.filter(r=>介入时效(r).over && r.status!=='已挽留' && r.status!=='已离职' && !r.talkAt);
+  const month=new Date().toISOString().slice(0,7);
+  const archived=recs.filter(r=>(r.status==='已挽留'||r.status==='已离职')&&(r.updatedAt||'').slice(0,7)===month);
+  document.getElementById('ovCards').innerHTML=
+    '<div class="stat"><div class="num">'+POOL.length+'</div><div class="lbl">店长底池（茶颜 '+byBrand['茶颜']+' / 鸳央 '+byBrand['鸳央']+' / 墨柠 '+byBrand['墨柠']+'）</div></div>'+
+    '<div class="stat warn"><div class="num">'+recs.filter(r=>r.status==='预警中').length+'</div><div class="lbl">预警中（出现信号，未提申请）</div></div>'+
+    '<div class="stat"><div class="num">'+open.filter(r=>r.status!=='预警中').length+'</div><div class="lbl">进行中离职沟通</div></div>'+
+    '<div class="stat bad"><div class="num">'+timeouts.length+'</div><div class="lbl">超 24h 未完成首次面谈</div></div>'+
+    '<div class="stat ok"><div class="num">'+archived.length+'</div><div class="lbl">本月已归档（挽留+离职）</div></div>';
+  document.getElementById('ovBrand').innerHTML='<table><tr><th>品牌</th><th>店长底池</th><th>预警中</th><th>已申请离职</th><th>面谈完成</th><th>已挽留</th><th>已离职</th></tr>'+
+    ['茶颜','鸳央','墨柠'].map(b=>{
+      const rs=recs.filter(r=>r.brand===b);
+      const cnt=s=>rs.filter(r=>r.status===s).length;
+      return '<tr><td>'+brandTag(b)+'</td><td>'+byBrand[b]+'</td><td>'+cnt('预警中')+'</td><td>'+cnt('已申请离职')+'</td><td>'+cnt('面谈完成')+'</td><td>'+cnt('已挽留')+'</td><td>'+cnt('已离职')+'</td></tr>';
+    }).join('')+'</table>';
+  const todo=recs.filter(r=>r.applyAt && !r.talkAt && r.status!=='已挽留' && r.status!=='已离职')
+    .map(r=>({r, t:介入时效(r)})).sort((a,b)=>b.t.h-a.t.h);
+  document.getElementById('ovTodo').innerHTML = todo.length?
+    '<table><tr><th>紧急度</th><th>品牌</th><th>姓名</th><th>门店</th><th>申请时间</th><th>已耗时</th><th>录入人</th></tr>'+
+    todo.slice(0,20).map(x=>{
+      const urgent=x.t.over, near=!urgent&&x.t.h>20;
+      return '<tr class="'+(urgent?'timeout':'')+'"><td>'+(urgent?'<span class="tag bad">已超时</span>':near?'<span class="tag warn">临近 24h</span>':'<span class="tag grey">窗口内</span>')+'</td><td>'+brandTag(x.r.brand)+'</td><td>'+esc(x.r.name)+'</td><td>'+esc(x.r.store)+'</td><td>'+fmtDT(x.r.applyAt)+'</td><td class="'+(urgent?'over24':'')+'">'+x.t.h.toFixed(1)+'h</td><td>'+esc(x.r.createdBy||'')+'</td></tr>';
+    }).join('')+'</table>'
+    : '<p class="muted">当前无待面谈人员，黄金窗口无超时 ✅</p>';
+}
+
+/* ================= 沟通台账 ================= */
+function renderLedger(){
+  const fb=document.getElementById('lgBrand').value, fs=document.getElementById('lgStatus').value, ft=document.getElementById('lgTimeout').checked;
+  let recs=CLOUD.records.slice();
+  if(fb) recs=recs.filter(r=>r.brand===fb);
+  if(fs) recs=recs.filter(r=>r.status===fs);
+  if(ft) recs=recs.filter(r=>介入时效(r).over && !r.talkAt);
+  recs.sort((a,b)=>(b.applyAt||b.createdAt||'').localeCompare(a.applyAt||a.createdAt||''));
+  document.getElementById('lgCount').textContent='共 '+recs.length+' 条';
+  document.querySelector('#lgTable tbody').innerHTML=recs.map(r=>{
+    const t=介入时效(r);
+    return '<tr class="'+((t.over&&!r.talkAt)?'timeout':'')+'"><td>'+statusTag(r.status)+'</td><td>'+brandTag(r.brand)+'</td>'+
+      '<td>'+esc(r.name)+'</td><td>'+esc(r.store)+'</td><td>'+esc(r.position)+'</td><td>'+esc(r.signal||'')+'</td>'+
+      '<td>'+fmtDT(r.applyAt)+'</td><td>'+fmtDT(r.ackAt)+'</td><td>'+fmtDT(r.talkAt)+'</td>'+
+      '<td class="'+((t.over)?'over24':'')+'">'+t.txt+(t.over?' ⚠️':'')+'</td>'+
+      '<td>'+esc(r.conclusion||'—')+'</td><td>'+esc(r.reason||'')+'</td><td>'+esc(r.createdBy||'')+'</td>'+
+      '<td style="white-space:nowrap"><button class="btn sm ghost" onclick="openRecModal(\''+r.id+'\')">编辑</button> '+
+      '<button class="btn sm ghost" onclick="delRec(\''+r.id+'\')">删除</button></td></tr>';
+  }).join('') || '<tr><td colspan="14" class="muted" style="text-align:center;padding:20px">暂无登记记录，点击「新增登记」开始</td></tr>';
+}
+let curEmp=null;
+function openRecModal(id){
+  const m=document.getElementById('recMask'); m.classList.add('show');
+  document.getElementById('empPick').style.display='none';
+  document.getElementById('recEmpKw').value=''; curEmp=null;
+  const r=id?CLOUD.records.find(x=>x.id===id):null;
+  document.getElementById('recTitle').textContent=r?'编辑登记':'新增离职沟通登记';
+  document.getElementById('recId').value=r?r.id:'';
+  document.getElementById('recSignal').value=r?r.signal:'主动表达离职意向';
+  document.getElementById('recStatus').value=r?r.status:'预警中';
+  document.getElementById('recApply').value=r?(r.applyAt||''):'';
+  document.getElementById('recAck').value=r?(r.ackAt||''):'';
+  document.getElementById('recTalk').value=r?(r.talkAt||''):'';
+  document.getElementById('recConcl').value=r?(r.conclusion||''):'';
+  document.getElementById('recReason').value=r?(r.reason||''):'';
+  document.getElementById('recBy').value=r?(r.createdBy||''):(localStorage.getItem('lizhi_me')||'');
+  document.getElementById('recEmpShow').innerHTML=r?('已选：<b>'+esc(r.name)+'</b>（'+esc(r.empId)+' · '+esc(r.store)+' · '+esc(r.position)+'）'):'';
+  if(r) curEmp={name:r.name,empId:r.empId,brand:r.brand,store:r.store,position:r.position};
+}
+function closeRecModal(){ document.getElementById('recMask').classList.remove('show'); }
+function pickEmp(){
+  const kw=document.getElementById('recEmpKw').value.trim().toLowerCase();
+  const box=document.getElementById('empPick');
+  if(!kw){ box.style.display='none'; return; }
+  const hits=POOL.filter(p=>(p.name+p.empId+p.store).toLowerCase().includes(kw)).slice(0,30);
+  box.innerHTML=hits.map((p,i)=>'<div onclick="chooseEmp(\''+p.empId+'\')">'+brandTag(p.brand)+' <b>'+esc(p.name)+'</b> '+esc(p.empId)+' · '+esc(p.store)+' · '+esc(p.position)+'</div>').join('')||'<div class="muted">底池中未找到，请检查关键字</div>';
+  box.style.display='block';
+}
+function chooseEmp(empId){
+  curEmp=POOL.find(p=>p.empId===empId);
+  document.getElementById('empPick').style.display='none';
+  document.getElementById('recEmpKw').value='';
+  document.getElementById('recEmpShow').innerHTML='已选：<b>'+esc(curEmp.name)+'</b>（'+esc(curEmp.empId)+' · '+esc(curEmp.store)+' · '+esc(curEmp.position)+'）';
+}
+function saveRec(){
+  const id=document.getElementById('recId').value;
+  const by=document.getElementById('recBy').value.trim();
+  if(!curEmp){ alert('请先从底池选择人员'); return; }
+  if(!by){ alert('请填写录入人'); return; }
+  const apply=document.getElementById('recApply').value;
+  if(!apply){ alert('请填写离职申请/预警出现时间（T+0）'); return; }
+  localStorage.setItem('lizhi_me',by);
+  const fields={
+    name:curEmp.name, empId:curEmp.empId, brand:curEmp.brand, store:curEmp.store, position:curEmp.position,
+    signal:document.getElementById('recSignal').value,
+    status:document.getElementById('recStatus').value,
+    applyAt:apply, ackAt:document.getElementById('recAck').value||null,
+    talkAt:document.getElementById('recTalk').value||null,
+    conclusion:document.getElementById('recConcl').value||null,
+    reason:document.getElementById('recReason').value.trim(),
+    createdBy:by
+  };
+  const now=new Date().toISOString();
+  if(id){
+    doOp({t:'rec.set', id:id, v:fields, at:now});
+  }else{
+    doOp({t:'rec.add', v:Object.assign({id:'r'+Date.now()+Math.random().toString(36).slice(2,7), createdAt:now, updatedAt:now},fields)});
+  }
+  closeRecModal();
+}
+function delRec(id){
+  const r=CLOUD.records.find(x=>x.id===id);
+  if(!r) return;
+  if(!confirm('确认删除「'+r.name+'」的这条登记？')) return;
+  doOp({t:'rec.del', id:id});
+}
+function exportCSV(){
+  const head=['状态','品牌','姓名','工号','门店','职位','预警信号','申请时间','BP确认','首次面谈','介入时效h','面谈结论','真因','录入人','更新时间'];
+  const rows=CLOUD.records.map(r=>[r.status,r.brand,r.name,r.empId,r.store,r.position,r.signal||'',r.applyAt||'',r.ackAt||'',r.talkAt||'',介入时效(r).h?介入时效(r).h.toFixed(1):'',r.conclusion||'',(r.reason||'').replace(/[\r\n,]/g,' '),r.createdBy||'',r.updatedAt||'']);
+  const csv='﻿'+[head].concat(rows).map(r=>r.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(',')).join('\r\n');
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));
+  a.download='店长离职沟通台账_'+new Date().toISOString().slice(0,10)+'.csv';
+  a.click();
+}
+
+/* ================= 店长底池 ================= */
+function initPoolFilters(){
+  const areas=[...new Set(POOL.map(p=>p.area))].sort();
+  document.getElementById('plArea').innerHTML='<option value="">全部区域</option>'+areas.map(a=>'<option>'+esc(a)+'</option>').join('');
+}
+function renderPool(){
+  const fb=document.getElementById('plBrand').value, fa=document.getElementById('plArea').value,
+        fp=document.getElementById('plPos').value, kw=document.getElementById('plKw').value.trim().toLowerCase();
+  let list=POOL;
+  if(fb) list=list.filter(p=>p.brand===fb);
+  if(fa) list=list.filter(p=>p.area===fa);
+  if(fp) list=list.filter(p=>p.position===fp);
+  if(kw) list=list.filter(p=>(p.name+p.empId+p.store+p.bigArea).toLowerCase().includes(kw));
+  document.getElementById('plCount').textContent='共 '+list.length+' 人';
+  const openRecs={};
+  CLOUD.records.forEach(r=>{ if(r.status!=='已挽留'&&r.status!=='已离职') openRecs[r.empId]=r.status; });
+  document.querySelector('#plTable tbody').innerHTML=list.map(p=>{
+    const st=openRecs[p.empId];
+    return '<tr><td>'+brandTag(p.brand)+'</td><td><b>'+esc(p.name)+'</b></td><td>'+esc(p.empId)+'</td><td>'+esc(p.empType)+'</td>'+
+      '<td>'+esc(p.hireDate)+'</td><td>'+(p.tenureM==null?'—':p.tenureM)+'</td><td>'+esc(p.area)+'</td><td>'+esc(p.bigArea)+'</td>'+
+      '<td>'+esc(p.store)+'</td><td>'+esc(p.position)+'</td>'+
+      '<td>'+(st?statusTag(st):'<span class="muted">—</span>')+'</td>'+
+      '<td><button class="btn sm ghost" onclick="regFromPool(\''+p.empId+'\')">登记</button></td></tr>';
+  }).join('');
+}
+function regFromPool(empId){
+  curEmp=POOL.find(p=>p.empId===empId);
+  openRecModal();
+  chooseEmp(empId);
+}
+
+initPoolFilters();
+loadCloud();
+</script>
+</body>
+</html>

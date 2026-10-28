@@ -467,20 +467,20 @@
 
 <!-- ===== 第一排：核心KPI ===== -->
 <div class="section-header" style="display:flex;align-items:center;justify-content:space-between;">
-    <span>【第一排】核心指标总览 - 古德墨柠 7月离职情况</span>
+    <span>【第一排】核心指标总览 - 古德墨柠 10月离职情况</span>
     <button class="action-btn" style="background:#1565c0;color:#fff;padding:6px 16px;font-size:13px;" onclick="openPreTurnoverEditModal()">+ 新增预离职人员</button>
 </div>
 <div class="cards-row" id="cards-row"></div>
 
 <!-- ===== 第二排：趋势图表 ===== -->
-<div class="section-header">【第二排】离职率趋势分析 - 古德墨柠 4-7月</div>
+<div class="section-header">【第二排】离职率趋势分析 - 古德墨柠 5-10月</div>
 <div class="chart-row">
     <div class="chart-box">
-        <div class="chart-title">📈 古德墨柠 月度主动离职率趋势 (4-7月)</div>
+        <div class="chart-title">📈 古德墨柠 月度主动离职率趋势 (5-10月)</div>
         <div class="chart-canvas-wrap"><canvas id="chart-monthly"></canvas></div>
     </div>
     <div class="chart-box">
-        <div class="chart-title">📊 各月离职人数对比 (4-7月)</div>
+        <div class="chart-title">📊 各月离职人数对比 (5-10月)</div>
         <div class="chart-canvas-wrap"><canvas id="chart-monthly-count"></canvas></div>
     </div>
 </div>
@@ -676,8 +676,8 @@
 
 </div><!-- end container -->
 
-<script src="data.js?v=20261028a"></script>
-    <script src="roster.js?v=20261028a"></script>
+<script src="data.js?v=20261028b"></script>
+    <script src="roster.js?v=20261028b"></script>
 <script>
 // ===== 全局错误捕获（显示在页面顶部红色条，方便用户看到 JS 错误） =====
 window.addEventListener('error',function(e){
@@ -1074,15 +1074,31 @@ function computeDcStats(){
 
 // 月度趋势兜底（如果 data.js 没 monthlyTrend 字段，按 onlineResignList 动态聚合最近6个月）
 function computeMonthlyTrend(){
-    if(D.monthlyTrend && D.monthlyTrend.labels && D.monthlyTrend.labels.length){
-        return Object.assign({_isPercentage:true},D.monthlyTrend);
-    }
     var buckets={};
     (onlineResignList||[]).forEach(function(e){
         if(!e.resignDate) return;
         var ym=(e.resignDate+'').slice(0,7);
         buckets[ym]=(buckets[ym]||0)+1;
     });
+    if(D.monthlyTrend && D.monthlyTrend.labels && D.monthlyTrend.labels.length){
+        var mt=D.monthlyTrend;
+        var labels=mt.labels.slice();
+        var rates=(mt.brands['古德墨柠']||[]).slice();
+        var counts=(mt.resignCounts||[]).slice();
+        // 静态历史只到上月；当月数据按云端明细实时聚合追加，保证趋势图始终最新
+        var today=new Date();
+        var curLabel=(today.getMonth()+1)+'月';
+        var curKey=today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0');
+        if(labels.indexOf(curLabel)<0){
+            var curCount=buckets[curKey]||0;
+            var bc=(D.overview&&D.overview.beginCount)||0;
+            var avg=bc?(bc+(bc-curCount))/2:0;
+            labels.push(curLabel);
+            rates.push(avg>0?+(curCount/avg).toFixed(4):0);
+            counts.push(curCount);
+        }
+        return {labels:labels, brands:{'古德墨柠':rates}, resignCounts:counts, _isPercentage:true};
+    }
     var labels=[];
     var vals=[];
     var today=new Date();

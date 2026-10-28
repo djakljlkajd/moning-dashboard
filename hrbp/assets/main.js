@@ -44694,7 +44694,7 @@ function App() {
     ] })
   ] });
   const profilePage = /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)(import_jsx_runtime3.Fragment, { children: [
-    pageHeading("PROFILE & ACCESS", "\u6211\u7684", "\u8EAB\u4EFD\u51B3\u5B9A\u53EF\u6267\u884C\u64CD\u4F5C\uFF1B\u6B63\u5F0F\u7248\u91C7\u7528\u5FAE\u4FE1\u6388\u6743\u540E\u9996\u6B21\u7ED1\u5B9A\u5DE5\u53F7\u3002"),
+    pageHeading("PROFILE & ACCESS", "\u6211\u7684", backendEnabled ? "\u5DF2\u7ED1\u5B9A\u5DE5\u53F7\uFF0C\u8EAB\u4EFD\u51B3\u5B9A\u53EF\u6267\u884C\u64CD\u4F5C\uFF1B\u6240\u6709\u63D0\u4EA4\u5B9E\u65F6\u5199\u5165\u56E2\u961F\u5171\u4EAB\u6570\u636E\u5E93\u3002" : "\u8EAB\u4EFD\u51B3\u5B9A\u53EF\u6267\u884C\u64CD\u4F5C\uFF1B\u6B63\u5F0F\u7248\u91C7\u7528\u5FAE\u4FE1\u6388\u6743\u540E\u9996\u6B21\u7ED1\u5B9A\u5DE5\u53F7\u3002"),
     /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "mobile-only", style: { gap: 9, marginBottom: 16 }, children: [
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("button", { className: "button button-secondary button-sm", onClick: () => navigate("visits"), children: [
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(ClipboardCheck, { size: 14 }),
@@ -44716,8 +44716,8 @@ function App() {
     /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "grid grid-2", children: [
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card", children: [
         /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card-header", children: [
-          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-title", children: "\u5F53\u524D\u6F14\u793A\u8EAB\u4EFD" }),
-          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: "badge badge-amber", children: "\u4EC5\u6F14\u793A\u5207\u6362" })
+          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-title", children: backendEnabled ? "\u5F53\u524D\u7ED1\u5B9A\u8EAB\u4EFD" : "\u5F53\u524D\u6F14\u793A\u8EAB\u4EFD" }),
+          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: `badge ${backendEnabled ? "badge-green" : "badge-amber"}`, children: backendEnabled ? "\u5DE5\u53F7\u5DF2\u7ED1\u5B9A" : "\u4EC5\u6F14\u793A\u5207\u6362" })
         ] }),
         /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card-body", children: [
           /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { style: { display: "flex", alignItems: "center", gap: 15, marginBottom: 20 }, children: [
@@ -44733,18 +44733,24 @@ function App() {
               ] })
             ] })
           ] }),
-          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("label", { className: "form-label", children: "\u5207\u6362\u8EAB\u4EFD\u4EE5\u9A8C\u8BC1 BP / \u7ECF\u7406\u6743\u9650" }),
-          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("select", { className: "input", style: { marginTop: 8 }, value: currentEmployeeId, onChange: (e) => {
-            setCurrentEmployeeId(e.target.value);
-            setIssueDetailId(null);
-            showToast("\u6F14\u793A\u8EAB\u4EFD\u5DF2\u5207\u6362\uFF0C\u6570\u636E\u4E0D\u4F1A\u6309\u8EAB\u4EFD\u9694\u79BB\u67E5\u770B");
-          }, children: employeeList.map((item2) => /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("option", { value: item2.id, children: [
-            item2.name,
-            " \xB7 ",
-            ROLE_LABELS[item2.role],
-            " \xB7 ",
-            item2.brands.join("\u3001")
-          ] }, item2.id)) }),
+          !backendEnabled && /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)(import_jsx_runtime3.Fragment, { children: [
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("label", { className: "form-label", children: "\u5207\u6362\u8EAB\u4EFD\u4EE5\u9A8C\u8BC1 BP / \u7ECF\u7406\u6743\u9650" }),
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("select", { className: "input", style: { marginTop: 8 }, value: currentEmployeeId, onChange: (e) => {
+              setCurrentEmployeeId(e.target.value);
+              setIssueDetailId(null);
+              showToast("\u6F14\u793A\u8EAB\u4EFD\u5DF2\u5207\u6362\uFF0C\u6570\u636E\u4E0D\u4F1A\u6309\u8EAB\u4EFD\u9694\u79BB\u67E5\u770B");
+            }, children: employeeList.map((item2) => /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("option", { value: item2.id, children: [
+              item2.name,
+              " \xB7 ",
+              ROLE_LABELS[item2.role],
+              " \xB7 ",
+              item2.brands.join("\u3001")
+            ] }, item2.id)) })
+          ] }),
+          backendEnabled && /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "inline-notice green", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(ShieldCheck, { size: 15 }),
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { children: "\u8EAB\u4EFD\u7531\u5DE5\u53F7\u7ED1\u5B9A\u51B3\u5B9A\uFF0C\u4E0D\u80FD\u5728\u770B\u677F\u5185\u5207\u6362\u4ED6\u4EBA\u8EAB\u4EFD\uFF1B\u5982\u9700\u6362\u7ED1\u8BF7\u8054\u7CFB\u7BA1\u7406\u5458\u3002" })
+          ] }),
           /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "inline-notice", style: { marginTop: 16 }, children: [
             /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(Eye, { size: 15 }),
             /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { children: "\u5DF2\u786E\u8BA4\u5168\u5458\u5168\u90E8\u53EF\u89C1\u3002BP \u53EA\u80FD\u8DDF\u8FDB\u672C\u4EBA\u95EE\u9898\uFF0C\u54C1\u724C\u7ECF\u7406\u53EA\u80FD\u590D\u6838\u672C\u54C1\u724C\uFF0C\u7ECF\u7406\u4E0D\u80FD\u4EE3\u5F55\u5DE1\u5E97\u3002" })
@@ -44752,9 +44758,9 @@ function App() {
         ] })
       ] }),
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card", children: [
-        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-header", children: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-title", children: "\u6B63\u5F0F\u7248\u8EAB\u4EFD\u6D41\u7A0B" }) }),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-header", children: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-title", children: usingSupabase ? "\u591A\u4EBA\u534F\u4F5C\u8EAB\u4EFD\u6D41\u7A0B" : "\u6B63\u5F0F\u7248\u8EAB\u4EFD\u6D41\u7A0B" }) }),
         /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card-body", children: [
-          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "timeline", children: [["\u5FAE\u4FE1\u6388\u6743\u767B\u5F55", "\u83B7\u53D6\u771F\u5B9E\u767B\u5F55\u8EAB\u4EFD\uFF0C\u672A\u767B\u5F55\u4E0D\u53EF\u8BBF\u95EE\u4E1A\u52A1\u6570\u636E"], ["\u9996\u6B21\u8F93\u5165\u5DE5\u53F7", "\u7CBE\u786E\u5339\u914D\u4EBA\u5458\u5E95\u7A3F\uFF0C\u81EA\u52A8\u5E26\u51FA\u59D3\u540D\u3001\u54C1\u724C\u548C\u89D2\u8272"], ["\u4E4B\u540E\u76F4\u63A5\u4F7F\u7528", "\u7ED1\u5B9A\u6301\u7EED\u6709\u6548\uFF0C\u5DE1\u5E97\u65E0\u9700\u91CD\u590D\u586B\u5199\u8EAB\u4EFD\u4FE1\u606F"]].map(([title, text2], index) => /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "timeline-item", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "timeline", children: (usingSupabase ? [["\u8F93\u5165\u5DE5\u53F7+\u59D3\u540D", "\u4E0E HR \u6210\u5458\u540D\u518C\u5339\u914D\u540E\u81EA\u52A8\u5EFA\u7ACB\u4F1A\u8BDD\uFF0C\u65E0\u9700\u5FAE\u4FE1\u6216\u624B\u673A\u53F7"], ["\u81EA\u52A8\u5E26\u51FA\u8EAB\u4EFD", "\u59D3\u540D\u3001\u54C1\u724C\u3001\u89D2\u8272\u7531\u540D\u518C\u51B3\u5B9A\uFF0C\u5DE1\u5E97\u53EA\u9700\u9009\u95E8\u5E97"], ["\u4E4B\u540E\u514D\u767B\u5F55", "\u672C\u8BBE\u5907\u4F1A\u8BDD\u6301\u7EED\u6709\u6548\uFF0C\u6240\u6709\u63D0\u4EA4\u5B9E\u65F6\u5171\u4EAB\u7ED9\u56E2\u961F"]] : [["\u5FAE\u4FE1\u6388\u6743\u767B\u5F55", "\u83B7\u53D6\u771F\u5B9E\u767B\u5F55\u8EAB\u4EFD\uFF0C\u672A\u767B\u5F55\u4E0D\u53EF\u8BBF\u95EE\u4E1A\u52A1\u6570\u636E"], ["\u9996\u6B21\u8F93\u5165\u5DE5\u53F7", "\u7CBE\u786E\u5339\u914D\u4EBA\u5458\u5E95\u7A3F\uFF0C\u81EA\u52A8\u5E26\u51FA\u59D3\u540D\u3001\u54C1\u724C\u548C\u89D2\u8272"], ["\u4E4B\u540E\u76F4\u63A5\u4F7F\u7528", "\u7ED1\u5B9A\u6301\u7EED\u6709\u6548\uFF0C\u5DE1\u5E97\u65E0\u9700\u91CD\u590D\u586B\u5199\u8EAB\u4EFD\u4FE1\u606F"]]).map(([title, text2], index) => /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "timeline-item", children: [
             /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "timeline-title", children: [
               index + 1,
               ". ",
@@ -44762,7 +44768,7 @@ function App() {
             ] }),
             /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "timeline-comment", children: text2 })
           ] }, title)) }),
-          /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "inline-notice", style: { marginTop: 10 }, children: [
+          !backendEnabled && /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "inline-notice", style: { marginTop: 10 }, children: [
             /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(Info, { size: 15 }),
             "\u5F53\u524D\u73AF\u5883\u672A\u63D0\u4F9B\u4E91\u670D\u52A1\u5F00\u901A\u5165\u53E3\uFF0C\u56E0\u6B64\u672C\u6F14\u793A\u4E0D\u6A21\u62DF\u5FAE\u4FE1\u767B\u5F55\u6216\u4E91\u7AEF\u6301\u4E45\u5316\u3002"
           ] })
@@ -44815,7 +44821,7 @@ function App() {
           /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: "topbar-title", children: PAGE_LABELS[page] }),
           /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("span", { className: "demo-pill", children: [
             /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(Circle, { size: 6, fill: "currentColor" }),
-            "\u6F14\u793A\u6570\u636E \xB7 \u4E0D\u5199\u5165\u4E91\u7AEF"
+            backendEnabled ? "\u56E2\u961F\u534F\u4F5C\u7248 \xB7 \u5B9E\u65F6\u4FDD\u5B58" : "\u6F14\u793A\u6570\u636E \xB7 \u4E0D\u5199\u5165\u4E91\u7AEF"
           ] })
         ] }),
         /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "topbar-right", children: [

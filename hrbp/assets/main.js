@@ -15738,6 +15738,37 @@ var supabaseBridge = {
   },
   async signOut() {
     writeSession(null);
+  },
+  /** 逐步自检：会话 → 身份 → 各表读取，返回可直接展示的逐行结果。 */
+  async diagnose() {
+    if (!enabled) return "未配置 Supabase";
+    const lines = [];
+    const errText = (caught) => caught instanceof Error ? caught.message : String(caught);
+    try {
+      const session = await ensureSession();
+      lines.push(`会话：已建立（token 前8位 ${session.access_token.slice(0, 8)}）`);
+    } catch (caught) {
+      return `会话建立失败：${errText(caught)}`;
+    }
+    const checks = [
+      ["绑定身份", "/rpc/app_current_employee", "POST"],
+      ["成员表", "/hr_employees?select=id,work_no,name,role,brands", "GET"],
+      ["门店表", "/hr_stores?select=*", "GET"],
+      ["巡店表", "/hr_visits?select=*", "GET"],
+      ["问题表", "/hr_issues?select=*", "GET"],
+      ["指标表", "/hr_store_metrics_monthly?select=*", "GET"],
+      ["人员表", "/hr_personnel?select=id", "GET"]
+    ];
+    for (const [label, path, method] of checks) {
+      try {
+        const payload = await rest(path, { method, ...method === "POST" ? { body: "{}" } : {} });
+        const summary = Array.isArray(payload) ? `${payload.length} 行` : payload && typeof payload === "object" ? `对象 ${JSON.stringify(payload).slice(0, 80)}` : String(payload);
+        lines.push(`${label}：${summary}`);
+      } catch (caught) {
+        lines.push(`${label}：${errText(caught)}`);
+      }
+    }
+    return lines.join("\n");
   }
 };
 
@@ -43157,6 +43188,16 @@ function NewVisitModal({ employee, stores, visits, preselectedStoreId, modeLabel
   (0, import_react5.useEffect)(() => {
     if (!stores.length) onReload();
   }, []);
+  const [diagnosis, setDiagnosis] = (0, import_react5.useState)("");
+  const [diagnosing, setDiagnosing] = (0, import_react5.useState)(false);
+  const runDiagnose = async () => {
+    setDiagnosing(true);
+    try {
+      setDiagnosis(await supabaseBridge.diagnose());
+    } finally {
+      setDiagnosing(false);
+    }
+  };
   const selectedStore = stores.find((store) => store.id === storeId);
   const brandStores = stores.filter((store) => employee.brands.includes(store.brand));
   const filteredStores = brandStores.filter((store) => `${store.name}${store.code}${store.brand}`.toLowerCase().includes(query.toLowerCase())).slice(0, 6);
@@ -43264,10 +43305,14 @@ ${note.trim()}` : "")
               ] }, store.id)),
               !filteredStores.length && /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "empty-state", style: { padding: 18 }, children: [
                 brandStores.length ? "未找到匹配门店，请换个关键词" : `门店数据尚未加载完成（${modeLabel}，当前读取 ${stores.length} 家）`,
-                !brandStores.length && /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { style: { marginTop: 10 }, children: /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("button", { className: "button button-secondary button-sm", onClick: onReload, children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(RefreshCw, { size: 13 }),
-                  "重新加载门店"
-                ] }) })
+                !brandStores.length && /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { style: { marginTop: 10, display: "flex", gap: 8, justifyContent: "center" }, children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("button", { className: "button button-secondary button-sm", onClick: onReload, children: [
+                    /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(RefreshCw, { size: 13 }),
+                    "重新加载门店"
+                  ] }),
+                  /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("button", { className: "button button-secondary button-sm", disabled: diagnosing, onClick: runDiagnose, children: diagnosing ? "诊断中…" : "诊断连接" })
+                ] }),
+                diagnosis && /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("pre", { style: { marginTop: 12, padding: 12, background: "#f7f8f5", borderRadius: 8, fontSize: 12, lineHeight: 1.8, whiteSpace: "pre-wrap", textAlign: "left" }, children: diagnosis })
               ] }),
               !query && brandStores.length > 6 && /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { style: { padding: "8px 12px", fontSize: 12, color: "var(--muted)" }, children: [
                 "仅显示前 6 家，输入名称或编码可搜索全部 ",

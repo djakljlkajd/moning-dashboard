@@ -43242,9 +43242,9 @@ ${note.trim()}` : "")
               /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("input", { value: query, onChange: (e) => {
                 setQuery(e.target.value);
                 setStoreId("");
-              }, placeholder: "\u8F93\u5165\u95E8\u5E97\u7F16\u7801\u6216\u540D\u79F0\u641C\u7D22" })
+              }, placeholder: `\u672C\u54C1\u724C\u53EF\u5DE1 ${brandStores.length} \u5BB6\uFF0C\u8F93\u5165\u540D\u79F0\u6216\u7F16\u7801\u641C\u7D22` })
             ] }),
-            query && !selectedStore && /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card", style: { padding: 6 }, children: [
+            !selectedStore && /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card", style: { padding: 6 }, children: [
               filteredStores.map((store) => /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("button", { className: "nav-item", style: { color: "var(--ink)" }, onClick: () => {
                 setStoreId(store.id);
                 setQuery(store.name);
@@ -43259,7 +43259,12 @@ ${note.trim()}` : "")
                   ] })
                 ] })
               ] }, store.id)),
-              !filteredStores.length && /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "empty-state", style: { padding: 18 }, children: "\u672A\u627E\u5230\u5339\u914D\u95E8\u5E97" })
+              !filteredStores.length && /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "empty-state", style: { padding: 18 }, children: brandStores.length ? "\u672A\u627E\u5230\u5339\u914D\u95E8\u5E97\uFF0C\u8BF7\u6362\u4E2A\u5173\u952E\u8BCD" : "\u95E8\u5E97\u6570\u636E\u5C1A\u672A\u52A0\u8F7D\u5B8C\u6210\uFF0C\u8BF7\u7A0D\u5019\u91CD\u8BD5" }),
+              !query && brandStores.length > 6 && /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { style: { padding: "8px 12px", fontSize: 12, color: "var(--muted)" }, children: [
+                "\u4EC5\u663E\u793A\u524D 6 \u5BB6\uFF0C\u8F93\u5165\u540D\u79F0\u6216\u7F16\u7801\u53EF\u641C\u7D22\u5168\u90E8 ",
+                brandStores.length,
+                " \u5BB6"
+              ] })
             ] }),
             selectedStore && /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "auto-card", children: [
               /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "auto-item", children: [

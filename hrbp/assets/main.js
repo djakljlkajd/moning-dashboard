@@ -15482,7 +15482,7 @@ function CloudAuthGate({ onBound, error }) {
       setBusy(false);
     }
   };
-  return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "modal-mask", children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "modal", style: { maxWidth: 460 }, children: [
+  return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "modal-backdrop", style: { zIndex: 80 }, children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "modal", style: { maxWidth: 460 }, children: [
     /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "modal-header", children: [
       /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [
         /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "eyebrow", children: "CLOUD AUTH" }),
@@ -15797,7 +15797,7 @@ function SupabaseAuthGate({ onBound, error }) {
       setBusy(false);
     }
   };
-  return /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("div", { className: "modal-mask", children: /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "modal", style: { maxWidth: 460 }, children: [
+  return /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("div", { className: "modal-backdrop", style: { zIndex: 80 }, children: /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "modal", style: { maxWidth: 460 }, children: [
     /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "modal-header", children: [
       /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { children: [
         /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("div", { className: "eyebrow", children: "TEAM SIGN IN" }),

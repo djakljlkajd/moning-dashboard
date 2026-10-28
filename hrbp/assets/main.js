@@ -14964,7 +14964,7 @@ var X = createLucideIcon("X", [
 ]);
 
 // src/features/types.ts
-var BRANDS = ["\u8336\u989C\u60A6\u8272", "\u53E4\u5FB7\u58A8\u67E0", "\u9E33\u592E\u5496\u5561"];
+var BRANDS = ["茶颜悦色", "古德墨柠", "鸳央咖啡"];
 
 // src/config/business-rules.ts
 var DEMO_TODAY = "2026-10-27";
@@ -14972,29 +14972,29 @@ var CURRENT_QUARTER = "2026-Q4";
 var DEFAULT_EMPLOYEE_ID = "DEMO009";
 var QUARTERLY_VISIT_TARGET = 25;
 var RISK_RULES = [
-  { key: "architectureLabor", label: "\u67B6\u6784\u53D8\u52A8", description: "\u6700\u8FD1\u5B8C\u6574\u6708\u6709\u5E97\u957F\u6216\u6838\u5FC3\u4F19\u4F34\u79BB\u804C\u3001\u65B0\u5165\u804C" },
-  { key: "abcAllC", label: "ABC\u8FDE\u7EED3\u6708\u4E0D\u597D", description: "\u6700\u8FD13\u4E2A\u5B8C\u6574\u6708ABC\u8BC4\u7EA7\u5747\u4E3AC" },
-  { key: "qcBelow80", label: "QC\u8FDE\u7EED3\u6708\u4E0D\u597D", description: "\u6700\u8FD13\u4E2A\u5B8C\u6574\u6708QC\u5747\u4F4E\u4E8E80" },
-  { key: "salesBelow100", label: "\u4E1A\u7EE9\u8FDE\u7EED3\u6708\u4E0D\u597D", description: "\u6700\u8FD13\u4E2A\u5B8C\u6574\u6708\u4E1A\u7EE9\u8FBE\u6210\u7387\u5747\u4F4E\u4E8E100%" },
-  { key: "hoursOver220", label: "\u5DE5\u65F6\u8D85220H", description: "\u6700\u8FD1\u5B8C\u6574\u6708\u6708\u4EBA\u5747\u5DE5\u65F6\u5927\u4E8E220\u5C0F\u65F6" },
-  { key: "hoursUnder167", label: "\u5DE5\u65F6\u4F4E167H", description: "\u6700\u8FD1\u5B8C\u6574\u6708\u6708\u4EBA\u5747\u5DE5\u65F6\u5C0F\u4E8E167\u5C0F\u65F6" },
-  { key: "highTemperature", label: "\u9AD8\u6E29\u95E8\u5E97", description: "\u6700\u8FD1\u5B8C\u6574\u6708\u6807\u8BB0\u4E3A\u9AD8\u6E29\u95E8\u5E97" },
-  { key: "treeHoleComplaints", label: "\u6811\u6D1E\u6295\u8BC9\u9884\u8B66", description: "\u6700\u8FD1\u5B8C\u6574\u6708\u6811\u6D1E\u6295\u8BC9\u4E0D\u5C11\u4E8E2\u6761" },
-  { key: "noReward", label: "\u4E24\u5927\u5956\u52B1\u9884\u8B66", description: "\u6700\u8FD1\u5B8C\u6574\u6708\u4E24\u5927\u5956\u52B1\u8FBE\u6807\u4E3A\u5426" }
+  { key: "architectureLabor", label: "架构变动", description: "最近完整月有店长或核心伙伴离职、新入职" },
+  { key: "abcAllC", label: "ABC连续3月不好", description: "最近3个完整月ABC评级均为C" },
+  { key: "qcBelow80", label: "QC连续3月不好", description: "最近3个完整月QC均低于80" },
+  { key: "salesBelow100", label: "业绩连续3月不好", description: "最近3个完整月业绩达成率均低于100%" },
+  { key: "hoursOver220", label: "工时超220H", description: "最近完整月月人均工时大于220小时" },
+  { key: "hoursUnder167", label: "工时低167H", description: "最近完整月月人均工时小于167小时" },
+  { key: "highTemperature", label: "高温门店", description: "最近完整月标记为高温门店" },
+  { key: "treeHoleComplaints", label: "树洞投诉预警", description: "最近完整月树洞投诉不少于2条" },
+  { key: "noReward", label: "两大奖励预警", description: "最近完整月两大奖励达标为否" }
 ];
 var RISK_PHASE_BY_LEVEL = {
-  \u6781\u9AD8\u98CE\u9669: "\u672C\u6708",
-  \u9AD8\u98CE\u9669: "\u6B21\u6708",
-  \u4E2D\u98CE\u9669: "\u5B63\u5EA6\u5185",
-  \u4F4E\u98CE\u9669: "\u5E38\u89C4",
-  \u6570\u636E\u5F85\u8865\u5145: "\u672C\u6708"
+  极高风险: "本月",
+  高风险: "次月",
+  中风险: "季度内",
+  低风险: "常规",
+  数据待补充: "本月"
 };
 function getRiskLevel(knownScore, missingCount = 0) {
-  if (missingCount > 0) return "\u6570\u636E\u5F85\u8865\u5145";
-  if (knownScore >= 6) return "\u6781\u9AD8\u98CE\u9669";
-  if (knownScore >= 4) return "\u9AD8\u98CE\u9669";
-  if (knownScore >= 2) return "\u4E2D\u98CE\u9669";
-  return "\u4F4E\u98CE\u9669";
+  if (missingCount > 0) return "数据待补充";
+  if (knownScore >= 6) return "极高风险";
+  if (knownScore >= 4) return "高风险";
+  if (knownScore >= 2) return "中风险";
+  return "低风险";
 }
 function getRiskPhase(level) {
   return RISK_PHASE_BY_LEVEL[level];
@@ -15002,19 +15002,19 @@ function getRiskPhase(level) {
 
 // src/data/demo-data.ts
 var demoEmployees = [
-  { id: "DEMO001", workNo: "DEMO001", name: "\u8D75\u82AC", role: "bp", brands: ["\u8336\u989C\u60A6\u8272"] },
-  { id: "DEMO002", workNo: "DEMO002", name: "\u90B5\u6653\u5B87", role: "bp", brands: ["\u8336\u989C\u60A6\u8272"] },
-  { id: "DEMO003", workNo: "DEMO003", name: "\u5218\u6797", role: "bp", brands: ["\u8336\u989C\u60A6\u8272"] },
-  { id: "DEMO004", workNo: "DEMO004", name: "\u66FE\u4EE4\u8D22", role: "bp", brands: ["\u8336\u989C\u60A6\u8272"] },
-  { id: "DEMO005", workNo: "DEMO005", name: "\u5510\u6F02", role: "bp", brands: ["\u8336\u989C\u60A6\u8272"] },
-  { id: "DEMO006", workNo: "DEMO006", name: "\u8C22\u6C38\u6797", role: "bp", brands: ["\u9E33\u592E\u5496\u5561"] },
-  { id: "DEMO007", workNo: "DEMO007", name: "\u5468\u4E3D", role: "bp", brands: ["\u53E4\u5FB7\u58A8\u67E0"] },
-  { id: "DEMO008", workNo: "DEMO008", name: "\u6768\u68A6\u7433", role: "bp", brands: ["\u53E4\u5FB7\u58A8\u67E0"] },
-  { id: "DEMO009", workNo: "DEMO009", name: "\u6234\u5609\u4F1F", role: "bp", brands: ["\u53E4\u5FB7\u58A8\u67E0"] },
-  { id: "DEMO010", workNo: "DEMO010", name: "\u6731\u82B3", role: "manager", brands: ["\u8336\u989C\u60A6\u8272"] },
-  { id: "DEMO011", workNo: "DEMO011", name: "\u80E1\u82AC", role: "manager", brands: ["\u9E33\u592E\u5496\u5561"] },
-  { id: "DEMO012", workNo: "DEMO012", name: "\u674E\u5F53", role: "manager", brands: ["\u53E4\u5FB7\u58A8\u67E0"] },
-  { id: "DEMO013", workNo: "DEMO013", name: "\u6768\u5E08", role: "director", brands: [...BRANDS] }
+  { id: "DEMO001", workNo: "DEMO001", name: "赵芬", role: "bp", brands: ["茶颜悦色"] },
+  { id: "DEMO002", workNo: "DEMO002", name: "邵晓宇", role: "bp", brands: ["茶颜悦色"] },
+  { id: "DEMO003", workNo: "DEMO003", name: "刘林", role: "bp", brands: ["茶颜悦色"] },
+  { id: "DEMO004", workNo: "DEMO004", name: "曾令财", role: "bp", brands: ["茶颜悦色"] },
+  { id: "DEMO005", workNo: "DEMO005", name: "唐漂", role: "bp", brands: ["茶颜悦色"] },
+  { id: "DEMO006", workNo: "DEMO006", name: "谢永林", role: "bp", brands: ["鸳央咖啡"] },
+  { id: "DEMO007", workNo: "DEMO007", name: "周丽", role: "bp", brands: ["古德墨柠"] },
+  { id: "DEMO008", workNo: "DEMO008", name: "杨梦琳", role: "bp", brands: ["古德墨柠"] },
+  { id: "DEMO009", workNo: "DEMO009", name: "戴嘉伟", role: "bp", brands: ["古德墨柠"] },
+  { id: "DEMO010", workNo: "DEMO010", name: "朱芳", role: "manager", brands: ["茶颜悦色"] },
+  { id: "DEMO011", workNo: "DEMO011", name: "胡芬", role: "manager", brands: ["鸳央咖啡"] },
+  { id: "DEMO012", workNo: "DEMO012", name: "李当", role: "manager", brands: ["古德墨柠"] },
+  { id: "DEMO013", workNo: "DEMO013", name: "杨师", role: "director", brands: [...BRANDS] }
 ];
 var demoCurrentEmployee = demoEmployees.find((employee) => employee.id === DEFAULT_EMPLOYEE_ID);
 var demoVisits = [];
@@ -15023,31 +15023,31 @@ var demoIssueEvents = [];
 
 // src/config/dictionaries.ts
 var ISSUE_STATUS_LABELS = {
-  open: "\u5F85\u5904\u7406",
-  in_progress: "\u5904\u7406\u4E2D",
-  completed: "\u5F85\u590D\u6838",
-  closed: "\u5DF2\u5173\u95ED"
+  open: "待处理",
+  in_progress: "处理中",
+  completed: "待复核",
+  closed: "已关闭"
 };
 var ISSUE_SEVERITY_LABELS = {
-  low: "\u4F4E",
-  medium: "\u4E2D",
-  high: "\u9AD8"
+  low: "低",
+  medium: "中",
+  high: "高"
 };
 var ISSUE_CATEGORY_DICTIONARY = [
-  { key: "people", label: "\u4EBA\u5458\u72B6\u6001", examples: ["\u9AD8\u5CF0\u4EBA\u624B\u4E0D\u8DB3", "\u65B0\u5458\u5DE5\u5E26\u6559\u7F3A\u5931"] },
-  { key: "teamwork", label: "\u534F\u4F5C\u6C1B\u56F4", examples: ["\u8DE8\u73ED\u6B21\u534F\u4F5C\u4E0D\u7545", "\u4FE1\u606F\u4E0D\u540C\u6B65"] },
-  { key: "service", label: "\u5BA2\u6237\u4F53\u9A8C", examples: ["\u51FA\u676F\u7B49\u5F85\u8FC7\u957F", "\u670D\u52A1\u8BDD\u672F\u672A\u6267\u884C"] },
-  { key: "operation", label: "\u5236\u5EA6\u6267\u884C", examples: ["\u76D8\u70B9\u5DEE\u5F02", "\u9648\u5217\u672A\u6309\u6807\u51C6"] },
-  { key: "development", label: "\u4EBA\u624D\u53D1\u5C55", examples: ["\u5E26\u6559\u8BA1\u5212\u7F3A\u5931", "\u664B\u5347\u8BAD\u7EC3\u5F85\u8DDF\u8FDB"] },
-  { key: "ai", label: "AI\u9762\u8BD5", examples: ["\u9762\u8BD5\u6D41\u7A0B\u5F85\u5B8C\u5584", "\u8BC4\u4F30\u8BB0\u5F55\u7F3A\u5931"] },
-  { key: "other", label: "\u5176\u4ED6", examples: ["\u8BBE\u5907\u8BBE\u65BD", "\u6D41\u7A0B\u4E0D\u5408\u7406"] }
+  { key: "people", label: "人员状态", examples: ["高峰人手不足", "新员工带教缺失"] },
+  { key: "teamwork", label: "协作氛围", examples: ["跨班次协作不畅", "信息不同步"] },
+  { key: "service", label: "客户体验", examples: ["出杯等待过长", "服务话术未执行"] },
+  { key: "operation", label: "制度执行", examples: ["盘点差异", "陈列未按标准"] },
+  { key: "development", label: "人才发展", examples: ["带教计划缺失", "晋升训练待跟进"] },
+  { key: "ai", label: "AI面试", examples: ["面试流程待完善", "评估记录缺失"] },
+  { key: "other", label: "其他", examples: ["设备设施", "流程不合理"] }
 ];
-var ISSUE_NATURES = ["\u5236\u5EA6\u7F3A\u5931", "\u6267\u884C\u504F\u5DEE", "\u4EBA\u5458\u80FD\u529B", "\u8BBE\u5907\u8BBE\u65BD", "\u6D41\u7A0B\u4E0D\u5408\u7406", "\u5176\u4ED6"];
+var ISSUE_NATURES = ["制度缺失", "执行偏差", "人员能力", "设备设施", "流程不合理", "其他"];
 var ROLE_LABELS = {
   bp: "BP",
-  manager: "\u54C1\u724C\u7ECF\u7406",
-  director: "\u603B\u8D1F\u8D23\u4EBA",
-  dataAdmin: "\u6570\u636E\u7BA1\u7406\u5458"
+  manager: "品牌经理",
+  director: "总负责人",
+  dataAdmin: "数据管理员"
 };
 
 // src/features/date-utils.ts
@@ -15056,7 +15056,7 @@ var MONTH_RE = /^(\d{4})-(\d{2})$/;
 function toDateOnly(value) {
   if (typeof value === "string") {
     const match = value.match(DATE_ONLY_RE);
-    if (!match) throw new Error(`\u65E0\u6548\u65E5\u671F\uFF1A${value}`);
+    if (!match) throw new Error(`无效日期：${value}`);
     return `${match[1]}-${match[2]}-${match[3]}`;
   }
   const year = value.getFullYear();
@@ -15071,7 +15071,7 @@ function isValidMonth(month) {
   return value >= 1 && value <= 12;
 }
 function shiftMonth(month, offset) {
-  if (!isValidMonth(month)) throw new Error(`\u65E0\u6548\u6708\u4EFD\uFF1A${month}`);
+  if (!isValidMonth(month)) throw new Error(`无效月份：${month}`);
   const [year, monthNumber] = month.split("-").map(Number);
   const index = year * 12 + monthNumber - 1 + offset;
   const nextYear = Math.floor(index / 12);
@@ -15079,7 +15079,7 @@ function shiftMonth(month, offset) {
   return `${String(nextYear).padStart(4, "0")}-${String(nextMonth).padStart(2, "0")}`;
 }
 function getRecentCompleteMonths(reference, count = 3) {
-  if (!Number.isInteger(count) || count < 1) throw new Error("\u6708\u4EFD\u6570\u91CF\u5FC5\u987B\u4E3A\u6B63\u6574\u6570");
+  if (!Number.isInteger(count) || count < 1) throw new Error("月份数量必须为正整数");
   const currentMonth = toDateOnly(reference).slice(0, 7);
   return Array.from({ length: count }, (_, index) => shiftMonth(currentMonth, index - count));
 }
@@ -15105,8 +15105,8 @@ function isCountableVisit(visit) {
   return visit.status === "submitted" && visit.voided !== true;
 }
 function calculateQuarterlyProgress(visits, bpId, quarter, target = QUARTERLY_VISIT_TARGET) {
-  if (!isValidQuarter(quarter)) throw new Error(`\u65E0\u6548\u5B63\u5EA6\uFF1A${quarter}`);
-  if (!Number.isFinite(target) || target < 0) throw new Error("\u5DE1\u5E97\u76EE\u6807\u4E0D\u80FD\u4E3A\u8D1F\u6570");
+  if (!isValidQuarter(quarter)) throw new Error(`无效季度：${quarter}`);
+  if (!Number.isFinite(target) || target < 0) throw new Error("巡店目标不能为负数");
   const storeIds = Array.from(new Set(
     visits.filter((visit) => visit.bpId === bpId && isCountableVisit(visit) && getQuarterKey(visit.visitedAt) === quarter).map((visit) => visit.storeId)
   )).sort();
@@ -15145,7 +15145,7 @@ function calculateRisk(storeId, metrics, asOfDate = /* @__PURE__ */ new Date()) 
   function acrossMonths(key, field, isAbnormal, abnormalReason, normalReason) {
     const missingMonths = months2.filter((_, index) => recent[index]?.[field] === void 0 || recent[index]?.[field] === null);
     if (missingMonths.length) {
-      return item(key, "missing", abnormalReason, normalReason, `${missingMonths.join("\u3001")}\u7F3A\u5C11${RISK_RULES.find((rule) => rule.key === key)?.label}\u6240\u9700\u6570\u636E`);
+      return item(key, "missing", abnormalReason, normalReason, `${missingMonths.join("、")}缺少${RISK_RULES.find((rule) => rule.key === key)?.label}所需数据`);
     }
     const values = recent.map((metric) => metric?.[field]);
     return item(key, isAbnormal(values) ? "abnormal" : "normal", abnormalReason, normalReason, "");
@@ -15153,27 +15153,27 @@ function calculateRisk(storeId, metrics, asOfDate = /* @__PURE__ */ new Date()) 
   function latestOnly(key, field, isAbnormal, abnormalReason, normalReason) {
     const value = latest?.[field];
     if (value === void 0 || value === null) {
-      return item(key, "missing", abnormalReason, normalReason, `${latestMonth}\u7F3A\u5C11${RISK_RULES.find((rule) => rule.key === key)?.label}\u6570\u636E`);
+      return item(key, "missing", abnormalReason, normalReason, `${latestMonth}缺少${RISK_RULES.find((rule) => rule.key === key)?.label}数据`);
     }
     return item(key, isAbnormal(value) ? "abnormal" : "normal", abnormalReason, normalReason, "");
   }
   const hoursItem = (key) => {
-    const label = key === "hoursOver220" ? "\u6708\u4EBA\u5747\u5DE5\u65F6>220H" : "\u6708\u4EBA\u5747\u5DE5\u65F6<167H";
+    const label = key === "hoursOver220" ? "月人均工时>220H" : "月人均工时<167H";
     const value = latest?.workHours;
-    if (value === void 0 || value === null) return item(key, "missing", label, "\u6708\u4EBA\u5747\u5DE5\u65F6\u5728\u6B63\u5E38\u533A\u95F4", `${latestMonth}\u7F3A\u5C11\u5DE5\u65F6\u6570\u636E`);
+    if (value === void 0 || value === null) return item(key, "missing", label, "月人均工时在正常区间", `${latestMonth}缺少工时数据`);
     const abnormal = key === "hoursOver220" ? value > 220 : value < 167;
-    return item(key, abnormal ? "abnormal" : "normal", `${latestMonth}\u6708\u4EBA\u5747\u5DE5\u65F6${value}H\uFF0C\u89E6\u53D1${label}`, `${latestMonth}\u6708\u4EBA\u5747\u5DE5\u65F6${value}H\uFF0C\u672A\u89E6\u53D1\u8BE5\u89C4\u5219`, "");
+    return item(key, abnormal ? "abnormal" : "normal", `${latestMonth}月人均工时${value}H，触发${label}`, `${latestMonth}月人均工时${value}H，未触发该规则`, "");
   };
   const items = [
-    latestOnly("architectureLabor", "architectureLabor", Boolean, "\u6700\u8FD1\u5B8C\u6574\u6708\u6709\u5E97\u957F\u6216\u6838\u5FC3\u4F19\u4F34\u79BB\u804C\u3001\u65B0\u5165\u804C", "\u6700\u8FD1\u5B8C\u6574\u6708\u65E0\u67B6\u6784\u53D8\u52A8"),
-    acrossMonths("abcAllC", "abcGrade", (values) => values.every((value) => value === "C"), "\u6700\u8FD13\u4E2A\u5B8C\u6574\u6708ABC\u8BC4\u7EA7\u5747\u4E3AC", "\u6700\u8FD13\u4E2A\u5B8C\u6574\u6708ABC\u8BC4\u7EA7\u5E76\u975E\u5747\u4E3AC"),
-    acrossMonths("qcBelow80", "qcScore", (values) => values.every((value) => Number(value) < 80), "\u6700\u8FD13\u4E2A\u5B8C\u6574\u6708QC\u5747\u4F4E\u4E8E80", "\u6700\u8FD13\u4E2A\u5B8C\u6574\u6708QC\u5E76\u975E\u5747\u4F4E\u4E8E80"),
-    acrossMonths("salesBelow100", "salesAchievementRate", (values) => values.every((value) => Number(value) < 100), "\u6700\u8FD13\u4E2A\u5B8C\u6574\u6708\u4E1A\u7EE9\u8FBE\u6210\u7387\u5747\u4F4E\u4E8E100%", "\u6700\u8FD13\u4E2A\u5B8C\u6574\u6708\u4E1A\u7EE9\u8FBE\u6210\u7387\u5E76\u975E\u5747\u4F4E\u4E8E100%"),
+    latestOnly("architectureLabor", "architectureLabor", Boolean, "最近完整月有店长或核心伙伴离职、新入职", "最近完整月无架构变动"),
+    acrossMonths("abcAllC", "abcGrade", (values) => values.every((value) => value === "C"), "最近3个完整月ABC评级均为C", "最近3个完整月ABC评级并非均为C"),
+    acrossMonths("qcBelow80", "qcScore", (values) => values.every((value) => Number(value) < 80), "最近3个完整月QC均低于80", "最近3个完整月QC并非均低于80"),
+    acrossMonths("salesBelow100", "salesAchievementRate", (values) => values.every((value) => Number(value) < 100), "最近3个完整月业绩达成率均低于100%", "最近3个完整月业绩达成率并非均低于100%"),
     hoursItem("hoursOver220"),
     hoursItem("hoursUnder167"),
-    latestOnly("highTemperature", "highTemperature", Boolean, "\u6700\u8FD1\u5B8C\u6574\u6708\u6807\u8BB0\u4E3A\u9AD8\u6E29\u95E8\u5E97", "\u6700\u8FD1\u5B8C\u6574\u6708\u975E\u9AD8\u6E29\u95E8\u5E97"),
-    latestOnly("treeHoleComplaints", "treeHoleComplaints", (value) => Number(value) >= 2, "\u6700\u8FD1\u5B8C\u6574\u6708\u6811\u6D1E\u6295\u8BC9\u4E0D\u5C11\u4E8E2\u6761", "\u6700\u8FD1\u5B8C\u6574\u6708\u6811\u6D1E\u6295\u8BC9\u5C11\u4E8E2\u6761"),
-    latestOnly("noReward", "hasReward", (value) => value === false, "\u6700\u8FD1\u5B8C\u6574\u6708\u4E24\u5927\u5956\u52B1\u8FBE\u6807\u4E3A\u5426", "\u6700\u8FD1\u5B8C\u6574\u6708\u4E24\u5927\u5956\u52B1\u8FBE\u6807")
+    latestOnly("highTemperature", "highTemperature", Boolean, "最近完整月标记为高温门店", "最近完整月非高温门店"),
+    latestOnly("treeHoleComplaints", "treeHoleComplaints", (value) => Number(value) >= 2, "最近完整月树洞投诉不少于2条", "最近完整月树洞投诉少于2条"),
+    latestOnly("noReward", "hasReward", (value) => value === false, "最近完整月两大奖励达标为否", "最近完整月两大奖励达标")
   ];
   const knownScore = items.reduce((sum, result2) => sum + result2.score, 0);
   const missingCount = items.filter((result2) => result2.status === "missing").length;
@@ -15192,7 +15192,7 @@ function calculateRisk(storeId, metrics, asOfDate = /* @__PURE__ */ new Date()) 
 
 // src/config/cloud-config.json
 var cloud_config_default = {
-  _comment: "\u5F00\u901A\u4E91\u670D\u52A1\u540E\u7531 workbuddy_cloud_service \u8FD4\u56DE\u7684 publicConfig \u586B\u5165\u6B64\u5904\uFF1B\u5168\u90E8\u7559\u7A7A\u8868\u793A\u672A\u542F\u7528\uFF0C\u770B\u677F\u81EA\u52A8\u4FDD\u6301\u672C\u673A\u6F14\u793A\u6A21\u5F0F\uFF0C\u4E0D\u4F1A\u5047\u88C5\u6709\u4E91\u7AEF\u4FDD\u5B58\u3002",
+  _comment: "开通云服务后由 workbuddy_cloud_service 返回的 publicConfig 填入此处；全部留空表示未启用，看板自动保持本机演示模式，不会假装有云端保存。",
   endpoint: "",
   oauthRelayBaseUrl: "",
   publishableKey: ""
@@ -15318,7 +15318,7 @@ var cloudBridge = {
     if (url.searchParams.has("code") || url.searchParams.has("error")) {
       const provider = url.searchParams.get("provider");
       const handler = provider === "workbuddy" ? client.auth.handleWorkBuddyCallback : client.auth.handleWechatWebCallback;
-      if (typeof handler !== "function") throw new Error("\u5F53\u524D SDK \u4E0D\u652F\u6301\u8BE5\u767B\u5F55\u65B9\u5F0F\uFF0C\u8BF7\u5237\u65B0\u540E\u91CD\u8BD5");
+      if (typeof handler !== "function") throw new Error("当前 SDK 不支持该登录方式，请刷新后重试");
       const result2 = await handler.call(client.auth);
       if (result2 && !result2.error && result2.data) {
         for (const key of ["code", "state", "provider"]) url.searchParams.delete(key);
@@ -15380,7 +15380,7 @@ var cloudBridge = {
       voided: visit.voided ?? false,
       summary: visit.summary ?? null
     }).select();
-    if (inserted.error || !inserted.data || inserted.data.length === 0) throw new Error("\u5DE1\u5E97\u8BB0\u5F55\u672A\u5199\u5165\uFF0C\u8BF7\u68C0\u67E5\u767B\u5F55\u72B6\u6001");
+    if (inserted.error || !inserted.data || inserted.data.length === 0) throw new Error("巡店记录未写入，请检查登录状态");
     if (issues.length) {
       const rows = issues.map((issue) => ({
         id: issue.id,
@@ -15458,16 +15458,16 @@ function CloudAuthGate({ onBound, error }) {
     try {
       const url = await cloudBridge.signInWithWechat();
       if (url) location.assign(url);
-      else setMessage("\u5FAE\u4FE1\u767B\u5F55\u672A\u80FD\u53D1\u8D77\uFF0C\u8BF7\u7A0D\u540E\u91CD\u8BD5");
+      else setMessage("微信登录未能发起，请稍后重试");
     } catch (caught) {
-      setMessage(caught instanceof Error ? caught.message : "\u5FAE\u4FE1\u767B\u5F55\u5931\u8D25");
+      setMessage(caught instanceof Error ? caught.message : "微信登录失败");
     } finally {
       setBusy(false);
     }
   };
   const bind = async () => {
     if (!workNo.trim() || !name.trim()) {
-      setMessage("\u8BF7\u586B\u5199\u5DE5\u53F7\u548C\u59D3\u540D");
+      setMessage("请填写工号和姓名");
       return;
     }
     setBusy(true);
@@ -15475,9 +15475,9 @@ function CloudAuthGate({ onBound, error }) {
     try {
       const employee = await cloudBridge.bindWorkNo(workNo.trim(), name.trim());
       if (employee) onBound(employee);
-      else setMessage("\u5DE5\u53F7\u4E0E\u59D3\u540D\u4E0D\u5339\u914D\uFF0C\u6216\u8BE5\u5DE5\u53F7\u5DF2\u88AB\u7ED1\u5B9A");
+      else setMessage("工号与姓名不匹配，或该工号已被绑定");
     } catch (caught) {
-      setMessage(caught instanceof Error ? caught.message : "\u7ED1\u5B9A\u5931\u8D25");
+      setMessage(caught instanceof Error ? caught.message : "绑定失败");
     } finally {
       setBusy(false);
     }
@@ -15486,25 +15486,25 @@ function CloudAuthGate({ onBound, error }) {
     /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "modal-header", children: [
       /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [
         /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "eyebrow", children: "CLOUD AUTH" }),
-        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("h2", { style: { margin: 0 }, children: "\u767B\u5F55\u5E76\u7ED1\u5B9A\u5DE5\u53F7" })
+        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("h2", { style: { margin: 0 }, children: "登录并绑定工号" })
       ] }),
       /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ShieldCheck, { size: 20 })
     ] }),
     /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "modal-body", children: [
       /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "inline-notice", children: [
         /* @__PURE__ */ (0, import_jsx_runtime.jsx)(KeyRound, { size: 16 }),
-        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "\u770B\u677F\u6570\u636E\u9700\u767B\u5F55\u540E\u67E5\u770B\u3002\u8BF7\u7528\u5FAE\u4FE1\u6388\u6743\u767B\u5F55\uFF0C\u9996\u6B21\u767B\u5F55\u540E\u8F93\u5165\u5DE5\u53F7\u548C\u59D3\u540D\u5B8C\u6210\u7ED1\u5B9A\uFF0C\u4E4B\u540E\u81EA\u52A8\u8BC6\u522B\u8EAB\u4EFD\u3002" })
+        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "看板数据需登录后查看。请用微信授权登录，首次登录后输入工号和姓名完成绑定，之后自动识别身份。" })
       ] }),
-      /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { className: "button button-primary", style: { width: "100%", marginTop: 16 }, disabled: busy, onClick: login, children: "\u4F7F\u7528\u5FAE\u4FE1\u767B\u5F55" }),
+      /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { className: "button button-primary", style: { width: "100%", marginTop: 16 }, disabled: busy, onClick: login, children: "使用微信登录" }),
       /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "form-group", style: { marginTop: 18 }, children: [
-        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("label", { className: "form-label", children: "\u5DE5\u53F7" }),
-        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", { className: "input", value: workNo, onChange: (e) => setWorkNo(e.target.value), placeholder: "\u5982\u5DF2\u767B\u5F55\u4E14\u672A\u7ED1\u5B9A\uFF0C\u8BF7\u586B\u5199\u5DE5\u53F7" })
+        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("label", { className: "form-label", children: "工号" }),
+        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", { className: "input", value: workNo, onChange: (e) => setWorkNo(e.target.value), placeholder: "如已登录且未绑定，请填写工号" })
       ] }),
       /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "form-group", style: { marginTop: 12 }, children: [
-        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("label", { className: "form-label", children: "\u59D3\u540D" }),
-        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", { className: "input", value: name, onChange: (e) => setName(e.target.value), placeholder: "\u4E0E\u4EBA\u5458\u5E95\u7A3F\u4E00\u81F4\u7684\u59D3\u540D" })
+        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("label", { className: "form-label", children: "姓名" }),
+        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", { className: "input", value: name, onChange: (e) => setName(e.target.value), placeholder: "与人员底稿一致的姓名" })
       ] }),
-      /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { className: "button button-secondary", style: { width: "100%", marginTop: 14 }, disabled: busy, onClick: bind, children: "\u7ED1\u5B9A\u5DE5\u53F7" }),
+      /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { className: "button button-secondary", style: { width: "100%", marginTop: 14 }, disabled: busy, onClick: bind, children: "绑定工号" }),
       (message || error) && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "inline-notice", style: { marginTop: 14 }, children: message ?? error })
     ] })
   ] }) });
@@ -15541,8 +15541,8 @@ async function authRequest(path, body) {
   });
   const payload = await response.json().catch(() => ({}));
   if (!response.ok) {
-    const message = payload.msg ?? payload.error_description ?? payload.message ?? `\u8BA4\u8BC1\u5931\u8D25\uFF08${response.status}\uFF09`;
-    if (response.status === 422) throw new Error("\u533F\u540D\u767B\u5F55\u5C1A\u672A\u5F00\u542F\uFF1A\u8BF7\u5728 Supabase \u2192 Authentication \u2192 Sign In / Providers \u6253\u5F00 Anonymous sign-ins");
+    const message = payload.msg ?? payload.error_description ?? payload.message ?? `认证失败（${response.status}）`;
+    if (response.status === 422) throw new Error("匿名登录尚未开启：请在 Supabase → Authentication → Sign In / Providers 打开 Anonymous sign-ins");
     throw new Error(message);
   }
   return payload;
@@ -15583,8 +15583,8 @@ async function rest(path, init = {}) {
   const payload = await response.json().catch(() => null);
   if (!response.ok) {
     const code = payload?.code ?? "";
-    if (code === "PGRST205") throw new Error("\u6570\u636E\u8868\u8FD8\u6CA1\u521B\u5EFA\uFF1A\u8BF7\u5148\u5728 Supabase SQL Editor \u6267\u884C schema.sql \u548C seed.sql");
-    throw new Error(payload?.message ?? `\u8BF7\u6C42\u5931\u8D25\uFF08${response.status}\uFF09`);
+    if (code === "PGRST205") throw new Error("数据表还没创建：请先在 Supabase SQL Editor 执行 schema.sql 和 seed.sql");
+    throw new Error(payload?.message ?? `请求失败（${response.status}）`);
   }
   return payload;
 }
@@ -15751,7 +15751,7 @@ function SupabaseAuthGate({ onBound, error }) {
   const [message, setMessage] = (0, import_react4.useState)(null);
   const bind = async () => {
     if (!workNo.trim() || !name.trim()) {
-      setMessage("\u8BF7\u586B\u5199\u5DE5\u53F7\u548C\u59D3\u540D");
+      setMessage("请填写工号和姓名");
       return;
     }
     setBusy(true);
@@ -15759,9 +15759,9 @@ function SupabaseAuthGate({ onBound, error }) {
     try {
       const employee = await supabaseBridge.bindWorkNo(workNo.trim(), name.trim());
       if (employee) onBound(employee);
-      else setMessage("\u5DE5\u53F7\u4E0E\u59D3\u540D\u4E0D\u5339\u914D\uFF0C\u6216\u8BE5\u5DE5\u53F7\u5DF2\u88AB\u5176\u4ED6\u8BBE\u5907\u7ED1\u5B9A");
+      else setMessage("工号与姓名不匹配，或该工号已被其他设备绑定");
     } catch (caught) {
-      setMessage(caught instanceof Error ? caught.message : "\u7ED1\u5B9A\u5931\u8D25\uFF0C\u8BF7\u7A0D\u540E\u91CD\u8BD5");
+      setMessage(caught instanceof Error ? caught.message : "绑定失败，请稍后重试");
     } finally {
       setBusy(false);
     }
@@ -15770,24 +15770,24 @@ function SupabaseAuthGate({ onBound, error }) {
     /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "modal-header", children: [
       /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { children: [
         /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("div", { className: "eyebrow", children: "TEAM SIGN IN" }),
-        /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("h2", { style: { margin: 0 }, children: "\u5DE5\u53F7\u7ED1\u5B9A" })
+        /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("h2", { style: { margin: 0 }, children: "工号绑定" })
       ] }),
       /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(ShieldCheck, { size: 20 })
     ] }),
     /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "modal-body", children: [
       /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "inline-notice", children: [
         /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(KeyRound, { size: 16 }),
-        /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { children: "\u770B\u677F\u6570\u636E\u9700\u7ED1\u5B9A\u8EAB\u4EFD\u540E\u67E5\u770B\u3002\u8F93\u5165\u4F60\u7684\u4EBA\u5458\u5E95\u7A3F\u5DE5\u53F7\u548C\u59D3\u540D\u5373\u53EF\uFF0C\u7CFB\u7EDF\u4F1A\u81EA\u52A8\u521B\u5EFA\u4F1A\u8BDD\uFF0C\u8FD9\u53F0\u8BBE\u5907\u4E4B\u540E\u514D\u767B\u5F55\u3002" })
+        /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { children: "看板数据需绑定身份后查看。输入你的人员底稿工号和姓名即可，系统会自动创建会话，这台设备之后免登录。" })
       ] }),
       /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "form-group", style: { marginTop: 16 }, children: [
-        /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("label", { className: "form-label", children: "\u5DE5\u53F7" }),
-        /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("input", { className: "input", value: workNo, onChange: (e) => setWorkNo(e.target.value), placeholder: "\u4F8B\u5982\uFF1ADEMO009", autoComplete: "off" })
+        /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("label", { className: "form-label", children: "工号" }),
+        /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("input", { className: "input", value: workNo, onChange: (e) => setWorkNo(e.target.value), placeholder: "例如：DEMO009", autoComplete: "off" })
       ] }),
       /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "form-group", style: { marginTop: 12 }, children: [
-        /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("label", { className: "form-label", children: "\u59D3\u540D" }),
-        /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("input", { className: "input", value: name, onChange: (e) => setName(e.target.value), placeholder: "\u4E0E\u4EBA\u5458\u5E95\u7A3F\u4E00\u81F4\u7684\u59D3\u540D" })
+        /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("label", { className: "form-label", children: "姓名" }),
+        /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("input", { className: "input", value: name, onChange: (e) => setName(e.target.value), placeholder: "与人员底稿一致的姓名" })
       ] }),
-      /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { className: "button button-primary", style: { width: "100%", marginTop: 16 }, disabled: busy, onClick: bind, children: busy ? "\u6B63\u5728\u7ED1\u5B9A\u2026" : "\u7ED1\u5B9A\u5E76\u8FDB\u5165\u770B\u677F" }),
+      /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { className: "button button-primary", style: { width: "100%", marginTop: 16 }, disabled: busy, onClick: bind, children: busy ? "正在绑定…" : "绑定并进入看板" }),
       (message || error) && /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("div", { className: "inline-notice", style: { marginTop: 14 }, children: message ?? error })
     ] })
   ] }) });
@@ -15806,7 +15806,7 @@ function getOverdueDays(issue, now = /* @__PURE__ */ new Date()) {
 }
 
 // src/features/recommendation.ts
-var PHASE_ORDER = { \u672C\u6708: 0, \u6B21\u6708: 1, \u5B63\u5EA6\u5185: 2, \u5E38\u89C4: 3 };
+var PHASE_ORDER = { 本月: 0, 次月: 1, 季度内: 2, 常规: 3 };
 function compareNumberDesc(a, b) {
   return b - a;
 }
@@ -15827,16 +15827,16 @@ function recommendStores(options) {
     const highSeverityIssueCount = storeIssues.filter((issue) => issue.status !== "closed" && issue.severity === "high").length;
     const unvisited = quarterVisits.length === 0;
     const risk = riskByStore.get(store.id) ?? null;
-    const phase = risk?.phase ?? "\u672C\u6708";
+    const phase = risk?.phase ?? "本月";
     const reasons = [];
-    if (!risk || risk.missingCount > 0) reasons.push(`\u98CE\u9669\u6570\u636E\u5F85\u8865\u5145\uFF08${risk?.missingCount ?? 9}\u9879\u7F3A\u5931\uFF09\uFF0C\u9700\u4F18\u5148\u6838\u67E5`);
-    else if (risk.knownScore >= 4) reasons.push(`${risk.riskLevel}\uFF0C\u4E5D\u9879\u89C4\u5219\u547D\u4E2D${risk.knownScore}\u9879\uFF0C\u5B89\u6392\u5728${phase}\u5DE1\u5E97`);
-    else reasons.push(`${risk.riskLevel}\uFF0C\u5EFA\u8BAE\u6309${phase}\u8282\u594F\u5DE1\u5E97`);
-    if (unvisited) reasons.push(`${quarter}\u5C1A\u672A\u63D0\u4EA4\u6709\u6548\u5DE1\u5E97`);
-    if (overdueIssueCount > 0) reasons.push(`\u5B58\u5728${overdueIssueCount}\u4E2A\u5DF2\u903E\u671F\u95EE\u9898`);
-    if (highSeverityIssueCount > 0) reasons.push(`\u5B58\u5728${highSeverityIssueCount}\u4E2A\u672A\u5173\u95ED\u9AD8\u4E25\u91CD\u95EE\u9898`);
-    if (daysSinceLastVisit !== null) reasons.push(daysSinceLastVisit === 0 ? "\u4ECA\u5929\u5DF2\u6709\u5DE1\u5E97\u8BB0\u5F55" : `\u8DDD\u4E0A\u6B21\u5DE1\u5E97\u5DF2${daysSinceLastVisit}\u5929`);
-    if (reasons.length < 2) reasons.push(unvisited ? "\u9700\u5EFA\u7ACB\u672C\u5B63\u5EA6\u73B0\u573A\u5DE1\u5E97\u8BB0\u5F55" : "\u672C\u5B63\u5EA6\u5DF2\u6709\u6709\u6548\u5DE1\u5E97\uFF0C\u53EF\u6301\u7EED\u8DDF\u8E2A");
+    if (!risk || risk.missingCount > 0) reasons.push(`风险数据待补充（${risk?.missingCount ?? 9}项缺失），需优先核查`);
+    else if (risk.knownScore >= 4) reasons.push(`${risk.riskLevel}，九项规则命中${risk.knownScore}项，安排在${phase}巡店`);
+    else reasons.push(`${risk.riskLevel}，建议按${phase}节奏巡店`);
+    if (unvisited) reasons.push(`${quarter}尚未提交有效巡店`);
+    if (overdueIssueCount > 0) reasons.push(`存在${overdueIssueCount}个已逾期问题`);
+    if (highSeverityIssueCount > 0) reasons.push(`存在${highSeverityIssueCount}个未关闭高严重问题`);
+    if (daysSinceLastVisit !== null) reasons.push(daysSinceLastVisit === 0 ? "今天已有巡店记录" : `距上次巡店已${daysSinceLastVisit}天`);
+    if (reasons.length < 2) reasons.push(unvisited ? "需建立本季度现场巡店记录" : "本季度已有有效巡店，可持续跟踪");
     return {
       store,
       risk,
@@ -15849,7 +15849,7 @@ function recommendStores(options) {
     };
   });
   recommendations.sort((a, b) => {
-    const phaseDifference = PHASE_ORDER[a.risk?.phase ?? "\u672C\u6708"] - PHASE_ORDER[b.risk?.phase ?? "\u672C\u6708"];
+    const phaseDifference = PHASE_ORDER[a.risk?.phase ?? "本月"] - PHASE_ORDER[b.risk?.phase ?? "本月"];
     return phaseDifference || Number(b.unvisited) - Number(a.unvisited) || compareNumberDesc(a.overdueIssueCount, b.overdueIssueCount) || compareNumberDesc(a.highSeverityIssueCount, b.highSeverityIssueCount) || (b.daysSinceLastVisit ?? Number.MAX_SAFE_INTEGER) - (a.daysSinceLastVisit ?? Number.MAX_SAFE_INTEGER) || a.store.code.localeCompare(b.store.code);
   });
   return options.limit === void 0 ? recommendations : recommendations.slice(0, Math.max(0, options.limit));
@@ -15895,9 +15895,9 @@ function createIssueEvent(issue, actorId, action, options = {}) {
   };
 }
 function applyIssueAction(issue, actor, action, options = {}) {
-  if (!canPerformIssueAction(issue, actor, action)) throw new Error("\u5F53\u524D\u8EAB\u4EFD\u65E0\u6743\u6267\u884C\u8BE5\u95EE\u9898\u64CD\u4F5C");
+  if (!canPerformIssueAction(issue, actor, action)) throw new Error("当前身份无权执行该问题操作");
   const nextStatus = getNextIssueStatus(issue, action);
-  if (!nextStatus) throw new Error("\u5F53\u524D\u95EE\u9898\u72B6\u6001\u4E0D\u652F\u6301\u8BE5\u64CD\u4F5C");
+  if (!nextStatus) throw new Error("当前问题状态不支持该操作");
   const createdAt = options.createdAt ?? (/* @__PURE__ */ new Date()).toISOString();
   return {
     issue: {
@@ -16257,7 +16257,7 @@ function SSF_init_table(t) {
   t[47] = "mmss.0";
   t[48] = "##0.0E+0";
   t[49] = "@";
-  t[56] = '"\u4E0A\u5348/\u4E0B\u5348 "hh"\u6642"mm"\u5206"ss"\u79D2 "';
+  t[56] = '"上午/下午 "hh"時"mm"分"ss"秒 "';
   return t;
 }
 var table_fmt = {
@@ -16289,7 +16289,7 @@ var table_fmt = {
   47: "mmss.0",
   48: "##0.0E+0",
   49: "@",
-  56: '"\u4E0A\u5348/\u4E0B\u5348 "hh"\u6642"mm"\u5206"ss"\u79D2 "'
+  56: '"上午/下午 "hh"時"mm"分"ss"秒 "'
 };
 var SSF_default_map = {
   5: 37,
@@ -17030,10 +17030,10 @@ function fmt_is_date(fmt) {
         return true;
       case "A":
       case "a":
-      case "\u4E0A":
+      case "上":
         if (fmt.substr(i, 3).toUpperCase() === "A/P") return true;
         if (fmt.substr(i, 5).toUpperCase() === "AM/PM") return true;
-        if (fmt.substr(i, 5).toUpperCase() === "\u4E0A\u5348/\u4E0B\u5348") return true;
+        if (fmt.substr(i, 5).toUpperCase() === "上午/下午") return true;
         ++i;
         break;
       case "[":
@@ -17152,7 +17152,7 @@ function eval_fmt(fmt, v, opts, flen) {
         break;
       case "A":
       case "a":
-      case "\u4E0A":
+      case "上":
         var q = { t: c, v: c };
         if (dt == null) dt = SSF_parse_date_code(v, opts);
         if (fmt.substr(i, 3).toUpperCase() === "A/P") {
@@ -17165,8 +17165,8 @@ function eval_fmt(fmt, v, opts, flen) {
           q.t = "T";
           i += 5;
           hr = "h";
-        } else if (fmt.substr(i, 5).toUpperCase() === "\u4E0A\u5348/\u4E0B\u5348") {
-          if (dt != null) q.v = dt.H >= 12 ? "\u4E0B\u5348" : "\u4E0A\u5348";
+        } else if (fmt.substr(i, 5).toUpperCase() === "上午/下午") {
+          if (dt != null) q.v = dt.H >= 12 ? "下午" : "上午";
           q.t = "T";
           i += 5;
           hr = "h";
@@ -17247,7 +17247,7 @@ function eval_fmt(fmt, v, opts, flen) {
         ++i;
         break;
       default:
-        if (",$-+/():!^&'~{}<>=\u20ACacfijklopqrtuvwxzP".indexOf(c) === -1) throw new Error("unrecognized character " + c + " in " + fmt);
+        if (",$-+/():!^&'~{}<>=€acfijklopqrtuvwxzP".indexOf(c) === -1) throw new Error("unrecognized character " + c + " in " + fmt);
         out[out.length] = { t: "t", v: c };
         ++i;
         break;
@@ -19411,33 +19411,33 @@ function cc2str(arr, debomit) {
       if (arr[0] == 254 && arr[1] == 255) return utf8write(new TextDecoder("utf-16be").decode(arr.slice(2)));
     }
     var rev = {
-      "\u20AC": "\x80",
-      "\u201A": "\x82",
-      "\u0192": "\x83",
-      "\u201E": "\x84",
-      "\u2026": "\x85",
-      "\u2020": "\x86",
-      "\u2021": "\x87",
-      "\u02C6": "\x88",
-      "\u2030": "\x89",
-      "\u0160": "\x8A",
-      "\u2039": "\x8B",
-      "\u0152": "\x8C",
-      "\u017D": "\x8E",
-      "\u2018": "\x91",
-      "\u2019": "\x92",
-      "\u201C": "\x93",
-      "\u201D": "\x94",
-      "\u2022": "\x95",
-      "\u2013": "\x96",
-      "\u2014": "\x97",
-      "\u02DC": "\x98",
-      "\u2122": "\x99",
-      "\u0161": "\x9A",
-      "\u203A": "\x9B",
-      "\u0153": "\x9C",
-      "\u017E": "\x9E",
-      "\u0178": "\x9F"
+      "€": "",
+      "‚": "",
+      "ƒ": "",
+      "„": "",
+      "…": "",
+      "†": "",
+      "‡": "",
+      "ˆ": "",
+      "‰": "",
+      "Š": "",
+      "‹": "",
+      "Œ": "",
+      "Ž": "",
+      "‘": "",
+      "’": "",
+      "“": "",
+      "”": "",
+      "•": "",
+      "–": "",
+      "—": "",
+      "˜": "",
+      "™": "",
+      "š": "",
+      "›": "",
+      "œ": "",
+      "ž": "",
+      "Ÿ": ""
     };
     if (Array.isArray(arr)) arr = new Uint8Array(arr);
     return new TextDecoder("latin1").decode(arr).replace(/[€‚ƒ„…†‡ˆ‰Š‹ŒŽ‘’“”•–—˜™š›œžŸ]/g, function(c) {
@@ -19760,7 +19760,7 @@ function utf8readb(data) {
 function utf8readc(data) {
   return Buffer_from(data, "binary").toString("utf8");
 }
-var utf8corpus = "foo bar baz\xE2\x98\x83\xF0\x9F\x8D\xA3";
+var utf8corpus = "foo bar bazâð£";
 var utf8read = has_buf && (/* @__PURE__ */ utf8readc(utf8corpus) == /* @__PURE__ */ utf8reada(utf8corpus) && utf8readc || /* @__PURE__ */ utf8readb(utf8corpus) == /* @__PURE__ */ utf8reada(utf8corpus) && utf8readb) || utf8reada;
 var utf8write = has_buf ? function(data) {
   return Buffer_from(data, "utf8").toString("binary");
@@ -19803,7 +19803,7 @@ var matchtag = /* @__PURE__ */ (function() {
 var htmldecode = /* @__PURE__ */ (function() {
   var entities = [
     ["nbsp", " "],
-    ["middot", "\xB7"],
+    ["middot", "·"],
     ["quot", '"'],
     ["apos", "'"],
     ["gt", ">"],
@@ -21522,28 +21522,28 @@ function load_props_pairs(HP, TOP, props, opts) {
     len = +v[i + 1].v;
     switch (v[i].v) {
       case "Worksheets":
-      case "\u5DE5\u4F5C\u8868":
-      case "\u041B\u0438\u0441\u0442\u044B":
-      case "\u0623\u0648\u0631\u0627\u0642 \u0627\u0644\u0639\u0645\u0644":
-      case "\u30EF\u30FC\u30AF\u30B7\u30FC\u30C8":
-      case "\u05D2\u05DC\u05D9\u05D5\u05E0\u05D5\u05EA \u05E2\u05D1\u05D5\u05D3\u05D4":
-      case "Arbeitsbl\xE4tter":
-      case "\xC7al\u0131\u015Fma Sayfalar\u0131":
+      case "工作表":
+      case "Листы":
+      case "أوراق العمل":
+      case "ワークシート":
+      case "גליונות עבודה":
+      case "Arbeitsblätter":
+      case "Çalışma Sayfaları":
       case "Feuilles de calcul":
       case "Fogli di lavoro":
-      case "Folhas de c\xE1lculo":
+      case "Folhas de cálculo":
       case "Planilhas":
       case "Regneark":
-      case "Hojas de c\xE1lculo":
+      case "Hojas de cálculo":
       case "Werkbladen":
         props.Worksheets = len;
         props.SheetNames = parts.slice(idx, idx + len);
         break;
       case "Named Ranges":
       case "Rangos con nombre":
-      case "\u540D\u524D\u4ED8\u304D\u4E00\u89A7":
+      case "名前付き一覧":
       case "Benannte Bereiche":
-      case "Navngivne omr\xE5der":
+      case "Navngivne områder":
         props.NamedRanges = len;
         props.DefinedNames = parts.slice(idx, idx + len);
         break;
@@ -23544,58 +23544,58 @@ var DBF = /* @__PURE__ */ (function() {
 })();
 var SYLK = /* @__PURE__ */ (function() {
   var sylk_escapes = {
-    AA: "\xC0",
-    BA: "\xC1",
-    CA: "\xC2",
+    AA: "À",
+    BA: "Á",
+    CA: "Â",
     DA: 195,
-    HA: "\xC4",
+    HA: "Ä",
     JA: 197,
-    AE: "\xC8",
-    BE: "\xC9",
-    CE: "\xCA",
-    HE: "\xCB",
-    AI: "\xCC",
-    BI: "\xCD",
-    CI: "\xCE",
-    HI: "\xCF",
-    AO: "\xD2",
-    BO: "\xD3",
-    CO: "\xD4",
+    AE: "È",
+    BE: "É",
+    CE: "Ê",
+    HE: "Ë",
+    AI: "Ì",
+    BI: "Í",
+    CI: "Î",
+    HI: "Ï",
+    AO: "Ò",
+    BO: "Ó",
+    CO: "Ô",
     DO: 213,
-    HO: "\xD6",
-    AU: "\xD9",
-    BU: "\xDA",
-    CU: "\xDB",
-    HU: "\xDC",
-    Aa: "\xE0",
-    Ba: "\xE1",
-    Ca: "\xE2",
+    HO: "Ö",
+    AU: "Ù",
+    BU: "Ú",
+    CU: "Û",
+    HU: "Ü",
+    Aa: "à",
+    Ba: "á",
+    Ca: "â",
     Da: 227,
-    Ha: "\xE4",
+    Ha: "ä",
     Ja: 229,
-    Ae: "\xE8",
-    Be: "\xE9",
-    Ce: "\xEA",
-    He: "\xEB",
-    Ai: "\xEC",
-    Bi: "\xED",
-    Ci: "\xEE",
-    Hi: "\xEF",
-    Ao: "\xF2",
-    Bo: "\xF3",
-    Co: "\xF4",
+    Ae: "è",
+    Be: "é",
+    Ce: "ê",
+    He: "ë",
+    Ai: "ì",
+    Bi: "í",
+    Ci: "î",
+    Hi: "ï",
+    Ao: "ò",
+    Bo: "ó",
+    Co: "ô",
     Do: 245,
-    Ho: "\xF6",
-    Au: "\xF9",
-    Bu: "\xFA",
-    Cu: "\xFB",
-    Hu: "\xFC",
-    KC: "\xC7",
-    Kc: "\xE7",
-    q: "\xE6",
-    z: "\u0153",
-    a: "\xC6",
-    j: "\u0152",
+    Ho: "ö",
+    Au: "ù",
+    Bu: "ú",
+    Cu: "û",
+    Hu: "ü",
+    KC: "Ç",
+    Kc: "ç",
+    q: "æ",
+    z: "œ",
+    a: "Æ",
+    j: "Œ",
     DN: 209,
     Dn: 241,
     Hy: 255,
@@ -27087,10 +27087,10 @@ function write_theme(Themes, opts) {
   o[o.length] = '<a:latin typeface="Cambria"/>';
   o[o.length] = '<a:ea typeface=""/>';
   o[o.length] = '<a:cs typeface=""/>';
-  o[o.length] = '<a:font script="Jpan" typeface="\uFF2D\uFF33 \uFF30\u30B4\u30B7\u30C3\u30AF"/>';
-  o[o.length] = '<a:font script="Hang" typeface="\uB9D1\uC740 \uACE0\uB515"/>';
-  o[o.length] = '<a:font script="Hans" typeface="\u5B8B\u4F53"/>';
-  o[o.length] = '<a:font script="Hant" typeface="\u65B0\u7D30\u660E\u9AD4"/>';
+  o[o.length] = '<a:font script="Jpan" typeface="ＭＳ Ｐゴシック"/>';
+  o[o.length] = '<a:font script="Hang" typeface="맑은 고딕"/>';
+  o[o.length] = '<a:font script="Hans" typeface="宋体"/>';
+  o[o.length] = '<a:font script="Hant" typeface="新細明體"/>';
   o[o.length] = '<a:font script="Arab" typeface="Times New Roman"/>';
   o[o.length] = '<a:font script="Hebr" typeface="Times New Roman"/>';
   o[o.length] = '<a:font script="Thai" typeface="Tahoma"/>';
@@ -27122,10 +27122,10 @@ function write_theme(Themes, opts) {
   o[o.length] = '<a:latin typeface="Calibri"/>';
   o[o.length] = '<a:ea typeface=""/>';
   o[o.length] = '<a:cs typeface=""/>';
-  o[o.length] = '<a:font script="Jpan" typeface="\uFF2D\uFF33 \uFF30\u30B4\u30B7\u30C3\u30AF"/>';
-  o[o.length] = '<a:font script="Hang" typeface="\uB9D1\uC740 \uACE0\uB515"/>';
-  o[o.length] = '<a:font script="Hans" typeface="\u5B8B\u4F53"/>';
-  o[o.length] = '<a:font script="Hant" typeface="\u65B0\u7D30\u660E\u9AD4"/>';
+  o[o.length] = '<a:font script="Jpan" typeface="ＭＳ Ｐゴシック"/>';
+  o[o.length] = '<a:font script="Hang" typeface="맑은 고딕"/>';
+  o[o.length] = '<a:font script="Hans" typeface="宋体"/>';
+  o[o.length] = '<a:font script="Hant" typeface="新細明體"/>';
   o[o.length] = '<a:font script="Arab" typeface="Arial"/>';
   o[o.length] = '<a:font script="Hebr" typeface="Arial"/>';
   o[o.length] = '<a:font script="Thai" typeface="Tahoma"/>';
@@ -40413,7 +40413,7 @@ function parse_content_xml(d, _opts) {
   str = str.replace(/<!--([\s\S]*?)-->/mg, "").replace(/<!DOCTYPE[^\[]*\[[^\]]*\]>/gm, "");
   while (Rn = xlmlregex.exec(str)) switch (Rn[3] = Rn[3].replace(/_.*$/, "")) {
     case "table":
-    case "\u5DE5\u4F5C\u8868":
+    case "工作表":
       if (Rn[1] === "/") {
         if (range.e.c >= range.s.c && range.e.r >= range.s.r) ws["!ref"] = encode_range(range);
         else ws["!ref"] = "A1:A1";
@@ -40424,7 +40424,7 @@ function parse_content_xml(d, _opts) {
         }
         if (merges.length) ws["!merges"] = merges;
         if (rowinfo.length) ws["!rows"] = rowinfo;
-        sheetag.name = sheetag["\u540D\u79F0"] || sheetag.name;
+        sheetag.name = sheetag["名称"] || sheetag.name;
         if (typeof JSON !== "undefined") JSON.stringify(sheetag);
         SheetNames.push(sheetag.name);
         Sheets[sheetag.name] = ws;
@@ -40445,14 +40445,14 @@ function parse_content_xml(d, _opts) {
       else ++row_ol;
       break;
     case "table-row":
-    case "\u884C":
+    case "行":
       if (Rn[1] === "/") {
         R += rowpeat;
         rowpeat = 1;
         break;
       }
       rowtag = parsexmltag(Rn[0], false);
-      if (rowtag["\u884C\u53F7"]) R = rowtag["\u884C\u53F7"] - 1;
+      if (rowtag["行号"]) R = rowtag["行号"] - 1;
       else if (R == -1) R = 0;
       rowpeat = +rowtag["number-rows-repeated"] || 1;
       if (rowpeat < 10) {
@@ -40473,7 +40473,7 @@ function parse_content_xml(d, _opts) {
       break;
     /* stub */
     case "table-cell":
-    case "\u6570\u636E":
+    case "数据":
       if (Rn[0].charAt(Rn[0].length - 2) === "/") {
         ++C;
         ctag = parsexmltag(Rn[0], false);
@@ -40484,7 +40484,7 @@ function parse_content_xml(d, _opts) {
           /*:: , z:null, w:"",c:[]*/
         };
         if (ctag.formula && opts.cellFormula != false) q.f = ods_to_csf_formula(unescapexml(ctag.formula));
-        if ((ctag["\u6570\u636E\u7C7B\u578B"] || ctag["value-type"]) == "string") {
+        if ((ctag["数据类型"] || ctag["value-type"]) == "string") {
           q.t = "s";
           q.v = unescapexml(ctag["string-value"] || "");
           if (opts.dense) {
@@ -40510,7 +40510,7 @@ function parse_content_xml(d, _opts) {
         comments = [];
         comment = {};
         q = {
-          t: ctag["\u6570\u636E\u7C7B\u578B"] || ctag["value-type"],
+          t: ctag["数据类型"] || ctag["value-type"],
           v: null
           /*:: , z:null, w:"",c:[]*/
         };
@@ -40574,7 +40574,7 @@ function parse_content_xml(d, _opts) {
             break;
           case "number":
             q.t = "n";
-            q.v = parseFloat(ctag["\u6570\u636E\u6570\u503C"]);
+            q.v = parseFloat(ctag["数据数值"]);
             break;
           default:
             if (q.t === "string" || q.t === "text" || !q.t) {
@@ -40634,10 +40634,10 @@ function parse_content_xml(d, _opts) {
     case "document":
     // TODO: <office:document> is the root for FODS
     case "document-content":
-    case "\u7535\u5B50\u8868\u683C\u6587\u6863":
+    case "电子表格文档":
     // 3.1.3.2 <office:document-content>
     case "spreadsheet":
-    case "\u4E3B\u4F53":
+    case "主体":
     // 3.7 <office:spreadsheet>
     case "scripts":
     // 3.12 <office:scripts>
@@ -40673,7 +40673,7 @@ function parse_content_xml(d, _opts) {
       break;
     /* ignore state */
     case "meta":
-    case "\u5143\u6570\u636E":
+    case "元数据":
     // TODO: <office:meta> <uof:元数据> FODS/UOF
     case "settings":
     // TODO: <office:settings>
@@ -40848,7 +40848,7 @@ function parse_content_xml(d, _opts) {
       break;
     // 16.27.4 <number:embedded-text>
     case "body":
-    case "\u7535\u5B50\u8868\u683C":
+    case "电子表格":
       break;
     // 3.3 16.9.6 19.726.3
     case "forms":
@@ -40913,7 +40913,7 @@ function parse_content_xml(d, _opts) {
       break;
     // 6.1.7 <text:span>
     case "p":
-    case "\u6587\u672C\u4E32":
+    case "文本串":
       if (["master-styles"].indexOf(state[state.length - 1][0]) > -1) break;
       if (Rn[1] === "/" && (!ctag || !ctag["string-value"])) {
         var ptp = parse_text_p(str.slice(textpidx, Rn.index), textptag);
@@ -40942,7 +40942,7 @@ function parse_content_xml(d, _opts) {
       break;
     // 10.4.6.2 <draw:object>
     case "title":
-    case "\u6807\u9898":
+    case "标题":
       break;
     // <*:title> OR <uof:标题>
     case "desc":
@@ -41172,9 +41172,9 @@ function parse_content_xml(d, _opts) {
         // TODO: forms
         case "uof:":
         // TODO: uof
-        case "\u8868:":
+        case "表:":
         // TODO: uof
-        case "\u5B57:":
+        case "字:":
           break;
         default:
           if (opts.WTF) throw new Error(Rn);
@@ -42708,39 +42708,39 @@ var version = XLSX.version;
 
 // src/features/imports/templates.ts
 var EMPLOYEE_IMPORT_FIELDS = [
-  { key: "workNo", label: "\u5DE5\u53F7", required: true, example: "DEMO001", description: "\u6309\u6587\u672C\u8BFB\u53D6\uFF0C\u4FDD\u7559\u524D\u5BFC\u96F6" },
-  { key: "name", label: "\u59D3\u540D", required: true, example: "\u6F14\u793A\u5458\u5DE5" },
-  { key: "role", label: "\u89D2\u8272", required: true, example: "BP", description: "BP/\u7ECF\u7406/\u603B\u8D1F\u8D23\u4EBA/\u6570\u636E\u7BA1\u7406\u5458" },
-  { key: "brands", label: "\u54C1\u724C", required: true, example: "\u8336\u989C\u60A6\u8272", description: "\u591A\u54C1\u724C\u7528\u987F\u53F7\u5206\u9694\uFF1B\u603B\u8D1F\u8D23\u4EBA\u53EF\u586B\u5168\u90E8" }
+  { key: "workNo", label: "工号", required: true, example: "DEMO001", description: "按文本读取，保留前导零" },
+  { key: "name", label: "姓名", required: true, example: "演示员工" },
+  { key: "role", label: "角色", required: true, example: "BP", description: "BP/经理/总负责人/数据管理员" },
+  { key: "brands", label: "品牌", required: true, example: "茶颜悦色", description: "多品牌用顿号分隔；总负责人可填全部" }
 ];
 var STORE_IMPORT_FIELDS = [
-  { key: "code", label: "\u95E8\u5E97\u7F16\u7801", required: true, example: "DEMO-S001", description: "\u6309\u6587\u672C\u8BFB\u53D6\uFF0C\u4FDD\u7559\u524D\u5BFC\u96F6" },
-  { key: "name", label: "\u95E8\u5E97\u540D\u79F0", required: true, example: "\u6F14\u793A\xB7\u9752\u79BE\u5E97" },
-  { key: "brand", label: "\u54C1\u724C", required: true, example: "\u8336\u989C\u60A6\u8272" },
-  { key: "bpId", label: "BP\u5DE5\u53F7", required: true, example: "DEMO001" },
-  { key: "managerName", label: "\u5E97\u957F\u59D3\u540D", required: false, example: "\u6F14\u793A\u5E97\u957F" }
+  { key: "code", label: "门店编码", required: true, example: "DEMO-S001", description: "按文本读取，保留前导零" },
+  { key: "name", label: "门店名称", required: true, example: "演示·青禾店" },
+  { key: "brand", label: "品牌", required: true, example: "茶颜悦色" },
+  { key: "bpId", label: "BP工号", required: true, example: "DEMO001" },
+  { key: "managerName", label: "店长姓名", required: false, example: "演示店长" }
 ];
 var METRICS_IMPORT_FIELDS = [
-  { key: "storeId", label: "\u95E8\u5E97\u7F16\u7801", required: true, example: "DEMO-S001" },
-  { key: "month", label: "\u6708\u4EFD", required: true, example: "2026-09", description: "\u683C\u5F0FYYYY-MM" },
-  { key: "architectureLabor", label: "\u67B6\u6784\u4EBA\u5DE5", required: true, example: "\u5426" },
-  { key: "abcGrade", label: "ABC\u7B49\u7EA7", required: true, example: "A" },
-  { key: "qcScore", label: "QC\u5206\u6570", required: true, example: "90" },
-  { key: "salesAchievementRate", label: "\u4E1A\u7EE9\u8FBE\u6210\u7387", required: true, example: "100%", description: "\u7EDF\u4E00\u8F6C\u6362\u4E3A100=100%" },
-  { key: "workHours", label: "\u5DE5\u65F6", required: true, example: "180" },
-  { key: "highTemperature", label: "\u9AD8\u6E29", required: true, example: "\u5426" },
-  { key: "treeHoleComplaints", label: "\u6811\u6D1E\u6295\u8BC9", required: true, example: "0" },
-  { key: "hasReward", label: "\u5956\u52B1", required: true, example: "\u662F" }
+  { key: "storeId", label: "门店编码", required: true, example: "DEMO-S001" },
+  { key: "month", label: "月份", required: true, example: "2026-09", description: "格式YYYY-MM" },
+  { key: "architectureLabor", label: "架构人工", required: true, example: "否" },
+  { key: "abcGrade", label: "ABC等级", required: true, example: "A" },
+  { key: "qcScore", label: "QC分数", required: true, example: "90" },
+  { key: "salesAchievementRate", label: "业绩达成率", required: true, example: "100%", description: "统一转换为100=100%" },
+  { key: "workHours", label: "工时", required: true, example: "180" },
+  { key: "highTemperature", label: "高温", required: true, example: "否" },
+  { key: "treeHoleComplaints", label: "树洞投诉", required: true, example: "0" },
+  { key: "hasReward", label: "奖励", required: true, example: "是" }
 ];
 var ROSTER_IMPORT_FIELDS = [
-  { key: "name", label: "\u59D3\u540D", required: true, example: "\u5F20*" },
-  { key: "workNo", label: "\u5DE5\u53F7", required: true, example: "CY000001", description: "\u6309\u6587\u672C\u8BFB\u53D6\uFF0C\u4FDD\u7559\u539F\u59CB\u683C\u5F0F" },
-  { key: "employmentType", label: "\u4EBA\u5458\u7C7B\u522B", required: true, example: "\u8FD0\u8425\u5168\u804C", description: "\u539F\u6837\u5BFC\u5165\uFF1B\u975E\u5168\u804C/\u5B66\u751F\u4F1A\u6807\u8BB0\u5F85\u786E\u8BA4" },
-  { key: "hireDate", label: "\u5165\u804C\u65E5\u671F", required: true, example: "2026-01-17" },
-  { key: "region", label: "\u6240\u5C5E\u533A\u57DF", required: true, example: "\u6F14\u793A\u533A\u57DF", description: "\u4E5F\u652F\u6301\u6E90\u8868\u201C\u4E94\u7EA7\u90E8\u95E8\u201D" },
-  { key: "district", label: "\u6240\u5C5E\u5927\u5E97\u533A", required: true, example: "\u6F14\u793A\u5927\u5E97\u533A", description: "\u4E5F\u652F\u6301\u6E90\u8868\u201C\u516D\u7EA7\u90E8\u95E8\u201D" },
-  { key: "storeName", label: "\u6240\u5C5E\u95E8\u5E97", required: true, example: "\u6F14\u793A\xB7\u9752\u79BE\u5E97", description: "\u4E5F\u652F\u6301\u6E90\u8868\u201C\u4E03\u7EA7\u90E8\u95E8\u201D" },
-  { key: "position", label: "\u804C\u4F4D", required: true, example: "\u670D\u52A1\u5458" }
+  { key: "name", label: "姓名", required: true, example: "张*" },
+  { key: "workNo", label: "工号", required: true, example: "CY000001", description: "按文本读取，保留原始格式" },
+  { key: "employmentType", label: "人员类别", required: true, example: "运营全职", description: "原样导入；非全职/学生会标记待确认" },
+  { key: "hireDate", label: "入职日期", required: true, example: "2026-01-17" },
+  { key: "region", label: "所属区域", required: true, example: "演示区域", description: "也支持源表“五级部门”" },
+  { key: "district", label: "所属大店区", required: true, example: "演示大店区", description: "也支持源表“六级部门”" },
+  { key: "storeName", label: "所属门店", required: true, example: "演示·青禾店", description: "也支持源表“七级部门”" },
+  { key: "position", label: "职位", required: true, example: "服务员" }
 ];
 var IMPORT_TEMPLATES = {
   employees: EMPLOYEE_IMPORT_FIELDS,
@@ -42756,7 +42756,7 @@ async function readRows(source) {
   const isLegacyWorkbook = buffer[0] === 208 && buffer[1] === 207;
   const workbook = isZipWorkbook || isLegacyWorkbook ? readSync(buffer, { type: "array", cellDates: false }) : readSync(new TextDecoder("utf-8").decode(buffer), { type: "string", raw: true });
   const firstSheet = workbook.SheetNames[0];
-  if (!firstSheet) throw new Error("\u6587\u4EF6\u4E2D\u6CA1\u6709\u5DE5\u4F5C\u8868");
+  if (!firstSheet) throw new Error("文件中没有工作表");
   return utils.sheet_to_json(workbook.Sheets[firstSheet], {
     header: 1,
     defval: "",
@@ -42770,12 +42770,12 @@ function text(value) {
 function parseRows(kind, rows) {
   const fields = IMPORT_TEMPLATES[kind];
   const errors = [];
-  if (!rows.length) return { records: [], errors: [{ row: 1, message: "\u6587\u4EF6\u4E3A\u7A7A" }], totalRows: 0 };
+  if (!rows.length) return { records: [], errors: [{ row: 1, message: "文件为空" }], totalRows: 0 };
   const headers = rows[0].map(text);
   const indexes = /* @__PURE__ */ new Map();
   fields.forEach((field) => {
     const index = headers.findIndex((header) => header === field.label || header === field.key);
-    if (index < 0) errors.push({ row: 1, field: field.key, message: `\u7F3A\u5C11\u5FC5\u586B\u5217\uFF1A${field.label}` });
+    if (index < 0) errors.push({ row: 1, field: field.key, message: `缺少必填列：${field.label}` });
     else indexes.set(field.key, index);
   });
   const dataRows = rows.slice(1);
@@ -42787,7 +42787,7 @@ function parseRows(kind, rows) {
       const index = indexes.get(field.key);
       const value = index === void 0 ? "" : text(row[index]);
       record[field.key] = value;
-      if (field.required && value === "") errors.push({ row: rowIndex + 2, field: field.key, message: `${field.label}\u4E0D\u80FD\u4E3A\u7A7A` });
+      if (field.required && value === "") errors.push({ row: rowIndex + 2, field: field.key, message: `${field.label}不能为空` });
     });
     records.push(record);
   });
@@ -42801,7 +42801,7 @@ function rowError(errors, row, field, message) {
   errors.push({ row, field, message });
 }
 function parseBrands(value) {
-  if (value === "\u5168\u90E8") return [...BRANDS];
+  if (value === "全部") return [...BRANDS];
   const brands = value.split(/[、,，/]/).map((part) => part.trim()).filter(Boolean);
   return brands.length && brands.every((brand) => BRANDS.includes(brand)) ? brands : void 0;
 }
@@ -42809,19 +42809,19 @@ function parseRole(value) {
   const roles = {
     bp: "bp",
     BP: "bp",
-    \u7ECF\u7406: "manager",
+    经理: "manager",
     manager: "manager",
-    \u54C1\u724C\u7ECF\u7406: "manager",
-    \u603B\u8D1F\u8D23\u4EBA: "director",
+    品牌经理: "manager",
+    总负责人: "director",
     director: "director",
-    \u6570\u636E\u7BA1\u7406\u5458: "dataAdmin",
+    数据管理员: "dataAdmin",
     dataAdmin: "dataAdmin"
   };
   return roles[value] ?? roles[value.toLowerCase()];
 }
 function parseBoolean(value) {
-  if (["\u662F", "\u6709", "true", "TRUE", "1"].includes(value)) return true;
-  if (["\u5426", "\u65E0", "false", "FALSE", "0"].includes(value)) return false;
+  if (["是", "有", "true", "TRUE", "1"].includes(value)) return true;
+  if (["否", "无", "false", "FALSE", "0"].includes(value)) return false;
   return void 0;
 }
 function parseFiniteNumber(value) {
@@ -42846,23 +42846,23 @@ async function parseEmployeeImport(source) {
     let valid = !errors.some((error) => error.row === row);
     const workNo = text(record.workNo);
     if (workNo && seen.has(workNo)) {
-      rowError(errors, row, "workNo", `\u5DE5\u53F7\u91CD\u590D\uFF0C\u9996\u6B21\u51FA\u73B0\u4E8E\u7B2C${seen.get(workNo)}\u884C`);
+      rowError(errors, row, "workNo", `工号重复，首次出现于第${seen.get(workNo)}行`);
       valid = false;
     } else if (workNo) {
       seen.set(workNo, row);
     }
     const role = parseRole(text(record.role));
     if (text(record.role) && !role) {
-      rowError(errors, row, "role", "\u89D2\u8272\u5FC5\u987B\u662FBP\u3001\u7ECF\u7406\u3001\u603B\u8D1F\u8D23\u4EBA\u6216\u6570\u636E\u7BA1\u7406\u5458");
+      rowError(errors, row, "role", "角色必须是BP、经理、总负责人或数据管理员");
       valid = false;
     }
     const brands = parseBrands(text(record.brands));
     if (text(record.brands) && !brands) {
-      rowError(errors, row, "brands", `\u54C1\u724C\u4EC5\u652F\u6301${BRANDS.join("\u3001")}\u6216\u5168\u90E8`);
+      rowError(errors, row, "brands", `品牌仅支持${BRANDS.join("、")}或全部`);
       valid = false;
     }
     if (role === "bp" && brands && brands.length !== 1) {
-      rowError(errors, row, "brands", "BP\u53EA\u80FD\u8D1F\u8D23\u4E00\u4E2A\u54C1\u724C");
+      rowError(errors, row, "brands", "BP只能负责一个品牌");
       valid = false;
     }
     if (valid && workNo && role && brands) {
@@ -42880,14 +42880,14 @@ async function parseStoreImport(source) {
     let valid = !errors.some((error) => error.row === row);
     const code = text(record.code);
     if (code && seen.has(code)) {
-      rowError(errors, row, "code", `\u95E8\u5E97\u7F16\u7801\u91CD\u590D\uFF0C\u9996\u6B21\u51FA\u73B0\u4E8E\u7B2C${seen.get(code)}\u884C`);
+      rowError(errors, row, "code", `门店编码重复，首次出现于第${seen.get(code)}行`);
       valid = false;
     } else if (code) {
       seen.set(code, row);
     }
     const brand = text(record.brand);
     if (text(record.brand) && !BRANDS.includes(brand)) {
-      rowError(errors, row, "brand", `\u54C1\u724C\u4EC5\u652F\u6301${BRANDS.join("\u3001")}`);
+      rowError(errors, row, "brand", `品牌仅支持${BRANDS.join("、")}`);
       valid = false;
     }
     if (valid && code && BRANDS.includes(brand)) {
@@ -42909,29 +42909,29 @@ async function parseMetricsImport(source) {
     };
     const storeId = text(record.storeId);
     const month = text(record.month);
-    if (month && !isValidMonth(month)) invalidate("month", "\u6708\u4EFD\u683C\u5F0F\u5FC5\u987B\u4E3A\u6709\u6548\u7684YYYY-MM");
+    if (month && !isValidMonth(month)) invalidate("month", "月份格式必须为有效的YYYY-MM");
     const duplicateKey = `${storeId}|${month}`;
     if (storeId && month && seen.has(duplicateKey)) {
-      invalidate("month", `\u540C\u4E00\u95E8\u5E97\u6708\u4EFD\u91CD\u590D\uFF0C\u9996\u6B21\u51FA\u73B0\u4E8E\u7B2C${seen.get(duplicateKey)}\u884C`);
+      invalidate("month", `同一门店月份重复，首次出现于第${seen.get(duplicateKey)}行`);
     } else if (storeId && month) {
       seen.set(duplicateKey, row);
     }
     const architectureLabor = parseBoolean(text(record.architectureLabor));
-    if (text(record.architectureLabor) && architectureLabor === void 0) invalidate("architectureLabor", "\u67B6\u6784\u4EBA\u5DE5\u5FC5\u987B\u586B\u662F/\u5426");
+    if (text(record.architectureLabor) && architectureLabor === void 0) invalidate("architectureLabor", "架构人工必须填是/否");
     const abcGrade = text(record.abcGrade).toUpperCase();
-    if (abcGrade && !["A", "B", "C"].includes(abcGrade)) invalidate("abcGrade", "ABC\u7B49\u7EA7\u53EA\u80FD\u662FA\u3001B\u6216C");
+    if (abcGrade && !["A", "B", "C"].includes(abcGrade)) invalidate("abcGrade", "ABC等级只能是A、B或C");
     const qcScore = parseFiniteNumber(text(record.qcScore));
-    if (text(record.qcScore) && (qcScore === void 0 || qcScore < 0 || qcScore > 100)) invalidate("qcScore", "QC\u5206\u6570\u5FC5\u987B\u662F0\u5230100\u7684\u6570\u5B57");
+    if (text(record.qcScore) && (qcScore === void 0 || qcScore < 0 || qcScore > 100)) invalidate("qcScore", "QC分数必须是0到100的数字");
     const salesAchievementRate = normalizePercentage(text(record.salesAchievementRate));
-    if (text(record.salesAchievementRate) && salesAchievementRate === void 0) invalidate("salesAchievementRate", "\u4E1A\u7EE9\u8FBE\u6210\u7387\u5FC5\u987B\u4E3A\u975E\u8D1F\u767E\u5206\u6BD4\u6216\u6570\u5B57");
+    if (text(record.salesAchievementRate) && salesAchievementRate === void 0) invalidate("salesAchievementRate", "业绩达成率必须为非负百分比或数字");
     const workHours = parseFiniteNumber(text(record.workHours));
-    if (text(record.workHours) && (workHours === void 0 || workHours < 0)) invalidate("workHours", "\u5DE5\u65F6\u5FC5\u987B\u662F\u975E\u8D1F\u6570\u5B57");
+    if (text(record.workHours) && (workHours === void 0 || workHours < 0)) invalidate("workHours", "工时必须是非负数字");
     const highTemperature = parseBoolean(text(record.highTemperature));
-    if (text(record.highTemperature) && highTemperature === void 0) invalidate("highTemperature", "\u9AD8\u6E29\u5FC5\u987B\u586B\u662F/\u5426");
+    if (text(record.highTemperature) && highTemperature === void 0) invalidate("highTemperature", "高温必须填是/否");
     const treeHoleComplaints = parseFiniteNumber(text(record.treeHoleComplaints));
-    if (text(record.treeHoleComplaints) && (treeHoleComplaints === void 0 || treeHoleComplaints < 0 || !Number.isInteger(treeHoleComplaints))) invalidate("treeHoleComplaints", "\u6811\u6D1E\u6295\u8BC9\u5FC5\u987B\u662F\u975E\u8D1F\u6574\u6570");
+    if (text(record.treeHoleComplaints) && (treeHoleComplaints === void 0 || treeHoleComplaints < 0 || !Number.isInteger(treeHoleComplaints))) invalidate("treeHoleComplaints", "树洞投诉必须是非负整数");
     const hasReward = parseBoolean(text(record.hasReward));
-    if (text(record.hasReward) && hasReward === void 0) invalidate("hasReward", "\u5956\u52B1\u5FC5\u987B\u586B\u662F/\u5426");
+    if (text(record.hasReward) && hasReward === void 0) invalidate("hasReward", "奖励必须填是/否");
     if (valid && storeId && month && architectureLabor !== void 0 && qcScore !== void 0 && salesAchievementRate !== void 0 && workHours !== void 0 && highTemperature !== void 0 && treeHoleComplaints !== void 0 && hasReward !== void 0) {
       data.push({
         storeId,
@@ -42950,14 +42950,14 @@ async function parseMetricsImport(source) {
   return result(data, errors, totalRows);
 }
 var ROSTER_ALIASES = {
-  name: ["\u59D3\u540D"],
-  workNo: ["\u5DE5\u53F7"],
-  employmentType: ["\u4EBA\u5458\u7C7B\u522B", "\u7528\u5DE5\u7C7B\u578B"],
-  hireDate: ["\u5165\u804C\u65E5\u671F", "\u5165\u804C\u65F6\u95F4"],
-  region: ["\u6240\u5C5E\u533A\u57DF", "\u4E94\u7EA7\u90E8\u95E8"],
-  district: ["\u6240\u5C5E\u5927\u5E97\u533A", "\u516D\u7EA7\u90E8\u95E8"],
-  storeName: ["\u6240\u5C5E\u95E8\u5E97", "\u4E03\u7EA7\u90E8\u95E8"],
-  position: ["\u804C\u4F4D"]
+  name: ["姓名"],
+  workNo: ["工号"],
+  employmentType: ["人员类别", "用工类型"],
+  hireDate: ["入职日期", "入职时间"],
+  region: ["所属区域", "五级部门"],
+  district: ["所属大店区", "六级部门"],
+  storeName: ["所属门店", "七级部门"],
+  position: ["职位"]
 };
 function normalizeHireDate(value) {
   const trimmed = value.trim();
@@ -42971,16 +42971,16 @@ function normalizeHireDate(value) {
   }
   return trimmed;
 }
-async function parseRosterImport(source, brand, sourceFile = "\u4E0A\u4F20\u6587\u4EF6") {
+async function parseRosterImport(source, brand, sourceFile = "上传文件") {
   const rows = await readRows(source);
   const errors = [];
-  if (!rows.length) return result([], [{ row: 1, message: "\u6587\u4EF6\u4E3A\u7A7A" }], 0);
-  if (!BRANDS.includes(brand)) return result([], [{ row: 1, field: "brand", message: "\u65E0\u6CD5\u4ECE\u6587\u4EF6\u540D\u8BC6\u522B\u54C1\u724C" }], 0);
+  if (!rows.length) return result([], [{ row: 1, message: "文件为空" }], 0);
+  if (!BRANDS.includes(brand)) return result([], [{ row: 1, field: "brand", message: "无法从文件名识别品牌" }], 0);
   const headers = rows[0].map(text);
   const indexes = /* @__PURE__ */ new Map();
   Object.entries(ROSTER_ALIASES).forEach(([key, aliases]) => {
     const index = headers.findIndex((header) => aliases.includes(header));
-    if (index < 0) errors.push({ row: 1, field: key, message: `\u7F3A\u5C11\u5FC5\u586B\u5217\uFF1A${aliases[0]}` });
+    if (index < 0) errors.push({ row: 1, field: key, message: `缺少必填列：${aliases[0]}` });
     else indexes.set(key, index);
   });
   const seen = /* @__PURE__ */ new Map();
@@ -43006,18 +43006,18 @@ async function parseRosterImport(source, brand, sourceFile = "\u4E0A\u4F20\u6587
     let valid = true;
     Object.keys(ROSTER_ALIASES).forEach((key) => {
       if (!record[key]) {
-        rowError(errors, rowNo, key, `${ROSTER_ALIASES[key][0]}\u4E0D\u80FD\u4E3A\u7A7A`);
+        rowError(errors, rowNo, key, `${ROSTER_ALIASES[key][0]}不能为空`);
         valid = false;
       }
     });
     if (record.workNo && seen.has(record.workNo)) {
-      rowError(errors, rowNo, "workNo", `\u5DE5\u53F7\u91CD\u590D\uFF0C\u9996\u6B21\u51FA\u73B0\u4E8E\u7B2C${seen.get(record.workNo)}\u884C`);
+      rowError(errors, rowNo, "workNo", `工号重复，首次出现于第${seen.get(record.workNo)}行`);
       valid = false;
     } else if (record.workNo) seen.set(record.workNo, rowNo);
     const dataFlags = [];
-    if (!["\u8FD0\u8425\u5168\u804C", "\u5B66\u751F\u7528\u5DE5"].includes(record.employmentType)) dataFlags.push("\u7528\u5DE5\u7C7B\u578B\u5F85\u786E\u8BA4");
+    if (!["运营全职", "学生用工"].includes(record.employmentType)) dataFlags.push("用工类型待确认");
     if (record.hireDate && !/^\d{4}-\d{2}-\d{2}$/.test(record.hireDate)) {
-      rowError(errors, rowNo, "hireDate", "\u5165\u804C\u65E5\u671F\u65E0\u6CD5\u8BC6\u522B");
+      rowError(errors, rowNo, "hireDate", "入职日期无法识别");
       valid = false;
     }
     if (valid) data.push({ id: `${brand}-${record.workNo}`, ...record, employmentType: record.employmentType, brand, sourceFile, dataFlags });
@@ -43033,13 +43033,13 @@ async function parseImportFile(kind, source) {
 // src/App.tsx
 var import_jsx_runtime3 = __toESM(require_jsx_runtime(), 1);
 function summarizeRoster(records) {
-  const byBrand = Object.fromEntries(["\u8336\u989C\u60A6\u8272", "\u9E33\u592E\u5496\u5561", "\u53E4\u5FB7\u58A8\u67E0"].map((brand) => [brand, { total: 0, fullTime: 0, student: 0, partTime: 0 }]));
+  const byBrand = Object.fromEntries(["茶颜悦色", "鸳央咖啡", "古德墨柠"].map((brand) => [brand, { total: 0, fullTime: 0, student: 0, partTime: 0 }]));
   records.forEach((record) => {
     const bucket = byBrand[record.brand];
     if (!bucket) return;
     bucket.total += 1;
-    if (record.employmentType === "\u8FD0\u8425\u5168\u804C") bucket.fullTime += 1;
-    else if (record.employmentType === "\u5B66\u751F\u7528\u5DE5") bucket.student += 1;
+    if (record.employmentType === "运营全职") bucket.fullTime += 1;
+    else if (record.employmentType === "学生用工") bucket.student += 1;
     else bucket.partTime += 1;
   });
   const workNos = /* @__PURE__ */ new Set();
@@ -43048,45 +43048,45 @@ function summarizeRoster(records) {
   records.forEach((record) => {
     if (workNos.has(record.workNo)) duplicateWorkNos += 1;
     workNos.add(record.workNo);
-    if (record.dataFlags.includes("\u7528\u5DE5\u7C7B\u578B\u5F85\u786E\u8BA4")) typeExceptions.push({ workNo: record.workNo, name: record.name, brand: record.brand, rowNumber: 0, employmentType: record.employmentType });
+    if (record.dataFlags.includes("用工类型待确认")) typeExceptions.push({ workNo: record.workNo, name: record.name, brand: record.brand, rowNumber: 0, employmentType: record.employmentType });
   });
   return { totalRecords: records.length, duplicateWorkNos, typeExceptions, byBrand };
 }
 var PAGE_LABELS = {
-  home: "\u5DE1\u5E97\u9996\u9875",
-  recommend: "\u91CD\u70B9\u95E8\u5E97\u63A8\u8350",
-  visits: "\u5DE1\u5E97\u8BB0\u5F55",
-  issues: "\u95EE\u9898\u95ED\u73AF",
-  dashboard: "\u7BA1\u7406\u603B\u89C8",
-  imports: "\u57FA\u7840\u6570\u636E\u5BFC\u5165",
-  standards: "\u5DE1\u5E97\u6807\u51C6",
-  profile: "\u6211\u7684",
-  roster: "\u4EBA\u5458\u4E3B\u6570\u636E"
+  home: "巡店首页",
+  recommend: "重点门店推荐",
+  visits: "巡店记录",
+  issues: "问题闭环",
+  dashboard: "管理总览",
+  imports: "基础数据导入",
+  standards: "巡店标准",
+  profile: "我的",
+  roster: "人员主数据"
 };
 var NAV_ITEMS = [
-  { page: "home", label: "\u5DE1\u5E97\u9996\u9875", icon: House, section: "\u65E5\u5E38\u5DE5\u4F5C" },
-  { page: "recommend", label: "\u63A8\u8350\u95E8\u5E97", icon: Sparkles },
-  { page: "visits", label: "\u5DE1\u5E97\u8BB0\u5F55", icon: ClipboardCheck },
-  { page: "issues", label: "\u95EE\u9898\u95ED\u73AF", icon: CircleAlert },
-  { page: "dashboard", label: "\u7BA1\u7406\u603B\u89C8", icon: LayoutDashboard, section: "\u7BA1\u7406\u590D\u76D8" },
-  { page: "imports", label: "\u57FA\u7840\u6570\u636E", icon: FileSpreadsheet },
-  { page: "roster", label: "\u4EBA\u5458\u4E3B\u6570\u636E", icon: UsersRound },
-  { page: "standards", label: "\u5DE1\u5E97\u6807\u51C6", icon: BookOpen, section: "\u89C4\u5219\u4E0E\u8BF4\u660E" }
+  { page: "home", label: "巡店首页", icon: House, section: "日常工作" },
+  { page: "recommend", label: "推荐门店", icon: Sparkles },
+  { page: "visits", label: "巡店记录", icon: ClipboardCheck },
+  { page: "issues", label: "问题闭环", icon: CircleAlert },
+  { page: "dashboard", label: "管理总览", icon: LayoutDashboard, section: "管理复盘" },
+  { page: "imports", label: "基础数据", icon: FileSpreadsheet },
+  { page: "roster", label: "人员主数据", icon: UsersRound },
+  { page: "standards", label: "巡店标准", icon: BookOpen, section: "规则与说明" }
 ];
 var ACTION_LABELS = {
-  create: "\u521B\u5EFA\u95EE\u9898",
-  comment: "\u8BB0\u5F55\u8DDF\u8FDB",
-  start: "\u5F00\u59CB\u5904\u7406",
-  complete: "\u63D0\u4EA4\u590D\u6838",
-  review: "\u590D\u6838\u901A\u8FC7\u5E76\u5173\u95ED",
-  reopen: "\u9000\u56DE\u7EE7\u7EED\u5904\u7406",
-  close: "\u5173\u95ED\u95EE\u9898"
+  create: "创建问题",
+  comment: "记录跟进",
+  start: "开始处理",
+  complete: "提交复核",
+  review: "复核通过并关闭",
+  reopen: "退回继续处理",
+  close: "关闭问题"
 };
 var CLOSURE_STEPS = [
-  { icon: CircleAlert, title: "\u5F85\u5904\u7406", subtitle: "BP \u73B0\u573A\u786E\u8BA4" },
-  { icon: Clock3, title: "\u5904\u7406\u4E2D", subtitle: "BP \u6301\u7EED\u8DDF\u8FDB" },
-  { icon: FileCheck2, title: "\u5F85\u590D\u6838", subtitle: "\u95E8\u5E97\u5904\u7406\u5B8C\u6210" },
-  { icon: ShieldCheck, title: "\u5DF2\u5173\u95ED", subtitle: "\u54C1\u724C\u7ECF\u7406\u901A\u8FC7" }
+  { icon: CircleAlert, title: "待处理", subtitle: "BP 现场确认" },
+  { icon: Clock3, title: "处理中", subtitle: "BP 持续跟进" },
+  { icon: FileCheck2, title: "待复核", subtitle: "门店处理完成" },
+  { icon: ShieldCheck, title: "已关闭", subtitle: "品牌经理通过" }
 ];
 var CATEGORY_KEY_BY_LABEL = Object.fromEntries(
   ISSUE_CATEGORY_DICTIONARY.map((item2) => [item2.label, item2.key])
@@ -43095,18 +43095,18 @@ var CATEGORY_LABEL_BY_KEY = Object.fromEntries(
   ISSUE_CATEGORY_DICTIONARY.map((item2) => [item2.key, item2.label])
 );
 function riskBadge(level) {
-  if (level === "\u6781\u9AD8\u98CE\u9669" || level === "\u9AD8\u98CE\u9669") return "badge-red";
-  if (level === "\u4E2D\u98CE\u9669") return "badge-orange";
-  if (level === "\u6570\u636E\u5F85\u8865\u5145") return "badge-amber";
+  if (level === "极高风险" || level === "高风险") return "badge-red";
+  if (level === "中风险") return "badge-orange";
+  if (level === "数据待补充") return "badge-amber";
   return "badge-green";
 }
 function statusBadge(status) {
   return status === "closed" ? "badge-green" : status === "completed" ? "badge-blue" : status === "open" ? "badge-orange" : "badge-amber";
 }
 function formatDate(date) {
-  if (!date) return "\u2014";
+  if (!date) return "—";
   const [, month, day] = date.slice(0, 10).split("-");
-  return `${Number(month)}\u6708${Number(day)}\u65E5`;
+  return `${Number(month)}月${Number(day)}日`;
 }
 function ProgressRing({ value }) {
   const radius = 45;
@@ -43134,7 +43134,7 @@ function ProgressRing({ value }) {
         value,
         "%"
       ] }),
-      /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "progress-ring-label", children: "\u5B63\u5EA6\u8FDB\u5EA6" })
+      /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "progress-ring-label", children: "季度进度" })
     ] })
   ] });
 }
@@ -43145,8 +43145,8 @@ function EmptyState({ title, description }) {
     /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("p", { children: description })
   ] });
 }
-var emptyIssueForm = () => ({ description: "", dimension: "\u4EBA\u5458\u72B6\u6001", nature: "\u6267\u884C\u504F\u5DEE", severity: "medium", responsibleName: "", dueDate: "2026-11-03" });
-function NewVisitModal({ employee, stores, visits, preselectedStoreId, onClose, onSave }) {
+var emptyIssueForm = () => ({ description: "", dimension: "人员状态", nature: "执行偏差", severity: "medium", responsibleName: "", dueDate: "2026-11-03" });
+function NewVisitModal({ employee, stores, visits, preselectedStoreId, modeLabel, onReload, onClose, onSave }) {
   const [step, setStep] = (0, import_react5.useState)(1);
   const [query, setQuery] = (0, import_react5.useState)("");
   const [storeId, setStoreId] = (0, import_react5.useState)(preselectedStoreId ?? "");
@@ -43154,6 +43154,9 @@ function NewVisitModal({ employee, stores, visits, preselectedStoreId, onClose, 
   const [summary, setSummary] = (0, import_react5.useState)("");
   const [note, setNote] = (0, import_react5.useState)("");
   const [issueForms, setIssueForms] = (0, import_react5.useState)([]);
+  (0, import_react5.useEffect)(() => {
+    if (!stores.length) onReload();
+  }, []);
   const selectedStore = stores.find((store) => store.id === storeId);
   const brandStores = stores.filter((store) => employee.brands.includes(store.brand));
   const filteredStores = brandStores.filter((store) => `${store.name}${store.code}${store.brand}`.toLowerCase().includes(query.toLowerCase())).slice(0, 6);
@@ -43193,14 +43196,14 @@ ${note.trim()}` : "")
       dueDate: form.dueDate,
       responsibleName: form.responsibleName.trim()
     }));
-    const events = newIssues.map((issue) => createIssueEvent(issue, employee.id, "create", { comment: "\u5DE1\u5E97\u73B0\u573A\u8BB0\u5F55\u95EE\u9898", createdAt: (/* @__PURE__ */ new Date()).toISOString() }));
+    const events = newIssues.map((issue) => createIssueEvent(issue, employee.id, "create", { comment: "巡店现场记录问题", createdAt: (/* @__PURE__ */ new Date()).toISOString() }));
     onSave(visit, newIssues, events, isRevisit);
   };
   return /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "modal-backdrop", onMouseDown: (event) => event.target === event.currentTarget && onClose(), children: /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "modal modal-wide", children: [
     /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "modal-header", children: [
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { children: [
-        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("h2", { children: "\u5F00\u59CB\u5DE1\u5E97" }),
-        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("p", { children: "\u5C11\u91CF\u5FC5\u586B\uFF0C\u73B0\u573A\u95EE\u9898\u53EF\u4E00\u6B21\u8BB0\u5F55\u591A\u9879" })
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("h2", { children: "开始巡店" }),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("p", { children: "少量必填，现场问题可一次记录多项" })
       ] }),
       /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("button", { className: "icon-button", onClick: onClose, children: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(X, { size: 18 }) })
     ] }),
@@ -43208,33 +43211,33 @@ ${note.trim()}` : "")
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "steps", children: [
         /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: `step ${step === 1 ? "active" : ""}`, children: [
           /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: "step-number", children: "1" }),
-          "\u786E\u8BA4\u5DE1\u5E97"
+          "确认巡店"
         ] }),
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: "step-line" }),
         /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: `step ${step === 2 ? "active" : ""}`, children: [
           /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: "step-number", children: "2" }),
-          "\u8BB0\u5F55\u95EE\u9898"
+          "记录问题"
         ] })
       ] }),
       step === 1 ? /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "stack", children: [
         /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "auto-card", children: [
           /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "auto-item", children: [
-            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("label", { children: "\u5DE1\u5E97 HRBP" }),
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("label", { children: "巡店 HRBP" }),
             /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("strong", { children: employee.name })
           ] }),
           /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "auto-item", children: [
-            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("label", { children: "\u5DE5\u53F7" }),
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("label", { children: "工号" }),
             /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("strong", { children: employee.workNo })
           ] }),
           /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "auto-item", children: [
-            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("label", { children: "\u6240\u5C5E\u54C1\u724C" }),
-            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("strong", { children: employee.brands.join("\u3001") })
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("label", { children: "所属品牌" }),
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("strong", { children: employee.brands.join("、") })
           ] })
         ] }),
         /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "form-grid", children: [
           /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "form-group full", children: [
             /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("label", { className: "form-label", children: [
-              "\u9009\u62E9\u95E8\u5E97",
+              "选择门店",
               /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: "required", children: "*" })
             ] }),
             /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "search-box", children: [
@@ -43242,7 +43245,7 @@ ${note.trim()}` : "")
               /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("input", { value: query, onChange: (e) => {
                 setQuery(e.target.value);
                 setStoreId("");
-              }, placeholder: `\u672C\u54C1\u724C\u53EF\u5DE1 ${brandStores.length} \u5BB6\uFF0C\u8F93\u5165\u540D\u79F0\u6216\u7F16\u7801\u641C\u7D22` })
+              }, placeholder: `本品牌可巡 ${brandStores.length} 家，输入名称或编码搜索` })
             ] }),
             !selectedStore && /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card", style: { padding: 6 }, children: [
               filteredStores.map((store) => /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("button", { className: "nav-item", style: { color: "var(--ink)" }, onClick: () => {
@@ -43254,70 +43257,76 @@ ${note.trim()}` : "")
                   store.name,
                   /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("small", { style: { display: "block", color: "var(--muted)" }, children: [
                     store.code,
-                    " \xB7 ",
+                    " · ",
                     store.brand
                   ] })
                 ] })
               ] }, store.id)),
-              !filteredStores.length && /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "empty-state", style: { padding: 18 }, children: brandStores.length ? "\u672A\u627E\u5230\u5339\u914D\u95E8\u5E97\uFF0C\u8BF7\u6362\u4E2A\u5173\u952E\u8BCD" : "\u95E8\u5E97\u6570\u636E\u5C1A\u672A\u52A0\u8F7D\u5B8C\u6210\uFF0C\u8BF7\u7A0D\u5019\u91CD\u8BD5" }),
+              !filteredStores.length && /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "empty-state", style: { padding: 18 }, children: [
+                brandStores.length ? "未找到匹配门店，请换个关键词" : `门店数据尚未加载完成（${modeLabel}，当前读取 ${stores.length} 家）`,
+                !brandStores.length && /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { style: { marginTop: 10 }, children: /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("button", { className: "button button-secondary button-sm", onClick: onReload, children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(RefreshCw, { size: 13 }),
+                  "重新加载门店"
+                ] }) })
+              ] }),
               !query && brandStores.length > 6 && /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { style: { padding: "8px 12px", fontSize: 12, color: "var(--muted)" }, children: [
-                "\u4EC5\u663E\u793A\u524D 6 \u5BB6\uFF0C\u8F93\u5165\u540D\u79F0\u6216\u7F16\u7801\u53EF\u641C\u7D22\u5168\u90E8 ",
+                "仅显示前 6 家，输入名称或编码可搜索全部 ",
                 brandStores.length,
-                " \u5BB6"
+                " 家"
               ] })
             ] }),
             selectedStore && /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "auto-card", children: [
               /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "auto-item", children: [
-                /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("label", { children: "\u5DF2\u9009\u95E8\u5E97" }),
+                /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("label", { children: "已选门店" }),
                 /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("strong", { children: selectedStore.name })
               ] }),
               /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "auto-item", children: [
-                /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("label", { children: "\u95E8\u5E97\u7F16\u7801" }),
+                /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("label", { children: "门店编码" }),
                 /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("strong", { children: selectedStore.code })
               ] }),
               /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "auto-item", children: [
-                /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("label", { children: "\u533A\u57DF / \u5E97\u957F" }),
+                /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("label", { children: "区域 / 店长" }),
                 /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("strong", { children: [
-                  selectedStore.region || "\u2014",
-                  " \xB7 ",
-                  selectedStore.managerName ? selectedStore.managerIsStoreManager === false ? `${selectedStore.managerName}\uFF08${selectedStore.managerPosition}\xB7\u4EE3\uFF09` : selectedStore.managerName : "\u2014"
+                  selectedStore.region || "—",
+                  " · ",
+                  selectedStore.managerName ? selectedStore.managerIsStoreManager === false ? `${selectedStore.managerName}（${selectedStore.managerPosition}·代）` : selectedStore.managerName : "—"
                 ] })
               ] }),
               /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "auto-item", children: [
-                /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("label", { children: "\u54C1\u724C" }),
+                /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("label", { children: "品牌" }),
                 /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("strong", { children: selectedStore.brand })
               ] }),
               /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "auto-item", children: [
-                /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("label", { children: "\u533A\u7ECF\u7406" }),
-                /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("strong", { children: selectedStore.districtManager || "\u2014" })
+                /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("label", { children: "区经理" }),
+                /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("strong", { children: selectedStore.districtManager || "—" })
               ] }),
               /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "auto-item", children: [
-                /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("label", { children: "\u5927\u5E97\u957F" }),
-                /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("strong", { children: selectedStore.areaManager || "\u2014" })
+                /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("label", { children: "大店长" }),
+                /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("strong", { children: selectedStore.areaManager || "—" })
               ] })
             ] })
           ] }),
           /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "form-group", children: [
             /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("label", { className: "form-label", children: [
-              "\u5DE1\u5E97\u65E5\u671F",
+              "巡店日期",
               /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: "required", children: "*" })
             ] }),
             /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("input", { className: "input", type: "date", value: visitDate, max: DEMO_TODAY, onChange: (e) => setVisitDate(e.target.value) })
           ] }),
           /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "form-group", children: [
-            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("label", { className: "form-label", children: "\u8FBE\u6807\u53E3\u5F84" }),
-            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "input", style: { background: "#f7f8f5" }, children: isRevisit ? "\u672C\u5B63\u5EA6\u590D\u8BBF\uFF0C\u4E0D\u91CD\u590D\u8BA1\u6570" : "\u672C\u5B63\u5EA6\u9996\u8BBF\uFF0C\u8BA1\u5165\u53BB\u91CD\u95E8\u5E97" })
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("label", { className: "form-label", children: "达标口径" }),
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "input", style: { background: "#f7f8f5" }, children: isRevisit ? "本季度复访，不重复计数" : "本季度首访，计入去重门店" })
           ] }),
           /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "form-group full", children: [
             /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("label", { className: "form-label", children: [
-              "\u5DE1\u5E97\u5C0F\u7ED3",
+              "巡店小结",
               /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: "required", children: "*" })
             ] }),
-            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("textarea", { className: "textarea", value: summary, onChange: (e) => setSummary(e.target.value), placeholder: "\u7B80\u8981\u8BB0\u5F55\u73B0\u573A\u6574\u4F53\u60C5\u51B5\u3001\u89C2\u5BDF\u5230\u7684\u4E8B\u5B9E\u2026" })
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("textarea", { className: "textarea", value: summary, onChange: (e) => setSummary(e.target.value), placeholder: "简要记录现场整体情况、观察到的事实…" })
           ] }),
           /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "form-group full", children: [
-            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("label", { className: "form-label", children: "\u5907\u6CE8" }),
-            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("input", { className: "input", value: note, onChange: (e) => setNote(e.target.value), placeholder: "\u9009\u586B" })
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("label", { className: "form-label", children: "备注" }),
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("input", { className: "input", value: note, onChange: (e) => setNote(e.target.value), placeholder: "选填" })
           ] })
         ] })
       ] }) : /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "stack", children: [
@@ -43325,86 +43334,86 @@ ${note.trim()}` : "")
           /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(CircleCheck, { size: 16 }),
           /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("span", { children: [
             selectedStore?.name,
-            " \xB7 ",
+            " · ",
             formatDate(visitDate),
-            "\u3002\u65E0\u95EE\u9898\u53EF\u76F4\u63A5\u5B8C\u6210\uFF1B\u6709\u95EE\u9898\u53EF\u6DFB\u52A0\u591A\u9879\uFF0C\u63D0\u4EA4\u540E\u8FDB\u5165\u95ED\u73AF\u3002"
+            "。无问题可直接完成；有问题可添加多项，提交后进入闭环。"
           ] })
         ] }),
         !issueForms.length && /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "no-issue-box", children: [
           /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(CircleCheck, { size: 25, style: { color: "var(--green-700)", marginBottom: 8 } }),
-          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("p", { children: "\u82E5\u672C\u6B21\u672A\u53D1\u73B0\u95EE\u9898\uFF0C\u76F4\u63A5\u70B9\u51FB\u201C\u5B8C\u6210\u5DE1\u5E97\u201D" })
+          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("p", { children: "若本次未发现问题，直接点击“完成巡店”" })
         ] }),
         issueForms.map((form, index) => /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card", style: { padding: 17, boxShadow: "none" }, children: [
           /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { style: { display: "flex", justifyContent: "space-between", marginBottom: 15 }, children: [
             /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("strong", { style: { fontSize: 13 }, children: [
-              "\u95EE\u9898 ",
+              "问题 ",
               index + 1
             ] }),
             /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("button", { className: "text-button", onClick: () => setIssueForms((current) => current.filter((_, i) => i !== index)), children: [
               /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(X, { size: 14 }),
-              "\u79FB\u9664"
+              "移除"
             ] })
           ] }),
           /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "form-grid", children: [
             /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "form-group full", children: [
               /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("label", { className: "form-label", children: [
-                "\u95EE\u9898\u63CF\u8FF0",
+                "问题描述",
                 /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: "required", children: "*" })
               ] }),
-              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("textarea", { className: "textarea", value: form.description, onChange: (e) => updateIssue(index, { description: e.target.value }), placeholder: "\u63CF\u8FF0\u73B0\u573A\u53D1\u73B0\u7684\u5177\u4F53\u4E8B\u5B9E\uFF0C\u4E0D\u5199\u7B3C\u7EDF\u8BC4\u4EF7" })
+              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("textarea", { className: "textarea", value: form.description, onChange: (e) => updateIssue(index, { description: e.target.value }), placeholder: "描述现场发现的具体事实，不写笼统评价" })
             ] }),
             /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "form-group", children: [
-              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("label", { className: "form-label", children: "\u95EE\u9898\u7EF4\u5EA6" }),
+              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("label", { className: "form-label", children: "问题维度" }),
               /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("select", { className: "input", value: form.dimension, onChange: (e) => updateIssue(index, { dimension: e.target.value }), children: ISSUE_CATEGORY_DICTIONARY.map((item2) => /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("option", { children: item2.label }, item2.key)) })
             ] }),
             /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "form-group", children: [
-              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("label", { className: "form-label", children: "\u95EE\u9898\u5B9A\u6027" }),
+              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("label", { className: "form-label", children: "问题定性" }),
               /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("select", { className: "input", value: form.nature, onChange: (e) => updateIssue(index, { nature: e.target.value }), children: ISSUE_NATURES.map((item2) => /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("option", { children: item2 }, item2)) })
             ] }),
             /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "form-group", children: [
-              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("label", { className: "form-label", children: "\u4E25\u91CD\u7A0B\u5EA6" }),
+              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("label", { className: "form-label", children: "严重程度" }),
               /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("select", { className: "input", value: form.severity, onChange: (e) => updateIssue(index, { severity: e.target.value }), children: [
-                /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("option", { value: "high", children: "\u9AD8" }),
-                /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("option", { value: "medium", children: "\u4E2D" }),
-                /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("option", { value: "low", children: "\u4F4E" })
+                /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("option", { value: "high", children: "高" }),
+                /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("option", { value: "medium", children: "中" }),
+                /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("option", { value: "low", children: "低" })
               ] })
             ] }),
             /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "form-group", children: [
               /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("label", { className: "form-label", children: [
-                "\u95ED\u73AF\u622A\u6B62\u65E5\u671F",
+                "闭环截止日期",
                 /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: "required", children: "*" })
               ] }),
               /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("input", { className: "input", type: "date", min: visitDate, value: form.dueDate, onChange: (e) => updateIssue(index, { dueDate: e.target.value }) })
             ] }),
             /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "form-group full", children: [
               /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("label", { className: "form-label", children: [
-                "\u95E8\u5E97\u95ED\u73AF\u8D23\u4EFB\u4EBA",
+                "门店闭环责任人",
                 /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: "required", children: "*" })
               ] }),
-              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("input", { className: "input", value: form.responsibleName, onChange: (e) => updateIssue(index, { responsibleName: e.target.value }), placeholder: `\u9ED8\u8BA4\u53EF\u53C2\u8003\u5E97\u957F\uFF1A${selectedStore?.managerName ?? "\u2014"}` })
+              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("input", { className: "input", value: form.responsibleName, onChange: (e) => updateIssue(index, { responsibleName: e.target.value }), placeholder: `默认可参考店长：${selectedStore?.managerName ?? "—"}` })
             ] })
           ] })
         ] }, index)),
         /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("button", { className: "button button-ghost", onClick: () => setIssueForms((current) => [...current, emptyIssueForm()]), children: [
           /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(Plus, { size: 16 }),
-          "\u6DFB\u52A0\u95EE\u9898"
+          "添加问题"
         ] })
       ] })
     ] }),
     /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "modal-footer", children: [
-      /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: "form-hint", children: "\u6F14\u793A\u8BB0\u5F55\u4EC5\u4FDD\u7559\u5728\u5F53\u524D\u9875\u9762\u4F1A\u8BDD" }),
+      /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: "form-hint", children: "演示记录仅保留在当前页面会话" }),
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "modal-footer-right", children: [
         step === 2 && /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("button", { className: "button button-secondary", onClick: () => setStep(1), children: [
           /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(ArrowLeft, { size: 15 }),
-          "\u4E0A\u4E00\u6B65"
+          "上一步"
         ] }),
         step === 1 ? /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("button", { className: "button button-primary", disabled: !canNext, onClick: () => setStep(2), children: [
-          "\u4E0B\u4E00\u6B65",
+          "下一步",
           /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(ArrowRight, { size: 15 })
         ] }) : /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("button", { className: "button button-primary", disabled: !issuesValid, onClick: submit, children: [
           /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(Check, { size: 15 }),
-          "\u5B8C\u6210\u5DE1\u5E97",
-          issueForms.length ? `\u5E76\u63D0\u4EA4 ${issueForms.length} \u4E2A\u95EE\u9898` : ""
+          "完成巡店",
+          issueForms.length ? `并提交 ${issueForms.length} 个问题` : ""
         ] })
       ] })
     ] })
@@ -43415,11 +43424,11 @@ function RiskDrawer({ recommendation, onClose, onVisit }) {
   return /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "drawer-backdrop", onMouseDown: (e) => e.target === e.currentTarget && onClose(), children: /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "drawer", children: [
     /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "drawer-header", children: [
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { children: [
-        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: `badge ${riskBadge(risk?.riskLevel)}`, children: risk?.riskLevel ?? "\u6570\u636E\u5F85\u8865\u5145" }),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: `badge ${riskBadge(risk?.riskLevel)}`, children: risk?.riskLevel ?? "数据待补充" }),
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("h2", { className: "drawer-title", children: recommendation.store.name }),
         /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("p", { className: "card-subtitle", children: [
           recommendation.store.code,
-          " \xB7 ",
+          " · ",
           recommendation.store.brand
         ] })
       ] }),
@@ -43428,38 +43437,38 @@ function RiskDrawer({ recommendation, onClose, onVisit }) {
     /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "drawer-body", children: [
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "detail-grid", children: [
         /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { children: [
-          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "detail-label", children: "\u98CE\u9669\u5206" }),
+          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "detail-label", children: "风险分" }),
           /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "detail-value", children: [
             risk?.knownScore ?? 0,
-            " / 9 \u5206",
-            risk?.missingCount ? ` \xB7 \u7F3A ${risk.missingCount} \u9879` : ""
+            " / 9 分",
+            risk?.missingCount ? ` · 缺 ${risk.missingCount} 项` : ""
           ] })
         ] }),
         /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { children: [
-          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "detail-label", children: "\u5EFA\u8BAE\u5DE1\u5E97\u8282\u594F" }),
-          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "detail-value", children: risk?.phase ?? "\u672C\u6708" })
+          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "detail-label", children: "建议巡店节奏" }),
+          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "detail-value", children: risk?.phase ?? "本月" })
         ] }),
         /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { children: [
-          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "detail-label", children: "\u6307\u6807\u6708\u4EFD" }),
-          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "detail-value", children: risk?.months.join("\u3001") ?? "\u2014" })
+          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "detail-label", children: "指标月份" }),
+          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "detail-value", children: risk?.months.join("、") ?? "—" })
         ] }),
         /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { children: [
-          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "detail-label", children: "\u89C4\u5219\u7248\u672C" }),
-          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "detail-value", children: "\u539F\u8868\u89C4\u5219 \xB7 v1.0" })
+          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "detail-label", children: "规则版本" }),
+          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "detail-value", children: "原表规则 · v1.0" })
         ] })
       ] }),
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "detail-section", children: [
-        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("h3", { children: "\u63A8\u8350\u7406\u7531" }),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("h3", { children: "推荐理由" }),
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "reason-box", children: recommendation.reasons.map((reason) => /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "reason", children: reason }, reason)) })
       ] }),
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "detail-section", children: [
-        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("h3", { children: "\u4E5D\u9879\u6253\u6807\u660E\u7EC6" }),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("h3", { children: "九项打标明细" }),
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "risk-items", children: risk?.items.map((item2) => /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: `risk-item ${item2.status}`, children: [
           /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: "risk-item-icon", children: item2.status === "abnormal" ? /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(CircleAlert, { size: 15, color: "var(--red)" }) : item2.status === "missing" ? /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(CircleHelp, { size: 15, color: "var(--amber)" }) : /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(CircleCheck, { size: 15, color: "var(--green-700)" }) }),
           /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { children: [
             /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "risk-item-title", children: [
               item2.label,
-              item2.status === "abnormal" ? " \xB7 +1" : item2.status === "missing" ? " \xB7 \u6682\u65E0\u6570\u636E" : " \xB7 \u6B63\u5E38"
+              item2.status === "abnormal" ? " · +1" : item2.status === "missing" ? " · 暂无数据" : " · 正常"
             ] }),
             /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "risk-item-reason", children: item2.reason })
           ] })
@@ -43468,9 +43477,9 @@ function RiskDrawer({ recommendation, onClose, onVisit }) {
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "drawer-actions", children: [
         /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("button", { className: "button button-primary", onClick: onVisit, children: [
           /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(Plus, { size: 15 }),
-          "\u53BB\u8FD9\u5BB6\u95E8\u5E97\u5DE1\u5E97"
+          "去这家门店巡店"
         ] }),
-        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("button", { className: "button button-secondary", onClick: onClose, children: "\u5173\u95ED" })
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("button", { className: "button button-secondary", onClick: onClose, children: "关闭" })
       ] })
     ] })
   ] }) });
@@ -43495,9 +43504,9 @@ function IssueDrawer({ issue, employee, employees, stores, events, onClose, onAc
           /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: `badge ${statusBadge(issue.status)}`, children: ISSUE_STATUS_LABELS[issue.status] }),
           /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("span", { className: `severity severity-${issue.severity}`, children: [
             ISSUE_SEVERITY_LABELS[issue.severity],
-            "\u4E25\u91CD"
+            "严重"
           ] }),
-          isIssueOverdue(issue, DEMO_TODAY) && /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: "badge badge-red", children: "\u5DF2\u903E\u671F" })
+          isIssueOverdue(issue, DEMO_TODAY) && /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: "badge badge-red", children: "已逾期" })
         ] }),
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("h2", { className: "drawer-title", children: issue.title })
       ] }),
@@ -43506,76 +43515,76 @@ function IssueDrawer({ issue, employee, employees, stores, events, onClose, onAc
     /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "drawer-body", children: [
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "detail-grid", children: [
         /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { children: [
-          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "detail-label", children: "\u95E8\u5E97" }),
+          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "detail-label", children: "门店" }),
           /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "detail-value", children: store?.name })
         ] }),
         /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { children: [
-          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "detail-label", children: "\u4E3B\u8D23 BP" }),
+          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "detail-label", children: "主责 BP" }),
           /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "detail-value", children: reporter?.name })
         ] }),
         /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { children: [
-          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "detail-label", children: "\u95EE\u9898\u7EF4\u5EA6" }),
+          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "detail-label", children: "问题维度" }),
           /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "detail-value", children: issue.dimension ?? CATEGORY_LABEL_BY_KEY[issue.category] ?? issue.category })
         ] }),
         /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { children: [
-          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "detail-label", children: "\u95E8\u5E97\u95ED\u73AF\u8D23\u4EFB\u4EBA" }),
-          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "detail-value", children: issue.responsibleName ?? store?.managerName ?? "\u2014" })
+          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "detail-label", children: "门店闭环责任人" }),
+          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "detail-value", children: issue.responsibleName ?? store?.managerName ?? "—" })
         ] }),
         /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { children: [
-          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "detail-label", children: "\u53D1\u73B0\u65E5\u671F" }),
+          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "detail-label", children: "发现日期" }),
           /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "detail-value", children: issue.createdAt.slice(0, 10) })
         ] }),
         /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { children: [
-          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "detail-label", children: "\u95ED\u73AF\u622A\u6B62\u65E5\u671F" }),
+          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "detail-label", children: "闭环截止日期" }),
           /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "detail-value", style: { color: isIssueOverdue(issue, DEMO_TODAY) ? "var(--red)" : void 0 }, children: [
             issue.dueDate,
-            isIssueOverdue(issue, DEMO_TODAY) ? ` \xB7 \u903E\u671F ${getOverdueDays(issue, DEMO_TODAY)} \u5929` : ""
+            isIssueOverdue(issue, DEMO_TODAY) ? ` · 逾期 ${getOverdueDays(issue, DEMO_TODAY)} 天` : ""
           ] })
         ] })
       ] }),
       issue.latestFollowup && /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "detail-section", children: [
-        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("h3", { children: "\u6700\u65B0\u8DDF\u8FDB" }),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("h3", { children: "最新跟进" }),
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "timeline-comment", children: issue.latestFollowup })
       ] }),
       (actions.length > 0 || canComment) && /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "detail-section", children: [
-        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("h3", { children: "\u672C\u6B21\u5904\u7406" }),
-        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("textarea", { className: "textarea", value: comment, onChange: (e) => setComment(e.target.value), placeholder: employee.role === "manager" ? "\u590D\u6838\u610F\u89C1\uFF1A\u901A\u8FC7\u65F6\u9009\u586B\uFF0C\u9000\u56DE\u65F6\u5FC5\u586B" : "\u586B\u5199\u672C\u6B21\u8DDF\u8FDB\u4E8B\u5B9E\u3001\u95E8\u5E97\u5904\u7406\u7ED3\u679C\u6216\u4E0B\u4E00\u6B65\u5B89\u6392" }),
-        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "form-hint", style: { marginTop: 6 }, children: "\u4FDD\u5B58\u540E\u5C06\u5199\u5165\u95EE\u9898\u65F6\u95F4\u7EBF" }),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("h3", { children: "本次处理" }),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("textarea", { className: "textarea", value: comment, onChange: (e) => setComment(e.target.value), placeholder: employee.role === "manager" ? "复核意见：通过时选填，退回时必填" : "填写本次跟进事实、门店处理结果或下一步安排" }),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "form-hint", style: { marginTop: 6 }, children: "保存后将写入问题时间线" }),
         /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "drawer-actions", style: { flexWrap: "wrap" }, children: [
           canComment && /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("button", { className: "button button-secondary button-sm", disabled: !comment.trim(), onClick: () => runAction("comment"), children: [
             /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(ListChecks, { size: 14 }),
-            "\u4EC5\u4FDD\u5B58\u8DDF\u8FDB"
+            "仅保存跟进"
           ] }),
-          actions.includes("start") && /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("button", { className: "button button-primary button-sm", disabled: !comment.trim(), onClick: () => runAction("start"), children: "\u5F00\u59CB\u5904\u7406" }),
+          actions.includes("start") && /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("button", { className: "button button-primary button-sm", disabled: !comment.trim(), onClick: () => runAction("start"), children: "开始处理" }),
           actions.includes("complete") && /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("button", { className: "button button-primary button-sm", disabled: !comment.trim(), onClick: () => runAction("complete"), children: [
             /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(FileCheck2, { size: 14 }),
-            "\u63D0\u4EA4\u590D\u6838"
+            "提交复核"
           ] }),
           actions.includes("review") && /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("button", { className: "button button-primary button-sm", onClick: () => runAction("review"), children: [
             /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(ShieldCheck, { size: 14 }),
-            "\u590D\u6838\u901A\u8FC7\u5E76\u5173\u95ED"
+            "复核通过并关闭"
           ] }),
           actions.includes("reopen") && /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("button", { className: "button button-danger button-sm", disabled: !comment.trim(), onClick: () => runAction("reopen"), children: [
             /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(RefreshCw, { size: 14 }),
-            issue.status === "closed" ? "\u91CD\u65B0\u6253\u5F00" : "\u9000\u56DE\u7EE7\u7EED\u5904\u7406"
+            issue.status === "closed" ? "重新打开" : "退回继续处理"
           ] })
         ] })
       ] }),
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "detail-section", children: [
         /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("h3", { children: [
-          "\u95ED\u73AF\u65F6\u95F4\u7EBF \xB7 ",
+          "闭环时间线 · ",
           issueEvents.length,
-          " \u6761"
+          " 条"
         ] }),
         issueEvents.length ? /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "timeline", children: issueEvents.map((event) => /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "timeline-item", children: [
           /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "timeline-title", children: ACTION_LABELS[event.action] ?? event.action }),
           /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "timeline-meta", children: [
-            employees.find((item2) => item2.id === event.actorId)?.name ?? "\u7CFB\u7EDF",
-            " \xB7 ",
+            employees.find((item2) => item2.id === event.actorId)?.name ?? "系统",
+            " · ",
             formatDate(event.createdAt)
           ] }),
           event.comment && /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "timeline-comment", children: event.comment })
-        ] }, event.id)) }) : /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("p", { className: "form-hint", children: "\u6682\u65E0\u5904\u7406\u8BB0\u5F55" })
+        ] }, event.id)) }) : /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("p", { className: "form-hint", children: "暂无处理记录" })
       ] })
     ] })
   ] }) });
@@ -43588,34 +43597,34 @@ function StoreCard({ recommendation, onDetail, onVisit }) {
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "store-name", children: recommendation.store.name }),
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "store-code", children: recommendation.store.code })
       ] }),
-      /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: `badge ${riskBadge(recommendation.risk?.riskLevel)}`, children: recommendation.risk?.riskLevel ?? "\u6570\u636E\u5F85\u8865\u5145" })
+      /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: `badge ${riskBadge(recommendation.risk?.riskLevel)}`, children: recommendation.risk?.riskLevel ?? "数据待补充" })
     ] }),
     /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "store-info", children: [
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("span", { children: [
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(MapPin, { size: 13 }),
-        recommendation.store.region || "\u2014"
+        recommendation.store.region || "—"
       ] }),
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("span", { children: [
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(UserRound, { size: 13 }),
-        "\u5E97\u957F ",
-        recommendation.store.managerName || "\u2014"
+        "店长 ",
+        recommendation.store.managerName || "—"
       ] }),
-      recommendation.unvisited && /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: "badge badge-orange", children: "\u672C\u5B63\u672A\u5DE1" })
+      recommendation.unvisited && /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: "badge badge-orange", children: "本季未巡" })
     ] }),
     /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "reason-box", children: recommendation.reasons.map((reason) => /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "reason", children: reason }, reason)) }),
     /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "store-card-footer", children: [
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("button", { className: "text-button", onClick: onDetail, children: [
-        "\u67E5\u770B\u6253\u6807\u4F9D\u636E",
+        "查看打标依据",
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(ChevronRight, { size: 13 })
       ] }),
-      /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("button", { className: "button button-primary button-sm", onClick: onVisit, children: "\u5F00\u59CB\u5DE1\u5E97" })
+      /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("button", { className: "button button-primary button-sm", onClick: onVisit, children: "开始巡店" })
     ] })
   ] });
 }
 function inferBrandFromFileName(fileName) {
-  if (fileName.includes("\u8336\u989C")) return "\u8336\u989C\u60A6\u8272";
-  if (fileName.includes("\u53E4\u5FB7\u58A8\u67E0") || fileName.includes("\u58A8\u67E0")) return "\u53E4\u5FB7\u58A8\u67E0";
-  if (fileName.includes("\u9E33\u592E")) return "\u9E33\u592E\u5496\u5561";
+  if (fileName.includes("茶颜")) return "茶颜悦色";
+  if (fileName.includes("古德墨柠") || fileName.includes("墨柠")) return "古德墨柠";
+  if (fileName.includes("鸳央")) return "鸳央咖啡";
   return void 0;
 }
 function ImportPage() {
@@ -43624,7 +43633,7 @@ function ImportPage() {
   const [fileName, setFileName] = (0, import_react5.useState)("");
   const [loading, setLoading] = (0, import_react5.useState)(false);
   const [fatal, setFatal] = (0, import_react5.useState)("");
-  const labels = { employees: "HR\u7EC4\u4EBA\u5458", stores: "\u95E8\u5E97\u5E95\u7A3F", metrics: "\u6307\u6807\u5E95\u7A3F", roster: "\u4EBA\u5458\u5927\u76D8" };
+  const labels = { employees: "HR组人员", stores: "门店底稿", metrics: "指标底稿", roster: "人员大盘" };
   const switchKind = (next) => {
     setKind(next);
     setResult(null);
@@ -43639,7 +43648,7 @@ function ImportPage() {
     try {
       if (kind === "roster") {
         const brand = inferBrandFromFileName(file.name);
-        if (!brand) throw new Error("\u65E0\u6CD5\u4ECE\u6587\u4EF6\u540D\u8BC6\u522B\u54C1\u724C\uFF0C\u8BF7\u786E\u4FDD\u6587\u4EF6\u540D\u5305\u542B\u8336\u989C\u3001\u53E4\u5FB7\u58A8\u67E0\u6216\u9E33\u592E");
+        if (!brand) throw new Error("无法从文件名识别品牌，请确保文件名包含茶颜、古德墨柠或鸳央");
         setResult(await parseRosterImport(file, brand, file.name));
       } else {
         const parsed = kind === "employees" ? await parseImportFile(kind, file) : kind === "stores" ? await parseImportFile(kind, file) : await parseImportFile(kind, file);
@@ -43647,7 +43656,7 @@ function ImportPage() {
       }
     } catch (error) {
       setResult(null);
-      setFatal(error instanceof Error ? error.message : "\u6587\u4EF6\u89E3\u6790\u5931\u8D25");
+      setFatal(error instanceof Error ? error.message : "文件解析失败");
     } finally {
       setLoading(false);
     }
@@ -43658,7 +43667,7 @@ function ImportPage() {
     const url = URL.createObjectURL(new Blob(["\uFEFF", csv], { type: "text/csv;charset=utf-8" }));
     const link = document.createElement("a");
     link.href = url;
-    link.download = `${labels[kind]}\u6A21\u677F.csv`;
+    link.download = `${labels[kind]}模板.csv`;
     link.click();
     URL.revokeObjectURL(url);
   };
@@ -43666,17 +43675,17 @@ function ImportPage() {
     /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "page-heading", children: [
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { children: [
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "eyebrow", children: "DATA FOUNDATION" }),
-        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("h1", { children: "\u57FA\u7840\u6570\u636E\u5BFC\u5165" }),
-        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("p", { children: "\u4EBA\u5458\u5927\u76D8\u6309\u771F\u5B9E\u5E95\u7A3F\u5217\u4F4D\u8BFB\u53D6\uFF1B\u54C1\u724C\u4ECE\u6587\u4EF6\u540D\u8BC6\u522B\uFF0C\u9010\u884C\u6821\u9A8C\u4E0D\u6539\u52A8\u6E90\u6587\u4EF6" })
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("h1", { children: "基础数据导入" }),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("p", { children: "人员大盘按真实底稿列位读取；品牌从文件名识别，逐行校验不改动源文件" })
       ] }),
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("button", { className: "button button-secondary", onClick: downloadTemplate, children: [
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(Download, { size: 15 }),
-        "\u4E0B\u8F7D\u5B57\u6BB5\u6A21\u677F"
+        "下载字段模板"
       ] })
     ] }),
     /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "inline-notice", children: [
       /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(Info, { size: 16 }),
-      /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { children: "\u5F53\u524D\u4E3A\u6F14\u793A\u73AF\u5883\uFF1A\u652F\u6301\u771F\u5B9E Excel / CSV \u89E3\u6790\u548C\u9010\u884C\u6821\u9A8C\uFF0C\u4F46\u4E0D\u4F1A\u5199\u5165\u6216\u4FDD\u5B58\u4F60\u4E0A\u4F20\u7684\u6570\u636E\u3002\u6B63\u5F0F\u63A5\u5165\u4E91\u7AEF\u540E\u624D\u4F1A\u5F00\u653E\u5BFC\u5165\u5199\u5165\u3002" })
+      /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { children: "当前为演示环境：支持真实 Excel / CSV 解析和逐行校验，但不会写入或保存你上传的数据。正式接入云端后才会开放导入写入。" })
     ] }),
     /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { style: { height: 18 } }),
     /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "import-tabs", children: ["roster", "employees", "stores", "metrics"].map((item2) => /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("button", { className: `import-tab ${kind === item2 ? "active" : ""}`, onClick: () => switchKind(item2), children: labels[item2] }, item2)) }),
@@ -43684,18 +43693,18 @@ function ImportPage() {
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card", children: [
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-header", children: /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { children: [
           /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card-title", children: [
-            "\u4E0A\u4F20",
+            "上传",
             labels[kind]
           ] }),
-          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-subtitle", children: "\u652F\u6301 .xlsx / .xls / .csv\uFF0C\u8BFB\u53D6\u7B2C\u4E00\u4E2A\u5DE5\u4F5C\u8868" })
+          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-subtitle", children: "支持 .xlsx / .xls / .csv，读取第一个工作表" })
         ] }) }),
         /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card-body", children: [
           /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("label", { className: "upload-zone", style: { display: "block", cursor: "pointer" }, children: [
             /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("input", { className: "upload-input", type: "file", accept: ".xlsx,.xls,.csv", onChange: (e) => upload(e.target.files?.[0]) }),
             /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "upload-icon", children: loading ? /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(RefreshCw, { size: 22, className: "spin" }) : /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(Upload, { size: 22 }) }),
-            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("h3", { children: loading ? "\u6B63\u5728\u89E3\u6790\u5E76\u6821\u9A8C\u2026" : fileName || "\u70B9\u51FB\u9009\u62E9\u6587\u4EF6" }),
-            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("p", { children: "\u7F16\u7801\u6309\u6587\u672C\u5904\u7406\uFF0C\u4FDD\u7559\u524D\u5BFC\u96F6\uFF1B\u4E0D\u4F1A\u8986\u76D6\u539F\u6587\u4EF6" }),
-            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: "button button-secondary button-sm", children: fileName ? "\u91CD\u65B0\u9009\u62E9" : "\u9009\u62E9\u6587\u4EF6" })
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("h3", { children: loading ? "正在解析并校验…" : fileName || "点击选择文件" }),
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("p", { children: "编码按文本处理，保留前导零；不会覆盖原文件" }),
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: "button button-secondary button-sm", children: fileName ? "重新选择" : "选择文件" })
           ] }),
           fatal && /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "inline-notice", style: { marginTop: 14 }, children: [
             /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(TriangleAlert, { size: 15 }),
@@ -43705,42 +43714,42 @@ function ImportPage() {
             /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "import-summary", children: [
               /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card stat-card", children: /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { children: [
                 /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "stat-value", children: result2.totalRows }),
-                /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "stat-label", children: "\u8BFB\u53D6\u884C\u6570" })
+                /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "stat-label", children: "读取行数" })
               ] }) }),
               /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card stat-card", children: /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { children: [
                 /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "stat-value", style: { color: "var(--green-700)" }, children: result2.validRows }),
-                /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "stat-label", children: "\u6709\u6548\u884C" })
+                /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "stat-label", children: "有效行" })
               ] }) }),
               /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card stat-card", children: /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { children: [
                 /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "stat-value", style: { color: result2.errors.length ? "var(--red)" : "var(--green-700)" }, children: result2.errors.length }),
-                /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "stat-label", children: "\u6821\u9A8C\u95EE\u9898" })
+                /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "stat-label", children: "校验问题" })
               ] }) })
             ] }),
             result2.errors.length ? /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "error-list", children: result2.errors.map((error, index) => /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "error-row", children: [
               /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("strong", { children: [
-                "\u7B2C ",
+                "第 ",
                 error.row,
-                " \u884C"
+                " 行"
               ] }),
               /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("span", { children: [
-                error.field ? `${error.field} \xB7 ` : "",
+                error.field ? `${error.field} · ` : "",
                 error.message
               ] })
             ] }, index)) }) : /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "inline-notice green", children: [
               /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(CircleCheck, { size: 16 }),
-              "\u5B57\u6BB5\u548C\u9010\u884C\u6821\u9A8C\u901A\u8FC7\u3002\u6F14\u793A\u6A21\u5F0F\u4E0D\u6267\u884C\u5199\u5165\u3002"
+              "字段和逐行校验通过。演示模式不执行写入。"
             ] }),
             /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("button", { className: "button button-primary", style: { width: "100%", marginTop: 15 }, disabled: true, children: [
               /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(ShieldCheck, { size: 15 }),
-              "\u4E91\u7AEF\u63A5\u5165\u540E\u786E\u8BA4\u5199\u5165"
+              "云端接入后确认写入"
             ] })
           ] })
         ] })
       ] }),
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card", children: [
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-header", children: /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { children: [
-          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-title", children: "\u5B57\u6BB5\u8981\u6C42" }),
-          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-subtitle", children: "\u53EA\u4FDD\u7559\u7CFB\u7EDF\u771F\u6B63\u9700\u8981\u7684\u5B57\u6BB5" })
+          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-title", children: "字段要求" }),
+          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-subtitle", children: "只保留系统真正需要的字段" })
         ] }) }),
         /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card-body", children: [
           /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "field-list", children: IMPORT_TEMPLATES[kind].map((field) => /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "field-item", children: [
@@ -43748,24 +43757,24 @@ function ImportPage() {
               field.label,
               field.required && /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: "required", children: "*" })
             ] }),
-            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { children: field.description ?? `\u793A\u4F8B\uFF1A${field.example}` })
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { children: field.description ?? `示例：${field.example}` })
           ] }, field.key)) }),
           /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "detail-section", children: [
-            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("h3", { children: "\u5BFC\u5165\u987A\u5E8F" }),
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("h3", { children: "导入顺序" }),
             /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "closure-flow", children: [
               /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "closure-step", children: [
                 /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "closure-icon", children: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(UsersRound, { size: 17 }) }),
-                /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("strong", { children: "1. \u4EBA\u5458" })
+                /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("strong", { children: "1. 人员" })
               ] }),
               /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(ChevronRight, { size: 15, color: "var(--muted)" }),
               /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "closure-step", children: [
                 /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "closure-icon", children: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(Store, { size: 17 }) }),
-                /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("strong", { children: "2. \u95E8\u5E97" })
+                /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("strong", { children: "2. 门店" })
               ] }),
               /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(ChevronRight, { size: 15, color: "var(--muted)" }),
               /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "closure-step", children: [
                 /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "closure-icon", children: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(ChartColumn, { size: 17 }) }),
-                /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("strong", { children: "3. \u6307\u6807" })
+                /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("strong", { children: "3. 指标" })
               ] })
             ] })
           ] })
@@ -43827,7 +43836,7 @@ function App() {
   };
   (0, import_react5.useEffect)(() => {
     if (!backendEnabled) return;
-    loadBackendData().catch((caught) => setCloudError(caught instanceof Error ? caught.message : "\u4E91\u7AEF\u6570\u636E\u52A0\u8F7D\u5931\u8D25"));
+    loadBackendData().catch((caught) => setCloudError(caught instanceof Error ? caught.message : "云端数据加载失败"));
   }, []);
   (0, import_react5.useEffect)(() => {
     if (backendEnabled) return;
@@ -43879,7 +43888,7 @@ function App() {
   };
   const openVisit = (storeId) => {
     if (employee.role !== "bp") {
-      showToast("\u5DE1\u5E97\u987B\u7531 BP \u672C\u4EBA\u63D0\u4EA4\uFF0C\u7ECF\u7406\u548C\u603B\u8D1F\u8D23\u4EBA\u4E0D\u80FD\u4EE3\u5F55");
+      showToast("巡店须由 BP 本人提交，经理和总负责人不能代录");
       return;
     }
     setVisitModalStoreId(storeId ?? "");
@@ -43892,17 +43901,17 @@ function App() {
       setEvents((current) => [...current, ...newEvents]);
       setVisitModalOpen(false);
       const nextProgress = calculateQuarterlyProgress([...visits, visit], employee.id, CURRENT_QUARTER);
-      showToast(isRevisit ? "\u590D\u8BBF\u5DF2\u8BB0\u5F55\uFF0C\u672C\u5B63\u5EA6\u8FBE\u6807\u6570\u4E0D\u91CD\u590D\u589E\u52A0" : `\u5DE1\u5E97\u5DF2\u5B8C\u6210\uFF0C\u672C\u5B63\u5EA6\u7B2C ${nextProgress.uniqueVisitCount} \u5BB6\u4E0D\u540C\u95E8\u5E97${newIssues.length ? `\uFF0C\u65B0\u589E ${newIssues.length} \u4E2A\u95EE\u9898` : ""}`);
+      showToast(isRevisit ? "复访已记录，本季度达标数不重复增加" : `巡店已完成，本季度第 ${nextProgress.uniqueVisitCount} 家不同门店${newIssues.length ? `，新增 ${newIssues.length} 个问题` : ""}`);
     };
     if (!backendEnabled) {
       commit();
       return;
     }
-    backend.saveVisit(visit, newIssues, newEvents).then(commit).catch((caught) => showToast(caught instanceof Error ? caught.message : "\u5DE1\u5E97\u672A\u4FDD\u5B58\u5230\u4E91\u7AEF"));
+    backend.saveVisit(visit, newIssues, newEvents).then(commit).catch((caught) => showToast(caught instanceof Error ? caught.message : "巡店未保存到云端"));
   };
   const persistIssue = (nextIssue, event) => {
     if (!backendEnabled) return;
-    backend.updateIssue(nextIssue, event).catch((caught) => showToast(caught instanceof Error ? caught.message : "\u4E91\u7AEF\u66F4\u65B0\u5931\u8D25"));
+    backend.updateIssue(nextIssue, event).catch((caught) => showToast(caught instanceof Error ? caught.message : "云端更新失败"));
   };
   const handleIssueAction = (issue, action, comment) => {
     if (action === "comment") {
@@ -43910,7 +43919,7 @@ function App() {
       setEvents((current) => [...current, event]);
       setIssues((current) => current.map((item2) => item2.id === issue.id ? { ...item2, latestFollowup: comment } : item2));
       persistIssue({ ...issue, latestFollowup: comment }, event);
-      showToast("\u8DDF\u8FDB\u8BB0\u5F55\u5DF2\u4FDD\u5B58\u5230\u65F6\u95F4\u7EBF");
+      showToast("跟进记录已保存到时间线");
       return;
     }
     try {
@@ -43919,9 +43928,9 @@ function App() {
       setIssues((current) => current.map((item2) => item2.id === issue.id ? nextIssue : item2));
       setEvents((current) => [...current, result2.event]);
       persistIssue(nextIssue, result2.event);
-      showToast(action === "review" ? "\u95EE\u9898\u5DF2\u590D\u6838\u5173\u95ED" : action === "complete" ? "\u5DF2\u63D0\u4EA4\u54C1\u724C\u7ECF\u7406\u590D\u6838" : action === "reopen" ? "\u5DF2\u9000\u56DE\u5904\u7406\u4E2D" : "\u95EE\u9898\u72B6\u6001\u5DF2\u66F4\u65B0");
+      showToast(action === "review" ? "问题已复核关闭" : action === "complete" ? "已提交品牌经理复核" : action === "reopen" ? "已退回处理中" : "问题状态已更新");
     } catch (error) {
-      showToast(error instanceof Error ? error.message : "\u64CD\u4F5C\u5931\u8D25");
+      showToast(error instanceof Error ? error.message : "操作失败");
     }
   };
   const pageHeading = (eyebrow, title, description, action) => /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "page-heading", children: [
@@ -43941,9 +43950,9 @@ function App() {
   });
   const lookupResult = workNoLookup.trim() ? rosterRecords.find((record) => record.workNo.toLowerCase() === workNoLookup.trim().toLowerCase()) : void 0;
   const homePage = /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)(import_jsx_runtime3.Fragment, { children: [
-    pageHeading("TUESDAY \xB7 27 OCT", `\u65E9\u4E0A\u597D\uFF0C${employee.name}`, "\u8D70\u8FDB\u95E8\u5E97\uFF0C\u53D1\u73B0\u95EE\u9898\uFF0C\u4E5F\u628A\u95EE\u9898\u89E3\u51B3\u5728\u73B0\u573A\u3002", /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("button", { className: "button button-primary", onClick: () => openVisit(), children: [
+    pageHeading("TUESDAY · 27 OCT", `早上好，${employee.name}`, "走进门店，发现问题，也把问题解决在现场。", /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("button", { className: "button button-primary", onClick: () => openVisit(), children: [
       /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(Plus, { size: 16 }),
-      "\u5F00\u59CB\u5DE1\u5E97"
+      "开始巡店"
     ] })),
     /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "home-layout", children: [
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "stack", children: [
@@ -43952,34 +43961,34 @@ function App() {
             /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "hero-kicker", children: [
               /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(Target, { size: 15 }),
               CURRENT_QUARTER,
-              " \u5B63\u5EA6\u5DE1\u5E97\u76EE\u6807"
+              " 季度巡店目标"
             ] }),
             /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "hero-number", children: [
               progress.uniqueVisitCount,
               /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("small", { children: [
                 " / ",
                 progress.target,
-                " \u5BB6"
+                " 家"
               ] })
             ] }),
             /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("p", { className: "hero-copy", children: [
-              "\u5DF2\u53BB\u91CD\u7EDF\u8BA1\uFF0C\u590D\u8BBF\u4E0D\u91CD\u590D\u8BA1\u6570",
+              "已去重统计，复访不重复计数",
               /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("br", {}),
-              "\u518D\u5DE1 ",
+              "再巡 ",
               /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("strong", { children: [
                 progress.gap,
-                " \u5BB6\u4E0D\u540C\u95E8\u5E97"
+                " 家不同门店"
               ] }),
-              "\u5373\u53EF\u8FBE\u6807"
+              "即可达标"
             ] }),
             /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "hero-progress-track", children: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "hero-progress-bar", style: { width: `${progress.cappedProgress}%` } }) }),
             /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "hero-actions", children: [
               /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("button", { className: "button button-light", onClick: () => openVisit(), children: [
                 /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(Plus, { size: 15 }),
-                "\u8BB0\u5F55\u5DE1\u5E97"
+                "记录巡店"
               ] }),
               /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("button", { className: "button", style: { color: "white", background: "rgba(255,255,255,.1)" }, onClick: () => navigate("recommend"), children: [
-                "\u67E5\u770B\u63A8\u8350",
+                "查看推荐",
                 /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(ArrowRight, { size: 15 })
               ] })
             ] })
@@ -43991,39 +44000,39 @@ function App() {
             /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "stat-icon", children: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(ClipboardCheck, { size: 19 }) }),
             /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { children: [
               /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "stat-value", children: openMyIssues.length }),
-              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "stat-label", children: "\u5F85\u6211\u95ED\u73AF" })
+              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "stat-label", children: "待我闭环" })
             ] })
           ] }),
           /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card stat-card", children: [
             /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "stat-icon red", children: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(Clock3, { size: 19 }) }),
             /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { children: [
               /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "stat-value", children: overdueMyIssues.length }),
-              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "stat-label", children: "\u5DF2\u903E\u671F" })
+              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "stat-label", children: "已逾期" })
             ] })
           ] }),
           /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card stat-card", children: [
             /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "stat-icon amber", children: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(FileCheck2, { size: 19 }) }),
             /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { children: [
               /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "stat-value", children: myIssues.filter((issue) => issue.status === "completed").length }),
-              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "stat-label", children: "\u5F85\u590D\u6838" })
+              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "stat-label", children: "待复核" })
             ] })
           ] }),
           /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card stat-card", children: [
             /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "stat-icon orange", children: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(Store, { size: 19 }) }),
             /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { children: [
               /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "stat-value", children: myRecommendations.filter((item2) => item2.unvisited).length }),
-              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "stat-label", children: "\u63A8\u8350\u672A\u5DE1\u95E8\u5E97" })
+              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "stat-label", children: "推荐未巡门店" })
             ] })
           ] })
         ] }),
         /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card", children: [
           /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card-header", children: [
             /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { children: [
-              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-title", children: "\u4F18\u5148\u63A8\u8350\u95E8\u5E97" }),
-              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-subtitle", children: "\u5148\u770B\u63A8\u8350\u7406\u7531\uFF0C\u4E0D\u5FC5\u7406\u89E3\u590D\u6742\u6253\u6807\u8868" })
+              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-title", children: "优先推荐门店" }),
+              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-subtitle", children: "先看推荐理由，不必理解复杂打标表" })
             ] }),
             /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("button", { className: "text-button", onClick: () => navigate("recommend"), children: [
-              "\u5168\u90E8\u63A8\u8350",
+              "全部推荐",
               /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(ChevronRight, { size: 13 })
             ] })
           ] }),
@@ -44033,7 +44042,7 @@ function App() {
               /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "list-title", children: recommendation.store.name }),
               /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "list-meta", children: recommendation.reasons[0] })
             ] }),
-            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: `badge ${riskBadge(recommendation.risk?.riskLevel)}`, children: recommendation.risk?.phase ?? "\u672C\u6708" }),
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: `badge ${riskBadge(recommendation.risk?.riskLevel)}`, children: recommendation.risk?.phase ?? "本月" }),
             /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("button", { className: "icon-button", onClick: () => openVisit(recommendation.store.id), children: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(ChevronRight, { size: 15 }) })
           ] }, recommendation.store.id)) }) })
         ] })
@@ -44042,11 +44051,11 @@ function App() {
         /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card", children: [
           /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card-header", children: [
             /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { children: [
-              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-title", children: "\u9700\u8981\u8DDF\u8FDB" }),
-              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-subtitle", children: "\u4F18\u5148\u5904\u7406\u903E\u671F\u548C\u9AD8\u4E25\u91CD\u95EE\u9898" })
+              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-title", children: "需要跟进" }),
+              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-subtitle", children: "优先处理逾期和高严重问题" })
             ] }),
             /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("button", { className: "text-button", onClick: () => navigate("issues"), children: [
-              "\u5168\u90E8\u95EE\u9898",
+              "全部问题",
               /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(ChevronRight, { size: 13 })
             ] })
           ] }),
@@ -44059,32 +44068,32 @@ function App() {
                   /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "list-title", children: issue.title }),
                   /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "list-meta", children: [
                     store?.name,
-                    " \xB7 ",
+                    " · ",
                     formatDate(issue.dueDate),
-                    " \u622A\u6B62"
+                    " 截止"
                   ] })
                 ] }),
-                /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("button", { className: "text-button", onClick: () => setIssueDetailId(issue.id), children: "\u5904\u7406" })
+                /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("button", { className: "text-button", onClick: () => setIssueDetailId(issue.id), children: "处理" })
               ] }, issue.id);
             }),
-            !openMyIssues.length && /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(EmptyState, { title: "\u6CA1\u6709\u5F85\u8DDF\u8FDB\u95EE\u9898", description: "\u5DE1\u5E97\u53D1\u73B0\u7684\u95EE\u9898\u4F1A\u51FA\u73B0\u5728\u8FD9\u91CC" })
+            !openMyIssues.length && /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(EmptyState, { title: "没有待跟进问题", description: "巡店发现的问题会出现在这里" })
           ] }) })
         ] }),
         /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card", children: [
           /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card-header", children: [
             /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { children: [
-              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-title", children: "\u672C\u5468\u5C0F\u63D0\u793A" }),
-              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-subtitle", children: "\u8BA9\u6BCF\u4E00\u6B21\u8D70\u8BBF\u90FD\u6709\u540E\u7EED" })
+              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-title", children: "本周小提示" }),
+              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-subtitle", children: "让每一次走访都有后续" })
             ] }),
             /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(BookOpen, { size: 18, color: "var(--green-700)" })
           ] }),
           /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card-body", children: [
             /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "inline-notice green", children: [
               /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(Flag, { size: 16 }),
-              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { children: "\u95EE\u9898\u63CF\u8FF0\u5199\u201C\u770B\u5230\u7684\u4E8B\u5B9E\u201D\uFF0C\u95ED\u73AF\u7ED3\u679C\u5199\u201C\u53D1\u751F\u7684\u53D8\u5316\u201D\u3002\u5B8C\u6210\u4E0D\u7B49\u4E8E\u5173\u95ED\uFF0C\u9700\u54C1\u724C\u7ECF\u7406\u590D\u6838\u3002" })
+              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { children: "问题描述写“看到的事实”，闭环结果写“发生的变化”。完成不等于关闭，需品牌经理复核。" })
             ] }),
             /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("button", { className: "text-button", style: { marginTop: 13 }, onClick: () => navigate("standards"), children: [
-              "\u67E5\u770B\u5B8C\u6574\u5DE1\u5E97\u6807\u51C6",
+              "查看完整巡店标准",
               /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(ArrowRight, { size: 13 })
             ] })
           ] })
@@ -44093,28 +44102,28 @@ function App() {
     ] })
   ] });
   const recommendPage = /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)(import_jsx_runtime3.Fragment, { children: [
-    pageHeading("SMART PRIORITY", "\u91CD\u70B9\u95E8\u5E97\u63A8\u8350", "\u540E\u53F0\u81EA\u52A8\u5B8C\u6210\u4E5D\u9879\u6253\u6807\uFF0C\u4F60\u53EA\u9700\u8981\u51B3\u5B9A\u4E0B\u4E00\u5BB6\u5148\u53BB\u54EA\u91CC\u3002", /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("button", { className: "button button-primary", onClick: () => openVisit(), children: [
+    pageHeading("SMART PRIORITY", "重点门店推荐", "后台自动完成九项打标，你只需要决定下一家先去哪里。", /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("button", { className: "button button-primary", onClick: () => openVisit(), children: [
       /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(Plus, { size: 15 }),
-      "\u81EA\u7531\u9009\u5E97\u5DE1\u5E97"
+      "自由选店巡店"
     ] })),
     /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "inline-notice green", children: [
       /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(Sparkles, { size: 16 }),
-      /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { children: "\u6307\u6807\u53E3\u5F84\uFF1A2026-07 \u81F3 2026-09 \u6700\u8FD1\u4E09\u4E2A\u5B8C\u6574\u6708\u3002\u6570\u636E\u4E0D\u5B8C\u6574\u4F1A\u660E\u786E\u6807\u8BB0\uFF0C\u4E0D\u4F1A\u88AB\u5F53\u4F5C\u4F4E\u98CE\u9669\u3002" })
+      /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { children: "指标口径：2026-07 至 2026-09 最近三个完整月。数据不完整会明确标记，不会被当作低风险。" })
     ] }),
     /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { style: { height: 18 } }),
     /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card filter-bar", children: [
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "search-box", children: [
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(Search, { size: 15 }),
-        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("input", { value: storeQuery, onChange: (e) => setStoreQuery(e.target.value), placeholder: "\u641C\u7D22\u95E8\u5E97\u540D\u79F0\u3001\u7F16\u7801\u6216\u54C1\u724C" })
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("input", { value: storeQuery, onChange: (e) => setStoreQuery(e.target.value), placeholder: "搜索门店名称、编码或品牌" })
       ] }),
-      /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "filter-chips", children: [["all", "\u5168\u90E8\u95E8\u5E97"], ["unvisited", "\u672C\u5B63\u672A\u5DE1"], ["high", "\u9AD8 / \u6781\u9AD8\u98CE\u9669"], ["missing", "\u6570\u636E\u5F85\u8865\u5145"]].map(([key, label]) => /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("button", { className: `chip ${storeFilter === key ? "active" : ""}`, onClick: () => setStoreFilter(key), children: label }, key)) })
+      /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "filter-chips", children: [["all", "全部门店"], ["unvisited", "本季未巡"], ["high", "高 / 极高风险"], ["missing", "数据待补充"]].map(([key, label]) => /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("button", { className: `chip ${storeFilter === key ? "active" : ""}`, onClick: () => setStoreFilter(key), children: label }, key)) })
     ] }),
     /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "store-grid", children: recommendations.filter((item2) => {
       const matchesQuery = `${item2.store.name}${item2.store.code}${item2.store.brand}`.toLowerCase().includes(storeQuery.toLowerCase());
-      const matchesFilter = storeFilter === "all" || storeFilter === "unvisited" && item2.unvisited || storeFilter === "high" && ["\u9AD8\u98CE\u9669", "\u6781\u9AD8\u98CE\u9669"].includes(item2.risk?.riskLevel ?? "") || storeFilter === "missing" && (item2.risk?.missingCount ?? 9) > 0;
+      const matchesFilter = storeFilter === "all" || storeFilter === "unvisited" && item2.unvisited || storeFilter === "high" && ["高风险", "极高风险"].includes(item2.risk?.riskLevel ?? "") || storeFilter === "missing" && (item2.risk?.missingCount ?? 9) > 0;
       return matchesQuery && matchesFilter;
     }).map((recommendation) => /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(StoreCard, { recommendation, onDetail: () => setRiskDetail(recommendation), onVisit: () => openVisit(recommendation.store.id) }, recommendation.store.id)) }),
-    !stores.length && /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(EmptyState, { title: "\u95E8\u5E97\u6570\u636E\u52A0\u8F7D\u4E2D", description: "\u95E8\u5E97\u6E05\u5355\u6765\u81EA\u5728\u804C\u6570\u636E\u805A\u5408\uFF0C\u82E5\u957F\u65F6\u95F4\u4E3A\u7A7A\u8BF7\u91CD\u65B0\u6253\u5F00\u770B\u677F" })
+    !stores.length && /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(EmptyState, { title: "门店数据加载中", description: "门店清单来自在职数据聚合，若长时间为空请重新打开看板" })
   ] });
   const displayVisits = visits.filter((visit) => visit.status === "submitted" && !visit.voided && getQuarterKey(visit.visitedAt) === visitQuarter).filter((visit) => {
     const store = stores.find((item2) => item2.id === visit.storeId);
@@ -44122,35 +44131,35 @@ function App() {
     return `${store?.name}${store?.code}${bp?.name}`.toLowerCase().includes(visitQuery.toLowerCase());
   }).sort((a, b) => b.visitedAt.localeCompare(a.visitedAt) || (b.submittedAt ?? "").localeCompare(a.submittedAt ?? ""));
   const visitsPage = /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)(import_jsx_runtime3.Fragment, { children: [
-    pageHeading("VISIT HISTORY", "\u5DE1\u5E97\u8BB0\u5F55", "\u6BCF\u4E00\u6B21\u9996\u8BBF\u4E0E\u590D\u8BBF\u90FD\u5B8C\u6574\u4FDD\u7559\uFF0C\u8FBE\u6807\u6309\u81EA\u7136\u5B63\u5EA6\u53BB\u91CD\u3002", /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("button", { className: "button button-primary", onClick: () => openVisit(), children: [
+    pageHeading("VISIT HISTORY", "巡店记录", "每一次首访与复访都完整保留，达标按自然季度去重。", /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("button", { className: "button button-primary", onClick: () => openVisit(), children: [
       /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(Plus, { size: 15 }),
-      "\u8BB0\u5F55\u5DE1\u5E97"
+      "记录巡店"
     ] })),
     /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card filter-bar", children: [
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "search-box", children: [
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(Search, { size: 15 }),
-        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("input", { value: visitQuery, onChange: (e) => setVisitQuery(e.target.value), placeholder: "\u641C\u7D22\u95E8\u5E97\u6216 BP" })
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("input", { value: visitQuery, onChange: (e) => setVisitQuery(e.target.value), placeholder: "搜索门店或 BP" })
       ] }),
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("select", { className: "select", value: visitQuarter, onChange: (e) => setVisitQuarter(e.target.value), children: [
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("option", { children: CURRENT_QUARTER }),
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("option", { children: "2026-Q3" })
       ] }),
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("span", { className: "result-count", children: [
-        "\u5171 ",
+        "共 ",
         displayVisits.length,
-        " \u6761\u6709\u6548\u8BB0\u5F55"
+        " 条有效记录"
       ] })
     ] }),
     /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card table-wrap desktop-only", children: [
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("table", { children: [
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("thead", { children: /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("tr", { children: [
-          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "\u5DE1\u5E97\u65E5\u671F" }),
-          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "\u95E8\u5E97" }),
-          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "\u54C1\u724C" }),
-          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "\u5DE1\u5E97 BP" }),
-          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "\u5DE1\u5E97\u5C0F\u7ED3" }),
-          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "\u5173\u8054\u95EE\u9898" }),
-          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "\u8BA1\u6570\u53E3\u5F84" })
+          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "巡店日期" }),
+          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "门店" }),
+          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "品牌" }),
+          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "巡店 BP" }),
+          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "巡店小结" }),
+          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "关联问题" }),
+          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "计数口径" })
         ] }) }),
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("tbody", { children: displayVisits.map((visit) => {
           const store = stores.find((item2) => item2.id === visit.storeId);
@@ -44170,13 +44179,13 @@ function App() {
             /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("td", { style: { maxWidth: 280 }, children: visit.summary }),
             /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("td", { children: /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("span", { className: "badge badge-gray", children: [
               issues.filter((issue) => issue.visitId === visit.id).length,
-              " \u4E2A"
+              " 个"
             ] }) }),
-            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("td", { children: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: `badge ${previous ? "badge-gray" : "badge-green"}`, children: previous ? "\u590D\u8BBF" : "\u5B63\u5EA6\u9996\u8BBF" }) })
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("td", { children: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: `badge ${previous ? "badge-gray" : "badge-green"}`, children: previous ? "复访" : "季度首访" }) })
           ] }, visit.id);
         }) })
       ] }),
-      !displayVisits.length && /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(EmptyState, { title: "\u672C\u5B63\u5EA6\u8FD8\u6CA1\u6709\u5DE1\u5E97\u8BB0\u5F55", description: "\u70B9\u51FB\u53F3\u4E0A\u89D2\u300C\u8BB0\u5F55\u5DE1\u5E97\u300D\u63D0\u4EA4\u7B2C\u4E00\u6761" })
+      !displayVisits.length && /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(EmptyState, { title: "本季度还没有巡店记录", description: "点击右上角「记录巡店」提交第一条" })
     ] }),
     /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "visit-mobile-list", children: [
       displayVisits.map((visit) => {
@@ -44188,7 +44197,7 @@ function App() {
               /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "list-title", children: store?.name }),
               /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "list-meta", children: [
                 store?.code,
-                " \xB7 ",
+                " · ",
                 store?.brand
               ] })
             ] }),
@@ -44196,25 +44205,25 @@ function App() {
           ] }),
           /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("p", { style: { fontSize: 12, lineHeight: 1.7, marginTop: 12 }, children: visit.summary }),
           /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "list-meta", style: { marginTop: 10 }, children: [
-            "\u5DE1\u5E97 BP\uFF1A",
+            "巡店 BP：",
             bp?.name
           ] })
         ] }, visit.id);
       }),
-      !displayVisits.length && /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(EmptyState, { title: "\u672C\u5B63\u5EA6\u8FD8\u6CA1\u6709\u5DE1\u5E97\u8BB0\u5F55", description: "\u70B9\u51FB\u300C\u8BB0\u5F55\u5DE1\u5E97\u300D\u63D0\u4EA4\u7B2C\u4E00\u6761" })
+      !displayVisits.length && /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(EmptyState, { title: "本季度还没有巡店记录", description: "点击「记录巡店」提交第一条" })
     ] })
   ] });
   const issuesPage = /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)(import_jsx_runtime3.Fragment, { children: [
-    pageHeading("ISSUE CLOSURE", "\u95EE\u9898\u95ED\u73AF", "\u4ECE\u73B0\u573A\u53D1\u73B0\u5230\u7ECF\u7406\u590D\u6838\uFF0C\u6240\u6709\u5904\u7406\u90FD\u6709\u8BB0\u5F55\u3001\u6709\u8D23\u4EFB\u4EBA\u3002", employee.role !== "bp" && /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("span", { className: "badge badge-blue", children: [
+    pageHeading("ISSUE CLOSURE", "问题闭环", "从现场发现到经理复核，所有处理都有记录、有责任人。", employee.role !== "bp" && /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("span", { className: "badge badge-blue", children: [
       pendingReview.length,
-      " \u4E2A\u5F85\u6211\u590D\u6838"
+      " 个待我复核"
     ] })),
     /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card filter-bar", children: [
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "search-box", children: [
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(Search, { size: 15 }),
-        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("input", { value: issueQuery, onChange: (e) => setIssueQuery(e.target.value), placeholder: "\u641C\u7D22\u95EE\u9898\u3001\u95E8\u5E97\u6216 BP" })
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("input", { value: issueQuery, onChange: (e) => setIssueQuery(e.target.value), placeholder: "搜索问题、门店或 BP" })
       ] }),
-      /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "filter-chips", children: [["all", "\u5168\u90E8"], ["mine", "\u6211\u4E3B\u8D23"], ["open", "\u672A\u95ED\u73AF"], ["overdue", "\u5DF2\u903E\u671F"], ["completed", "\u5F85\u590D\u6838"], ["closed", "\u5DF2\u5173\u95ED"]].map(([key, label]) => /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("button", { className: `chip ${issueFilter === key ? "active" : ""}`, onClick: () => setIssueFilter(key), children: label }, key)) })
+      /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "filter-chips", children: [["all", "全部"], ["mine", "我主责"], ["open", "未闭环"], ["overdue", "已逾期"], ["completed", "待复核"], ["closed", "已关闭"]].map(([key, label]) => /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("button", { className: `chip ${issueFilter === key ? "active" : ""}`, onClick: () => setIssueFilter(key), children: label }, key)) })
     ] }),
     /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "issue-list", children: [
       issues.filter((issue) => {
@@ -44232,7 +44241,7 @@ function App() {
               /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: `badge ${statusBadge(issue.status)}`, children: ISSUE_STATUS_LABELS[issue.status] }),
               /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("span", { className: `severity severity-${issue.severity}`, children: [
                 ISSUE_SEVERITY_LABELS[issue.severity],
-                "\u4E25\u91CD"
+                "严重"
               ] }),
               /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: "badge badge-gray", children: issue.dimension ?? CATEGORY_LABEL_BY_KEY[issue.category] ?? issue.category })
             ] }),
@@ -44249,25 +44258,25 @@ function App() {
               /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("span", { children: [
                 /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(CalendarDays, { size: 12 }),
                 issue.dueDate,
-                " \u622A\u6B62"
+                " 截止"
               ] })
             ] })
           ] }),
           /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "issue-side", children: [
             isIssueOverdue(issue, DEMO_TODAY) ? /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("span", { className: "overdue-text", children: [
               /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(TriangleAlert, { size: 12 }),
-              "\u903E\u671F ",
+              "逾期 ",
               getOverdueDays(issue, DEMO_TODAY),
-              " \u5929"
+              " 天"
             ] }) : /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: "badge badge-gray", children: issue.brand }),
             /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("button", { className: "text-button", children: [
-              "\u67E5\u770B\u5904\u7406",
+              "查看处理",
               /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(ChevronRight, { size: 13 })
             ] })
           ] })
         ] }, issue.id);
       }),
-      !issues.length && /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(EmptyState, { title: "\u8FD8\u6CA1\u6709\u95EE\u9898\u8BB0\u5F55", description: "\u5DE1\u5E97\u65F6\u53D1\u73B0\u7684\u95EE\u9898\u4F1A\u5728\u8FD9\u91CC\u7EDF\u4E00\u8DDF\u8FDB\u95ED\u73AF" })
+      !issues.length && /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(EmptyState, { title: "还没有问题记录", description: "巡店时发现的问题会在这里统一跟进闭环" })
     ] })
   ] });
   const bpEmployees = employeeList.filter((item2) => item2.role === "bp");
@@ -44277,22 +44286,22 @@ function App() {
   const totalUnique = bpEmployees.reduce((sum, bp) => sum + calculateQuarterlyProgress(visits, bp.id, CURRENT_QUARTER).uniqueVisitCount, 0);
   const coveredStores = new Set(validVisits.map((visit) => visit.storeId)).size;
   const exportDashboard = () => {
-    const rows = [["HRBP", "\u54C1\u724C", "\u5B63\u5EA6\u53BB\u91CD\u5DE1\u5E97\u6570", "\u76EE\u6807", "\u5269\u4F59\u7F3A\u53E3", "\u672A\u95ED\u73AF\u95EE\u9898"], ...bpEmployees.map((bp) => {
+    const rows = [["HRBP", "品牌", "季度去重巡店数", "目标", "剩余缺口", "未闭环问题"], ...bpEmployees.map((bp) => {
       const item2 = calculateQuarterlyProgress(visits, bp.id, CURRENT_QUARTER);
       return [bp.name, bp.brands[0], String(item2.uniqueVisitCount), "25", String(item2.gap), String(issues.filter((issue) => issue.assigneeId === bp.id && issue.status !== "closed").length)];
     })];
     const url = URL.createObjectURL(new Blob(["\uFEFF", rows.map((row) => row.join(",")).join("\n")], { type: "text/csv;charset=utf-8" }));
     const link = document.createElement("a");
     link.href = url;
-    link.download = `${CURRENT_QUARTER}-\u5DE1\u5E97\u8FDB\u5EA6\u6458\u8981.csv`;
+    link.download = `${CURRENT_QUARTER}-巡店进度摘要.csv`;
     link.click();
     URL.revokeObjectURL(url);
-    showToast("\u5DF2\u5BFC\u51FA\u5F53\u524D\u53E3\u5F84\u7684 BP \u5DE1\u5E97\u8FDB\u5EA6\u6458\u8981");
+    showToast("已导出当前口径的 BP 巡店进度摘要");
   };
   const dashboardPage = /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)(import_jsx_runtime3.Fragment, { children: [
-    pageHeading("MANAGEMENT OVERVIEW", "\u7BA1\u7406\u603B\u89C8", "\u5168\u5458\u540C\u4E00\u4EFD\u6570\u636E\u53E3\u5F84\uFF0C\u4ECE\u5B63\u5EA6\u8986\u76D6\u4E0B\u94BB\u5230\u5177\u4F53\u95EE\u9898\u3002", /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("button", { className: "button button-secondary", onClick: exportDashboard, children: [
+    pageHeading("MANAGEMENT OVERVIEW", "管理总览", "全员同一份数据口径，从季度覆盖下钻到具体问题。", /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("button", { className: "button button-secondary", onClick: exportDashboard, children: [
       /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(Download, { size: 15 }),
-      "\u5BFC\u51FA\u6458\u8981"
+      "导出摘要"
     ] })),
     /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "grid grid-4", style: { marginBottom: 18 }, children: [
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card stat-card", children: [
@@ -44302,7 +44311,7 @@ function App() {
             totalUnique,
             /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("small", { style: { fontSize: 12, color: "var(--muted)" }, children: " / 225" })
           ] }),
-          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "stat-label", children: "BP \u53BB\u91CD\u5DE1\u5E97\u5408\u8BA1" })
+          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "stat-label", children: "BP 去重巡店合计" })
         ] })
       ] }),
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card stat-card", children: [
@@ -44315,21 +44324,21 @@ function App() {
               stores.length
             ] })
           ] }),
-          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "stat-label", children: "\u95E8\u5E97\u8986\u76D6\u7387" })
+          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "stat-label", children: "门店覆盖率" })
         ] })
       ] }),
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card stat-card", children: [
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "stat-icon orange", children: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(CircleAlert, { size: 19 }) }),
         /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { children: [
           /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "stat-value", children: allOpenIssues.length }),
-          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "stat-label", children: "\u672A\u95ED\u73AF\u95EE\u9898" })
+          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "stat-label", children: "未闭环问题" })
         ] })
       ] }),
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card stat-card", children: [
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "stat-icon red", children: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(Clock3, { size: 19 }) }),
         /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { children: [
           /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "stat-value", children: issues.filter((issue) => isIssueOverdue(issue, DEMO_TODAY)).length }),
-          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "stat-label", children: "\u5F53\u524D\u903E\u671F" })
+          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "stat-label", children: "当前逾期" })
         ] })
       ] })
     ] }),
@@ -44337,23 +44346,23 @@ function App() {
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card", children: [
         /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card-header", children: [
           /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { children: [
-            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-title", children: "BP \u5B63\u5EA6\u8FBE\u6807\u8FDB\u5EA6" }),
-            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-subtitle", children: "\u76EE\u6807 25 \u5BB6\u4E0D\u540C\u95E8\u5E97 \xB7 \u590D\u8BBF\u4E0D\u91CD\u590D\u8BA1\u6570" })
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-title", children: "BP 季度达标进度" }),
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-subtitle", children: "目标 25 家不同门店 · 复访不重复计数" })
           ] }),
           /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("span", { className: "badge badge-green", children: [
             bpEmployees.filter((bp) => calculateQuarterlyProgress(visits, bp.id, CURRENT_QUARTER).completed).length,
-            " \u4EBA\u5DF2\u8FBE\u6807"
+            " 人已达标"
           ] })
         ] }),
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "table-wrap", children: /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("table", { children: [
           /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("thead", { children: /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("tr", { children: [
             /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "HRBP" }),
-            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "\u54C1\u724C" }),
-            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "\u5B63\u5EA6\u8FDB\u5EA6" }),
-            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "\u5DF2\u5DE1 / \u76EE\u6807" }),
-            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "\u5269\u4F59\u7F3A\u53E3" }),
-            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "\u672A\u95ED\u73AF" }),
-            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "\u72B6\u6001" })
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "品牌" }),
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "季度进度" }),
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "已巡 / 目标" }),
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "剩余缺口" }),
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "未闭环" }),
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "状态" })
           ] }) }),
           /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("tbody", { children: bpEmployees.map((bp) => {
             const item2 = calculateQuarterlyProgress(visits, bp.id, CURRENT_QUARTER);
@@ -44373,17 +44382,17 @@ function App() {
               ] }) }),
               /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("td", { children: [
                 item2.uniqueVisitCount,
-                " / 25 \u5BB6"
+                " / 25 家"
               ] }),
               /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("td", { children: [
                 item2.gap,
-                " \u5BB6"
+                " 家"
               ] }),
               /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("td", { children: [
                 open,
-                " \u4E2A"
+                " 个"
               ] }),
-              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("td", { children: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: `badge ${item2.completed ? "badge-green" : "badge-orange"}`, children: item2.completed ? "\u5DF2\u8FBE\u6807" : "\u63A8\u8FDB\u4E2D" }) })
+              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("td", { children: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: `badge ${item2.completed ? "badge-green" : "badge-orange"}`, children: item2.completed ? "已达标" : "推进中" }) })
             ] }, bp.id);
           }) })
         ] }) })
@@ -44391,10 +44400,10 @@ function App() {
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "insight-grid", children: [
         /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card", children: [
           /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-header", children: /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { children: [
-            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-title", children: "\u54C1\u724C\u95E8\u5E97\u8986\u76D6" }),
-            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-subtitle", children: "\u672C\u5B63\u5EA6\u81F3\u5C11\u6709\u4E00\u6B21\u6709\u6548\u5DE1\u5E97\u7684\u95E8\u5E97\u5360\u6BD4" })
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-title", children: "品牌门店覆盖" }),
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-subtitle", children: "本季度至少有一次有效巡店的门店占比" })
           ] }) }),
-          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-body", children: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "brand-bars", children: ["\u8336\u989C\u60A6\u8272", "\u53E4\u5FB7\u58A8\u67E0", "\u9E33\u592E\u5496\u5561"].map((brand, index) => {
+          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-body", children: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "brand-bars", children: ["茶颜悦色", "古德墨柠", "鸳央咖啡"].map((brand, index) => {
             const brandStores = stores.filter((store) => store.brand === brand);
             const covered = brandStores.filter((store) => validVisits.some((visit) => visit.storeId === store.id)).length;
             const percent = Math.round(covered / brandStores.length * 100);
@@ -44405,7 +44414,7 @@ function App() {
                   covered,
                   " / ",
                   brandStores.length,
-                  " \u5BB6 \xB7 ",
+                  " 家 · ",
                   percent,
                   "%"
                 ] })
@@ -44416,15 +44425,15 @@ function App() {
         ] }),
         /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card", children: [
           /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-header", children: /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { children: [
-            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-title", children: "\u95EE\u9898\u95ED\u73AF\u72B6\u6001" }),
-            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-subtitle", children: "\u5F85\u590D\u6838\u4ECD\u5C5E\u4E8E\u672A\u95ED\u73AF" })
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-title", children: "问题闭环状态" }),
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-subtitle", children: "待复核仍属于未闭环" })
           ] }) }),
           /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-body", children: /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "donut-wrap", children: [
             /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "donut", style: { background: `conic-gradient(#e8793e 0 ${issues.filter((i) => i.status === "open").length / issues.length * 100}%, #d6a553 0 ${issues.filter((i) => i.status !== "closed" && i.status !== "completed").length / issues.length * 100}%, #6d8fa3 0 ${allOpenIssues.length / issues.length * 100}%, #327260 0 100%)` }, children: /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "donut-center", children: [
               /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("strong", { children: issues.length }),
-              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { children: "\u5168\u90E8\u95EE\u9898" })
+              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { children: "全部问题" })
             ] }) }),
-            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "legend", children: [["#e8793e", "\u5F85\u5904\u7406", issues.filter((i) => i.status === "open").length], ["#d6a553", "\u5904\u7406\u4E2D", issues.filter((i) => i.status === "in_progress").length], ["#6d8fa3", "\u5F85\u590D\u6838", issues.filter((i) => i.status === "completed").length], ["#327260", "\u5DF2\u5173\u95ED", closedIssues.length]].map(([color, label, count]) => /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "legend-row", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "legend", children: [["#e8793e", "待处理", issues.filter((i) => i.status === "open").length], ["#d6a553", "处理中", issues.filter((i) => i.status === "in_progress").length], ["#6d8fa3", "待复核", issues.filter((i) => i.status === "completed").length], ["#327260", "已关闭", closedIssues.length]].map(([color, label, count]) => /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "legend-row", children: [
               /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: "legend-dot", style: { background: color } }),
               label,
               /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("strong", { children: count })
@@ -44435,43 +44444,43 @@ function App() {
     ] })
   ] });
   const rosterPage = /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)(import_jsx_runtime3.Fragment, { children: [
-    pageHeading("PEOPLE MASTER", "\u4EBA\u5458\u4E3B\u6570\u636E", "\u4E09\u4EFD\u5728\u804C\u5E95\u7A3F\u5DF2\u5408\u5E76\u5BFC\u5165\u672C\u5730\u770B\u677F\uFF1B\u771F\u5B9E\u6570\u636E\u4E0D\u8FDB\u5165\u516C\u5F00\u5206\u4EAB\u5305\u3002", /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("span", { className: "badge badge-green", children: [
-      "\u672C\u5730\u5DF2\u5BFC\u5165 ",
+    pageHeading("PEOPLE MASTER", "人员主数据", "三份在职底稿已合并导入本地看板；真实数据不进入公开分享包。", /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("span", { className: "badge badge-green", children: [
+      "本地已导入 ",
       rosterSummary?.totalRecords ?? 0,
-      " \u4EBA"
+      " 人"
     ] })),
     /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "inline-notice", children: [
       /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(ShieldCheck, { size: 16 }),
-      /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { children: "\u771F\u5B9E\u59D3\u540D\u3001\u5DE5\u53F7\u548C\u95E8\u5E97\u4EC5\u7528\u4E8E\u672C\u673A\u6F14\u793A\uFF1B\u6B63\u5F0F\u5206\u4EAB\u524D\u5FC5\u987B\u63A5\u5165\u4E91\u767B\u5F55\u4E0E\u6743\u9650\uFF0C\u516C\u5F00\u6F14\u793A\u5305\u4E0D\u5305\u542B\u8FD9\u6279\u6570\u636E\u3002" })
+      /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { children: "真实姓名、工号和门店仅用于本机演示；正式分享前必须接入云登录与权限，公开演示包不包含这批数据。" })
     ] }),
     /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { style: { height: 18 } }),
     /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "grid grid-4", style: { marginBottom: 18 }, children: [
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card stat-card", children: [
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "stat-icon", children: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(UsersRound, { size: 19 }) }),
         /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { children: [
-          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "stat-value", children: rosterSummary?.totalRecords ?? "\u2026" }),
-          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "stat-label", children: "\u6709\u6548\u4EBA\u5458" })
+          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "stat-value", children: rosterSummary?.totalRecords ?? "…" }),
+          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "stat-label", children: "有效人员" })
         ] })
       ] }),
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card stat-card", children: [
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "stat-icon", children: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(CircleCheck, { size: 19 }) }),
         /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { children: [
-          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "stat-value", children: rosterSummary ? Object.values(rosterSummary.byBrand).reduce((sum, item2) => sum + item2.fullTime, 0) : "\u2026" }),
-          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "stat-label", children: "\u8FD0\u8425\u5168\u804C" })
+          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "stat-value", children: rosterSummary ? Object.values(rosterSummary.byBrand).reduce((sum, item2) => sum + item2.fullTime, 0) : "…" }),
+          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "stat-label", children: "运营全职" })
         ] })
       ] }),
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card stat-card", children: [
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "stat-icon orange", children: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(UserRound, { size: 19 }) }),
         /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { children: [
-          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "stat-value", children: rosterSummary ? Object.values(rosterSummary.byBrand).reduce((sum, item2) => sum + item2.student, 0) : "\u2026" }),
-          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "stat-label", children: "\u5B66\u751F\u7528\u5DE5" })
+          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "stat-value", children: rosterSummary ? Object.values(rosterSummary.byBrand).reduce((sum, item2) => sum + item2.student, 0) : "…" }),
+          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "stat-label", children: "学生用工" })
         ] })
       ] }),
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card stat-card", children: [
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "stat-icon amber", children: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(TriangleAlert, { size: 19 }) }),
         /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { children: [
           /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "stat-value", children: rosterSummary?.typeExceptions.length ?? 0 }),
-          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "stat-label", children: "\u517C\u804C\u5F85\u786E\u8BA4" })
+          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "stat-label", children: "兼职待确认" })
         ] })
       ] })
     ] }),
@@ -44479,43 +44488,43 @@ function App() {
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card", children: [
         /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card-header", children: [
           /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { children: [
-            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-title", children: "\u5DE5\u53F7\u81EA\u52A8\u5E26\u51FA" }),
-            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-subtitle", children: "\u8F93\u5165\u5DE5\u53F7\uFF0C\u81EA\u52A8\u8FD4\u56DE\u59D3\u540D\u3001\u95E8\u5E97\u3001\u804C\u4F4D\u548C\u533A\u57DF" })
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-title", children: "工号自动带出" }),
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-subtitle", children: "输入工号，自动返回姓名、门店、职位和区域" })
           ] }),
           /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(Search, { size: 18, color: "var(--green-700)" })
         ] }),
         /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card-body", children: [
           /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "search-box", children: [
             /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(Search, { size: 15 }),
-            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("input", { value: workNoLookup, onChange: (event) => setWorkNoLookup(event.target.value), placeholder: "\u8F93\u5165\u5B8C\u6574\u5DE5\u53F7\uFF0C\u4F8B\u5982 CY\u2026" })
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("input", { value: workNoLookup, onChange: (event) => setWorkNoLookup(event.target.value), placeholder: "输入完整工号，例如 CY…" })
           ] }),
           lookupResult ? /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "auto-card", style: { marginTop: 14 }, children: [
             /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "auto-item", children: [
-              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("label", { children: "\u59D3\u540D / \u5DE5\u53F7" }),
+              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("label", { children: "姓名 / 工号" }),
               /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("strong", { children: [
                 lookupResult.name,
-                " \xB7 ",
+                " · ",
                 lookupResult.workNo
               ] })
             ] }),
             /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "auto-item", children: [
-              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("label", { children: "\u54C1\u724C / \u7C7B\u578B" }),
+              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("label", { children: "品牌 / 类型" }),
               /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("strong", { children: [
                 lookupResult.brand,
-                " \xB7 ",
+                " · ",
                 lookupResult.employmentType
               ] })
             ] }),
             /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "auto-item", children: [
-              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("label", { children: "\u804C\u4F4D" }),
+              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("label", { children: "职位" }),
               /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("strong", { children: lookupResult.position })
             ] }),
             /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "auto-item", children: [
-              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("label", { children: "\u6240\u5C5E\u95E8\u5E97" }),
+              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("label", { children: "所属门店" }),
               /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("strong", { children: lookupResult.storeName })
             ] }),
             /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "auto-item", children: [
-              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("label", { children: "\u533A\u57DF / \u5927\u5E97\u533A" }),
+              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("label", { children: "区域 / 大店区" }),
               /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("strong", { children: [
                 lookupResult.region,
                 " / ",
@@ -44523,19 +44532,19 @@ function App() {
               ] })
             ] }),
             /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "auto-item", children: [
-              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("label", { children: "\u5165\u804C\u65E5\u671F" }),
+              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("label", { children: "入职日期" }),
               /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("strong", { children: lookupResult.hireDate })
             ] })
           ] }) : workNoLookup.trim() ? /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "empty-state", style: { padding: 24 }, children: [
-            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("h3", { children: "\u672A\u627E\u5230\u8BE5\u5DE5\u53F7" }),
-            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("p", { children: "\u8BF7\u6838\u5BF9\u5B8C\u6574\u5DE5\u53F7\uFF1B\u5927\u5C0F\u5199\u4E0D\u654F\u611F" })
-          ] }) : /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "form-hint", style: { marginTop: 10 }, children: "\u76EE\u524D\u4EC5\u652F\u6301\u7CBE\u786E\u5339\u914D\uFF0C\u907F\u514D\u540C\u540D\u8BEF\u5E26\u3002" })
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("h3", { children: "未找到该工号" }),
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("p", { children: "请核对完整工号；大小写不敏感" })
+          ] }) : /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "form-hint", style: { marginTop: 10 }, children: "目前仅支持精确匹配，避免同名误带。" })
         ] })
       ] }),
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card", children: [
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-header", children: /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { children: [
-          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-title", children: "\u54C1\u724C\u5BFC\u5165\u5206\u5E03" }),
-          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-subtitle", children: "\u65E0\u8DE8\u54C1\u724C\u91CD\u590D\u5DE5\u53F7" })
+          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-title", children: "品牌导入分布" }),
+          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-subtitle", children: "无跨品牌重复工号" })
         ] }) }),
         /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card-body", children: [
           /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "brand-bars", children: rosterSummary && Object.entries(rosterSummary.byBrand).map(([brand, item2], index) => {
@@ -44545,7 +44554,7 @@ function App() {
                 /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("strong", { children: brand }),
                 /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("span", { children: [
                   item2.total,
-                  " \u4EBA \xB7 ",
+                  " 人 · ",
                   percent,
                   "%"
                 ] })
@@ -44557,7 +44566,7 @@ function App() {
             /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(TriangleAlert, { size: 15 }),
             /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("span", { children: [
               rosterSummary?.typeExceptions.length ?? 0,
-              " \u6761\u201C\u517C\u804C\u201D\u4FDD\u7559\u539F\u503C\u5E76\u5F85\u786E\u8BA4\uFF0C\u672A\u64C5\u81EA\u5F52\u4E3A\u5168\u804C\u6216\u5B66\u751F\u3002"
+              " 条“兼职”保留原值并待确认，未擅自归为全职或学生。"
             ] })
           ] })
         ] })
@@ -44566,38 +44575,38 @@ function App() {
     /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card filter-bar", children: [
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "search-box", children: [
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(Search, { size: 15 }),
-        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("input", { value: rosterQuery, onChange: (event) => setRosterQuery(event.target.value), placeholder: "\u641C\u7D22\u59D3\u540D\u3001\u5DE5\u53F7\u3001\u95E8\u5E97\u3001\u804C\u4F4D" })
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("input", { value: rosterQuery, onChange: (event) => setRosterQuery(event.target.value), placeholder: "搜索姓名、工号、门店、职位" })
       ] }),
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("select", { className: "select", value: rosterBrand, onChange: (event) => setRosterBrand(event.target.value), children: [
-        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("option", { value: "all", children: "\u5168\u90E8\u54C1\u724C" }),
-        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("option", { children: "\u8336\u989C\u60A6\u8272" }),
-        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("option", { children: "\u53E4\u5FB7\u58A8\u67E0" }),
-        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("option", { children: "\u9E33\u592E\u5496\u5561" })
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("option", { value: "all", children: "全部品牌" }),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("option", { children: "茶颜悦色" }),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("option", { children: "古德墨柠" }),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("option", { children: "鸳央咖啡" })
       ] }),
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("select", { className: "select", value: rosterType, onChange: (event) => setRosterType(event.target.value), children: [
-        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("option", { value: "all", children: "\u5168\u90E8\u7C7B\u578B" }),
-        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("option", { children: "\u8FD0\u8425\u5168\u804C" }),
-        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("option", { children: "\u5B66\u751F\u7528\u5DE5" }),
-        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("option", { children: "\u517C\u804C" }),
-        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("option", { value: "exception", children: "\u4EC5\u770B\u5F85\u786E\u8BA4" })
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("option", { value: "all", children: "全部类型" }),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("option", { children: "运营全职" }),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("option", { children: "学生用工" }),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("option", { children: "兼职" }),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("option", { value: "exception", children: "仅看待确认" })
       ] }),
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("span", { className: "result-count", children: [
-        "\u5339\u914D ",
+        "匹配 ",
         filteredRoster.length,
-        " \u4EBA \xB7 \u5F53\u524D\u663E\u793A\u524D 100 \u6761"
+        " 人 · 当前显示前 100 条"
       ] })
     ] }),
     /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card table-wrap desktop-only", children: /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("table", { children: [
       /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("thead", { children: /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("tr", { children: [
-        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "\u5DE5\u53F7" }),
-        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "\u59D3\u540D" }),
-        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "\u54C1\u724C" }),
-        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "\u7528\u5DE5\u7C7B\u578B" }),
-        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "\u5165\u804C\u65E5\u671F" }),
-        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "\u533A\u57DF / \u5927\u5E97\u533A" }),
-        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "\u6240\u5C5E\u95E8\u5E97" }),
-        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "\u804C\u4F4D" }),
-        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "\u6807\u8BB0" })
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "工号" }),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "姓名" }),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "品牌" }),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "用工类型" }),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "入职日期" }),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "区域 / 大店区" }),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "所属门店" }),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "职位" }),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "标记" })
       ] }) }),
       /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("tbody", { children: filteredRoster.slice(0, 100).map((record) => /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("tr", { children: [
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("td", { children: record.workNo }),
@@ -44611,7 +44620,7 @@ function App() {
         ] }),
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("td", { children: record.storeName }),
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("td", { children: record.position }),
-        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("td", { children: record.dataFlags.length ? /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: "badge badge-amber", children: "\u5F85\u786E\u8BA4" }) : /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: "badge badge-green", children: "\u6B63\u5E38" }) })
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("td", { children: record.dataFlags.length ? /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: "badge badge-amber", children: "待确认" }) : /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: "badge badge-green", children: "正常" }) })
       ] }, record.id)) })
     ] }) }),
     /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "visit-mobile-list", children: filteredRoster.slice(0, 30).map((record) => /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card", style: { padding: 16 }, children: [
@@ -44620,7 +44629,7 @@ function App() {
           /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "list-title", children: record.name }),
           /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "list-meta", children: [
             record.workNo,
-            " \xB7 ",
+            " · ",
             record.position
           ] })
         ] }),
@@ -44629,7 +44638,7 @@ function App() {
       /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("p", { style: { fontSize: 12, lineHeight: 1.7, marginTop: 12 }, children: record.storeName }),
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "list-meta", style: { marginTop: 8 }, children: [
         record.brand,
-        " \xB7 ",
+        " · ",
         record.region,
         " / ",
         record.district
@@ -44637,23 +44646,23 @@ function App() {
     ] }, record.id)) })
   ] });
   const standardsPage = /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)(import_jsx_runtime3.Fragment, { children: [
-    pageHeading("VISIT STANDARD", "\u5DE1\u5E97\u6807\u51C6", "\u6807\u51C6\u5199\u5728\u660E\u5904\uFF0C\u590D\u6742\u8BA1\u7B97\u7559\u5728\u540E\u53F0\u3002"),
+    pageHeading("VISIT STANDARD", "巡店标准", "标准写在明处，复杂计算留在后台。"),
     /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "standard-hero", children: [
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { children: [
-        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("h2", { children: "\u6BCF\u5B63\u5EA6\uFF0C\u81F3\u5C11\u8D70\u8FDB 25 \u5BB6\u4E0D\u540C\u95E8\u5E97" }),
-        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("p", { children: "\u4EE5\u81EA\u7136\u5B63\u5EA6\u3001\u5DE1\u5E97 BP \u548C\u95E8\u5E97\u7F16\u7801\u53BB\u91CD\u7EDF\u8BA1\u3002\u540C\u5E97\u590D\u8BBF\u4F1A\u88AB\u4FDD\u7559\uFF0C\u4F46\u4E0D\u91CD\u590D\u8BA1\u5165\u8FBE\u6807\u6570\uFF1B\u53EA\u6709\u5DF2\u63D0\u4EA4\u4E14\u672A\u4F5C\u5E9F\u7684\u5DE1\u5E97\u8BB0\u5F55\u624D\u6709\u6548\u3002" })
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("h2", { children: "每季度，至少走进 25 家不同门店" }),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("p", { children: "以自然季度、巡店 BP 和门店编码去重统计。同店复访会被保留，但不重复计入达标数；只有已提交且未作废的巡店记录才有效。" })
       ] }),
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "standard-number", children: [
         "25",
-        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("small", { children: "\u5BB6 / \u4EBA / \u5B63\u5EA6" })
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("small", { children: "家 / 人 / 季度" })
       ] })
     ] }),
     /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "stack", children: [
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card", children: [
         /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card-header", children: [
           /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { children: [
-            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-title", children: "\u91CD\u70B9\u95E8\u5E97\u4E5D\u9879\u6253\u6807" }),
-            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-subtitle", children: "\u6BCF\u9879\u5F02\u5E38 1 \u5206 \xB7 \u6700\u8FD1\u4E09\u4E2A\u5B8C\u6574\u6708 \xB7 \u7F3A\u5931\u4E0D\u7B49\u4E8E\u6B63\u5E38" })
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-title", children: "重点门店九项打标" }),
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-subtitle", children: "每项异常 1 分 · 最近三个完整月 · 缺失不等于正常" })
           ] }),
           /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: "badge badge-green", children: "v1.0" })
         ] }),
@@ -44667,10 +44676,10 @@ function App() {
       ] }),
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card", children: [
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-header", children: /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { children: [
-          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-title", children: "\u98CE\u9669\u7B49\u7EA7\u4E0E\u5DE1\u5E97\u8282\u594F" }),
-          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-subtitle", children: "\u6CBF\u7528\u539F\u8868\u89C4\u5219\uFF0C\u4E0D\u5728\u524D\u7AEF\u91CD\u590D\u53D1\u660E\u8BC4\u5206" })
+          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-title", children: "风险等级与巡店节奏" }),
+          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-subtitle", children: "沿用原表规则，不在前端重复发明评分" })
         ] }) }),
-        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-body", children: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "phase-flow", children: [["6+", "\u6781\u9AD8\u98CE\u9669", "\u7B2C\u4E00\u9636\u6BB5 \xB7 \u672C\u6708\u4F18\u5148", "var(--red)"], ["4\u20135", "\u9AD8\u98CE\u9669", "\u7B2C\u4E8C\u9636\u6BB5 \xB7 \u6B21\u6708", "var(--orange)"], ["2\u20133", "\u4E2D\u98CE\u9669", "\u7B2C\u4E09\u9636\u6BB5 \xB7 \u5B63\u5EA6\u5185", "var(--amber)"], ["0\u20131", "\u4F4E\u98CE\u9669", "\u7B2C\u56DB\u9636\u6BB5 \xB7 \u5E38\u89C4\u5DE1\u68C0", "var(--green-700)"]].map(([score, level, phase, color]) => /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "phase-card", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-body", children: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "phase-flow", children: [["6+", "极高风险", "第一阶段 · 本月优先", "var(--red)"], ["4–5", "高风险", "第二阶段 · 次月", "var(--orange)"], ["2–3", "中风险", "第三阶段 · 季度内", "var(--amber)"], ["0–1", "低风险", "第四阶段 · 常规巡检", "var(--green-700)"]].map(([score, level, phase, color]) => /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "phase-card", children: [
           /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "phase-score", style: { color }, children: score }),
           /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("strong", { children: level }),
           /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("p", { children: phase })
@@ -44678,8 +44687,8 @@ function App() {
       ] }),
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card", children: [
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-header", children: /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { children: [
-          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-title", children: "\u95EE\u9898\u95ED\u73AF\u6807\u51C6" }),
-          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-subtitle", children: "\u5B8C\u6210\u95E8\u5E97\u5904\u7406 \u2260 \u95EE\u9898\u5173\u95ED\uFF0C\u5FC5\u987B\u7ECF\u8FC7\u54C1\u724C\u7ECF\u7406\u590D\u6838" })
+          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-title", children: "问题闭环标准" }),
+          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-subtitle", children: "完成门店处理 ≠ 问题关闭，必须经过品牌经理复核" })
         ] }) }),
         /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card-body", children: [
           /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "closure-flow", children: CLOSURE_STEPS.map(({ icon: Icon2, title, subtitle }, index) => /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { style: { display: "contents" }, children: [
@@ -44692,37 +44701,37 @@ function App() {
           ] }, title)) }),
           /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "inline-notice", style: { marginTop: 20 }, children: [
             /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(Clock3, { size: 16 }),
-            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { children: "\u622A\u6B62\u65E5\u5F53\u5929\u4E0D\u903E\u671F\uFF0C\u6B21\u65E5\u8D77\u4ECD\u672A\u5173\u95ED\u5373\u903E\u671F\uFF1B\u5F85\u590D\u6838\u4E5F\u5C5E\u4E8E\u672A\u95ED\u73AF\u3002\u9000\u56DE\u3001\u6539\u671F\u3001\u91CD\u5F00\u5747\u9700\u7559\u75D5\u3002" })
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { children: "截止日当天不逾期，次日起仍未关闭即逾期；待复核也属于未闭环。退回、改期、重开均需留痕。" })
           ] })
         ] })
       ] })
     ] })
   ] });
   const profilePage = /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)(import_jsx_runtime3.Fragment, { children: [
-    pageHeading("PROFILE & ACCESS", "\u6211\u7684", backendEnabled ? "\u5DF2\u7ED1\u5B9A\u5DE5\u53F7\uFF0C\u8EAB\u4EFD\u51B3\u5B9A\u53EF\u6267\u884C\u64CD\u4F5C\uFF1B\u6240\u6709\u63D0\u4EA4\u5B9E\u65F6\u5199\u5165\u56E2\u961F\u5171\u4EAB\u6570\u636E\u5E93\u3002" : "\u8EAB\u4EFD\u51B3\u5B9A\u53EF\u6267\u884C\u64CD\u4F5C\uFF1B\u6B63\u5F0F\u7248\u91C7\u7528\u5FAE\u4FE1\u6388\u6743\u540E\u9996\u6B21\u7ED1\u5B9A\u5DE5\u53F7\u3002"),
+    pageHeading("PROFILE & ACCESS", "我的", backendEnabled ? "已绑定工号，身份决定可执行操作；所有提交实时写入团队共享数据库。" : "身份决定可执行操作；正式版采用微信授权后首次绑定工号。"),
     /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "mobile-only", style: { gap: 9, marginBottom: 16 }, children: [
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("button", { className: "button button-secondary button-sm", onClick: () => navigate("visits"), children: [
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(ClipboardCheck, { size: 14 }),
-        "\u5DE1\u5E97\u8BB0\u5F55"
+        "巡店记录"
       ] }),
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("button", { className: "button button-secondary button-sm", onClick: () => navigate("imports"), children: [
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(FileSpreadsheet, { size: 14 }),
-        "\u57FA\u7840\u6570\u636E"
+        "基础数据"
       ] }),
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("button", { className: "button button-secondary button-sm", onClick: () => navigate("roster"), children: [
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(UsersRound, { size: 14 }),
-        "\u4EBA\u5458"
+        "人员"
       ] }),
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("button", { className: "button button-secondary button-sm", onClick: () => navigate("standards"), children: [
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(BookOpen, { size: 14 }),
-        "\u6807\u51C6"
+        "标准"
       ] })
     ] }),
     /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "grid grid-2", children: [
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card", children: [
         /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card-header", children: [
-          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-title", children: backendEnabled ? "\u5F53\u524D\u7ED1\u5B9A\u8EAB\u4EFD" : "\u5F53\u524D\u6F14\u793A\u8EAB\u4EFD" }),
-          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: `badge ${backendEnabled ? "badge-green" : "badge-amber"}`, children: backendEnabled ? "\u5DE5\u53F7\u5DF2\u7ED1\u5B9A" : "\u4EC5\u6F14\u793A\u5207\u6362" })
+          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-title", children: backendEnabled ? "当前绑定身份" : "当前演示身份" }),
+          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: `badge ${backendEnabled ? "badge-green" : "badge-amber"}`, children: backendEnabled ? "工号已绑定" : "仅演示切换" })
         ] }),
         /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card-body", children: [
           /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { style: { display: "flex", alignItems: "center", gap: 15, marginBottom: 20 }, children: [
@@ -44731,41 +44740,41 @@ function App() {
               /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("h3", { children: employee.name }),
               /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("p", { className: "card-subtitle", children: [
                 employee.workNo,
-                " \xB7 ",
+                " · ",
                 ROLE_LABELS[employee.role],
-                " \xB7 ",
-                employee.brands.join("\u3001")
+                " · ",
+                employee.brands.join("、")
               ] })
             ] })
           ] }),
           !backendEnabled && /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)(import_jsx_runtime3.Fragment, { children: [
-            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("label", { className: "form-label", children: "\u5207\u6362\u8EAB\u4EFD\u4EE5\u9A8C\u8BC1 BP / \u7ECF\u7406\u6743\u9650" }),
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("label", { className: "form-label", children: "切换身份以验证 BP / 经理权限" }),
             /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("select", { className: "input", style: { marginTop: 8 }, value: currentEmployeeId, onChange: (e) => {
               setCurrentEmployeeId(e.target.value);
               setIssueDetailId(null);
-              showToast("\u6F14\u793A\u8EAB\u4EFD\u5DF2\u5207\u6362\uFF0C\u6570\u636E\u4E0D\u4F1A\u6309\u8EAB\u4EFD\u9694\u79BB\u67E5\u770B");
+              showToast("演示身份已切换，数据不会按身份隔离查看");
             }, children: employeeList.map((item2) => /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("option", { value: item2.id, children: [
               item2.name,
-              " \xB7 ",
+              " · ",
               ROLE_LABELS[item2.role],
-              " \xB7 ",
-              item2.brands.join("\u3001")
+              " · ",
+              item2.brands.join("、")
             ] }, item2.id)) })
           ] }),
           backendEnabled && /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "inline-notice green", children: [
             /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(ShieldCheck, { size: 15 }),
-            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { children: "\u8EAB\u4EFD\u7531\u5DE5\u53F7\u7ED1\u5B9A\u51B3\u5B9A\uFF0C\u4E0D\u80FD\u5728\u770B\u677F\u5185\u5207\u6362\u4ED6\u4EBA\u8EAB\u4EFD\uFF1B\u5982\u9700\u6362\u7ED1\u8BF7\u8054\u7CFB\u7BA1\u7406\u5458\u3002" })
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { children: "身份由工号绑定决定，不能在看板内切换他人身份；如需换绑请联系管理员。" })
           ] }),
           /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "inline-notice", style: { marginTop: 16 }, children: [
             /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(Eye, { size: 15 }),
-            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { children: "\u5DF2\u786E\u8BA4\u5168\u5458\u5168\u90E8\u53EF\u89C1\u3002BP \u53EA\u80FD\u8DDF\u8FDB\u672C\u4EBA\u95EE\u9898\uFF0C\u54C1\u724C\u7ECF\u7406\u53EA\u80FD\u590D\u6838\u672C\u54C1\u724C\uFF0C\u7ECF\u7406\u4E0D\u80FD\u4EE3\u5F55\u5DE1\u5E97\u3002" })
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { children: "已确认全员全部可见。BP 只能跟进本人问题，品牌经理只能复核本品牌，经理不能代录巡店。" })
           ] })
         ] })
       ] }),
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card", children: [
-        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-header", children: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-title", children: usingSupabase ? "\u591A\u4EBA\u534F\u4F5C\u8EAB\u4EFD\u6D41\u7A0B" : "\u6B63\u5F0F\u7248\u8EAB\u4EFD\u6D41\u7A0B" }) }),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-header", children: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-title", children: usingSupabase ? "多人协作身份流程" : "正式版身份流程" }) }),
         /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card-body", children: [
-          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "timeline", children: (usingSupabase ? [["\u8F93\u5165\u5DE5\u53F7+\u59D3\u540D", "\u4E0E HR \u6210\u5458\u540D\u518C\u5339\u914D\u540E\u81EA\u52A8\u5EFA\u7ACB\u4F1A\u8BDD\uFF0C\u65E0\u9700\u5FAE\u4FE1\u6216\u624B\u673A\u53F7"], ["\u81EA\u52A8\u5E26\u51FA\u8EAB\u4EFD", "\u59D3\u540D\u3001\u54C1\u724C\u3001\u89D2\u8272\u7531\u540D\u518C\u51B3\u5B9A\uFF0C\u5DE1\u5E97\u53EA\u9700\u9009\u95E8\u5E97"], ["\u4E4B\u540E\u514D\u767B\u5F55", "\u672C\u8BBE\u5907\u4F1A\u8BDD\u6301\u7EED\u6709\u6548\uFF0C\u6240\u6709\u63D0\u4EA4\u5B9E\u65F6\u5171\u4EAB\u7ED9\u56E2\u961F"]] : [["\u5FAE\u4FE1\u6388\u6743\u767B\u5F55", "\u83B7\u53D6\u771F\u5B9E\u767B\u5F55\u8EAB\u4EFD\uFF0C\u672A\u767B\u5F55\u4E0D\u53EF\u8BBF\u95EE\u4E1A\u52A1\u6570\u636E"], ["\u9996\u6B21\u8F93\u5165\u5DE5\u53F7", "\u7CBE\u786E\u5339\u914D\u4EBA\u5458\u5E95\u7A3F\uFF0C\u81EA\u52A8\u5E26\u51FA\u59D3\u540D\u3001\u54C1\u724C\u548C\u89D2\u8272"], ["\u4E4B\u540E\u76F4\u63A5\u4F7F\u7528", "\u7ED1\u5B9A\u6301\u7EED\u6709\u6548\uFF0C\u5DE1\u5E97\u65E0\u9700\u91CD\u590D\u586B\u5199\u8EAB\u4EFD\u4FE1\u606F"]]).map(([title, text2], index) => /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "timeline-item", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "timeline", children: (usingSupabase ? [["输入工号+姓名", "与 HR 成员名册匹配后自动建立会话，无需微信或手机号"], ["自动带出身份", "姓名、品牌、角色由名册决定，巡店只需选门店"], ["之后免登录", "本设备会话持续有效，所有提交实时共享给团队"]] : [["微信授权登录", "获取真实登录身份，未登录不可访问业务数据"], ["首次输入工号", "精确匹配人员底稿，自动带出姓名、品牌和角色"], ["之后直接使用", "绑定持续有效，巡店无需重复填写身份信息"]]).map(([title, text2], index) => /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "timeline-item", children: [
             /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "timeline-title", children: [
               index + 1,
               ". ",
@@ -44775,7 +44784,7 @@ function App() {
           ] }, title)) }),
           !backendEnabled && /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "inline-notice", style: { marginTop: 10 }, children: [
             /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(Info, { size: 15 }),
-            "\u5F53\u524D\u73AF\u5883\u672A\u63D0\u4F9B\u4E91\u670D\u52A1\u5F00\u901A\u5165\u53E3\uFF0C\u56E0\u6B64\u672C\u6F14\u793A\u4E0D\u6A21\u62DF\u5FAE\u4FE1\u767B\u5F55\u6216\u4E91\u7AEF\u6301\u4E45\u5316\u3002"
+            "当前环境未提供云服务开通入口，因此本演示不模拟微信登录或云端持久化。"
           ] })
         ] })
       ] })
@@ -44786,7 +44795,7 @@ function App() {
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "brand", children: [
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "brand-mark", children: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(Store, { size: 22 }) }),
         /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { children: [
-          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "brand-title", children: "\u5DE1\u5E97\u65E5\u5386" }),
+          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "brand-title", children: "巡店日历" }),
           /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "brand-sub", children: "HRBP FIELDWORK" })
         ] })
       ] }),
@@ -44800,11 +44809,11 @@ function App() {
       ] }, item2.page)) }),
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "sidebar-bottom", children: [
         /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "sidebar-standard", children: [
-          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("strong", { children: "25 \u5BB6 / \u4EBA / \u5B63\u5EA6" }),
+          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("strong", { children: "25 家 / 人 / 季度" }),
           /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("p", { children: [
-            "\u4E0D\u540C\u95E8\u5E97\u53BB\u91CD\u8FBE\u6807",
+            "不同门店去重达标",
             /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("br", {}),
-            "\u53D1\u73B0\u95EE\u9898\uFF0C\u66F4\u8981\u89E3\u51B3\u95EE\u9898"
+            "发现问题，更要解决问题"
           ] })
         ] }),
         /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("button", { className: "sidebar-user", style: { width: "100%", borderLeft: 0, borderRight: 0, borderBottom: 0, background: "transparent", color: "white", textAlign: "left" }, onClick: () => navigate("profile"), children: [
@@ -44813,7 +44822,7 @@ function App() {
             /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: "sidebar-user-name", style: { display: "block" }, children: employee.name }),
             /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("span", { className: "sidebar-user-role", children: [
               ROLE_LABELS[employee.role],
-              " \xB7 ",
+              " · ",
               employee.brands[0]
             ] })
           ] })
@@ -44826,13 +44835,13 @@ function App() {
           /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: "topbar-title", children: PAGE_LABELS[page] }),
           /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("span", { className: "demo-pill", children: [
             /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(Circle, { size: 6, fill: "currentColor" }),
-            backendEnabled ? "\u56E2\u961F\u534F\u4F5C\u7248 \xB7 \u5B9E\u65F6\u4FDD\u5B58" : "\u6F14\u793A\u6570\u636E \xB7 \u4E0D\u5199\u5165\u4E91\u7AEF"
+            backendEnabled ? "团队协作版 · 实时保存" : "演示数据 · 不写入云端"
           ] })
         ] }),
         /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "topbar-right", children: [
-          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("select", { className: "quarter-select", "aria-label": "\u5B63\u5EA6", children: /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("option", { children: [
+          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("select", { className: "quarter-select", "aria-label": "季度", children: /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("option", { children: [
             CURRENT_QUARTER,
-            " \u81EA\u7136\u5B63\u5EA6"
+            " 自然季度"
           ] }) }),
           /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("button", { className: "icon-button", onClick: () => navigate("standards"), children: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(CircleHelp, { size: 17 }) }),
           /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("button", { className: "avatar-button", onClick: () => navigate("profile"), children: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: "avatar", children: employee.name.slice(-2) }) })
@@ -44853,26 +44862,30 @@ function App() {
     /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("nav", { className: "mobile-nav", children: [
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("button", { className: `mobile-nav-item ${page === "home" ? "active" : ""}`, onClick: () => navigate("home"), children: [
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(House, { size: 19 }),
-        "\u9996\u9875"
+        "首页"
       ] }),
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("button", { className: `mobile-nav-item ${page === "recommend" ? "active" : ""}`, onClick: () => navigate("recommend"), children: [
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(Sparkles, { size: 19 }),
-        "\u63A8\u8350"
+        "推荐"
       ] }),
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("button", { className: "mobile-nav-item", onClick: () => openVisit(), children: [
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: "mobile-add", children: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(Plus, { size: 23 }) }),
-        "\u5DE1\u5E97"
+        "巡店"
       ] }),
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("button", { className: `mobile-nav-item ${page === "issues" ? "active" : ""}`, onClick: () => navigate("issues"), children: [
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(CircleAlert, { size: 19 }),
-        "\u95EE\u9898"
+        "问题"
       ] }),
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("button", { className: `mobile-nav-item ${page === "dashboard" ? "active" : ""}`, onClick: () => navigate("dashboard"), children: [
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(Menu, { size: 19 }),
-        "\u603B\u89C8"
+        "总览"
       ] })
     ] }),
-    visitModalOpen && /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(NewVisitModal, { employee, stores, visits, preselectedStoreId: visitModalStoreId, onClose: () => setVisitModalOpen(false), onSave: saveVisit }),
+    visitModalOpen && /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(NewVisitModal, { employee, stores, visits, preselectedStoreId: visitModalStoreId, modeLabel: usingSupabase ? "Supabase 协作" : isCloudEnabled() ? "WorkBuddy 云" : "本机演示", onReload: () => {
+      if (backendEnabled) {
+        loadBackendData().catch((caught) => showToast(caught instanceof Error ? caught.message : "云端数据加载失败"));
+      }
+    }, onClose: () => setVisitModalOpen(false), onSave: saveVisit }),
     riskDetail && /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(RiskDrawer, { recommendation: riskDetail, onClose: () => setRiskDetail(null), onVisit: () => {
       setRiskDetail(null);
       openVisit(riskDetail.store.id);
@@ -44881,11 +44894,11 @@ function App() {
     backendEnabled && !cloudReady && (usingSupabase ? /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(SupabaseAuthGate, { error: cloudError, onBound: (bound) => {
       setCurrentEmployeeId(bound.id);
       setCloudError(null);
-      loadBackendData().catch((caught) => setCloudError(caught instanceof Error ? caught.message : "\u4E91\u7AEF\u6570\u636E\u52A0\u8F7D\u5931\u8D25"));
+      loadBackendData().catch((caught) => setCloudError(caught instanceof Error ? caught.message : "云端数据加载失败"));
     } }) : /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(CloudAuthGate, { error: cloudError, onBound: (bound) => {
       setCurrentEmployeeId(bound.id);
       setCloudError(null);
-      loadBackendData().catch((caught) => setCloudError(caught instanceof Error ? caught.message : "\u4E91\u7AEF\u6570\u636E\u52A0\u8F7D\u5931\u8D25"));
+      loadBackendData().catch((caught) => setCloudError(caught instanceof Error ? caught.message : "云端数据加载失败"));
     } })),
     toast && /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "toast", children: [
       /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(CircleCheck, { size: 17 }),

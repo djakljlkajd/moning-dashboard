@@ -44007,7 +44007,15 @@ function App() {
     return districts === null || districts.length === 0 ? void 0 : districts;
   }, [employee]);
   const recommendLimit = employee.role === "bp" ? 10 : void 0;
-  const recommendations = (0, import_react5.useMemo)(() => recommendStores({ stores, visits, issues, riskSnapshots: risks, asOfDate: DEMO_TODAY, brands: recommendBrands, bpId: recommendBpId, districts: recommendDistricts, warningsByCode, limit: recommendLimit }), [stores, visits, issues, risks, recommendBrands, recommendBpId, recommendDistricts, warningsByCode, recommendLimit]);
+  const recommendations = (0, import_react5.useMemo)(() => recommendStores({ stores, visits, issues, riskSnapshots: risks, asOfDate: DEMO_TODAY, brands: recommendBrands, bpId: recommendBpId, districts: recommendDistricts, warningsByCode }), [stores, visits, issues, risks, recommendBrands, recommendBpId, recommendDistricts, warningsByCode]);
+  const displayedRecommendations = (0, import_react5.useMemo)(() => {
+    const top10 = (list) => list.slice(0, 10);
+    if (storeFilter === "cupeff") return top10(recommendations.filter((r) => r.warning && r.warning.activeDays > 0).sort((a, b) => b.warning.redRatio - a.warning.redRatio || b.warning.redDays - a.warning.redDays));
+    if (storeFilter === "wow") return top10(recommendations.filter((r) => r.warning?.monthCupWow !== null && r.warning?.monthCupWow !== void 0).sort((a, b) => a.warning.monthCupWow - b.warning.monthCupWow));
+    if (storeFilter === "yoy") return top10(recommendations.filter((r) => r.warning?.monthCupYoy !== null && r.warning?.monthCupYoy !== void 0).sort((a, b) => a.warning.monthCupYoy - b.warning.monthCupYoy));
+    if (storeFilter === "achieve") return top10(recommendations.filter((r) => r.warning?.salesAchieveRate !== null && r.warning?.salesAchieveRate !== void 0).sort((a, b) => a.warning.salesAchieveRate - b.warning.salesAchieveRate));
+    return recommendLimit ? recommendations.slice(0, recommendLimit) : recommendations;
+  }, [recommendations, storeFilter, recommendLimit]);
   const myRecommendations = recommendations;
   const progress = calculateQuarterlyProgress(visits, employee.id, CURRENT_QUARTER);
   const myIssues = issues.filter((issue) => issue.assigneeId === employee.id);
@@ -44250,8 +44258,7 @@ function App() {
         weeklyReport.rangeLabel,
         "（更新至 ",
         weeklyReport.reportDate,
-        "）。杯效按日分档（50杯/档），低于同档位中位数标红，标红率≥60%为长期标红。",
-        employee.role === "bp" ? "按严重程度仅展示前 10 家。" : "",
+        "）。杯效按日分档（50杯/档），低于同档位中位数标红。5 个维度各取最严重 10 家。",
         recommendDistricts ? `已按管辖大店长过滤（${recommendDistricts.length} 个大店区）。` : ""
       ] })
     ] }),
@@ -44265,14 +44272,11 @@ function App() {
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(Search, { size: 15 }),
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("input", { value: storeQuery, onChange: (e) => setStoreQuery(e.target.value), placeholder: "搜索门店名称、编码或品牌" })
       ] }),
-      /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "filter-chips", children: [["all", "全部门店"], ["warning", "问题门店"], ["high", "高 / 极高风险"], ["unvisited", "本季未巡"], ["missing", "数据待补充"]].map(([key, label]) => /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("button", { className: `chip ${storeFilter === key ? "active" : ""}`, onClick: () => setStoreFilter(key), children: label }, key)) })
+      /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "filter-chips", children: [["all", "高 / 极高风险"], ["cupeff", "杯效标红最多"], ["wow", "环比下降最大"], ["yoy", "同比下降最大"], ["achieve", "达成率最低"]].map(([key, label]) => /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("button", { className: `chip ${storeFilter === key ? "active" : ""}`, onClick: () => setStoreFilter(key), children: label }, key)) })
     ] }),
-    /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "store-grid", children: recommendations.filter((item2) => {
-      const matchesQuery = `${item2.store.name}${item2.store.code}${item2.store.brand}`.toLowerCase().includes(storeQuery.toLowerCase());
-      const matchesFilter = storeFilter === "all" || storeFilter === "warning" && item2.warning && item2.warning.level !== "ok" || storeFilter === "unvisited" && item2.unvisited || storeFilter === "high" && (["高风险", "极高风险"].includes(item2.risk?.riskLevel ?? "") || item2.warning?.level === "high") || storeFilter === "missing" && !item2.warning && (item2.risk?.missingCount ?? 9) > 0;
-      return matchesQuery && matchesFilter;
-    }).map((recommendation) => /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(StoreCard, { recommendation, onDetail: () => setRiskDetail(recommendation), onVisit: () => openVisit(recommendation.store.id) }, recommendation.store.id)) }),
-    !stores.length && /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(EmptyState, { title: "门店数据加载中", description: "门店清单来自在职数据聚合，若长时间为空请重新打开看板" })
+    /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "store-grid", children: displayedRecommendations.filter((item2) => `${item2.store.name}${item2.store.code}${item2.store.brand}`.toLowerCase().includes(storeQuery.toLowerCase())).map((recommendation) => /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(StoreCard, { recommendation, onDetail: () => setRiskDetail(recommendation), onVisit: () => openVisit(recommendation.store.id) }, recommendation.store.id)) }),
+    !stores.length && /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(EmptyState, { title: "门店数据加载中", description: "门店清单来自在职数据聚合，若长时间为空请重新打开看板" }),
+    stores.length > 0 && !displayedRecommendations.length && /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(EmptyState, { title: "该维度暂无数据", description: "当前品牌的周报数据尚未导入，或管辖范围内没有符合该维度的门店" })
   ] });
   const displayVisits = visits.filter((visit) => visit.status === "submitted" && !visit.voided && getQuarterKey(visit.visitedAt) === visitQuarter).filter((visit) => {
     const store = stores.find((item2) => item2.id === visit.storeId);

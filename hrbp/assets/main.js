@@ -15661,6 +15661,23 @@ var supabaseBridge = {
       dataFlags: row.data_flags ?? []
     }));
   },
+  /** 读取最新一期墨柠周报的门店预警；未导入过周报时返回 null。 */
+  async loadWeeklyWarnings(brand = "古德墨柠") {
+    const reports = await rest(
+      `/hr_report_uploads?brand=eq.${encodeURIComponent(brand)}&order=created_at.desc&limit=1`
+    );
+    const report = reports[0];
+    if (!report) return null;
+    const rows = await rest(
+      `/hr_store_weekly_flags?report_id=eq.${report.id}&select=store_code,payload`
+    );
+    return {
+      reportId: report.id,
+      reportDate: report.report_date,
+      rangeLabel: report.range_label,
+      warnings: rows.map((row) => row.payload)
+    };
+  },
   async saveVisit(visit, issues, events) {
     await rest("/hr_visits", {
       method: "POST",
@@ -15824,6 +15841,24 @@ function SupabaseAuthGate({ onBound, error }) {
   ] }) });
 }
 
+// scripts/daily/warning-core.mjs
+var MONING_BP_SCOPE = {
+  周丽: ["钟天祥", "周思凡", "童璐", "何海云", "旷瑶", "易彪"],
+  杨梦琳: ["邵宝生", "杜强", "廖灿", "李奔", "徐宇辉", "赵思洁", "刘旺林"]
+};
+var MONING_FULL_ACCESS = ["戴嘉伟", "李当", "杨师"];
+function moningScopeDistricts(employeeName) {
+  if (MONING_FULL_ACCESS.includes(employeeName)) return null;
+  const leaders = MONING_BP_SCOPE[employeeName];
+  if (!leaders) return [];
+  return leaders.map((name) => `${name}大店区`);
+}
+function warningSortScore(warning) {
+  if (!warning) return 0;
+  const levelScore = warning.level === "high" ? 2e3 : warning.level === "mid" ? 1e3 : 0;
+  return levelScore + warning.redRatio * 100 - (warning.salesAchieveRate ?? 1) * 10;
+}
+
 // src/features/issues/overdue.ts
 function isIssueOverdue(issue, now = /* @__PURE__ */ new Date()) {
   if (issue.status === "closed") return false;
@@ -15845,7 +15880,7 @@ function recommendStores(options) {
   const asOfDate = toDateOnly(options.asOfDate ?? /* @__PURE__ */ new Date());
   const quarter = getQuarterKey(asOfDate);
   const riskByStore = new Map(options.riskSnapshots.map((risk) => [risk.storeId, risk]));
-  const stores = options.stores.filter((store) => store.active && (!options.brands || options.brands.includes(store.brand)));
+  const stores = options.stores.filter((store) => store.active && (!options.brands || options.brands.includes(store.brand)) && (!options.districts || options.districts.includes(store.district ?? "")));
   const countableVisits = options.visits.filter((visit) => visit.status === "submitted" && !visit.voided);
   const recommendations = stores.map((store) => {
     const storeVisits = countableVisits.filter((visit) => visit.storeId === store.id && (!options.bpId || visit.bpId === options.bpId));
@@ -15859,10 +15894,14 @@ function recommendStores(options) {
     const unvisited = quarterVisits.length === 0;
     const risk = riskByStore.get(store.id) ?? null;
     const phase = risk?.phase ?? "本月";
+    const warning = options.warningsByCode?.get(store.code) ?? null;
     const reasons = [];
-    if (!risk || risk.missingCount > 0) reasons.push(`风险数据待补充（${risk?.missingCount ?? 9}项缺失），需优先核查`);
-    else if (risk.knownScore >= 4) reasons.push(`${risk.riskLevel}，九项规则命中${risk.knownScore}项，安排在${phase}巡店`);
-    else reasons.push(`${risk.riskLevel}，建议按${phase}节奏巡店`);
+    if (warning && warning.level !== "ok") reasons.push(...warning.anomalies.slice(0, 2));
+    if (!warning) {
+      if (!risk || risk.missingCount > 0) reasons.push(`风险数据待补充（${risk?.missingCount ?? 9}项缺失），需优先核查`);
+      else if (risk.knownScore >= 4) reasons.push(`${risk.riskLevel}，九项规则命中${risk.knownScore}项，安排在${phase}巡店`);
+      else reasons.push(`${risk.riskLevel}，建议按${phase}节奏巡店`);
+    }
     if (unvisited) reasons.push(`${quarter}尚未提交有效巡店`);
     if (overdueIssueCount > 0) reasons.push(`存在${overdueIssueCount}个已逾期问题`);
     if (highSeverityIssueCount > 0) reasons.push(`存在${highSeverityIssueCount}个未关闭高严重问题`);
@@ -15876,10 +15915,13 @@ function recommendStores(options) {
       overdueIssueCount,
       highSeverityIssueCount,
       lastVisitAt,
-      daysSinceLastVisit
+      daysSinceLastVisit,
+      warning
     };
   });
   recommendations.sort((a, b) => {
+    const warningDifference = warningSortScore(b.warning) - warningSortScore(a.warning);
+    if (warningDifference) return warningDifference;
     const phaseDifference = PHASE_ORDER[a.risk?.phase ?? "本月"] - PHASE_ORDER[b.risk?.phase ?? "本月"];
     return phaseDifference || Number(b.unvisited) - Number(a.unvisited) || compareNumberDesc(a.overdueIssueCount, b.overdueIssueCount) || compareNumberDesc(a.highSeverityIssueCount, b.highSeverityIssueCount) || (b.daysSinceLastVisit ?? Number.MAX_SAFE_INTEGER) - (a.daysSinceLastVisit ?? Number.MAX_SAFE_INTEGER) || a.store.code.localeCompare(b.store.code);
   });
@@ -43131,6 +43173,11 @@ function riskBadge(level) {
   if (level === "数据待补充") return "badge-amber";
   return "badge-green";
 }
+function warningBadge(level) {
+  if (level === "high") return { cls: "badge-red", label: "问题门店" };
+  if (level === "mid") return { cls: "badge-orange", label: "需关注" };
+  return { cls: "badge-green", label: "正常" };
+}
 function statusBadge(status) {
   return status === "closed" ? "badge-green" : status === "completed" ? "badge-blue" : status === "open" ? "badge-orange" : "badge-amber";
 }
@@ -43466,40 +43513,58 @@ ${note.trim()}` : "")
 }
 function RiskDrawer({ recommendation, onClose, onVisit }) {
   const risk = recommendation.risk;
+  const warning = recommendation.warning;
+  const badge = warning ? warningBadge(warning.level) : null;
+  const pct = (v) => v === null ? "—" : `${(v * 100).toFixed(1)}%`;
   return /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "drawer-backdrop", onMouseDown: (e) => e.target === e.currentTarget && onClose(), children: /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "drawer", children: [
     /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "drawer-header", children: [
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { children: [
-        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: `badge ${riskBadge(risk?.riskLevel)}`, children: risk?.riskLevel ?? "数据待补充" }),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: `badge ${badge ? badge.cls : riskBadge(risk?.riskLevel)}`, children: badge ? badge.label : risk?.riskLevel ?? "数据待补充" }),
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("h2", { className: "drawer-title", children: recommendation.store.name }),
         /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("p", { className: "card-subtitle", children: [
           recommendation.store.code,
           " · ",
-          recommendation.store.brand
+          recommendation.store.brand,
+          warning ? ` · ${warning.district}大店区` : ""
         ] })
       ] }),
       /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("button", { className: "icon-button", onClick: onClose, children: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(X, { size: 18 }) })
     ] }),
     /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "drawer-body", children: [
-      /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "detail-grid", children: [
-        /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { children: [
-          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "detail-label", children: "风险分" }),
-          /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "detail-value", children: [
-            risk?.knownScore ?? 0,
-            " / 9 分",
-            risk?.missingCount ? ` · 缺 ${risk.missingCount} 项` : ""
+      warning && /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)(import_jsx_runtime3.Fragment, { children: [
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "detail-grid", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { children: [
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "detail-label", children: "杯效标红" }),
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "detail-value", children: [
+              warning.redDays,
+              " / ",
+              warning.activeDays,
+              " 天"
+            ] })
+          ] }),
+          /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { children: [
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "detail-label", children: "期间平均杯效" }),
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "detail-value", children: [
+              warning.avgCupEff ?? "—",
+              " 杯/小时"
+            ] })
+          ] }),
+          /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { children: [
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "detail-label", children: "业绩达成率" }),
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "detail-value", children: pct(warning.salesAchieveRate) })
+          ] }),
+          /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { children: [
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "detail-label", children: "杯数环比 / 同比" }),
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "detail-value", children: [
+              pct(warning.monthCupWow),
+              " / ",
+              pct(warning.monthCupYoy)
+            ] })
           ] })
         ] }),
-        /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { children: [
-          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "detail-label", children: "建议巡店节奏" }),
-          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "detail-value", children: risk?.phase ?? "本月" })
-        ] }),
-        /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { children: [
-          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "detail-label", children: "指标月份" }),
-          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "detail-value", children: risk?.months.join("、") ?? "—" })
-        ] }),
-        /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { children: [
-          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "detail-label", children: "规则版本" }),
-          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "detail-value", children: "原表规则 · v1.0" })
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "detail-section", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("h3", { children: "异常数据（巡店需重点关注）" }),
+          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "reason-box", children: warning.anomalies.length ? warning.anomalies.map((item2) => /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "reason", children: item2 }, item2)) : /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "reason", children: "本期未触发异常规则" }) })
         ] })
       ] }),
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "detail-section", children: [
@@ -43635,6 +43700,8 @@ function IssueDrawer({ issue, employee, employees, stores, events, onClose, onAc
   ] }) });
 }
 function StoreCard({ recommendation, onDetail, onVisit }) {
+  const warning = recommendation.warning;
+  const badge = warning ? warningBadge(warning.level) : null;
   return /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card store-card", children: [
     /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "store-card-top", children: [
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { children: [
@@ -43642,7 +43709,7 @@ function StoreCard({ recommendation, onDetail, onVisit }) {
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "store-name", children: recommendation.store.name }),
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "store-code", children: recommendation.store.code })
       ] }),
-      /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: `badge ${riskBadge(recommendation.risk?.riskLevel)}`, children: recommendation.risk?.riskLevel ?? "数据待补充" })
+      /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: `badge ${badge ? badge.cls : riskBadge(recommendation.risk?.riskLevel)}`, children: badge ? badge.label : recommendation.risk?.riskLevel ?? "数据待补充" })
     ] }),
     /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "store-info", children: [
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("span", { children: [
@@ -43656,6 +43723,7 @@ function StoreCard({ recommendation, onDetail, onVisit }) {
       ] }),
       recommendation.unvisited && /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: "badge badge-orange", children: "本季未巡" })
     ] }),
+    warning && warning.tags.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { style: { display: "flex", gap: 6, flexWrap: "wrap", marginTop: 4 }, children: warning.tags.map((tag) => /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: "badge badge-red", style: { fontWeight: 500 }, children: tag }, tag)) }),
     /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "reason-box", children: recommendation.reasons.map((reason) => /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "reason", children: reason }, reason)) }),
     /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "store-card-footer", children: [
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("button", { className: "text-button", onClick: onDetail, children: [
@@ -43855,6 +43923,7 @@ function App() {
   const [cloudError, setCloudError] = (0, import_react5.useState)(null);
   const [roster, setRoster] = (0, import_react5.useState)(null);
   const [stores, setStores] = (0, import_react5.useState)([]);
+  const [weeklyReport, setWeeklyReport] = (0, import_react5.useState)(null);
   const [rosterSummary, setRosterSummary] = (0, import_react5.useState)(null);
   const [rosterQuery, setRosterQuery] = (0, import_react5.useState)("");
   const [rosterBrand, setRosterBrand] = (0, import_react5.useState)("all");
@@ -43874,6 +43943,8 @@ function App() {
       const personnel = await supabaseBridge.loadPersonnel();
       setRoster(personnel);
       setRosterSummary(summarizeRoster(personnel));
+      const weekly = await supabaseBridge.loadWeeklyWarnings().catch(() => null);
+      setWeeklyReport(weekly);
     }
     const bound = await backend.currentEmployee();
     if (bound) setCurrentEmployeeId(bound.id);
@@ -43915,7 +43986,17 @@ function App() {
   const risks = (0, import_react5.useMemo)(() => stores.map((store) => calculateRisk(store.id, metrics, DEMO_TODAY)), [stores, metrics]);
   const recommendBrands = employee.role === "director" ? void 0 : employee.brands;
   const recommendBpId = employee.role === "bp" ? employee.id : void 0;
-  const recommendations = (0, import_react5.useMemo)(() => recommendStores({ stores, visits, issues, riskSnapshots: risks, asOfDate: DEMO_TODAY, brands: recommendBrands, bpId: recommendBpId }), [stores, visits, issues, risks, recommendBrands, recommendBpId]);
+  const warningsByCode = (0, import_react5.useMemo)(() => {
+    const map = /* @__PURE__ */ new Map();
+    for (const warning of weeklyReport?.warnings ?? []) map.set(warning.storeCode, warning);
+    return map;
+  }, [weeklyReport]);
+  const recommendDistricts = (0, import_react5.useMemo)(() => {
+    if (!employee.brands.includes("古德墨柠")) return void 0;
+    const districts = moningScopeDistricts(employee.name);
+    return districts === null || districts.length === 0 ? void 0 : districts;
+  }, [employee]);
+  const recommendations = (0, import_react5.useMemo)(() => recommendStores({ stores, visits, issues, riskSnapshots: risks, asOfDate: DEMO_TODAY, brands: recommendBrands, bpId: recommendBpId, districts: recommendDistricts, warningsByCode }), [stores, visits, issues, risks, recommendBrands, recommendBpId, recommendDistricts, warningsByCode]);
   const myRecommendations = recommendations;
   const progress = calculateQuarterlyProgress(visits, employee.id, CURRENT_QUARTER);
   const myIssues = issues.filter((issue) => issue.assigneeId === employee.id);
@@ -44147,13 +44228,24 @@ function App() {
     ] })
   ] });
   const recommendPage = /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)(import_jsx_runtime3.Fragment, { children: [
-    pageHeading("SMART PRIORITY", "重点门店推荐", "后台自动完成九项打标，你只需要决定下一家先去哪里。", /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("button", { className: "button button-primary", onClick: () => openVisit(), children: [
+    pageHeading("SMART PRIORITY", "重点门店推荐", "带数据去巡店：先看门店哪里异常，带着问题去现场，闭环问题。", /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("button", { className: "button button-primary", onClick: () => openVisit(), children: [
       /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(Plus, { size: 15 }),
       "自由选店巡店"
     ] })),
-    /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "inline-notice green", children: [
+    weeklyReport && /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "inline-notice green", children: [
       /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(Sparkles, { size: 16 }),
-      /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { children: "指标口径：2026-07 至 2026-09 最近三个完整月。数据不完整会明确标记，不会被当作低风险。" })
+      /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("span", { children: [
+        "墨柠日报数据：",
+        weeklyReport.rangeLabel,
+        "（更新至 ",
+        weeklyReport.reportDate,
+        "）。杯效按日分档（50杯/档），低于同档位中位数标红，标红率≥60%为长期标红。",
+        recommendDistricts ? `你已按管辖大店长过滤（${recommendDistricts.length} 个大店区）。` : ""
+      ] })
+    ] }),
+    !weeklyReport && /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "inline-notice green", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(Sparkles, { size: 16 }),
+      /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { children: "墨柠周报数据尚未导入，导入后按杯效标红/业绩达成/杯数环比同比推荐问题门店。" })
     ] }),
     /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { style: { height: 18 } }),
     /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card filter-bar", children: [
@@ -44161,11 +44253,11 @@ function App() {
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(Search, { size: 15 }),
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("input", { value: storeQuery, onChange: (e) => setStoreQuery(e.target.value), placeholder: "搜索门店名称、编码或品牌" })
       ] }),
-      /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "filter-chips", children: [["all", "全部门店"], ["unvisited", "本季未巡"], ["high", "高 / 极高风险"], ["missing", "数据待补充"]].map(([key, label]) => /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("button", { className: `chip ${storeFilter === key ? "active" : ""}`, onClick: () => setStoreFilter(key), children: label }, key)) })
+      /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "filter-chips", children: [["all", "全部门店"], ["warning", "问题门店"], ["unvisited", "本季未巡"], ["high", "高 / 极高风险"], ["missing", "数据待补充"]].map(([key, label]) => /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("button", { className: `chip ${storeFilter === key ? "active" : ""}`, onClick: () => setStoreFilter(key), children: label }, key)) })
     ] }),
     /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "store-grid", children: recommendations.filter((item2) => {
       const matchesQuery = `${item2.store.name}${item2.store.code}${item2.store.brand}`.toLowerCase().includes(storeQuery.toLowerCase());
-      const matchesFilter = storeFilter === "all" || storeFilter === "unvisited" && item2.unvisited || storeFilter === "high" && ["高风险", "极高风险"].includes(item2.risk?.riskLevel ?? "") || storeFilter === "missing" && (item2.risk?.missingCount ?? 9) > 0;
+      const matchesFilter = storeFilter === "all" || storeFilter === "warning" && item2.warning && item2.warning.level !== "ok" || storeFilter === "unvisited" && item2.unvisited || storeFilter === "high" && (["高风险", "极高风险"].includes(item2.risk?.riskLevel ?? "") || item2.warning?.level === "high") || storeFilter === "missing" && !item2.warning && (item2.risk?.missingCount ?? 9) > 0;
       return matchesQuery && matchesFilter;
     }).map((recommendation) => /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(StoreCard, { recommendation, onDetail: () => setRiskDetail(recommendation), onVisit: () => openVisit(recommendation.store.id) }, recommendation.store.id)) }),
     !stores.length && /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(EmptyState, { title: "门店数据加载中", description: "门店清单来自在职数据聚合，若长时间为空请重新打开看板" })

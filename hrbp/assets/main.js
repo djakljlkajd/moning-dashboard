@@ -43723,6 +43723,16 @@ function StoreCard({ recommendation, onDetail, onVisit }) {
       ] }),
       recommendation.unvisited && /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: "badge badge-orange", children: "本季未巡" })
     ] }),
+    warning && /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "store-info", style: { marginTop: 2 }, children: /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("span", { style: { color: warning.redRatio >= 0.6 ? "var(--red)" : "var(--amber)", fontWeight: 600 }, children: [
+      /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(Clock3, { size: 13 }),
+      "杯效低于同档中位数 ",
+      warning.redDays,
+      "/",
+      warning.activeDays,
+      " 天（",
+      Math.round(warning.redRatio * 100),
+      "%）"
+    ] }) }),
     warning && warning.tags.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { style: { display: "flex", gap: 6, flexWrap: "wrap", marginTop: 4 }, children: warning.tags.map((tag) => /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: "badge badge-red", style: { fontWeight: 500 }, children: tag }, tag)) }),
     /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "reason-box", children: recommendation.reasons.map((reason) => /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "reason", children: reason }, reason)) }),
     /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "store-card-footer", children: [
@@ -43996,7 +44006,8 @@ function App() {
     const districts = moningScopeDistricts(employee.name);
     return districts === null || districts.length === 0 ? void 0 : districts;
   }, [employee]);
-  const recommendations = (0, import_react5.useMemo)(() => recommendStores({ stores, visits, issues, riskSnapshots: risks, asOfDate: DEMO_TODAY, brands: recommendBrands, bpId: recommendBpId, districts: recommendDistricts, warningsByCode }), [stores, visits, issues, risks, recommendBrands, recommendBpId, recommendDistricts, warningsByCode]);
+  const recommendLimit = employee.role === "bp" ? 10 : void 0;
+  const recommendations = (0, import_react5.useMemo)(() => recommendStores({ stores, visits, issues, riskSnapshots: risks, asOfDate: DEMO_TODAY, brands: recommendBrands, bpId: recommendBpId, districts: recommendDistricts, warningsByCode, limit: recommendLimit }), [stores, visits, issues, risks, recommendBrands, recommendBpId, recommendDistricts, warningsByCode, recommendLimit]);
   const myRecommendations = recommendations;
   const progress = calculateQuarterlyProgress(visits, employee.id, CURRENT_QUARTER);
   const myIssues = issues.filter((issue) => issue.assigneeId === employee.id);
@@ -44240,7 +44251,8 @@ function App() {
         "（更新至 ",
         weeklyReport.reportDate,
         "）。杯效按日分档（50杯/档），低于同档位中位数标红，标红率≥60%为长期标红。",
-        recommendDistricts ? `你已按管辖大店长过滤（${recommendDistricts.length} 个大店区）。` : ""
+        employee.role === "bp" ? "按严重程度仅展示前 10 家。" : "",
+        recommendDistricts ? `已按管辖大店长过滤（${recommendDistricts.length} 个大店区）。` : ""
       ] })
     ] }),
     !weeklyReport && /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "inline-notice green", children: [
@@ -44253,7 +44265,7 @@ function App() {
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(Search, { size: 15 }),
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("input", { value: storeQuery, onChange: (e) => setStoreQuery(e.target.value), placeholder: "搜索门店名称、编码或品牌" })
       ] }),
-      /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "filter-chips", children: [["all", "全部门店"], ["warning", "问题门店"], ["unvisited", "本季未巡"], ["high", "高 / 极高风险"], ["missing", "数据待补充"]].map(([key, label]) => /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("button", { className: `chip ${storeFilter === key ? "active" : ""}`, onClick: () => setStoreFilter(key), children: label }, key)) })
+      /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "filter-chips", children: [["all", "全部门店"], ["warning", "问题门店"], ["high", "高 / 极高风险"], ["unvisited", "本季未巡"], ["missing", "数据待补充"]].map(([key, label]) => /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("button", { className: `chip ${storeFilter === key ? "active" : ""}`, onClick: () => setStoreFilter(key), children: label }, key)) })
     ] }),
     /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "store-grid", children: recommendations.filter((item2) => {
       const matchesQuery = `${item2.store.name}${item2.store.code}${item2.store.brand}`.toLowerCase().includes(storeQuery.toLowerCase());

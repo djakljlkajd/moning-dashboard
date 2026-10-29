@@ -15588,6 +15588,14 @@ async function rest(path, init = {}) {
   }
   return payload;
 }
+async function restAll(path, pageSize = 1e3) {
+  const out = [];
+  for (let from = 0; ; from += pageSize) {
+    const chunk = await rest(path, { headers: { "Range-Unit": "items", Range: `${from}-${from + pageSize - 1}` } });
+    out.push(...chunk);
+    if (chunk.length < pageSize) return out;
+  }
+}
 function toRows(payload) {
   if (!payload) return [];
   return Array.isArray(payload) ? payload : [payload];
@@ -15608,12 +15616,12 @@ var supabaseBridge = {
   },
   async bootstrap() {
     const [employees, stores, visits, issues, events, metrics] = await Promise.all([
-      rest("/hr_employees?select=id,work_no,name,role,brands"),
-      rest("/hr_stores?select=*"),
-      rest("/hr_visits?select=*"),
-      rest("/hr_issues?select=*"),
-      rest("/hr_issue_events?select=*"),
-      rest("/hr_store_metrics_monthly?select=*")
+      restAll("/hr_employees?select=id,work_no,name,role,brands"),
+      restAll("/hr_stores?select=*"),
+      restAll("/hr_visits?select=*"),
+      restAll("/hr_issues?select=*"),
+      restAll("/hr_issue_events?select=*"),
+      restAll("/hr_store_metrics_monthly?select=*")
     ]);
     return {
       employees: employees.map(mapEmployee),
@@ -15645,7 +15653,7 @@ var supabaseBridge = {
     return row && row.id ? mapEmployee(row) : null;
   },
   async loadPersonnel() {
-    const rows = await rest("/hr_personnel?select=*");
+    const rows = await restAll("/hr_personnel?select=*&order=id.asc");
     return rows.map((row) => ({
       id: row.id,
       workNo: row.work_no,
@@ -44597,14 +44605,14 @@ function App() {
     ] })
   ] });
   const rosterPage = /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)(import_jsx_runtime3.Fragment, { children: [
-    pageHeading("PEOPLE MASTER", "人员主数据", "三份在职底稿已合并导入本地看板；真实数据不进入公开分享包。", /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("span", { className: "badge badge-green", children: [
-      "本地已导入 ",
+    pageHeading("PEOPLE MASTER", "人员主数据", "三份在职底稿已合并导入云端协作库，仅登录成员可见。", /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("span", { className: "badge badge-green", children: [
+      "已导入 ",
       rosterSummary?.totalRecords ?? 0,
       " 人"
     ] })),
     /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "inline-notice", children: [
       /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(ShieldCheck, { size: 16 }),
-      /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { children: "真实姓名、工号和门店仅用于本机演示；正式分享前必须接入云登录与权限，公开演示包不包含这批数据。" })
+      /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { children: "真实姓名、工号和门店存储在 Supabase 协作库，需工号绑定身份后可见；未登录访客无法访问。" })
     ] }),
     /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { style: { height: 18 } }),
     /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "grid grid-4", style: { marginBottom: 18 }, children: [

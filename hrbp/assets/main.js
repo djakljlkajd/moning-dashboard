@@ -15753,7 +15753,16 @@ var supabaseBridge = {
     await rest(`/hr_issues?id=eq.${encodeURIComponent(issue.id)}`, {
       method: "PATCH",
       headers: { Prefer: "return=minimal" },
-      body: JSON.stringify({ status: issue.status, closed_at: issue.closedAt ?? null, latest_followup: issue.latestFollowup ?? null })
+      body: JSON.stringify({
+        status: issue.status,
+        closed_at: issue.closedAt ?? null,
+        latest_followup: issue.latestFollowup ?? null,
+        // BP 未关闭前可编辑的字段（变更会同步写入时间线）
+        description: issue.description ?? null,
+        severity: issue.severity,
+        due_date: issue.dueDate,
+        responsible_name: issue.responsibleName ?? null
+      })
     });
     await rest("/hr_issue_events", {
       method: "POST",
@@ -15955,7 +15964,7 @@ function canPerformIssueAction(issue, actor, action) {
   if (!ACTION_NEXT_STATUS[issue.status]?.[action]) return false;
   if (actor.role === "director") return true;
   if (actor.role === "bp") {
-    return issue.assigneeId === actor.id && ["start", "complete"].includes(action);
+    return issue.assigneeId === actor.id && (["start", "complete"].includes(action) || action === "reopen" && issue.status === "completed");
   }
   if (actor.role === "manager") {
     return actor.brands.includes(issue.brand) && (action === "review" && issue.status === "completed" || action === "reopen" && ["completed", "closed"].includes(issue.status));
@@ -43610,13 +43619,16 @@ function RiskDrawer({ recommendation, onClose, onVisit }) {
     ] })
   ] }) });
 }
-function IssueDrawer({ issue, employee, employees, stores, events, onClose, onAction }) {
+function IssueDrawer({ issue, employee, employees, stores, events, onClose, onAction, onEdit }) {
   const [comment, setComment] = (0, import_react5.useState)("");
+  const [editing, setEditing] = (0, import_react5.useState)(false);
+  const [editForm, setEditForm] = (0, import_react5.useState)({ description: issue.description ?? "", severity: issue.severity, dueDate: issue.dueDate, responsibleName: issue.responsibleName ?? "" });
   const store = stores.find((item2) => item2.id === issue.storeId);
   const reporter = employees.find((item2) => item2.id === issue.reporterId);
   const issueEvents = events.filter((event) => event.issueId === issue.id).sort((a, b) => b.createdAt.localeCompare(a.createdAt));
   const actions = getAvailableIssueActions(issue, employee);
-  const canComment = employee.role === "bp" && issue.assigneeId === employee.id && issue.status !== "closed" && issue.status !== "completed";
+  const canComment = employee.role === "bp" && issue.assigneeId === employee.id && issue.status !== "closed";
+  const canEdit = canComment;
   const needsComment = (action) => action !== "review";
   const runAction = (action) => {
     if (needsComment(action) && !comment.trim()) return;
@@ -43672,6 +43684,42 @@ function IssueDrawer({ issue, employee, employees, stores, events, onClose, onAc
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("h3", { children: "最新跟进" }),
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "timeline-comment", children: issue.latestFollowup })
       ] }),
+      canEdit && !editing && /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "detail-section", children: /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("button", { className: "text-button", onClick: () => setEditing(true), children: [
+        "编辑问题信息（描述 / 严重度 / 截止日 / 责任人）",
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(ChevronRight, { size: 13 })
+      ] }) }),
+      canEdit && editing && /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "detail-section", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("h3", { children: "编辑问题信息" }),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "form-group", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("label", { className: "form-label", children: "问题描述" }),
+          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("textarea", { className: "textarea", value: editForm.description, onChange: (e) => setEditForm({ ...editForm, description: e.target.value }) })
+        ] }),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginTop: 10 }, children: [
+          /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "form-group", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("label", { className: "form-label", children: "严重程度" }),
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("select", { className: "input", value: editForm.severity, onChange: (e) => setEditForm({ ...editForm, severity: e.target.value }), children: [
+              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("option", { value: "high", children: "高" }),
+              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("option", { value: "medium", children: "中" }),
+              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("option", { value: "low", children: "低" })
+            ] })
+          ] }),
+          /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "form-group", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("label", { className: "form-label", children: "闭环截止日期" }),
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("input", { className: "input", type: "date", value: editForm.dueDate, onChange: (e) => setEditForm({ ...editForm, dueDate: e.target.value }) })
+          ] })
+        ] }),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "form-group", style: { marginTop: 10 }, children: [
+          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("label", { className: "form-label", children: "门店闭环责任人" }),
+          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("input", { className: "input", value: editForm.responsibleName, onChange: (e) => setEditForm({ ...editForm, responsibleName: e.target.value }), placeholder: "默认为门店店长" })
+        ] }),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "drawer-actions", style: { marginTop: 12 }, children: [
+          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("button", { className: "button button-primary button-sm", onClick: () => {
+            onEdit(issue, editForm);
+            setEditing(false);
+          }, children: "保存修改" }),
+          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("button", { className: "button button-secondary button-sm", onClick: () => setEditing(false), children: "取消" })
+        ] })
+      ] }),
       (actions.length > 0 || canComment) && /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "detail-section", children: [
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("h3", { children: "本次处理" }),
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("textarea", { className: "textarea", value: comment, onChange: (e) => setComment(e.target.value), placeholder: employee.role === "manager" ? "复核意见：通过时选填，退回时必填" : "填写本次跟进事实、门店处理结果或下一步安排" }),
@@ -43692,7 +43740,7 @@ function IssueDrawer({ issue, employee, employees, stores, events, onClose, onAc
           ] }),
           actions.includes("reopen") && /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("button", { className: "button button-danger button-sm", disabled: !comment.trim(), onClick: () => runAction("reopen"), children: [
             /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(RefreshCw, { size: 14 }),
-            issue.status === "closed" ? "重新打开" : "退回继续处理"
+            issue.status === "closed" ? "重新打开" : employee.role === "bp" ? "撤回复核继续处理" : "退回继续处理"
           ] })
         ] })
       ] }),
@@ -44093,6 +44141,23 @@ function App() {
     } catch (error) {
       showToast(error instanceof Error ? error.message : "操作失败");
     }
+  };
+  const handleIssueEdit = (issue, changes) => {
+    const diffs = [];
+    if (changes.description !== (issue.description ?? "")) diffs.push("问题描述");
+    if (changes.severity !== issue.severity) diffs.push(`严重程度调整为「${ISSUE_SEVERITY_LABELS[changes.severity]}」`);
+    if (changes.dueDate !== issue.dueDate) diffs.push(`闭环截止日调整为 ${changes.dueDate}`);
+    if (changes.responsibleName !== (issue.responsibleName ?? "")) diffs.push(`门店闭环责任人调整为 ${changes.responsibleName || "默认店长"}`);
+    if (!diffs.length) {
+      showToast("没有修改内容");
+      return;
+    }
+    const nextIssue = { ...issue, ...changes };
+    const event = createIssueEvent(issue, employee.id, "comment", { comment: `更新了问题信息：${diffs.join("；")}` });
+    setIssues((current) => current.map((item2) => item2.id === issue.id ? nextIssue : item2));
+    setEvents((current) => [...current, event]);
+    persistIssue(nextIssue, event);
+    showToast("问题信息已更新并写入时间线");
   };
   const pageHeading = (eyebrow, title, description, action) => /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "page-heading", children: [
     /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { children: [
@@ -45059,7 +45124,7 @@ function App() {
       setRiskDetail(null);
       openVisit(riskDetail.store.id);
     } }),
-    issueDetail && /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(IssueDrawer, { issue: issueDetail, employee, employees: employeeList, stores, events, onClose: () => setIssueDetailId(null), onAction: handleIssueAction }),
+    issueDetail && /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(IssueDrawer, { issue: issueDetail, employee, employees: employeeList, stores, events, onClose: () => setIssueDetailId(null), onAction: handleIssueAction, onEdit: handleIssueEdit }),
     backendEnabled && !cloudReady && (usingSupabase ? /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(SupabaseAuthGate, { error: cloudError, onBound: (bound) => {
       setCurrentEmployeeId(bound.id);
       setCloudError(null);

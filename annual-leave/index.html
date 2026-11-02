@@ -209,7 +209,7 @@
             border-top: 1px dashed #eef0f3; border-radius: 0 0 8px 8px;
         }
 
-        /* ===== 10月休息天数（多人协作填写） ===== */
+        /* ===== 11月休息天数（多人协作填写） ===== */
         .sep-rest-cell { cursor: pointer; }
         .sep-rest-cell:hover { background: #eef6e0; }
         .sep-rest-val { color: #558b2f; font-weight: bold; font-size: 13.5px; }
@@ -354,9 +354,9 @@
 <div class="description-bar">
     <div class="description-bar-title">📋 看板相关说明</div>
     <div class="description-list">
-        <div class="description-item">1、<strong>进度口径：</strong>本年度应休年假 - 10/27剩余年假 = 年度已休年假天数；已休 ÷ 应休 = 年度完成进度（14 位大店长本人不计入本口径，单独见第一排）</div>
+        <div class="description-item">1、<strong>进度口径：</strong>本年度应休年假 - 11/2剩余年假 = 年度已休年假天数；已休 ÷ 应休 = 年度完成进度（14 位大店长本人不计入本口径，单独见第一排）</div>
         <div class="description-item">2、<strong>离职口径：</strong>离职员工剩余年假已折算薪资发放，其剩余年假按 <strong>0</strong> 计（源表 G 列仍显示原值，看板已按 0 处理）</div>
-        <div class="description-item">3、<strong>督办口径：</strong>「本期已休」= 上期剩余（10/8）− 10/19剩余，反映上期以来的实际消化量；「10月排休目标」为各大店长在员工明细弹窗中<strong>自行填写的计划合计</strong>，「达标差额」= 自填目标 − 本期已休，差额 &gt; 0 即未达标（红色标记行）；未填写目标的大店区不计入未达标</div>
+        <div class="description-item">3、<strong>督办口径：</strong>「本期已休」= 上期剩余（10/27）− 11/2剩余，反映上期以来的实际消化量；「11月排休目标」为各大店长在员工明细弹窗中<strong>自行填写的计划合计</strong>，「达标差额」= 自填目标 − 本期已休，差额 &gt; 0 即未达标（红色标记行）；未填写目标的大店区不计入未达标</div>
         <div class="description-item">4、<strong>明细填报：</strong>点击大店长行查看员工明细，点击员工「计划填写」单元格可登记天数及<strong>具体休息日期区间（必填）</strong>，支持分多段，数据实时同步云端</div>
         <div class="description-item">5、<strong>大店长年假：</strong>第一排为 14 位大店长本年度年假卡片（应休 5 天/人，<strong>不并入员工口径汇总</strong>），点击卡片登记本人休息日期区间，<strong>规则与门店伙伴排休一致</strong>，实时同步云端</div>
     </div>
@@ -422,15 +422,15 @@
     </div>
 </div>
 
-<!-- ===== 10月休息天数 编辑弹窗（多人协作·按员工） ===== -->
+<!-- ===== 11月休息天数 编辑弹窗（多人协作·按员工） ===== -->
 <div class="modal-overlay" id="rest-modal" onclick="closeRestModal(event)">
     <div class="modal-box small" onclick="event.stopPropagation()">
         <div class="modal-header">
-            <span class="modal-title">✏️ 填写 10月休息天数</span>
+            <span class="modal-title">✏️ 填写 11月休息天数</span>
             <button class="modal-close" onclick="closeRestModal()">×</button>
         </div>
         <div class="rest-form">
-            <div class="rest-form-label">员工：<b id="rest-emp-name"></b>（<span id="rest-emp-no"></span>）<br>大店区：<b id="rest-region-name"></b><br>请填写该员工 10月 计划休息天数及具体休息日期区间，保存后同步到云端，其他伙伴可见。</div>
+            <div class="rest-form-label">员工：<b id="rest-emp-name"></b>（<span id="rest-emp-no"></span>）<br>大店区：<b id="rest-region-name"></b><br>请填写该员工 11月 计划休息天数及具体休息日期区间，保存后同步到云端，其他伙伴可见。</div>
             <div class="rest-input-wrap">
                 <input type="number" class="rest-input" id="rest-input" min="0" max="31" step="1" placeholder="0">
             </div>
@@ -472,15 +472,16 @@
 
 </div>
 
-<script src="data.js?v=20261027a"></script>
+<script src="data.js?v=20261102a"></script>
 <!-- v=20261027a: 数据刷新至10/27 -->
-<!-- v=20261016a: 第一排新增大店长年假卡片 + 大店长排休日期区间登记（云端 mgr_rest_dates） -->
+<!-- v=20261016a: 第一排新增大店长年假卡片 + 大店长排休日期区间登记（云端 nov_mgr_rest_dates） -->
 <!-- v=20260916a: 新增休息日期区间（起止日期多段填写+校验+明细显示） -->
 <script>
 const D = window.ANNUAL_LEAVE_DATA;
-let sepRestCache = {};       // 员工工号 -> 10月休息天数（多人协作云端同步）
+let sepRestCache = {};       // 员工工号 -> 11月休息天数（多人协作云端同步）
 let sepRestDatesCache = {};  // 员工工号 -> 具体休息日期字符串（如 "9/3、9/5-9/6"），选填
 let mgrRestDatesCache = {};  // 大店长工号 -> [{s,e}] 本年度休息日期区间（云端同步）
+let legacyRestData = {};     // 云端其它月份的历史键（sep_*/oct_* 等），保存时原样带回，防止整体覆盖丢失
 
 // ---------- 标题 / 日期 ----------
 document.getElementById('hdr-title').textContent = '● ' + D.meta.title;
@@ -521,7 +522,7 @@ function sepRestTotal() {
 function sepRestFilledCount() {
     return Object.keys(sepRestCache).length;
 }
-// 动态目标：10月排休目标 = 该区大店长在弹窗中自行填写的计划合计（非固定25%计划）
+// 动态目标：11月排休目标 = 该区大店长在弹窗中自行填写的计划合计（非固定25%计划）
 function deriveRegion(r) {
     const t = sepRestRegionTotal(r.大店区);
     return Object.assign({}, r, { 目标: t, 计划已填: sepRestRegionFilled(r.大店区), 差额: t - (r.本期已休 || 0) });
@@ -615,8 +616,8 @@ function openDetailModal(cardLabel) {
 
     if (cardLabel === '未达标大店区') {
         const list = D.regions.rows.map(deriveRegion).filter(isFailRow).sort((a, b) => b.差额 - a.差额);
-        const columns = ['大店长', '员工数', '应休', PREV + '剩余', '本期已休<br>(' + PREV + '→' + CUR + ')', '10月排休目标', '还差', '完成率'];
-        title.textContent = '10月未达标大店区（本期已休 < 自填目标） - 共 ' + list.length + ' 个';
+        const columns = ['大店长', '员工数', '应休', PREV + '剩余', '本期已休<br>(' + PREV + '→' + CUR + ')', '11月排休目标', '还差', '完成率'];
+        title.textContent = '11月未达标大店区（本期已休 < 自填目标） - 共 ' + list.length + ' 个';
         foot.textContent = '还差合计 ' + list.reduce((a, r) => a + r.差额, 0) + ' 天 · 点击行可直接打开该区员工明细 · 未填写目标的大店区不计入';
         body.innerHTML = list.length === 0
             ? '<div class="modal-empty">全部大店区均已达标 🎉</div>'
@@ -725,11 +726,11 @@ const regionHead = document.getElementById('region-head');
 const regionTbody = document.getElementById('region-tbody');
 const regionFoot = document.getElementById('region-foot');
 
-// 表头：应休 → 上期剩余 → 年度已休 → 进度 → 本期已休 → 10月目标 → 差额（日期口径跟随 data.js meta）
+// 表头：应休 → 上期剩余 → 年度已休 → 进度 → 本期已休 → 11月目标 → 差额（日期口径跟随 data.js meta）
 const CUR = (D.meta && D.meta.currentLabel) || '10/8';   // 本期口径，如 10/19
 const PREV = (D.meta && D.meta.prevLabel) || '9/22';     // 上期口径，如 10/8
 const REGION_COLS = [
-    '大店长', '门店数', '员工数', '离职', '应休', PREV + '剩余', '年度已休', '完成进度', '本期已休', '10月排休目标', '达标差额', '剩余年假>3天'
+    '大店长', '门店数', '员工数', '离职', '应休', PREV + '剩余', '年度已休', '完成进度', '本期已休', '11月排休目标', '达标差额', '剩余年假>3天'
 ];
 const REGION_SUBS = {
     3: '（人数）', 4: '（年度应休）', 5: '（截至' + CUR + '）', 6: '（应休-' + CUR + '）', 7: '（已休÷应休）',
@@ -872,23 +873,23 @@ function exportData() {
     URL.revokeObjectURL(a.href);
 }
 
-// ========== 10月休息天数 · 多人线上协作（Supabase 云端同步，同工时看板机制） ==========
+// ========== 11月休息天数 · 多人线上协作（Supabase 云端同步，同工时看板机制） ==========
 const SUPA_URL = 'https://tclfmnfvlrlxquiojjya.supabase.co';
 const SUPA_KEY = 'sb_publishable_6sa-Pz6dX0BSlTJX3gNiRA_CbtZkf_b';
 const SUPA_TABLE = 'violation_data';
 const SUPA_ID = 10;   // 年假看板专用行
 
 function sepRestBackup() {
-    try { localStorage.setItem('sepRestBackupEmp', JSON.stringify({ sep_rest_emp: sepRestCache, sep_rest_dates: sepRestDatesCache, mgr_rest_dates: mgrRestDatesCache, ts: Date.now() })); } catch (e) {}
+    try { localStorage.setItem('novRestBackupEmp', JSON.stringify({ nov_rest_emp: sepRestCache, nov_rest_dates: sepRestDatesCache, nov_mgr_rest_dates: mgrRestDatesCache, ts: Date.now() })); } catch (e) {}
 }
 function sepRestRestore() {
     try {
-        const raw = localStorage.getItem('sepRestBackupEmp');
+        const raw = localStorage.getItem('novRestBackupEmp');
         if (!raw) return;
         const d = JSON.parse(raw);
-        if (d && d.sep_rest_emp) sepRestCache = Object.assign({}, d.sep_rest_emp, sepRestCache);
-        if (d && d.sep_rest_dates) sepRestDatesCache = Object.assign({}, d.sep_rest_dates, sepRestDatesCache);
-        if (d && d.mgr_rest_dates) mgrRestDatesCache = Object.assign({}, d.mgr_rest_dates, mgrRestDatesCache);
+        if (d && d.nov_rest_emp) sepRestCache = Object.assign({}, d.nov_rest_emp, sepRestCache);
+        if (d && d.nov_rest_dates) sepRestDatesCache = Object.assign({}, d.nov_rest_dates, sepRestDatesCache);
+        if (d && d.nov_mgr_rest_dates) mgrRestDatesCache = Object.assign({}, d.nov_mgr_rest_dates, mgrRestDatesCache);
     } catch (e) {}
 }
 
@@ -901,9 +902,14 @@ async function loadSepRest() {
         const rows = await res.json();
         if (rows && rows.length) {
             const d = rows[0].data || {};
-            sepRestCache = d.sep_rest_emp || {};
-            sepRestDatesCache = d.sep_rest_dates || {};
-            mgrRestDatesCache = d.mgr_rest_dates || {};
+            // 先留存历史上月键位，PATCH 是整列替换，必须带回否则会冲掉 9/10 月已填数据
+            legacyRestData = {};
+            Object.keys(d).forEach(function (k) {
+                if (k.indexOf('nov_') !== 0) legacyRestData[k] = d[k];
+            });
+            sepRestCache = d.nov_rest_emp || {};
+            sepRestDatesCache = d.nov_rest_dates || {};
+            mgrRestDatesCache = d.nov_mgr_rest_dates || {};
         }
         sepRestRestore();
         renderRegions();
@@ -920,7 +926,11 @@ async function loadSepRest() {
 
 async function saveSepRest() {
     try {
-        const payload = { sep_rest_emp: sepRestCache, sep_rest_dates: sepRestDatesCache, mgr_rest_dates: mgrRestDatesCache };
+        const payload = Object.assign({}, legacyRestData, {
+            nov_rest_emp: sepRestCache,
+            nov_rest_dates: sepRestDatesCache,
+            nov_mgr_rest_dates: mgrRestDatesCache
+        });
         const res = await fetch(SUPA_URL + '/rest/v1/' + SUPA_TABLE + '?id=eq.' + SUPA_ID, {
             method: 'PATCH',
             headers: {
@@ -939,7 +949,7 @@ async function saveSepRest() {
     }
 }
 
-// ---------- 10月休息天数 编辑弹窗 ----------
+// ---------- 11月休息天数 编辑弹窗 ----------
 let currentRestEmp = null;
 
 function openRestModal(empNo) {
@@ -1010,7 +1020,7 @@ function collectRestRanges() {
 async function confirmRestSave() {
     if (!currentRestEmp) return;
     const raw = document.getElementById('rest-input').value.trim();
-    if (raw === '') { alert('请填写 10月休息天数（0-31）'); return; }
+    if (raw === '') { alert('请填写 11月休息天数（0-31）'); return; }
     let v = parseInt(raw, 10);
     if (isNaN(v) || v < 0 || v > 31) { alert('请输入 0-31 之间的天数'); return; }
     // 日期区间校验
@@ -1041,7 +1051,7 @@ async function confirmRestSave() {
     }
     sepRestBackup();
     renderRegions();
-    // 如果员工明细弹窗正在打开，同步刷新其中的 10月休息天数 列
+    // 如果员工明细弹窗正在打开，同步刷新其中的 11月休息天数 列
     if (document.getElementById('detail-modal').classList.contains('active')) {
         openRegionModal(currentRestEmp.大店区);
     }
@@ -1059,7 +1069,7 @@ async function confirmRestSave() {
 
 async function clearRestValue() {
     if (!currentRestEmp) return;
-    if (!confirm('确定清空「' + currentRestEmp.姓名 + '」的 10月休息天数填写？')) return;
+    if (!confirm('确定清空「' + currentRestEmp.姓名 + '」的 11月休息天数填写？')) return;
     delete sepRestCache[currentRestEmp.工号];
     delete sepRestDatesCache[currentRestEmp.工号];
     sepRestBackup();

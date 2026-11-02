@@ -428,9 +428,9 @@ select.cell-input{padding:4px 6px;}
     <div class="description-bar">
       <div class="description-bar-title">目标抽查</div>
       <div class="description-list">
-        <div class="description-item">抽查店长与伙伴<strong>当日目标</strong>与<strong>充值总目标</strong>，以门店为单位，目标下沉到人</div>
+        <div class="description-item">抽查店长与伙伴对小主节活动的掌握情况（预热期 + 正式充值期，共 <strong>11 个抽问</strong>），以门店为单位，目标下沉到人</div>
         <div class="description-item">抽查人：HRBP（戴嘉伟 / 周丽 / 杨梦琳）· 抽查时间 <strong>11.06 - 11.10</strong>，每人每天约 8 家、共约 40 家</div>
-        <div class="description-item">已随机分配门店到抽查人与日期，点击「记录抽查」填写当日目标与充值总目标掌握情况，全员实时同步</div>
+        <div class="description-item">已随机分配门店到抽查人与日期，点「记录抽查」逐题判定（弹窗附参考答案）；数据可导出为《26年小主节下集抽问内容 1029》同构 CSV</div>
       </div>
     </div>
     <div class="section-header" id="auditProgress"></div>
@@ -591,32 +591,13 @@ select.cell-input{padding:4px 6px;}
 
 <!-- 抽查记录弹窗 -->
 <div class="modal-mask" id="auMask">
-  <div class="modal">
+  <div class="modal" style="max-width:720px">
     <div class="modal-head"><span id="auTitle">记录抽查</span><button class="modal-close" onclick="closeAuditModal()">×</button></div>
     <div class="modal-body">
       <div class="modal-sub" id="auSub"></div>
+      <div id="auQuestions"></div>
       <div class="form-row">
-        <div class="form-item">
-          <label>当日目标是否清晰</label>
-          <select id="auGoal">
-            <option value="">未抽查</option>
-            <option value="清晰">清晰</option>
-            <option value="不清晰">不清晰</option>
-          </select>
-          <div class="form-hint">店长与伙伴是否清楚当日目标</div>
-        </div>
-        <div class="form-item">
-          <label>充值总目标是否清晰</label>
-          <select id="auTotal">
-            <option value="">未抽查</option>
-            <option value="清晰">清晰</option>
-            <option value="不清晰">不清晰</option>
-          </select>
-          <div class="form-hint">是否清楚本次充值总目标</div>
-        </div>
-      </div>
-      <div class="form-row">
-        <div class="form-item">
+        <div class="form-item" style="flex:1">
           <label>备注（可选）</label>
           <input type="text" id="auNote" placeholder="如：店长清楚、伙伴不清楚">
         </div>
@@ -1463,10 +1444,21 @@ function exportSupCsv(){
 /* ============ 抽查表（目标抽查） ============ */
 const AUDITS = D.auditAssign||[];
 const AUDIT_INFO={}; AUDITS.forEach(a=>AUDIT_INFO[a.store]=a);
+const AU_QA = D.auditQA||[];  // 11 个抽问问题 + 参考答案
 function auState(store){
   const c=(CLOUD.audits||{})[store];
-  if(c) return {goal:c.goal||'',total:c.total||'',note:c.note||'',at:c.at||''};
-  return {goal:'',total:'',note:'',at:''};
+  const base={note:'',at:''};
+  AU_QA.forEach((qa,i)=>{ base['q'+(i+1)]=''; });
+  if(c) Object.keys(base).forEach(k=>{ if(c[k]!==undefined&&c[k]!==null) base[k]=c[k]; });
+  return base;
+}
+// 一店是否已抽查：至少有一题判定过
+function auDone(store){ const st=auState(store); return AU_QA.some((qa,i)=>st['q'+(i+1)]); }
+// 一店掌握统计：清晰数 / 不清晰数
+function auStats(store){
+  let clear=0,unclear=0;
+  AU_QA.forEach((qa,i)=>{ const v=auState(store)['q'+(i+1)]; if(v==='清晰')clear++; else if(v==='不清晰')unclear++; });
+  return {clear:clear,unclear:unclear};
 }
 function renderAudit(){
   const auditor=document.getElementById('auAuditor').value;
@@ -1475,32 +1467,33 @@ function renderAudit(){
   const q=document.getElementById('auSearch').value.trim();
   const scope=AUDITS.filter(a=>(auditor==='all'||a.auditor===auditor)&&(date==='all'||a.date===date));
   const rows=scope.filter(a=>{
-    const st=auState(a.store);
-    const done=!!(st.goal||st.total);
+    const done=auDone(a.store);
     if(only==='done') return done;
     if(only==='todo') return !done;
     if(q&&a.store.indexOf(q)<0&&a.mgr.indexOf(q)<0) return false;
     return true;
   });
-  let h=`<thead><tr><th>抽查人</th><th>日期</th><th>大店长</th><th>门店</th><th>BP</th><th style="text-align:center">当日目标</th><th style="text-align:center">充值总目标</th><th>备注</th><th>操作</th></tr></thead><tbody>`;
-  if(!rows.length) h+=`<tr><td colspan="9" style="text-align:center;color:#95a5a6;padding:24px">无匹配门店</td></tr>`;
+  // 表头：前 5 列固定 + 11 个问题（紧凑列）+ 备注 + 操作
+  const qheads=AU_QA.map((qa,i)=>`<th style="text-align:center" title="${esc(qa.q)}">问${i+1}</th>`).join('');
+  let h=`<thead><tr><th>抽查人</th><th>日期</th><th>大店长</th><th>门店</th><th>BP</th>${qheads}<th>备注</th><th>操作</th></tr></thead><tbody>`;
+  if(!rows.length) h+=`<tr><td colspan="${5+AU_QA.length+2}" style="text-align:center;color:#95a5a6;padding:24px">无匹配门店</td></tr>`;
+  const qBadge=v=>v==='清晰'?'<span class="badge badge-green" title="清晰">✓</span>':(v==='不清晰'?'<span class="badge badge-red" title="不清晰">✗</span>':'<span class="badge badge-gray" title="未抽查">—</span>');
   rows.forEach(a=>{
     const st=auState(a.store);
-    const badge=v=>v==='清晰'?'<span class="badge badge-green">清晰</span>':(v==='不清晰'?'<span class="badge badge-red">不清晰</span>':'<span class="badge badge-gray">未抽查</span>');
+    const qcells=AU_QA.map((qa,i)=>`<td style="text-align:center">${qBadge(st['q'+(i+1)])}</td>`).join('');
     h+=`<tr>
       <td><strong>${esc(a.auditor)}</strong></td><td>${esc(a.date)}</td>
       <td>${esc(a.mgr)}</td><td>${esc(shortStore(a.store))}</td><td>${esc(a.bp)}</td>
-      <td style="text-align:center">${badge(st.goal)}</td>
-      <td style="text-align:center">${badge(st.total)}</td>
-      <td style="white-space:normal;max-width:200px">${esc(st.note||'-')}</td>
+      ${qcells}
+      <td style="white-space:normal;max-width:160px">${esc(st.note||'-')}</td>
       <td><button class="mini-btn" onclick="openAuditModal('${esc(a.store)}')">记录抽查</button></td>
     </tr>`;
   });
   h+='</tbody>';
   document.getElementById('auTable').innerHTML=h;
   // 进度
-  const doneAll=AUDITS.filter(a=>{const st=auState(a.store);return !!(st.goal||st.total);}).length;
-  const doneCur=scope.filter(a=>{const st=auState(a.store);return !!(st.goal||st.total);}).length;
+  const doneAll=AUDITS.filter(a=>auDone(a.store)).length;
+  const doneCur=scope.filter(a=>auDone(a.store)).length;
   const pct=scope.length?Math.round(doneCur/scope.length*100):0;
   const filtered=auditor!=='all'||date!=='all';
   document.getElementById('auditProgress').innerHTML=
@@ -1510,8 +1503,12 @@ function renderAudit(){
        <span style="font-size:12.5px;color:var(--brand-d);font-weight:700">${doneCur} / ${scope.length} 家（${pct}%）</span>
        ${filtered?`<span style="font-size:11.5px;color:var(--ink-2)">全品牌 ${doneAll} / ${AUDITS.length} 家（${Math.round(doneAll/AUDITS.length*100)}%）</span>`:''}
      </div>`;
-  document.getElementById('auCount').innerHTML=`共 ${rows.length} 家门店`;
-  document.getElementById('auFoot').innerHTML=`抽查口径：店长与伙伴是否清楚<strong>当日目标</strong>与<strong>充值总目标</strong>；每人每天随机抽查约 8 家、共约 40 家。`;
+  document.getElementById('auCount').innerHTML=`共 ${rows.length} 家门店 · ${AU_QA.length} 个抽问`;
+  // 表头说明：每个问题的完整内容
+  const legend=AU_QA.map((qa,i)=>`<div style="margin:2px 0"><strong>问${i+1}</strong> ${esc(qa.q)}</div>`).join('');
+  document.getElementById('auFoot').innerHTML=
+    `抽查口径：店长与伙伴对小主节活动的掌握情况，共 <strong>${AU_QA.length}</strong> 个抽问。点「记录抽查」逐题判定，弹窗内附参考答案供对照。<br>`+
+    `<div style="margin-top:6px;padding:8px 10px;background:#fffaf7;border:1px solid var(--line);border-radius:6px;font-size:12px;line-height:1.8">${legend}</div>`;
 }
 let AU_EDIT=null;
 function openAuditModal(store){
@@ -1521,20 +1518,26 @@ function openAuditModal(store){
   document.getElementById('auTitle').textContent='记录抽查 · '+shortStore(store);
   document.getElementById('auSub').innerHTML=
     `<strong>${esc(store)}</strong> · 大店长 ${esc(a.mgr||'')} · BP ${esc(a.bp||'')} · 抽查人 <strong>${esc(a.auditor||'')}</strong>（${esc(a.date||'')}）`;
-  document.getElementById('auGoal').value=st.goal;
-  document.getElementById('auTotal').value=st.total;
+  // 逐题渲染：问题 + 参考答案 + 清晰/不清晰判定
+  document.getElementById('auQuestions').innerHTML=AU_QA.map((qa,i)=>{
+    const key='q'+(i+1), cur=st[key];
+    const opts=['','清晰','不清晰'].map(v=>`<option value="${v}"${cur===v?' selected':''}>${v||'未抽查'}</option>`).join('');
+    return `<div style="border:1px solid var(--line);border-radius:6px;padding:10px 12px;margin-bottom:10px">
+      <div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start">
+        <div style="font-size:12.5px;font-weight:600;color:var(--ink);flex:1;line-height:1.5">问${i+1} ${esc(qa.q)}</div>
+        <select id="auQ_${i}" class="cell-input" style="width:88px;flex-shrink:0">${opts}</select>
+      </div>
+      <div style="margin-top:6px;font-size:12px;color:var(--ink-2);background:#fffaf7;border-left:3px solid var(--brand-l);padding:6px 10px;border-radius:0 4px 4px 0;white-space:pre-wrap;line-height:1.6">参考答案：${esc(qa.a)}</div>
+    </div>`;
+  }).join('');
   document.getElementById('auNote').value=st.note;
   document.getElementById('auMask').classList.add('show');
 }
 function closeAuditModal(){ document.getElementById('auMask').classList.remove('show'); AU_EDIT=null; }
 function submitAudit(){
   if(!AU_EDIT) return;
-  const v={
-    goal:document.getElementById('auGoal').value,
-    total:document.getElementById('auTotal').value,
-    note:document.getElementById('auNote').value.trim(),
-    at:new Date().toISOString()
-  };
+  const v={ note:document.getElementById('auNote').value.trim(), at:new Date().toISOString() };
+  AU_QA.forEach((qa,i)=>{ v['q'+(i+1)]=document.getElementById('auQ_'+i).value; });
   commit({t:'audit.set',k:AU_EDIT,v:v});
   closeAuditModal();
   renderAudit();
@@ -1546,12 +1549,14 @@ function clearAudit(){
   renderAudit();
 }
 function exportAuditCsv(){
-  const rows=[['抽查人','日期','大店长','门店','BP','当日目标','充值总目标','备注','抽查时间']];
+  const head=['抽查人','日期','大店长','门店','BP'].concat(AU_QA.map(qa=>qa.q)).concat(['备注','抽查时间']);
+  const rows=[head];
   AUDITS.forEach(a=>{
     const st=auState(a.store);
-    rows.push([a.auditor,a.date,a.mgr,a.store,a.bp,st.goal||'未抽查',st.total||'未抽查',st.note||'',(st.at||'').replace('T',' ').slice(0,16)]);
+    const qv=AU_QA.map((qa,i)=>st['q'+(i+1)]||'未抽查');
+    rows.push([a.auditor,a.date,a.mgr,a.store,a.bp].concat(qv).concat([st.note||'',(st.at||'').replace('T',' ').slice(0,16)]));
   });
-  downloadCsv('小主节目标抽查表',rows);
+  downloadCsv('26年小主节下集抽问内容 1029',rows);
 }
 
 /* ============ 行事历卡岗 ============ */

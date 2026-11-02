@@ -14967,7 +14967,15 @@ var X = createLucideIcon("X", [
 var BRANDS = ["茶颜悦色", "古德墨柠", "鸳央咖啡"];
 
 // src/config/business-rules.ts
-var DEMO_TODAY = "2026-10-27";
+function today() {
+  const d = /* @__PURE__ */ new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+function addDays(days2) {
+  const d = /* @__PURE__ */ new Date();
+  d.setDate(d.getDate() + days2);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
 var CURRENT_QUARTER = "2026-Q4";
 var DEFAULT_EMPLOYEE_ID = "DEMO009";
 var QUARTERLY_VISIT_TARGET = 25;
@@ -43231,12 +43239,12 @@ function EmptyState({ title, description }) {
     /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("p", { children: description })
   ] });
 }
-var emptyIssueForm = () => ({ description: "", dimension: "人员状态", nature: "执行偏差", severity: "medium", responsibleName: "", dueDate: "2026-11-03" });
+var emptyIssueForm = () => ({ description: "", dimension: "人员状态", nature: "执行偏差", severity: "medium", responsibleName: "", dueDate: addDays(7) });
 function NewVisitModal({ employee, stores, visits, preselectedStoreId, modeLabel, onReload, onClose, onSave }) {
   const [step, setStep] = (0, import_react5.useState)(1);
   const [query, setQuery] = (0, import_react5.useState)("");
   const [storeId, setStoreId] = (0, import_react5.useState)(preselectedStoreId ?? "");
-  const [visitDate, setVisitDate] = (0, import_react5.useState)(DEMO_TODAY);
+  const [visitDate, setVisitDate] = (0, import_react5.useState)(today());
   const [summary, setSummary] = (0, import_react5.useState)("");
   const [note, setNote] = (0, import_react5.useState)("");
   const [issueForms, setIssueForms] = (0, import_react5.useState)([]);
@@ -43411,7 +43419,7 @@ ${note.trim()}` : "")
               "巡店日期",
               /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: "required", children: "*" })
             ] }),
-            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("input", { className: "input", type: "date", value: visitDate, max: DEMO_TODAY, onChange: (e) => setVisitDate(e.target.value) })
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("input", { className: "input", type: "date", value: visitDate, max: today(), onChange: (e) => setVisitDate(e.target.value) })
           ] }),
           /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "form-group", children: [
             /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("label", { className: "form-label", children: "达标口径" }),
@@ -43624,7 +43632,7 @@ function IssueDrawer({ issue, employee, employees, stores, events, onClose, onAc
             ISSUE_SEVERITY_LABELS[issue.severity],
             "严重"
           ] }),
-          isIssueOverdue(issue, DEMO_TODAY) && /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: "badge badge-red", children: "已逾期" })
+          isIssueOverdue(issue, today()) && /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: "badge badge-red", children: "已逾期" })
         ] }),
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("h2", { className: "drawer-title", children: issue.title })
       ] }),
@@ -43654,9 +43662,9 @@ function IssueDrawer({ issue, employee, employees, stores, events, onClose, onAc
         ] }),
         /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { children: [
           /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "detail-label", children: "闭环截止日期" }),
-          /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "detail-value", style: { color: isIssueOverdue(issue, DEMO_TODAY) ? "var(--red)" : void 0 }, children: [
+          /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "detail-value", style: { color: isIssueOverdue(issue, today()) ? "var(--red)" : void 0 }, children: [
             issue.dueDate,
-            isIssueOverdue(issue, DEMO_TODAY) ? ` · 逾期 ${getOverdueDays(issue, DEMO_TODAY)} 天` : ""
+            isIssueOverdue(issue, today()) ? ` · 逾期 ${getOverdueDays(issue, today())} 天` : ""
           ] })
         ] })
       ] }),
@@ -44001,7 +44009,7 @@ function App() {
       mounted = false;
     };
   }, []);
-  const risks = (0, import_react5.useMemo)(() => stores.map((store) => calculateRisk(store.id, metrics, DEMO_TODAY)), [stores, metrics]);
+  const risks = (0, import_react5.useMemo)(() => stores.map((store) => calculateRisk(store.id, metrics, today())), [stores, metrics]);
   const recommendBrands = employee.role === "director" ? void 0 : employee.brands;
   const recommendBpId = employee.role === "bp" ? employee.id : void 0;
   const warningsByCode = (0, import_react5.useMemo)(() => {
@@ -44015,7 +44023,7 @@ function App() {
     return districts === null || districts.length === 0 ? void 0 : districts;
   }, [employee]);
   const recommendLimit = employee.role === "bp" ? 10 : void 0;
-  const recommendations = (0, import_react5.useMemo)(() => recommendStores({ stores, visits, issues, riskSnapshots: risks, asOfDate: DEMO_TODAY, brands: recommendBrands, bpId: recommendBpId, districts: recommendDistricts, warningsByCode }), [stores, visits, issues, risks, recommendBrands, recommendBpId, recommendDistricts, warningsByCode]);
+  const recommendations = (0, import_react5.useMemo)(() => recommendStores({ stores, visits, issues, riskSnapshots: risks, asOfDate: today(), brands: recommendBrands, bpId: recommendBpId, districts: recommendDistricts, warningsByCode }), [stores, visits, issues, risks, recommendBrands, recommendBpId, recommendDistricts, warningsByCode]);
   const displayedRecommendations = (0, import_react5.useMemo)(() => {
     const top10 = (list) => list.slice(0, 10);
     if (storeFilter === "cupeff") return top10(recommendations.filter((r) => r.warning && r.warning.activeDays > 0).sort((a, b) => b.warning.redRatio - a.warning.redRatio || b.warning.redDays - a.warning.redDays));
@@ -44028,7 +44036,7 @@ function App() {
   const progress = calculateQuarterlyProgress(visits, employee.id, CURRENT_QUARTER);
   const myIssues = issues.filter((issue) => issue.assigneeId === employee.id);
   const openMyIssues = myIssues.filter((issue) => issue.status !== "closed");
-  const overdueMyIssues = myIssues.filter((issue) => isIssueOverdue(issue, DEMO_TODAY));
+  const overdueMyIssues = myIssues.filter((issue) => isIssueOverdue(issue, today()));
   const pendingReview = issues.filter((issue) => issue.status === "completed" && (employee.role === "director" || employee.brands.includes(issue.brand)));
   const issueDetail = issues.find((issue) => issue.id === issueDetailId);
   const showToast = (message) => {
@@ -44103,7 +44111,7 @@ function App() {
   });
   const lookupResult = workNoLookup.trim() ? rosterRecords.find((record) => record.workNo.toLowerCase() === workNoLookup.trim().toLowerCase()) : void 0;
   const homePage = /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)(import_jsx_runtime3.Fragment, { children: [
-    pageHeading("TUESDAY · 27 OCT", `早上好，${employee.name}`, "走进门店，发现问题，也把问题解决在现场。", /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("button", { className: "button button-primary", onClick: () => openVisit(), children: [
+    pageHeading((/* @__PURE__ */ new Date()).toLocaleDateString("en-US", { weekday: "long", day: "2-digit", month: "short" }).toUpperCase().replace(",", " ·"), `早上好，${employee.name}`, "走进门店，发现问题，也把问题解决在现场。", /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("button", { className: "button button-primary", onClick: () => openVisit(), children: [
       /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(Plus, { size: 16 }),
       "开始巡店"
     ] })),
@@ -44216,7 +44224,7 @@ function App() {
             openMyIssues.slice(0, 4).map((issue) => {
               const store = stores.find((item2) => item2.id === issue.storeId);
               return /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "list-row", children: [
-                /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: `stat-icon ${isIssueOverdue(issue, DEMO_TODAY) ? "red" : "amber"}`, style: { width: 34, height: 34 }, children: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(CircleAlert, { size: 16 }) }),
+                /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: `stat-icon ${isIssueOverdue(issue, today()) ? "red" : "amber"}`, style: { width: 34, height: 34 }, children: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(CircleAlert, { size: 16 }) }),
                 /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "list-main", children: [
                   /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "list-title", children: issue.title }),
                   /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "list-meta", children: [
@@ -44391,7 +44399,7 @@ function App() {
         const store = stores.find((item2) => item2.id === issue.storeId);
         const bp = employeeList.find((item2) => item2.id === issue.assigneeId);
         const matchesQuery = `${issue.title}${store?.name}${bp?.name}`.toLowerCase().includes(issueQuery.toLowerCase());
-        const matchesFilter = issueFilter === "all" || issueFilter === "mine" && issue.assigneeId === employee.id || issueFilter === "open" && issue.status !== "closed" || issueFilter === "overdue" && isIssueOverdue(issue, DEMO_TODAY) || issue.status === issueFilter;
+        const matchesFilter = issueFilter === "all" || issueFilter === "mine" && issue.assigneeId === employee.id || issueFilter === "open" && issue.status !== "closed" || issueFilter === "overdue" && isIssueOverdue(issue, today()) || issue.status === issueFilter;
         return matchesQuery && matchesFilter;
       }).map((issue) => {
         const store = stores.find((item2) => item2.id === issue.storeId);
@@ -44424,10 +44432,10 @@ function App() {
             ] })
           ] }),
           /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "issue-side", children: [
-            isIssueOverdue(issue, DEMO_TODAY) ? /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("span", { className: "overdue-text", children: [
+            isIssueOverdue(issue, today()) ? /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("span", { className: "overdue-text", children: [
               /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(TriangleAlert, { size: 12 }),
               "逾期 ",
-              getOverdueDays(issue, DEMO_TODAY),
+              getOverdueDays(issue, today()),
               " 天"
             ] }) : /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: "badge badge-gray", children: issue.brand }),
             /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("button", { className: "text-button", children: [
@@ -44498,7 +44506,7 @@ function App() {
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card stat-card", children: [
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "stat-icon red", children: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(Clock3, { size: 19 }) }),
         /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { children: [
-          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "stat-value", children: issues.filter((issue) => isIssueOverdue(issue, DEMO_TODAY)).length }),
+          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "stat-value", children: issues.filter((issue) => isIssueOverdue(issue, today())).length }),
           /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "stat-label", children: "当前逾期" })
         ] })
       ] })

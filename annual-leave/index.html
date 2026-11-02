@@ -315,6 +315,33 @@
         .val-done { color: #1565c0; font-weight: bold; }
         .col-sub { display: block; font-size: 9.5px; font-weight: normal; opacity: .82; }
 
+        /* ===== HRBP 对接汇总卡片 ===== */
+        .hrbp-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; background: #fff; padding: 14px 16px 18px; }
+        .hrbp-card { border: 1px solid #e8e8e8; border-radius: 8px; overflow: hidden; background: #fcfdf9; }
+        .hrbp-head { padding: 11px 14px; background: linear-gradient(90deg, #f1f8e9, #fff); border-bottom: 1px solid #eee; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+        .hrbp-name { font-size: 15px; font-weight: bold; color: #33691e; }
+        .hrbp-sub { font-size: 10.5px; color: #7f8c8d; margin-top: 2px; }
+        .hrbp-rate { font-size: 24px; font-weight: bold; color: #33691e; line-height: 1; }
+        .hrbp-rate.low { color: #e74c3c; }
+        .hrbp-rate small { font-size: 10px; font-weight: normal; color: #95a5a6; display: block; text-align: right; margin-top: 2px; }
+        .hrbp-track { height: 8px; background: #eceff1; border-radius: 4px; margin: 10px 14px 2px; overflow: hidden; }
+        .hrbp-track i { display: block; height: 100%; background: linear-gradient(90deg, #aed581, #7cb342); border-radius: 4px; }
+        .hrbp-track i.low { background: linear-gradient(90deg, #ef9a9a, #e53935); }
+        .hrbp-kpis { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; padding: 10px 14px 12px; }
+        .hrbp-kpi { background: #fff; border: 1px solid #eee; border-radius: 5px; padding: 7px 2px; text-align: center; }
+        .hrbp-kpi .n { font-size: 16px; font-weight: bold; color: #2c3e50; line-height: 1.2; }
+        .hrbp-kpi .l { font-size: 9.5px; color: #95a5a6; margin-top: 2px; }
+        .hrbp-detail { padding: 0 14px 8px; }
+        .hrbp-detail table { width: 100%; border-collapse: collapse; font-size: 11.5px; }
+        .hrbp-detail th { background: #f5f7f0; color: #558b2f; padding: 6px 3px; border-bottom: 1px solid #e0e0e0; font-size: 10.5px; }
+        .hrbp-detail td { padding: 5px 3px; text-align: center; border-bottom: 1px solid #f2f2f2; }
+        .hrbp-detail td.l { text-align: left; }
+        .hrbp-detail tr.clickable { cursor: pointer; }
+        .hrbp-detail tr.clickable:hover { background: #f1f8e9; }
+        .hrbp-detail .rate-bar { width: 34px; height: 6px; }
+        .hrbp-missing { color: #90a4ae; background: #fafafa; font-size: 10.5px; }
+        .hrbp-note { font-size: 10px; color: #95a5a6; padding: 4px 14px 12px; line-height: 1.5; }
+
         /* ===== 响应式 ===== */
         @media (max-width: 1100px) {
             .cards-row { grid-template-columns: repeat(3, 1fr); }
@@ -327,6 +354,8 @@
             .search-box { margin-left: 0; }
             .search-box input { flex: 1; }
             .header-bar { flex-direction: column; align-items: flex-start; gap: 8px; }
+            .hrbp-row { grid-template-columns: 1fr; padding: 10px; }
+            .hrbp-kpis { grid-template-columns: repeat(3, 1fr); }
         }
     </style>
 </head>
@@ -359,6 +388,7 @@
         <div class="description-item">3、<strong>督办口径：</strong>「本期已休」= 上期剩余（10/27）− 11/2剩余，反映上期以来的实际消化量；「11月排休目标」为各大店长在员工明细弹窗中<strong>自行填写的计划合计</strong>，「达标差额」= 自填目标 − 本期已休，差额 &gt; 0 即未达标（红色标记行）；未填写目标的大店区不计入未达标</div>
         <div class="description-item">4、<strong>明细填报：</strong>点击大店长行查看员工明细，点击员工「计划填写」单元格可登记天数及<strong>具体休息日期区间（必填）</strong>，支持分多段，数据实时同步云端</div>
         <div class="description-item">5、<strong>大店长年假：</strong>第一排为 14 位大店长本年度年假卡片（应休 5 天/人，<strong>不并入员工口径汇总</strong>），点击卡片登记本人休息日期区间，<strong>规则与门店伙伴排休一致</strong>，实时同步云端</div>
+        <div class="description-item">6、<strong>HRBP 对接口径：</strong>第四排按对接关系汇总——周丽负责何海云、周思凡、童璐、钟天祥、易彪、旷瑶（6 位）；杨梦琳负责李奔、邵宝生、杜强、徐宇辉、赵思洁、刘旺林、廖灿、王润仪（8 位）。进度 = 所辖大店区已休 ÷ 应休（<strong>不含大店长本人年假</strong>）；王润仪暂无门店明细，单列展示、不计入进度汇总</div>
     </div>
 </div>
 
@@ -407,6 +437,10 @@
         <tfoot><tr id="region-foot"></tr></tfoot>
     </table>
 </div>
+
+<!-- ===== 第四排：HRBP 对接汇总 ===== -->
+<div class="section-header" style="margin-top:2px;">【第四排】HRBP 对接汇总 - 2 位 HRBP 所辖大店长年假进度（总和 + 明细，点击大店长行查看员工明细）</div>
+<div class="hrbp-row" id="hrbp-row"></div>
 
 <!-- ===== 明细弹窗 ===== -->
 <div class="modal-overlay" id="detail-modal" onclick="closeModal(event)">
@@ -472,7 +506,7 @@
 
 </div>
 
-<script src="data.js?v=20261102a"></script>
+<script src="data.js?v=20261102b"></script>
 <!-- v=20261027a: 数据刷新至10/27 -->
 <!-- v=20261016a: 第一排新增大店长年假卡片 + 大店长排休日期区间登记（云端 nov_mgr_rest_dates） -->
 <!-- v=20260916a: 新增休息日期区间（起止日期多段填写+校验+明细显示） -->
@@ -531,7 +565,12 @@ function isFailRow(r) { return r.目标 > 0 && r.差额 > 0; }
 function updateSepRestCard() { /* 卡片改为静态进度口径，此处保留空实现以兼容旧调用 */ }
 
 // ---------- 休息日期区间工具 ----------
-const REST_MONTH_MIN = '2026-10-01', REST_MONTH_MAX = '2026-10-31';
+const REST_YEAR = parseInt(String(D.meta.asOf).slice(0, 4), 10);
+const REST_MON = parseInt(String(D.meta.asOf).slice(5, 7), 10);
+const REST_MM = String(REST_MON).padStart(2, '0');
+const REST_LAST = new Date(REST_YEAR, REST_MON, 0).getDate();
+const REST_MONTH_MIN = REST_YEAR + '-' + REST_MM + '-01';
+const REST_MONTH_MAX = REST_YEAR + '-' + REST_MM + '-' + REST_LAST;
 function daysInclusive(s, e) {
     return Math.round((new Date(e) - new Date(s)) / 86400000) + 1;
 }
@@ -546,9 +585,10 @@ function parseRestDates(v) {
         v.split(/[、,，;；\s]+/).forEach(function (part) {
             if (!part) return;
             const m = part.match(/^(\d{1,2})\/(\d{1,2})(?:\s*[-~～]\s*(\d{1,2})\/(\d{1,2}))?$/);
-            if (m && m[1] === '10') {
-                const s = '2026-10-' + String(m[2]).padStart(2, '0');
-                const e = m[3] ? '2026-10-' + String(m[4]).padStart(2, '0') : s;
+            if (m) {
+                const sm = String(m[1]).padStart(2, '0');
+                const s = REST_YEAR + '-' + sm + '-' + String(m[2]).padStart(2, '0');
+                const e = m[3] ? REST_YEAR + '-' + String(m[3]).padStart(2, '0') + '-' + String(m[4]).padStart(2, '0') : s;
                 out.push({ s: s, e: e });
             }
         });
@@ -561,7 +601,9 @@ function formatRestDates(v) {
     if (typeof v === 'string') return v;   // 旧文本原样显示
     const arr = parseRestDates(v);
     return arr.map(function (r) {
-        return r.s === r.e ? '10/' + parseInt(r.s.slice(-2), 10) : '10/' + parseInt(r.s.slice(-2), 10) + '~10/' + parseInt(r.e.slice(-2), 10);
+        const sm = parseInt(r.s.slice(5, 7), 10), sd = parseInt(r.s.slice(-2), 10);
+        const em = parseInt(r.e.slice(5, 7), 10), ed = parseInt(r.e.slice(-2), 10);
+        return r.s === r.e ? sm + '/' + sd : sm + '/' + sd + '~' + em + '/' + ed;
     }).join('、');
 }
 
@@ -830,6 +872,7 @@ function renderRegions() {
     updateDynamicCards();
 }
 renderRegions();
+// HRBP 汇总由 loadSepRest() 统一触发（定义在脚本尾部，避免 TDZ）
 
 function filterTable() { renderRegions(); }
 
@@ -914,12 +957,14 @@ async function loadSepRest() {
         sepRestRestore();
         renderRegions();
         renderMgrCards();
+        renderHrbp();
         updateSepRestCard();
     } catch (e) {
         console.error('loadSepRest failed', e);
         sepRestRestore();
         renderRegions();
         renderMgrCards();
+        renderHrbp();
         updateSepRestCard();
     }
 }
@@ -1107,7 +1152,9 @@ function renderMgrCards() {
         const ranges = mgrRangesOf(m.id);
         const planned = ranges.reduce(function (s, r) { return s + daysInclusive(r.s, r.e); }, 0);
         const datesStr = ranges.map(function (r) {
-            return r.s === r.e ? '10/' + parseInt(r.s.slice(-2), 10) : '10/' + parseInt(r.s.slice(-2), 10) + '~10/' + parseInt(r.e.slice(-2), 10);
+            const sm = parseInt(r.s.slice(5, 7), 10), sd = parseInt(r.s.slice(-2), 10);
+            const em = parseInt(r.e.slice(5, 7), 10), ed = parseInt(r.e.slice(-2), 10);
+            return r.s === r.e ? sm + '/' + sd : sm + '/' + sd + '~' + em + '/' + ed;
         }).join('、');
         let planHtml;
         if (m.left === 0) {
@@ -1124,6 +1171,80 @@ function renderMgrCards() {
             '<div class="mgr-left"' + leftStyle + '>' + m.left + '<span style="font-size:11px;color:#95a5a6;font-weight:normal;"> 天</span></div>' +
             '<div class="mgr-sub">剩余 / 应休 ' + m.total + ' 天</div>' +
             planHtml +
+        '</div>';
+    }).join('');
+}
+
+// ---------- 第四排：HRBP 对接汇总（2 位 HRBP 所辖大店长年假进度总和 + 明细） ----------
+const HRBP_GROUPS = [
+    { name: '周丽', mgrs: ['何海云', '周思凡', '童璐', '钟天祥', '易彪', '旷瑶'] },
+    { name: '杨梦琳', mgrs: ['李奔', '邵宝生', '杜强', '徐宇辉', '赵思洁', '刘旺林', '廖灿', '王润仪'] }
+];
+
+function renderHrbp() {
+    const box = document.getElementById('hrbp-row');
+    if (!box || !D.regions) return;
+    const all = D.regions.rows.map(deriveRegion);
+    const byName = {};
+    all.forEach(function (r) { byName[r.name] = r; });
+    const companyRate = D.summary['完成率'];
+
+    box.innerHTML = HRBP_GROUPS.map(function (g) {
+        const list = g.mgrs.map(function (n) { return byName[n]; })
+            .filter(Boolean).slice().sort(function (a, b) { return a.完成率 - b.完成率; });
+        const missing = g.mgrs.filter(function (n) { return !byName[n]; });
+        const sum = list.reduce(function (a, r) {
+            return {
+                门店数: a.门店数 + r.门店数, 员工数: a.员工数 + r.员工数,
+                应休: a.应休 + r.应休, left: a.left + r.left, 已休: a.已休 + r.已休,
+                gt3: a.gt3 + r.gt3
+            };
+        }, { 门店数: 0, 员工数: 0, 应休: 0, left: 0, 已休: 0, gt3: 0 });
+        const rate = sum.应休 ? Math.round(sum.已休 / sum.应休 * 1000) / 10 : 0;
+        const low = rate < companyRate;
+        const gap = Math.abs(Math.round((rate - companyRate) * 10) / 10);
+
+        const kpi = [
+            ['门店', sum.门店数], ['在职', sum.员工数], ['应休', sum.应休],
+            ['剩余', sum.left], ['已休', sum.已休], ['>3天', sum.gt3]
+        ].map(function (x) {
+            return '<div class="hrbp-kpi"><div class="n">' + x[1] + '</div><div class="l">' + x[0] + '</div></div>';
+        }).join('');
+
+        const detail = list.map(function (r) {
+            return '<tr class="clickable" onclick="openRegionModal(\'' + r.大店区 + '\')" title="点击查看 ' + r.name + ' 的员工明细">' +
+                '<td class="l"><strong>' + r.name + '</strong></td>' +
+                '<td>' + r.门店数 + '</td>' +
+                '<td>' + r.员工数 + '</td>' +
+                '<td>' + r.应休 + '</td>' +
+                '<td class="val-915">' + r.left + '</td>' +
+                '<td class="val-done">' + r.已休 + '</td>' +
+                '<td>' + rateBar(r.完成率) + '</td>' +
+                '<td>' + warnCell(r.gt3) + '</td></tr>';
+        }).join('');
+
+        const missingRows = missing.map(function (n) {
+            const m = (D.managers || []).find(function (x) { return x.name === n; });
+            return '<tr class="hrbp-missing"><td class="l" colspan="8">' + n +
+                ' · 暂无门店明细，不计入进度汇总' +
+                (m ? '（本人年假：应休 ' + m.total + ' 天 / 剩余 ' + m.left + ' 天）' : '') +
+                '</td></tr>';
+        }).join('');
+
+        return '<div class="hrbp-card">' +
+            '<div class="hrbp-head">' +
+                '<div><div class="hrbp-name">👤 ' + g.name + '（HRBP）</div>' +
+                '<div class="hrbp-sub">对接 ' + g.mgrs.length + ' 位大店长 · 有明细 ' + list.length + ' 位</div></div>' +
+                '<div class="hrbp-rate' + (low ? ' low' : '') + '">' + rate + '%' +
+                    '<small>全司 ' + companyRate + '% · ' + (low ? '低于' : '高于') + ' ' + gap + 'pct</small></div>' +
+            '</div>' +
+            '<div class="hrbp-track"><i class="' + (low ? 'low' : '') + '" style="width:' + Math.min(rate, 100) + '%"></i></div>' +
+            '<div class="hrbp-kpis">' + kpi + '</div>' +
+            '<div class="hrbp-detail"><table>' +
+                '<thead><tr><th class="l">大店长</th><th>门店</th><th>在职</th><th>应休</th><th>剩余</th><th>已休</th><th>进度</th><th>&gt;3天</th></tr></thead>' +
+                '<tbody>' + detail + missingRows + '</tbody>' +
+            '</table></div>' +
+            '<div class="hrbp-note">口径：进度 = 已休 ÷ 应休；汇总为所辖大店区之和，不含大店长本人年假。点击大店长行可查看员工明细。</div>' +
         '</div>';
     }).join('');
 }

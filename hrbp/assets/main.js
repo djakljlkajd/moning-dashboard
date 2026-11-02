@@ -15677,25 +15677,6 @@ var supabaseBridge = {
       dataFlags: row.data_flags ?? []
     }));
   },
-  /** 读取最新一期年假报表；未导入过返回 null。 */
-  async loadAnnualLeave() {
-    const latest = await rest("/hr_annual_leave?select=report_date&order=report_date.desc&limit=1");
-    const reportDate = latest[0]?.report_date;
-    if (!reportDate) return null;
-    const rows = await restAll(`/hr_annual_leave?report_date=eq.${reportDate}&order=district.asc,remaining.desc`);
-    return {
-      reportDate,
-      records: rows.map((row) => ({
-        workNo: row.work_no,
-        name: row.name,
-        status: row.status,
-        district: row.district ?? "",
-        storeName: row.store_name ?? "",
-        entitled: Number(row.entitled) || 0,
-        remaining: Number(row.remaining) || 0
-      }))
-    };
-  },
   /** 读取最新一期墨柠周报的门店预警；未导入过周报时返回 null。 */
   async loadWeeklyWarnings(brand = "古德墨柠") {
     const reports = await rest(
@@ -43782,110 +43763,6 @@ function IssueDrawer({ issue, employee, employees, stores, events, onClose, onAc
     ] })
   ] }) });
 }
-function AnnualLeaveCard({ reportDate, records }) {
-  const [openDistrict, setOpenDistrict] = (0, import_react5.useState)(null);
-  const active = records.filter((r) => r.status === "正式在职");
-  const groups = Object.entries(MONING_BP_SCOPE).map(([bp, leaders]) => {
-    const districts = leaders.map((n) => `${n}大店区`);
-    const byDistrict = leaders.map((leader) => {
-      const district = `${leader}大店区`;
-      const rows = active.filter((r) => r.district === district);
-      const ent2 = rows.reduce((sum, r) => sum + r.entitled, 0);
-      const rem2 = rows.reduce((sum, r) => sum + r.remaining, 0);
-      return { leader, district, rows, ent: ent2, rem: rem2, used: ent2 - rem2, pct: ent2 ? (ent2 - rem2) / ent2 : 0 };
-    });
-    const mine = byDistrict.flatMap((d) => d.rows);
-    const ent = mine.reduce((sum, r) => sum + r.entitled, 0);
-    const rem = mine.reduce((sum, r) => sum + r.remaining, 0);
-    return { bp, total: mine.length, ent, rem, used: ent - rem, pct: ent ? (ent - rem) / ent : 0, byDistrict };
-  });
-  const assigned = new Set(Object.values(MONING_BP_SCOPE).flat().map((n) => `${n}大店区`));
-  const others = active.filter((r) => r.district && !assigned.has(r.district));
-  const otherDistricts = [...new Set(others.map((r) => r.district))];
-  const bar = (pct, danger = false) => /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { style: { height: 7, borderRadius: 4, background: "var(--line)", overflow: "hidden", marginTop: 8 }, children: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { style: { height: "100%", width: `${Math.min(100, Math.round(pct * 100))}%`, background: danger ? "var(--red)" : "var(--green-700)", borderRadius: 4 } }) });
-  return /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card", children: [
-    /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card-header", children: [
-      /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { children: [
-        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-title", children: "年假推进 · 墨柠" }),
-        /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card-subtitle", children: [
-          "按 HRBP 管辖汇总（正式在职口径），数据更新至 ",
-          reportDate
-        ] })
-      ] }),
-      /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("span", { className: "badge badge-blue", children: [
-        active.length,
-        " 人"
-      ] })
-    ] }),
-    /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-body", children: /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "stack", children: [
-      groups.map((group) => /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { style: { border: "1px solid var(--line)", borderRadius: 12, padding: 14 }, children: [
-        /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center" }, children: [
-          /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { style: { fontWeight: 700 }, children: [
-            group.bp,
-            " 管辖 · ",
-            group.total,
-            " 人"
-          ] }),
-          /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { style: { fontSize: 12, color: "var(--text-secondary, #667)" }, children: [
-            "应休 ",
-            group.ent,
-            " 天 · 已休 ",
-            group.used,
-            " 天 · ",
-            /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("span", { style: { color: group.rem > 0 ? "var(--amber)" : "var(--green-700)", fontWeight: 600 }, children: [
-              "剩余 ",
-              group.rem,
-              " 天"
-            ] })
-          ] })
-        ] }),
-        bar(group.pct, group.pct < 0.5),
-        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { style: { marginTop: 10 }, children: group.byDistrict.map((d) => /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { style: { borderTop: "1px dashed var(--line)", padding: "7px 0" }, children: [
-          /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", cursor: "pointer" }, onClick: () => setOpenDistrict(openDistrict === d.district ? null : d.district), children: [
-            /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("span", { style: { fontSize: 13 }, children: [
-              d.leader,
-              "大店区 ",
-              /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("span", { style: { color: "var(--text-secondary, #667)" }, children: [
-                d.rows.length,
-                " 人"
-              ] })
-            ] }),
-            /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("span", { style: { fontSize: 12 }, children: [
-              "进度 ",
-              (d.pct * 100).toFixed(0),
-              "% · 剩余 ",
-              d.rem,
-              " 天 ",
-              openDistrict === d.district ? "▲" : "▾"
-            ] })
-          ] }),
-          openDistrict === d.district && /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { style: { marginTop: 6 }, children: [
-            d.rows.filter((r) => r.remaining > 0).sort((a, b) => b.remaining - a.remaining).map((r) => /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { style: { display: "flex", justifyContent: "space-between", fontSize: 12, padding: "3px 0", color: "var(--text-secondary, #667)" }, children: [
-              /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("span", { children: [
-                r.name,
-                " · ",
-                r.storeName
-              ] }),
-              /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("span", { style: { color: "var(--amber)", fontWeight: 600 }, children: [
-                "余 ",
-                r.remaining,
-                " 天"
-              ] })
-            ] }, r.workNo)),
-            !d.rows.some((r) => r.remaining > 0) && /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "form-hint", children: "已全部休完" })
-          ] })
-        ] }, d.district)) })
-      ] }, group.bp)),
-      otherDistricts.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "form-hint", children: [
-        "未分配管辖的大店区：",
-        otherDistricts.join("、"),
-        "（",
-        others.length,
-        " 人，不计入两位 BP 汇总）"
-      ] })
-    ] }) })
-  ] });
-}
 function StoreCard({ recommendation, onDetail, onVisit }) {
   const warning = recommendation.warning;
   const badge = warning ? warningBadge(warning.level) : null;
@@ -44121,7 +43998,6 @@ function App() {
   const [roster, setRoster] = (0, import_react5.useState)(null);
   const [stores, setStores] = (0, import_react5.useState)([]);
   const [weeklyReport, setWeeklyReport] = (0, import_react5.useState)(null);
-  const [annualLeave, setAnnualLeave] = (0, import_react5.useState)(null);
   const [rosterSummary, setRosterSummary] = (0, import_react5.useState)(null);
   const [rosterQuery, setRosterQuery] = (0, import_react5.useState)("");
   const [rosterBrand, setRosterBrand] = (0, import_react5.useState)("all");
@@ -44143,8 +44019,6 @@ function App() {
       setRosterSummary(summarizeRoster(personnel));
       const weekly = await supabaseBridge.loadWeeklyWarnings().catch(() => null);
       setWeeklyReport(weekly);
-      const leave = await supabaseBridge.loadAnnualLeave().catch(() => null);
-      setAnnualLeave(leave);
     }
     const bound = await backend.currentEmployee();
     if (bound) setCurrentEmployeeId(bound.id);
@@ -44377,7 +44251,6 @@ function App() {
             ] })
           ] })
         ] }),
-        annualLeave && employee.brands.includes("古德墨柠") && /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(AnnualLeaveCard, { reportDate: annualLeave.reportDate, records: annualLeave.records }),
         /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card", children: [
           /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card-header", children: [
             /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { children: [

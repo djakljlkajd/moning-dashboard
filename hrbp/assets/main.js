@@ -44059,7 +44059,7 @@ function App() {
   }, []);
   const risks = (0, import_react5.useMemo)(() => stores.map((store) => calculateRisk(store.id, metrics, today())), [stores, metrics]);
   const recommendBrands = employee.role === "director" ? void 0 : employee.brands;
-  const recommendBpId = employee.role === "bp" ? employee.id : void 0;
+  const recommendBpId = employee.id;
   const warningsByCode = (0, import_react5.useMemo)(() => {
     const map = /* @__PURE__ */ new Map();
     for (const warning of weeklyReport?.warnings ?? []) map.set(warning.storeCode, warning);
@@ -44096,10 +44096,6 @@ function App() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
   const openVisit = (storeId) => {
-    if (employee.role !== "bp") {
-      showToast("巡店须由 BP 本人提交，经理和总负责人不能代录");
-      return;
-    }
     setVisitModalStoreId(storeId ?? "");
     setVisitModalOpen(true);
   };
@@ -45001,7 +44997,7 @@ function App() {
           ] }),
           /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "inline-notice", style: { marginTop: 16 }, children: [
             /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(Eye, { size: 15 }),
-            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { children: "已确认全员全部可见。BP 只能跟进本人问题，品牌经理只能复核本品牌，经理不能代录巡店。" })
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { children: "已确认全员全部可见。全员可提交本人巡店；BP 只能跟进本人问题，品牌经理只能复核本品牌。" })
           ] })
         ] })
       ] }),

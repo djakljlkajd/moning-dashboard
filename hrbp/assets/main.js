@@ -15047,7 +15047,7 @@ var ISSUE_STATUS_LABELS = {
   open: "待处理",
   in_progress: "处理中",
   completed: "待复核",
-  closed: "已关闭"
+  closed: "已闭环"
 };
 var ISSUE_SEVERITY_LABELS = {
   low: "低",
@@ -16055,16 +16055,16 @@ function recommendStores(options) {
 
 // src/features/issues/workflow.ts
 var ACTION_NEXT_STATUS = {
-  open: { start: "in_progress" },
-  in_progress: { complete: "completed" },
-  completed: { review: "closed", reopen: "in_progress" },
+  open: { start: "in_progress", close: "closed" },
+  in_progress: { complete: "completed", close: "closed" },
+  completed: { review: "closed", reopen: "in_progress", close: "closed" },
   closed: { reopen: "in_progress" }
 };
 function canPerformIssueAction(issue, actor, action) {
   if (!ACTION_NEXT_STATUS[issue.status]?.[action]) return false;
   if (actor.role === "director") return true;
   if (actor.role === "bp") {
-    return issue.assigneeId === actor.id && (["start", "complete"].includes(action) || action === "reopen" && issue.status === "completed");
+    return issue.assigneeId === actor.id && (["start", "complete", "close"].includes(action) || action === "reopen" && issue.status === "completed");
   }
   if (actor.role === "manager") {
     return actor.brands.includes(issue.brand) && (action === "review" && issue.status === "completed" || action === "reopen" && ["completed", "closed"].includes(issue.status));
@@ -43336,7 +43336,7 @@ var ACTION_LABELS = {
   complete: "提交复核",
   review: "复核通过并关闭",
   reopen: "退回继续处理",
-  close: "关闭问题"
+  close: "问题已闭环"
 };
 var CLOSURE_STEPS = [
   { icon: CircleAlert, title: "待处理", subtitle: "BP 现场确认" },
@@ -43406,7 +43406,7 @@ function EmptyState({ title, description }) {
     /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("p", { children: description })
   ] });
 }
-var emptyCheck = () => ({ status: "pending", reason: "", severity: "medium" });
+var emptyCheck = () => ({ status: "pending", reason: "", severity: "medium", dueDate: addDays(7), responsibleName: "" });
 function NewVisitModal({ employee, stores, visits, preselectedStoreId, modeLabel, onReload, onClose, onSave }) {
   const [step, setStep] = (0, import_react5.useState)(1);
   const [query, setQuery] = (0, import_react5.useState)("");
@@ -43435,7 +43435,7 @@ function NewVisitModal({ employee, stores, visits, preselectedStoreId, modeLabel
   const targetRule = visitTargetFor(employee.name);
   const periodKeyOf = (date) => targetRule.period === "month" ? getMonthKey(date) : getQuarterKey(date);
   const isRevisit = Boolean(visitDate) && visits.some((visit) => visit.bpId === employee.id && visit.storeId === storeId && visit.status === "submitted" && !visit.voided && periodKeyOf(visit.visitedAt) === periodKeyOf(visitDate));
-  const canNext = Boolean(selectedStore && visitDate && rootCauses.length && summary.trim());
+  const canNext = Boolean(selectedStore && visitDate && rootCauses.length);
   const checkList = ISSUE_CATEGORY_DICTIONARY.map((item2) => ({ ...item2, check: checks[item2.key] ?? emptyCheck() }));
   const checksValid = checkList.every((item2) => item2.check.status !== "pending" && (item2.check.status === "ok" || Boolean(item2.check.reason.trim())));
   const issueChecks = checkList.filter((item2) => item2.check.status === "issue");
@@ -43453,7 +43453,7 @@ function NewVisitModal({ employee, stores, visits, preselectedStoreId, modeLabel
       visitedAt: visitDate,
       status: "submitted",
       submittedAt: (/* @__PURE__ */ new Date()).toISOString(),
-      summary: `巡店根因：${causeLabels.join("、")}。${summary.trim()}${note.trim() ? `（备注：${note.trim()}）` : ""}`
+      summary: `巡店根因：${causeLabels.join("、")}${summary.trim() ? `。${summary.trim()}` : ""}${note.trim() ? `（备注：${note.trim()}）` : ""}`
     };
     const newIssues = issueChecks.map((item2, index) => ({
       id: `${id}-issue-${index + 1}`,
@@ -43469,8 +43469,8 @@ function NewVisitModal({ employee, stores, visits, preselectedStoreId, modeLabel
       reporterId: employee.id,
       assigneeId: employee.id,
       createdAt: visitDate,
-      dueDate: addDays(7),
-      responsibleName: selectedStore.managerName ?? ""
+      dueDate: item2.check.dueDate || addDays(7),
+      responsibleName: item2.check.responsibleName.trim() || (selectedStore.managerName ?? "")
     }));
     const events = newIssues.map((issue) => createIssueEvent(issue, employee.id, "create", { comment: "到店必查清单发现问题", createdAt: (/* @__PURE__ */ new Date()).toISOString() }));
     onSave(visit, newIssues, events, isRevisit);
@@ -43618,9 +43618,9 @@ function NewVisitModal({ employee, stores, visits, preselectedStoreId, modeLabel
           /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "form-group full", children: [
             /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("label", { className: "form-label", children: [
               "根因说明",
-              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: "required", children: "*" })
+              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { style: { color: "var(--muted)", fontWeight: 400, marginLeft: 6, fontSize: 11 }, children: "选填" })
             ] }),
-            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("textarea", { className: "textarea", value: summary, onChange: (e) => setSummary(e.target.value), placeholder: "结合勾选的标准，说明为什么巡这家店（如周报杯效长期标红、环比下滑、打标异常等）…" })
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("textarea", { className: "textarea", value: summary, onChange: (e) => setSummary(e.target.value), placeholder: "选填：结合勾选的标准补充说明（如周报杯效长期标红、环比下滑、打标异常等）…" })
           ] }),
           /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "form-group full", children: [
             /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("label", { className: "form-label", children: "备注" }),
@@ -43676,13 +43676,12 @@ function NewVisitModal({ employee, stores, visits, preselectedStoreId, modeLabel
               ] })
             ] }),
             /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "form-group", children: [
-              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("label", { className: "form-label", children: "闭环口径" }),
-              /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "input", style: { background: "#f7f8f5" }, children: [
-                "截止 ",
-                addDays(7),
-                " · 责任人默认店长 ",
-                selectedStore?.managerName ?? "—"
-              ] })
+              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("label", { className: "form-label", children: "闭环截止日期" }),
+              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("input", { className: "input", type: "date", min: visitDate, value: item2.check.dueDate, onChange: (e) => setCheck(item2.key, { dueDate: e.target.value }) })
+            ] }),
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "form-group full", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("label", { className: "form-label", children: "闭环责任人" }),
+              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("input", { className: "input", value: item2.check.responsibleName, onChange: (e) => setCheck(item2.key, { responsibleName: e.target.value }), placeholder: `留空默认店长：${selectedStore?.managerName ?? "—"}` })
             ] })
           ] })
         ] }, item2.key))
@@ -44156,6 +44155,10 @@ function IssueDrawer({ issue, employee, employees, stores, events, onClose, onAc
             /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(ShieldCheck, { size: 14 }),
             "复核通过并关闭"
           ] }),
+          actions.includes("close") && /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("button", { className: "button button-primary button-sm", disabled: !comment.trim(), onClick: () => runAction("close"), children: [
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(CircleCheck, { size: 14 }),
+            "问题已闭环"
+          ] }),
           actions.includes("reopen") && /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("button", { className: "button button-danger button-sm", disabled: !comment.trim(), onClick: () => runAction("reopen"), children: [
             /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(RefreshCw, { size: 14 }),
             issue.status === "closed" ? "重新打开" : employee.role === "bp" ? "撤回复核继续处理" : "退回继续处理"
@@ -44609,7 +44612,7 @@ function App() {
       setIssues((current) => current.map((item2) => item2.id === issue.id ? nextIssue : item2));
       setEvents((current) => [...current, result2.event]);
       persistIssue(nextIssue, result2.event);
-      showToast(action === "review" ? "问题已复核关闭" : action === "complete" ? "已提交品牌经理复核" : action === "reopen" ? "已退回处理中" : "问题状态已更新");
+      showToast(action === "review" ? "问题已复核关闭" : action === "close" ? "问题已闭环" : action === "complete" ? "已提交品牌经理复核" : action === "reopen" ? "已退回处理中" : "问题状态已更新");
     } catch (error) {
       showToast(error instanceof Error ? error.message : "操作失败");
     }
@@ -44920,8 +44923,9 @@ function App() {
       !displayVisits.length && /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(EmptyState, { title: "本季度还没有巡店记录", description: "点击「记录巡店」提交第一条" })
     ] })
   ] });
+  const closedIssueList = issues.filter((issue) => issue.status === "closed").sort((a, b) => (b.closedAt ?? "").localeCompare(a.closedAt ?? ""));
   const issuesPage = /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)(import_jsx_runtime3.Fragment, { children: [
-    pageHeading("ISSUE CLOSURE", "问题闭环", "从现场发现到经理复核，所有处理都有记录、有责任人。", employee.role !== "bp" && /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("span", { className: "badge badge-blue", children: [
+    pageHeading("ISSUE CLOSURE", "问题闭环", "从现场发现到闭环，所有处理都有记录、有责任人；BP 可直接标记「问题已闭环」。", employee.role !== "bp" && /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("span", { className: "badge badge-blue", children: [
       pendingReview.length,
       " 个待我复核"
     ] })),
@@ -44930,14 +44934,14 @@ function App() {
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(Search, { size: 15 }),
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("input", { value: issueQuery, onChange: (e) => setIssueQuery(e.target.value), placeholder: "搜索问题、门店或 BP" })
       ] }),
-      /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "filter-chips", children: [["all", "全部"], ["mine", "我主责"], ["open", "未闭环"], ["overdue", "已逾期"], ["completed", "待复核"], ["closed", "已关闭"]].map(([key, label]) => /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("button", { className: `chip ${issueFilter === key ? "active" : ""}`, onClick: () => setIssueFilter(key), children: label }, key)) })
+      /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "filter-chips", children: [["all", "全部"], ["mine", "我主责"], ["open", "未闭环"], ["overdue", "已逾期"], ["completed", "待复核"]].map(([key, label]) => /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("button", { className: `chip ${issueFilter === key ? "active" : ""}`, onClick: () => setIssueFilter(key), children: label }, key)) })
     ] }),
     /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "issue-list", children: [
       issues.filter((issue) => {
         const store = stores.find((item2) => item2.id === issue.storeId);
         const bp = employeeList.find((item2) => item2.id === issue.assigneeId);
         const matchesQuery = `${issue.title}${store?.name}${bp?.name}`.toLowerCase().includes(issueQuery.toLowerCase());
-        const matchesFilter = issueFilter === "all" || issueFilter === "mine" && issue.assigneeId === employee.id || issueFilter === "open" && issue.status !== "closed" || issueFilter === "overdue" && isIssueOverdue(issue, today()) || issue.status === issueFilter;
+        const matchesFilter = issueFilter === "all" && issue.status !== "closed" || issueFilter === "mine" && issue.assigneeId === employee.id && issue.status !== "closed" || issueFilter === "open" && issue.status !== "closed" || issueFilter === "overdue" && isIssueOverdue(issue, today()) || issue.status === issueFilter;
         return matchesQuery && matchesFilter;
       }).map((issue) => {
         const store = stores.find((item2) => item2.id === issue.storeId);
@@ -44984,6 +44988,40 @@ function App() {
         ] }, issue.id);
       }),
       !issues.length && /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(EmptyState, { title: "还没有问题记录", description: "巡店时发现的问题会在这里统一跟进闭环" })
+    ] }),
+    /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card", style: { marginTop: 18 }, children: [
+      /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card-header", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { children: [
+          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-title", children: "已闭环问题" }),
+          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-subtitle", children: "已完成闭环的问题归档在这里，点击可查看完整处理时间线" })
+        ] }),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("span", { className: "badge badge-green", children: [
+          closedIssueList.length,
+          " 个"
+        ] })
+      ] }),
+      /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-body", children: /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "list", children: [
+        closedIssueList.map((issue) => {
+          const store = stores.find((item2) => item2.id === issue.storeId);
+          const bp = employeeList.find((item2) => item2.id === issue.assigneeId);
+          return /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "list-row", onClick: () => setIssueDetailId(issue.id), style: { cursor: "pointer" }, children: [
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: `stat-icon`, style: { width: 34, height: 34 }, children: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(CircleCheck, { size: 16 }) }),
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "list-main", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "list-title", children: issue.title }),
+              /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "list-meta", children: [
+                store?.name,
+                " · ",
+                bp?.name,
+                " · ",
+                issue.closedAt ? formatDate(issue.closedAt) : "—",
+                " 闭环"
+              ] })
+            ] }),
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: "badge badge-green", children: "已闭环" })
+          ] }, issue.id);
+        }),
+        !closedIssueList.length && /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(EmptyState, { title: "暂无已闭环问题", description: "问题标记「问题已闭环」或经理复核通过后归档到这里" })
+      ] }) })
     ] })
   ] });
   const bpEmployees = employeeList.filter((item2) => item2.role === "bp");

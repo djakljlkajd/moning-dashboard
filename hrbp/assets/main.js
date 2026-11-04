@@ -15768,7 +15768,13 @@ var supabaseBridge = {
       achieveM2: row.achieve_m2 ?? void 0,
       achieveM3: row.achieve_m3 ?? void 0,
       treeholeCount: row.treehole_count ?? void 0,
-      awardOk: row.award_ok ?? void 0
+      awardOk: row.award_ok ?? void 0,
+      hoursAvg: row.hours_avg ?? void 0,
+      hoursOver220: row.hours_over_220 ?? void 0,
+      hoursUnder167: row.hours_under_167 ?? void 0,
+      archChange: row.arch_change ?? void 0,
+      scoreTotal: row.score_total ?? void 0,
+      riskLevel: row.risk_level ?? void 0
     }));
   },
   /** 未获得巷战激励门店（整表） */
@@ -16141,6 +16147,15 @@ function rankTreehole(details) {
 }
 function rankAwardRisk(details) {
   return details.filter((d) => d.awardOk === false).sort((a, b) => byStoreName(a, b)).slice(0, TAG_DETAIL_LIMIT);
+}
+function rankHoursOver220(details) {
+  return details.filter((d) => (d.hoursOver220 ?? 0) > 0).sort((a, b) => (b.hoursAvg ?? 0) - (a.hoursAvg ?? 0) || byStoreName(a, b)).slice(0, TAG_DETAIL_LIMIT);
+}
+function rankHoursUnder167(details) {
+  return details.filter((d) => (d.hoursUnder167 ?? 0) > 0).sort((a, b) => (a.hoursAvg ?? Infinity) - (b.hoursAvg ?? Infinity) || byStoreName(a, b)).slice(0, TAG_DETAIL_LIMIT);
+}
+function rankByRiskLevel(details, level) {
+  return details.filter((d) => d.riskLevel === level).sort((a, b) => (b.scoreTotal ?? 0) - (a.scoreTotal ?? 0) || byStoreName(a, b)).slice(0, TAG_DETAIL_LIMIT);
 }
 
 // node_modules/xlsx/xlsx.mjs
@@ -43735,7 +43750,8 @@ function TagDetailModal({ kind, details, xiangzhan, reportMonth, onClose }) {
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "table-sub", children: [
         d.storeCode,
         " · ",
-        d.regionManager
+        d.brand,
+        d.regionManager ? ` · ${d.regionManager}` : ""
       ] })
     ] });
     if (kind === "abcAllC") {
@@ -43848,6 +43864,51 @@ function TagDetailModal({ kind, details, xiangzhan, reportMonth, onClose }) {
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("td", { children: d.areaManager || "—" }),
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("td", { children: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: "badge badge-red", children: "未达标" }) })
       ] }, d.id));
+    } else if (kind === "hoursOver220" || kind === "hoursUnder167") {
+      const over = kind === "hoursOver220";
+      const rows = over ? rankHoursOver220(details) : rankHoursUnder167(details);
+      title = over ? "工时超 220H 明细" : "工时低 167H 明细";
+      note = `${over ? "月人均工时大于 220 小时" : "月人均工时小于 167 小时"}的门店共 ${rows.length >= 60 ? "60+" : rows.length} 家（按人均工时${over ? "降序" : "升序"}，最多展示 60 家）。`;
+      head = /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("tr", { children: [
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "门店" }),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "月人均工时" }),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "标记值" }),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "区经理 / 大店长" })
+      ] });
+      body = rows.map((d) => /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("tr", { children: [
+        common(d),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("td", { children: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: "badge badge-red", children: d.hoursAvg !== void 0 ? `${d.hoursAvg}H` : "—" }) }),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("td", { children: over ? d.hoursOver220 : d.hoursUnder167 }),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("td", { children: [
+          d.districtManager || "—",
+          " / ",
+          d.areaManager || "—"
+        ] })
+      ] }, d.id));
+    } else if (kind.startsWith("risk:")) {
+      const level = kind.slice(5);
+      const rows = rankByRiskLevel(details, level);
+      title = `${level}门店`;
+      note = `底表九项打标总分对应「${level}」的门店共 ${rows.length >= 60 ? "60+" : rows.length} 家，按异常总分降序（最多展示 60 家）。`;
+      head = /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("tr", { children: [
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "门店" }),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "异常总分" }),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "风险等级" }),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "区经理 / 大店长" })
+      ] });
+      body = rows.map((d) => /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("tr", { children: [
+        common(d),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("td", { children: [
+          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("strong", { children: d.scoreTotal ?? 0 }),
+          " 分"
+        ] }),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("td", { children: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: `badge ${level === "极高风险" ? "badge-red" : level === "高风险" ? "badge-orange" : level === "中风险" ? "badge-amber" : "badge-green"}`, children: level }) }),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("td", { children: [
+          d.districtManager || "—",
+          " / ",
+          d.areaManager || "—"
+        ] })
+      ] }, d.id));
     }
   }
   return /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "modal-backdrop", onMouseDown: (event) => event.target === event.currentTarget && onClose(), children: /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "modal modal-wide", children: [
@@ -43866,7 +43927,8 @@ function TagDetailModal({ kind, details, xiangzhan, reportMonth, onClose }) {
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("span", { className: "form-hint", children: [
         "数据期：",
         reportMonth,
-        "（近 3 个月口径）· 品牌：茶颜悦色"
+        "（近 3 个月口径）· 品牌：",
+        [...new Set(details.map((d) => d.brand))].join("、") || "—"
       ] }),
       /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "modal-footer-right", children: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("button", { className: "button button-secondary", onClick: onClose, children: "关闭" }) })
     ] })
@@ -45290,7 +45352,7 @@ function App() {
           /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: "badge badge-green", children: "v1.0" })
         ] }),
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-body", children: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "rule-grid", children: RISK_RULES.map((rule, index) => {
-          const clickable = ["abcAllC", "qcBelow80", "salesBelow100", "treeHoleComplaints", "noReward"].includes(rule.key);
+          const clickable = ["abcAllC", "qcBelow80", "salesBelow100", "treeHoleComplaints", "noReward", "hoursOver220", "hoursUnder167"].includes(rule.key);
           return /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "rule-card", style: clickable ? { cursor: "pointer" } : void 0, onClick: clickable ? () => setTagModal(rule.key) : void 0, children: [
             /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: "rule-index", children: String(index + 1).padStart(2, "0") }),
             /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { children: [
@@ -45332,13 +45394,20 @@ function App() {
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card", children: [
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-header", children: /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { children: [
           /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-title", children: "风险等级与巡店节奏" }),
-          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-subtitle", children: "沿用原表规则，不在前端重复发明评分" })
+          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-subtitle", children: "分值来自打标底表九项异常重算（每项 1 分），点击卡片查看对应等级门店" })
         ] }) }),
-        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-body", children: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "phase-flow", children: [["6+", "极高风险", "第一阶段 · 本月优先", "var(--red)"], ["4–5", "高风险", "第二阶段 · 次月", "var(--orange)"], ["2–3", "中风险", "第三阶段 · 季度内", "var(--amber)"], ["0–1", "低风险", "第四阶段 · 常规巡检", "var(--green-700)"]].map(([score, level, phase, color]) => /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "phase-card", children: [
-          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "phase-score", style: { color }, children: score }),
-          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("strong", { children: level }),
-          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("p", { children: phase })
-        ] }, level)) }) })
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-body", children: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "phase-flow", children: [["6+", "极高风险", "第一阶段 · 本月优先", "var(--red)"], ["4–5", "高风险", "第二阶段 · 次月", "var(--orange)"], ["2–3", "中风险", "第三阶段 · 季度内", "var(--amber)"], ["0–1", "低风险", "第四阶段 · 常规巡检", "var(--green-700)"]].map(([score, level, phase, color]) => {
+          const count = tagDetails.filter((d) => d.riskLevel === level).length;
+          return /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "phase-card", style: { cursor: "pointer" }, onClick: () => setTagModal(`risk:${level}`), children: [
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "phase-score", style: { color }, children: score }),
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("strong", { children: [
+              level,
+              " ",
+              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { style: { fontSize: 12, color: "var(--muted)" }, children: tagDetails.length ? `${count} 家` : "待导入" })
+            ] }),
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("p", { children: phase })
+          ] }, level);
+        }) }) })
       ] }),
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card", children: [
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-header", children: /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { children: [

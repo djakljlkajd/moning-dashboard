@@ -15775,7 +15775,9 @@ var supabaseBridge = {
       hoursUnder167: row.hours_under_167 ?? void 0,
       archChange: row.arch_change ?? void 0,
       scoreTotal: row.score_total ?? void 0,
-      riskLevel: row.risk_level ?? void 0
+      riskLevel: row.risk_level ?? void 0,
+      anomalyFlags: row.anomaly_flags ?? void 0,
+      highTemp: row.high_temp ?? void 0
     }));
   },
   /** 未获得巷战激励门店（整表） */
@@ -43935,15 +43937,16 @@ function TagDetailModal({ kind, details, xiangzhan, reportMonth, onClose }) {
     ] })
   ] }) });
 }
-function RiskDrawer({ recommendation, onClose, onVisit }) {
+function RiskDrawer({ recommendation, tagDetail, onClose, onVisit }) {
   const risk = recommendation.risk;
   const warning = recommendation.warning;
   const badge = warning ? warningBadge(warning.level) : null;
   const pct = (v) => v === null ? "—" : `${(v * 100).toFixed(1)}%`;
+  const anomalyFlags = tagDetail?.anomalyFlags ?? [];
   return /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "drawer-backdrop", onMouseDown: (e) => e.target === e.currentTarget && onClose(), children: /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "drawer", children: [
     /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "drawer-header", children: [
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { children: [
-        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: `badge ${badge ? badge.cls : riskBadge(risk?.riskLevel)}`, children: badge ? badge.label : risk?.riskLevel ?? "数据待补充" }),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: `badge ${tagDetail?.riskLevel ? riskBadge(tagDetail.riskLevel) : badge ? badge.cls : riskBadge(risk?.riskLevel)}`, children: tagDetail?.riskLevel ?? (badge ? badge.label : risk?.riskLevel ?? "数据待补充") }),
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("h2", { className: "drawer-title", children: recommendation.store.name }),
         /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("p", { className: "card-subtitle", children: [
           recommendation.store.code,
@@ -43955,6 +43958,22 @@ function RiskDrawer({ recommendation, onClose, onVisit }) {
       /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("button", { className: "icon-button", onClick: onClose, children: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(X, { size: 18 }) })
     ] }),
     /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "drawer-body", children: [
+      tagDetail && /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "detail-section", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("h3", { children: [
+          "风险原因（打标底表 · 异常总分 ",
+          tagDetail.scoreTotal ?? 0,
+          " 分）"
+        ] }),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "reason-box", children: anomalyFlags.length ? anomalyFlags.map((flag) => /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "reason", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: "badge badge-red", style: { marginRight: 6 }, children: "+1" }),
+          flag
+        ] }, flag)) : /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "reason", children: "九项打标均正常，未命中异常项" }) }),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "form-hint", style: { marginTop: 8 }, children: [
+          "数据期 ",
+          tagDetail.reportMonth,
+          " · 九项：架构变动 / ABC两月C档 / QC连续3月不好 / 业绩连续3月<80% / 工时超220H / 工时低167H / 高温门店 / 树洞≥2条 / 两大奖励未达标"
+        ] })
+      ] }),
       warning && /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)(import_jsx_runtime3.Fragment, { children: [
         /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "detail-grid", children: [
           /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { children: [
@@ -44162,9 +44181,11 @@ function IssueDrawer({ issue, employee, employees, stores, events, onClose, onAc
     ] })
   ] }) });
 }
-function StoreCard({ recommendation, onDetail, onVisit }) {
+function StoreCard({ recommendation, tagDetail, onDetail, onVisit }) {
   const warning = recommendation.warning;
   const badge = warning ? warningBadge(warning.level) : null;
+  const tagLevel = tagDetail?.riskLevel;
+  const anomalyFlags = tagDetail?.anomalyFlags ?? [];
   return /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card store-card", children: [
     /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "store-card-top", children: [
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { children: [
@@ -44172,7 +44193,7 @@ function StoreCard({ recommendation, onDetail, onVisit }) {
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "store-name", children: recommendation.store.name }),
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "store-code", children: recommendation.store.code })
       ] }),
-      /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: `badge ${badge ? badge.cls : riskBadge(recommendation.risk?.riskLevel)}`, children: badge ? badge.label : recommendation.risk?.riskLevel ?? "数据待补充" })
+      /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: `badge ${tagLevel ? riskBadge(tagLevel) : badge ? badge.cls : riskBadge(recommendation.risk?.riskLevel)}`, children: tagLevel ?? (badge ? badge.label : recommendation.risk?.riskLevel ?? "数据待补充") })
     ] }),
     /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "store-info", children: [
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("span", { children: [
@@ -44197,6 +44218,16 @@ function StoreCard({ recommendation, onDetail, onVisit }) {
       "%）"
     ] }) }),
     warning && warning.tags.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { style: { display: "flex", gap: 6, flexWrap: "wrap", marginTop: 4 }, children: warning.tags.map((tag) => /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: "badge badge-red", style: { fontWeight: 500 }, children: tag }, tag)) }),
+    tagDetail && /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { style: { marginTop: 6 }, children: [
+      /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "form-hint", style: { marginBottom: 5 }, children: [
+        "风险原因（异常总分 ",
+        tagDetail.scoreTotal ?? 0,
+        " 分 · 命中 ",
+        anomalyFlags.length,
+        " 项）"
+      ] }),
+      anomalyFlags.length > 0 ? /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { style: { display: "flex", gap: 6, flexWrap: "wrap" }, children: anomalyFlags.map((flag) => /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: "badge badge-red", style: { fontWeight: 500 }, children: flag }, flag)) }) : /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { style: { display: "flex", gap: 6, flexWrap: "wrap" }, children: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: "badge badge-green", style: { fontWeight: 500 }, children: "九项打标均正常" }) })
+    ] }),
     /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "reason-box", children: recommendation.reasons.map((reason) => /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "reason", children: reason }, reason)) }),
     /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "store-card-footer", children: [
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("button", { className: "text-button", onClick: onDetail, children: [
@@ -44481,6 +44512,7 @@ function App() {
   }, [employee]);
   const recommendLimit = employee.role === "bp" ? 10 : void 0;
   const recommendations = (0, import_react5.useMemo)(() => recommendStores({ stores, visits, issues, riskSnapshots: risks, asOfDate: today(), brands: recommendBrands, bpId: recommendBpId, districts: recommendDistricts, warningsByCode }), [stores, visits, issues, risks, recommendBrands, recommendBpId, recommendDistricts, warningsByCode]);
+  const tagByCode = new Map(tagDetails.map((d) => [d.storeCode, d]));
   const displayedRecommendations = (0, import_react5.useMemo)(() => {
     const top10 = (list) => list.slice(0, 10);
     if (storeFilter === "xiangzhan") {
@@ -44514,8 +44546,7 @@ function App() {
     if (storeFilter === "yoy") return top10(recommendations.filter((r) => r.warning?.monthCupYoy !== null && r.warning?.monthCupYoy !== void 0).sort((a, b) => a.warning.monthCupYoy - b.warning.monthCupYoy));
     if (storeFilter === "achieve") return top10(recommendations.filter((r) => r.warning?.salesAchieveRate !== null && r.warning?.salesAchieveRate !== void 0).sort((a, b) => a.warning.salesAchieveRate - b.warning.salesAchieveRate));
     const levelOrder = { 极高风险: 0, 高风险: 1, 中风险: 2, 低风险: 3 };
-    const tagLevelByCode = new Map(tagDetails.map((d) => [d.storeCode, d.riskLevel]));
-    const sorted = [...recommendations].sort((a, b) => (levelOrder[tagLevelByCode.get(a.store.code) ?? ""] ?? 4) - (levelOrder[tagLevelByCode.get(b.store.code) ?? ""] ?? 4));
+    const sorted = [...recommendations].sort((a, b) => (levelOrder[tagByCode.get(a.store.code)?.riskLevel ?? ""] ?? 4) - (levelOrder[tagByCode.get(b.store.code)?.riskLevel ?? ""] ?? 4));
     return recommendLimit ? sorted.slice(0, recommendLimit) : sorted;
   }, [recommendations, storeFilter, recommendLimit, xiangzhanStores, stores, visits, employee.name, tagDetails]);
   const myRecommendations = recommendations;
@@ -44795,7 +44826,7 @@ function App() {
       ] }),
       /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "filter-chips", children: [["all", "按风险等级"], ["cupeff", "杯效标红最多"], ["wow", "环比下降最大"], ["yoy", "同比下降最大"], ["achieve", "达成率最低"], ["xiangzhan", "巷战未获奖门店"]].map(([key, label]) => /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("button", { className: `chip ${storeFilter === key ? "active" : ""}`, onClick: () => setStoreFilter(key), children: label }, key)) })
     ] }),
-    /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "store-grid", children: displayedRecommendations.filter((item2) => `${item2.store.name}${item2.store.code}${item2.store.brand}`.toLowerCase().includes(storeQuery.toLowerCase())).map((recommendation) => /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(StoreCard, { recommendation, onDetail: () => setRiskDetail(recommendation), onVisit: () => openVisit(recommendation.store.id) }, recommendation.store.id)) }),
+    /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "store-grid", children: displayedRecommendations.filter((item2) => `${item2.store.name}${item2.store.code}${item2.store.brand}`.toLowerCase().includes(storeQuery.toLowerCase())).map((recommendation) => /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(StoreCard, { recommendation, tagDetail: tagByCode.get(recommendation.store.code), onDetail: () => setRiskDetail(recommendation), onVisit: () => openVisit(recommendation.store.id) }, recommendation.store.id)) }),
     !stores.length && /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(EmptyState, { title: "门店数据加载中", description: "门店清单来自在职数据聚合，若长时间为空请重新打开看板" }),
     stores.length > 0 && !displayedRecommendations.length && /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(EmptyState, { title: "该维度暂无数据", description: "当前品牌的周报数据尚未导入，或管辖范围内没有符合该维度的门店" })
   ] });
@@ -45616,7 +45647,7 @@ function App() {
       }
     }, onClose: () => setVisitModalOpen(false), onSave: saveVisit }),
     tagModal && /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(TagDetailModal, { kind: tagModal, details: tagDetails, xiangzhan: xiangzhanStores, reportMonth: tagDetails[0]?.reportMonth ?? "2026-10", onClose: () => setTagModal(null) }),
-    riskDetail && /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(RiskDrawer, { recommendation: riskDetail, onClose: () => setRiskDetail(null), onVisit: () => {
+    riskDetail && /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(RiskDrawer, { recommendation: riskDetail, tagDetail: tagByCode.get(riskDetail.store.code), onClose: () => setRiskDetail(null), onVisit: () => {
       setRiskDetail(null);
       openVisit(riskDetail.store.id);
     } }),

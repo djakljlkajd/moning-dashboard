@@ -15541,8 +15541,22 @@ function writeSession(session) {
   if (session) localStorage.setItem(SESSION_KEY, JSON.stringify(session));
   else localStorage.removeItem(SESSION_KEY);
 }
+async function fetchWithTimeout(url, init, timeoutMs = 15e3) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    return await fetch(url, { ...init, signal: controller.signal });
+  } catch (caught) {
+    if (caught instanceof DOMException && caught.name === "AbortError") {
+      throw new Error("数据库连接超时：Supabase 项目可能已暂停，请联系管理员在控制台恢复（Restore）");
+    }
+    throw new Error("数据库连接失败：请检查网络后重试");
+  } finally {
+    clearTimeout(timer);
+  }
+}
 async function authRequest(path, body) {
-  const response = await fetch(`${supabase_config_default.url}/auth/v1${path}`, {
+  const response = await fetchWithTimeout(`${supabase_config_default.url}/auth/v1${path}`, {
     method: "POST",
     headers: { apikey: supabase_config_default.publishableKey, "Content-Type": "application/json" },
     body: JSON.stringify(body)
@@ -15578,7 +15592,7 @@ async function ensureSession() {
 }
 async function rest(path, init = {}) {
   const session = await ensureSession();
-  const response = await fetch(`${supabase_config_default.url}/rest/v1${path}`, {
+  const response = await fetchWithTimeout(`${supabase_config_default.url}/rest/v1${path}`, {
     ...init,
     headers: {
       apikey: supabase_config_default.publishableKey,

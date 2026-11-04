@@ -14986,10 +14986,16 @@ var RISK_RULES = [
   { key: "salesBelow100", label: "业绩连续3月不好", description: "最近3个完整月业绩达成率均低于100%" },
   { key: "hoursOver220", label: "工时超220H", description: "最近完整月月人均工时大于220小时" },
   { key: "hoursUnder167", label: "工时低167H", description: "最近完整月月人均工时小于167小时" },
-  { key: "highTemperature", label: "高温门店", description: "最近完整月标记为高温门店" },
+  { key: "attendanceOver8Days", label: "连续出勤>8天人数", description: "最近完整月有员工连续出勤大于8天" },
+  { key: "lowTemperature", label: "低温门店", description: "最近完整月标记为低温门店" },
   { key: "treeHoleComplaints", label: "树洞投诉预警", description: "最近完整月树洞投诉不少于2条" },
   { key: "noReward", label: "两大奖励预警", description: "最近完整月两大奖励达标为否" }
 ];
+var MONTHLY_VISIT_TARGET = 15;
+var QUARTERLY_TARGET_NAMES = ["戴嘉伟", "唐漂", "程洁霞"];
+function visitTargetFor(employeeName) {
+  return QUARTERLY_TARGET_NAMES.includes(employeeName) ? { period: "quarter", target: QUARTERLY_VISIT_TARGET, periodLabel: "季度" } : { period: "month", target: MONTHLY_VISIT_TARGET, periodLabel: "月" };
+}
 var RISK_PHASE_BY_LEVEL = {
   极高风险: "本月",
   高风险: "次月",
@@ -15045,12 +15051,10 @@ var ISSUE_CATEGORY_DICTIONARY = [
   { key: "people", label: "人员状态", examples: ["高峰人手不足", "新员工带教缺失"] },
   { key: "teamwork", label: "协作氛围", examples: ["跨班次协作不畅", "信息不同步"] },
   { key: "service", label: "客户体验", examples: ["出杯等待过长", "服务话术未执行"] },
-  { key: "operation", label: "制度执行", examples: ["盘点差异", "陈列未按标准"] },
+  { key: "operation", label: "项目执行", examples: ["盘点差异", "陈列未按标准"] },
   { key: "development", label: "人才发展", examples: ["带教计划缺失", "晋升训练待跟进"] },
-  { key: "ai", label: "AI面试", examples: ["面试流程待完善", "评估记录缺失"] },
   { key: "other", label: "其他", examples: ["设备设施", "流程不合理"] }
 ];
-var ISSUE_NATURES = ["制度缺失", "执行偏差", "人员能力", "设备设施", "流程不合理", "其他"];
 var ROLE_LABELS = {
   bp: "BP",
   manager: "品牌经理",
@@ -15091,6 +15095,9 @@ function getRecentCompleteMonths(reference, count = 3) {
   const currentMonth = toDateOnly(reference).slice(0, 7);
   return Array.from({ length: count }, (_, index) => shiftMonth(currentMonth, index - count));
 }
+function getMonthKey(date) {
+  return toDateOnly(date).slice(0, 7);
+}
 function getQuarterKey(date) {
   const value = toDateOnly(date);
   const year = Number(value.slice(0, 4));
@@ -15123,6 +15130,26 @@ function calculateQuarterlyProgress(visits, bpId, quarter, target = QUARTERLY_VI
   return {
     bpId,
     quarter,
+    storeIds,
+    uniqueVisitCount,
+    target,
+    gap: Math.max(0, target - uniqueVisitCount),
+    progress: cappedProgress,
+    cappedProgress,
+    completed: uniqueVisitCount >= target
+  };
+}
+function calculateMonthlyProgress(visits, bpId, month, target = 15) {
+  if (!isValidMonth(month)) throw new Error(`无效月份：${month}`);
+  if (!Number.isFinite(target) || target < 0) throw new Error("巡店目标不能为负数");
+  const storeIds = Array.from(new Set(
+    visits.filter((visit) => visit.bpId === bpId && isCountableVisit(visit) && getMonthKey(visit.visitedAt) === month).map((visit) => visit.storeId)
+  )).sort();
+  const uniqueVisitCount = storeIds.length;
+  const cappedProgress = target === 0 ? 100 : Math.min(100, Math.round(uniqueVisitCount / target * 100));
+  return {
+    bpId,
+    quarter: month,
     storeIds,
     uniqueVisitCount,
     target,
@@ -15179,7 +15206,8 @@ function calculateRisk(storeId, metrics, asOfDate = /* @__PURE__ */ new Date()) 
     acrossMonths("salesBelow100", "salesAchievementRate", (values) => values.every((value) => Number(value) < 100), "最近3个完整月业绩达成率均低于100%", "最近3个完整月业绩达成率并非均低于100%"),
     hoursItem("hoursOver220"),
     hoursItem("hoursUnder167"),
-    latestOnly("highTemperature", "highTemperature", Boolean, "最近完整月标记为高温门店", "最近完整月非高温门店"),
+    latestOnly("attendanceOver8Days", "attendanceOver8Days", (value) => Number(value) >= 1, "最近完整月有员工连续出勤大于8天", "最近完整月无连续出勤超8天人员"),
+    latestOnly("lowTemperature", "lowTemperature", Boolean, "最近完整月标记为低温门店", "最近完整月非低温门店"),
     latestOnly("treeHoleComplaints", "treeHoleComplaints", (value) => Number(value) >= 2, "最近完整月树洞投诉不少于2条", "最近完整月树洞投诉少于2条"),
     latestOnly("noReward", "hasReward", (value) => value === false, "最近完整月两大奖励达标为否", "最近完整月两大奖励达标")
   ];
@@ -15659,7 +15687,8 @@ var supabaseBridge = {
         qcScore: row.qc_score ?? void 0,
         salesAchievementRate: row.sales_achievement_rate ?? void 0,
         workHours: row.work_hours ?? void 0,
-        highTemperature: row.high_temperature ?? void 0,
+        attendanceOver8Days: row.attendance_over_8_days ?? void 0,
+        lowTemperature: row.low_temperature ?? void 0,
         treeHoleComplaints: row.tree_hole_complaints ?? void 0,
         hasReward: row.has_reward ?? void 0
       }))
@@ -15938,7 +15967,7 @@ function recommendStores(options) {
     if (warning && warning.level !== "ok") reasons.push(...warning.anomalies.slice(0, 2));
     if (!warning) {
       if (!risk || risk.missingCount > 0) reasons.push(`风险数据待补充（${risk?.missingCount ?? 9}项缺失），需优先核查`);
-      else if (risk.knownScore >= 4) reasons.push(`${risk.riskLevel}，九项规则命中${risk.knownScore}项，安排在${phase}巡店`);
+      else if (risk.knownScore >= 4) reasons.push(`${risk.riskLevel}，十项规则命中${risk.knownScore}项，安排在${phase}巡店`);
       else reasons.push(`${risk.riskLevel}，建议按${phase}节奏巡店`);
     }
     if (unvisited) reasons.push(`${quarter}尚未提交有效巡店`);
@@ -42840,7 +42869,8 @@ var METRICS_IMPORT_FIELDS = [
   { key: "qcScore", label: "QC分数", required: true, example: "90" },
   { key: "salesAchievementRate", label: "业绩达成率", required: true, example: "100%", description: "统一转换为100=100%" },
   { key: "workHours", label: "工时", required: true, example: "180" },
-  { key: "highTemperature", label: "高温", required: true, example: "否" },
+  { key: "attendanceOver8Days", label: "连续出勤>8天人数", required: true, example: "0" },
+  { key: "lowTemperature", label: "低温门店", required: true, example: "否" },
   { key: "treeHoleComplaints", label: "树洞投诉", required: true, example: "0" },
   { key: "hasReward", label: "奖励", required: true, example: "是" }
 ];
@@ -43038,13 +43068,15 @@ async function parseMetricsImport(source) {
     if (text(record.salesAchievementRate) && salesAchievementRate === void 0) invalidate("salesAchievementRate", "业绩达成率必须为非负百分比或数字");
     const workHours = parseFiniteNumber(text(record.workHours));
     if (text(record.workHours) && (workHours === void 0 || workHours < 0)) invalidate("workHours", "工时必须是非负数字");
-    const highTemperature = parseBoolean(text(record.highTemperature));
-    if (text(record.highTemperature) && highTemperature === void 0) invalidate("highTemperature", "高温必须填是/否");
+    const attendanceOver8Days = text(record.attendanceOver8Days) === "" ? void 0 : Number(text(record.attendanceOver8Days));
+    if (text(record.attendanceOver8Days) && (attendanceOver8Days === void 0 || !Number.isFinite(attendanceOver8Days))) invalidate("attendanceOver8Days", "连续出勤>8天人数必须填数字");
+    const lowTemperature = parseBoolean(text(record.lowTemperature));
+    if (text(record.lowTemperature) && lowTemperature === void 0) invalidate("lowTemperature", "低温门店必须填是/否");
     const treeHoleComplaints = parseFiniteNumber(text(record.treeHoleComplaints));
     if (text(record.treeHoleComplaints) && (treeHoleComplaints === void 0 || treeHoleComplaints < 0 || !Number.isInteger(treeHoleComplaints))) invalidate("treeHoleComplaints", "树洞投诉必须是非负整数");
     const hasReward = parseBoolean(text(record.hasReward));
     if (text(record.hasReward) && hasReward === void 0) invalidate("hasReward", "奖励必须填是/否");
-    if (valid && storeId && month && architectureLabor !== void 0 && qcScore !== void 0 && salesAchievementRate !== void 0 && workHours !== void 0 && highTemperature !== void 0 && treeHoleComplaints !== void 0 && hasReward !== void 0) {
+    if (valid && storeId && month && architectureLabor !== void 0 && qcScore !== void 0 && salesAchievementRate !== void 0 && workHours !== void 0 && attendanceOver8Days !== void 0 && lowTemperature !== void 0 && treeHoleComplaints !== void 0 && hasReward !== void 0) {
       data.push({
         storeId,
         month,
@@ -43053,7 +43085,8 @@ async function parseMetricsImport(source) {
         qcScore,
         salesAchievementRate,
         workHours,
-        highTemperature,
+        attendanceOver8Days,
+        lowTemperature,
         treeHoleComplaints,
         hasReward
       });
@@ -43225,7 +43258,7 @@ function formatDate(date) {
   const [, month, day] = date.slice(0, 10).split("-");
   return `${Number(month)}月${Number(day)}日`;
 }
-function ProgressRing({ value }) {
+function ProgressRing({ value, label }) {
   const radius = 45;
   const circumference = 2 * Math.PI * radius;
   return /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "progress-ring", children: [
@@ -43251,7 +43284,7 @@ function ProgressRing({ value }) {
         value,
         "%"
       ] }),
-      /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "progress-ring-label", children: "季度进度" })
+      /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "progress-ring-label", children: label })
     ] })
   ] });
 }
@@ -43262,15 +43295,16 @@ function EmptyState({ title, description }) {
     /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("p", { children: description })
   ] });
 }
-var emptyIssueForm = () => ({ description: "", dimension: "人员状态", nature: "执行偏差", severity: "medium", responsibleName: "", dueDate: addDays(7) });
+var emptyCheck = () => ({ status: "pending", reason: "", severity: "medium" });
 function NewVisitModal({ employee, stores, visits, preselectedStoreId, modeLabel, onReload, onClose, onSave }) {
   const [step, setStep] = (0, import_react5.useState)(1);
   const [query, setQuery] = (0, import_react5.useState)("");
   const [storeId, setStoreId] = (0, import_react5.useState)(preselectedStoreId ?? "");
   const [visitDate, setVisitDate] = (0, import_react5.useState)(today());
+  const [rootCauses, setRootCauses] = (0, import_react5.useState)([]);
   const [summary, setSummary] = (0, import_react5.useState)("");
   const [note, setNote] = (0, import_react5.useState)("");
-  const [issueForms, setIssueForms] = (0, import_react5.useState)([]);
+  const [checks, setChecks] = (0, import_react5.useState)(() => Object.fromEntries(ISSUE_CATEGORY_DICTIONARY.map((item2) => [item2.key, emptyCheck()])));
   (0, import_react5.useEffect)(() => {
     if (!stores.length) onReload();
   }, []);
@@ -43287,15 +43321,20 @@ function NewVisitModal({ employee, stores, visits, preselectedStoreId, modeLabel
   const selectedStore = stores.find((store) => store.id === storeId);
   const brandStores = stores.filter((store) => employee.brands.includes(store.brand));
   const filteredStores = brandStores.filter((store) => `${store.name}${store.code}${store.brand}`.toLowerCase().includes(query.toLowerCase())).slice(0, 6);
-  const isRevisit = Boolean(visitDate) && visits.some((visit) => visit.bpId === employee.id && visit.storeId === storeId && visit.status === "submitted" && !visit.voided && getQuarterKey(visit.visitedAt) === getQuarterKey(visitDate));
-  const canNext = Boolean(selectedStore && visitDate && summary.trim());
-  const issuesValid = issueForms.every((form) => form.description.trim() && form.responsibleName.trim() && form.dueDate);
-  const updateIssue = (index, patch) => {
-    setIssueForms((current) => current.map((form, i) => i === index ? { ...form, ...patch } : form));
+  const targetRule = visitTargetFor(employee.name);
+  const periodKeyOf = (date) => targetRule.period === "month" ? getMonthKey(date) : getQuarterKey(date);
+  const isRevisit = Boolean(visitDate) && visits.some((visit) => visit.bpId === employee.id && visit.storeId === storeId && visit.status === "submitted" && !visit.voided && periodKeyOf(visit.visitedAt) === periodKeyOf(visitDate));
+  const canNext = Boolean(selectedStore && visitDate && rootCauses.length && summary.trim());
+  const checkList = ISSUE_CATEGORY_DICTIONARY.map((item2) => ({ ...item2, check: checks[item2.key] ?? emptyCheck() }));
+  const checksValid = checkList.every((item2) => item2.check.status !== "pending" && (item2.check.status === "ok" || Boolean(item2.check.reason.trim())));
+  const issueChecks = checkList.filter((item2) => item2.check.status === "issue");
+  const setCheck = (key, patch) => {
+    setChecks((current) => ({ ...current, [key]: { ...current[key] ?? emptyCheck(), ...patch } }));
   };
   const submit = () => {
-    if (!selectedStore || !issuesValid) return;
+    if (!selectedStore || !checksValid) return;
     const id = crypto.randomUUID();
+    const causeLabels = RISK_RULES.filter((rule) => rootCauses.includes(rule.key)).map((rule) => rule.label);
     const visit = {
       id,
       storeId: selectedStore.id,
@@ -43303,34 +43342,33 @@ function NewVisitModal({ employee, stores, visits, preselectedStoreId, modeLabel
       visitedAt: visitDate,
       status: "submitted",
       submittedAt: (/* @__PURE__ */ new Date()).toISOString(),
-      summary: summary.trim() + (note.trim() ? `
-${note.trim()}` : "")
+      summary: `巡店根因：${causeLabels.join("、")}。${summary.trim()}${note.trim() ? `（备注：${note.trim()}）` : ""}`
     };
-    const newIssues = issueForms.map((form, index) => ({
+    const newIssues = issueChecks.map((item2, index) => ({
       id: `${id}-issue-${index + 1}`,
       visitId: id,
       storeId: selectedStore.id,
       brand: selectedStore.brand,
-      title: form.description.trim(),
-      description: form.description.trim(),
-      dimension: form.dimension,
-      category: CATEGORY_KEY_BY_LABEL[form.dimension] ?? "other",
-      severity: form.severity,
+      title: `${item2.label}：${item2.check.reason.trim()}`,
+      description: item2.check.reason.trim(),
+      dimension: item2.label,
+      category: item2.key,
+      severity: item2.check.severity,
       status: "open",
       reporterId: employee.id,
       assigneeId: employee.id,
       createdAt: visitDate,
-      dueDate: form.dueDate,
-      responsibleName: form.responsibleName.trim()
+      dueDate: addDays(7),
+      responsibleName: selectedStore.managerName ?? ""
     }));
-    const events = newIssues.map((issue) => createIssueEvent(issue, employee.id, "create", { comment: "巡店现场记录问题", createdAt: (/* @__PURE__ */ new Date()).toISOString() }));
+    const events = newIssues.map((issue) => createIssueEvent(issue, employee.id, "create", { comment: "到店必查清单发现问题", createdAt: (/* @__PURE__ */ new Date()).toISOString() }));
     onSave(visit, newIssues, events, isRevisit);
   };
   return /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "modal-backdrop", onMouseDown: (event) => event.target === event.currentTarget && onClose(), children: /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "modal modal-wide", children: [
     /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "modal-header", children: [
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { children: [
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("h2", { children: "开始巡店" }),
-        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("p", { children: "少量必填，现场问题可一次记录多项" })
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("p", { children: "选店先讲清根因，到店逐项必查" })
       ] }),
       /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("button", { className: "icon-button", onClick: onClose, children: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(X, { size: 18 }) })
     ] }),
@@ -43338,12 +43376,12 @@ ${note.trim()}` : "")
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "steps", children: [
         /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: `step ${step === 1 ? "active" : ""}`, children: [
           /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: "step-number", children: "1" }),
-          "确认巡店"
+          "确认巡店与根因"
         ] }),
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: "step-line" }),
         /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: `step ${step === 2 ? "active" : ""}`, children: [
           /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: "step-number", children: "2" }),
-          "记录问题"
+          "到店必查清单"
         ] })
       ] }),
       step === 1 ? /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "stack", children: [
@@ -43446,14 +43484,32 @@ ${note.trim()}` : "")
           ] }),
           /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "form-group", children: [
             /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("label", { className: "form-label", children: "达标口径" }),
-            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "input", style: { background: "#f7f8f5" }, children: isRevisit ? "本季度复访，不重复计数" : "本季度首访，计入去重门店" })
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "input", style: { background: "#f7f8f5" }, children: [
+              isRevisit ? `本${targetRule.periodLabel}复访，不重复计数` : `本${targetRule.periodLabel}首访，计入去重门店`,
+              "（目标 ",
+              targetRule.target,
+              " 家 / ",
+              targetRule.periodLabel,
+              "）"
+            ] })
           ] }),
           /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "form-group full", children: [
             /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("label", { className: "form-label", children: [
-              "巡店小结",
+              "巡店根因",
               /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: "required", children: "*" })
             ] }),
-            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("textarea", { className: "textarea", value: summary, onChange: (e) => setSummary(e.target.value), placeholder: "简要记录现场整体情况、观察到的事实…" })
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "form-hint", style: { marginBottom: 8 }, children: "为什么会选择巡这家门店？基于选店标准十项勾选判断依据（可多选）" }),
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { style: { display: "flex", flexWrap: "wrap", gap: 8 }, children: RISK_RULES.map((rule) => {
+              const active = rootCauses.includes(rule.key);
+              return /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("button", { type: "button", className: `button button-sm ${active ? "button-primary" : "button-secondary"}`, onClick: () => setRootCauses((current) => active ? current.filter((key) => key !== rule.key) : [...current, rule.key]), children: rule.label }, rule.key);
+            }) })
+          ] }),
+          /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "form-group full", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("label", { className: "form-label", children: [
+              "根因说明",
+              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: "required", children: "*" })
+            ] }),
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("textarea", { className: "textarea", value: summary, onChange: (e) => setSummary(e.target.value), placeholder: "结合勾选的标准，说明为什么巡这家店（如周报杯效长期标红、环比下滑、打标异常等）…" })
           ] }),
           /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "form-group full", children: [
             /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("label", { className: "form-label", children: "备注" }),
@@ -43467,68 +43523,58 @@ ${note.trim()}` : "")
             selectedStore?.name,
             " · ",
             formatDate(visitDate),
-            "。无问题可直接完成；有问题可添加多项，提交后进入闭环。"
+            "。必查清单 ",
+            checkList.length,
+            " 个维度逐项确认：无问题划勾，有问题划叉并填写原因，划叉自动生成问题进入闭环。"
           ] })
         ] }),
-        !issueForms.length && /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "no-issue-box", children: [
-          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(CircleCheck, { size: 25, style: { color: "var(--green-700)", marginBottom: 8 } }),
-          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("p", { children: "若本次未发现问题，直接点击“完成巡店”" })
-        ] }),
-        issueForms.map((form, index) => /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card", style: { padding: 17, boxShadow: "none" }, children: [
-          /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { style: { display: "flex", justifyContent: "space-between", marginBottom: 15 }, children: [
-            /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("strong", { style: { fontSize: 13 }, children: [
-              "问题 ",
-              index + 1
+        checkList.map((item2) => /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card", style: { padding: 15, boxShadow: "none" }, children: [
+          /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", gap: 10, flexWrap: "wrap" }, children: [
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { children: [
+              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("strong", { style: { fontSize: 13 }, children: item2.label }),
+              /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "form-hint", children: [
+                "如：",
+                item2.examples.join("、")
+              ] })
             ] }),
-            /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("button", { className: "text-button", onClick: () => setIssueForms((current) => current.filter((_, i) => i !== index)), children: [
-              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(X, { size: 14 }),
-              "移除"
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { style: { display: "flex", gap: 8 }, children: [
+              /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("button", { type: "button", className: `button button-sm ${item2.check.status === "ok" ? "button-primary" : "button-secondary"}`, onClick: () => setCheck(item2.key, { status: "ok", reason: "" }), children: [
+                /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(Check, { size: 13 }),
+                "无问题"
+              ] }),
+              /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("button", { type: "button", className: `button button-sm ${item2.check.status === "issue" ? "button-primary" : "button-secondary"}`, onClick: () => setCheck(item2.key, { status: "issue" }), children: [
+                /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(X, { size: 13 }),
+                "有问题"
+              ] })
             ] })
           ] }),
-          /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "form-grid", children: [
+          item2.check.status === "issue" && /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "form-grid", style: { marginTop: 12 }, children: [
             /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "form-group full", children: [
               /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("label", { className: "form-label", children: [
-                "问题描述",
+                "问题原因",
                 /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: "required", children: "*" })
               ] }),
-              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("textarea", { className: "textarea", value: form.description, onChange: (e) => updateIssue(index, { description: e.target.value }), placeholder: "描述现场发现的具体事实，不写笼统评价" })
-            ] }),
-            /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "form-group", children: [
-              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("label", { className: "form-label", children: "问题维度" }),
-              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("select", { className: "input", value: form.dimension, onChange: (e) => updateIssue(index, { dimension: e.target.value }), children: ISSUE_CATEGORY_DICTIONARY.map((item2) => /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("option", { children: item2.label }, item2.key)) })
-            ] }),
-            /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "form-group", children: [
-              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("label", { className: "form-label", children: "问题定性" }),
-              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("select", { className: "input", value: form.nature, onChange: (e) => updateIssue(index, { nature: e.target.value }), children: ISSUE_NATURES.map((item2) => /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("option", { children: item2 }, item2)) })
+              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("textarea", { className: "textarea", value: item2.check.reason, onChange: (e) => setCheck(item2.key, { reason: e.target.value }), placeholder: "描述现场发现的具体事实，不写笼统评价" })
             ] }),
             /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "form-group", children: [
               /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("label", { className: "form-label", children: "严重程度" }),
-              /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("select", { className: "input", value: form.severity, onChange: (e) => updateIssue(index, { severity: e.target.value }), children: [
+              /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("select", { className: "input", value: item2.check.severity, onChange: (e) => setCheck(item2.key, { severity: e.target.value }), children: [
                 /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("option", { value: "high", children: "高" }),
                 /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("option", { value: "medium", children: "中" }),
                 /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("option", { value: "low", children: "低" })
               ] })
             ] }),
             /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "form-group", children: [
-              /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("label", { className: "form-label", children: [
-                "闭环截止日期",
-                /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: "required", children: "*" })
-              ] }),
-              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("input", { className: "input", type: "date", min: visitDate, value: form.dueDate, onChange: (e) => updateIssue(index, { dueDate: e.target.value }) })
-            ] }),
-            /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "form-group full", children: [
-              /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("label", { className: "form-label", children: [
-                "门店闭环责任人",
-                /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: "required", children: "*" })
-              ] }),
-              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("input", { className: "input", value: form.responsibleName, onChange: (e) => updateIssue(index, { responsibleName: e.target.value }), placeholder: `默认可参考店长：${selectedStore?.managerName ?? "—"}` })
+              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("label", { className: "form-label", children: "闭环口径" }),
+              /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "input", style: { background: "#f7f8f5" }, children: [
+                "截止 ",
+                addDays(7),
+                " · 责任人默认店长 ",
+                selectedStore?.managerName ?? "—"
+              ] })
             ] })
           ] })
-        ] }, index)),
-        /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("button", { className: "button button-ghost", onClick: () => setIssueForms((current) => [...current, emptyIssueForm()]), children: [
-          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(Plus, { size: 16 }),
-          "添加问题"
-        ] })
+        ] }, item2.key))
       ] })
     ] }),
     /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "modal-footer", children: [
@@ -43541,10 +43587,10 @@ ${note.trim()}` : "")
         step === 1 ? /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("button", { className: "button button-primary", disabled: !canNext, onClick: () => setStep(2), children: [
           "下一步",
           /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(ArrowRight, { size: 15 })
-        ] }) : /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("button", { className: "button button-primary", disabled: !issuesValid, onClick: submit, children: [
+        ] }) : /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("button", { className: "button button-primary", disabled: !checksValid, onClick: submit, children: [
           /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(Check, { size: 15 }),
           "完成巡店",
-          issueForms.length ? `并提交 ${issueForms.length} 个问题` : ""
+          issueChecks.length ? `并提交 ${issueChecks.length} 个问题` : "（全部无问题）"
         ] })
       ] })
     ] })
@@ -43611,7 +43657,7 @@ function RiskDrawer({ recommendation, onClose, onVisit }) {
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "reason-box", children: recommendation.reasons.map((reason) => /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "reason", children: reason }, reason)) })
       ] }),
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "detail-section", children: [
-        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("h3", { children: "九项打标明细" }),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("h3", { children: "十项打标明细" }),
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "risk-items", children: risk?.items.map((item2) => /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: `risk-item ${item2.status}`, children: [
           /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: "risk-item-icon", children: item2.status === "abnormal" ? /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(CircleAlert, { size: 15, color: "var(--red)" }) : item2.status === "missing" ? /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(CircleHelp, { size: 15, color: "var(--amber)" }) : /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(CircleCheck, { size: 15, color: "var(--green-700)" }) }),
           /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { children: [
@@ -44095,7 +44141,14 @@ function App() {
     return recommendLimit ? recommendations.slice(0, recommendLimit) : recommendations;
   }, [recommendations, storeFilter, recommendLimit]);
   const myRecommendations = recommendations;
-  const progress = calculateQuarterlyProgress(visits, employee.id, CURRENT_QUARTER);
+  const currentMonth = getMonthKey(today());
+  const progressOf = (allVisits, bp) => {
+    const rule = visitTargetFor(bp.name);
+    return rule.period === "month" ? calculateMonthlyProgress(allVisits, bp.id, currentMonth, rule.target) : calculateQuarterlyProgress(allVisits, bp.id, CURRENT_QUARTER, rule.target);
+  };
+  const targetRule = visitTargetFor(employee.name);
+  const periodWord = targetRule.period === "month" ? "本月" : "本季度";
+  const progress = progressOf(visits, employee);
   const myIssues = issues.filter((issue) => issue.assigneeId === employee.id);
   const openMyIssues = myIssues.filter((issue) => issue.status !== "closed");
   const overdueMyIssues = myIssues.filter((issue) => isIssueOverdue(issue, today()));
@@ -44119,8 +44172,8 @@ function App() {
       setIssues((current) => [...current, ...newIssues]);
       setEvents((current) => [...current, ...newEvents]);
       setVisitModalOpen(false);
-      const nextProgress = calculateQuarterlyProgress([...visits, visit], employee.id, CURRENT_QUARTER);
-      showToast(isRevisit ? "复访已记录，本季度达标数不重复增加" : `巡店已完成，本季度第 ${nextProgress.uniqueVisitCount} 家不同门店${newIssues.length ? `，新增 ${newIssues.length} 个问题` : ""}`);
+      const nextProgress = progressOf([...visits, visit], employee);
+      showToast(isRevisit ? `复访已记录，${periodWord}达标数不重复增加` : `巡店已完成，${periodWord}第 ${nextProgress.uniqueVisitCount} 家不同门店${newIssues.length ? `，新增 ${newIssues.length} 个问题` : ""}`);
     };
     if (!backendEnabled) {
       commit();
@@ -44196,8 +44249,7 @@ function App() {
           /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { children: [
             /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "hero-kicker", children: [
               /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(Target, { size: 15 }),
-              CURRENT_QUARTER,
-              " 季度巡店目标"
+              targetRule.period === "month" ? `${currentMonth} 月度巡店目标` : `${CURRENT_QUARTER} 季度巡店目标`
             ] }),
             /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "hero-number", children: [
               progress.uniqueVisitCount,
@@ -44229,7 +44281,7 @@ function App() {
               ] })
             ] })
           ] }),
-          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(ProgressRing, { value: progress.cappedProgress })
+          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(ProgressRing, { value: progress.cappedProgress, label: targetRule.period === "month" ? "月度进度" : "季度进度" })
         ] }),
         /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "grid grid-4", children: [
           /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card stat-card", children: [
@@ -44375,7 +44427,7 @@ function App() {
     return `${store?.name}${store?.code}${bp?.name}`.toLowerCase().includes(visitQuery.toLowerCase());
   }).sort((a, b) => b.visitedAt.localeCompare(a.visitedAt) || (b.submittedAt ?? "").localeCompare(a.submittedAt ?? ""));
   const visitsPage = /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)(import_jsx_runtime3.Fragment, { children: [
-    pageHeading("VISIT HISTORY", "巡店记录", "每一次首访与复访都完整保留，达标按自然季度去重。", /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("button", { className: "button button-primary", onClick: () => openVisit(), children: [
+    pageHeading("VISIT HISTORY", "巡店记录", "每一次首访与复访都完整保留，达标按个人口径去重（默认每月 15 家，指定人员每季度 25 家）。", /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("button", { className: "button button-primary", onClick: () => openVisit(), children: [
       /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(Plus, { size: 15 }),
       "记录巡店"
     ] })),
@@ -44401,14 +44453,16 @@ function App() {
           /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "门店" }),
           /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "品牌" }),
           /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "巡店 BP" }),
-          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "巡店小结" }),
+          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "巡店根因" }),
           /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "关联问题" }),
           /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "计数口径" })
         ] }) }),
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("tbody", { children: displayVisits.map((visit) => {
           const store = stores.find((item2) => item2.id === visit.storeId);
           const bp = employeeList.find((item2) => item2.id === visit.bpId);
-          const previous = visits.some((item2) => item2.id !== visit.id && item2.bpId === visit.bpId && item2.storeId === visit.storeId && item2.status === "submitted" && !item2.voided && getQuarterKey(item2.visitedAt) === getQuarterKey(visit.visitedAt) && (item2.visitedAt < visit.visitedAt || item2.visitedAt === visit.visitedAt && ((item2.submittedAt ?? "") < (visit.submittedAt ?? "") || (item2.submittedAt ?? "") === (visit.submittedAt ?? "") && item2.id < visit.id)));
+          const bpRule = visitTargetFor(bp?.name ?? "");
+          const keyOf = (date) => bpRule.period === "month" ? getMonthKey(date) : getQuarterKey(date);
+          const previous = visits.some((item2) => item2.id !== visit.id && item2.bpId === visit.bpId && item2.storeId === visit.storeId && item2.status === "submitted" && !item2.voided && keyOf(item2.visitedAt) === keyOf(visit.visitedAt) && (item2.visitedAt < visit.visitedAt || item2.visitedAt === visit.visitedAt && ((item2.submittedAt ?? "") < (visit.submittedAt ?? "") || (item2.submittedAt ?? "") === (visit.submittedAt ?? "") && item2.id < visit.id)));
           return /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("tr", { children: [
             /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("td", { children: visit.visitedAt }),
             /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("td", { children: [
@@ -44425,7 +44479,7 @@ function App() {
               issues.filter((issue) => issue.visitId === visit.id).length,
               " 个"
             ] }) }),
-            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("td", { children: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: `badge ${previous ? "badge-gray" : "badge-green"}`, children: previous ? "复访" : "季度首访" }) })
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("td", { children: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: `badge ${previous ? "badge-gray" : "badge-green"}`, children: previous ? "复访" : `${bpRule.periodLabel}度首访` }) })
           ] }, visit.id);
         }) })
       ] }),
@@ -44527,12 +44581,14 @@ function App() {
   const validVisits = visits.filter((visit) => visit.status === "submitted" && !visit.voided && getQuarterKey(visit.visitedAt) === CURRENT_QUARTER);
   const allOpenIssues = issues.filter((issue) => issue.status !== "closed");
   const closedIssues = issues.filter((issue) => issue.status === "closed");
-  const totalUnique = bpEmployees.reduce((sum, bp) => sum + calculateQuarterlyProgress(visits, bp.id, CURRENT_QUARTER).uniqueVisitCount, 0);
+  const totalUnique = bpEmployees.reduce((sum, bp) => sum + progressOf(visits, bp).uniqueVisitCount, 0);
+  const totalTarget = bpEmployees.reduce((sum, bp) => sum + visitTargetFor(bp.name).target, 0);
   const coveredStores = new Set(validVisits.map((visit) => visit.storeId)).size;
   const exportDashboard = () => {
-    const rows = [["HRBP", "品牌", "季度去重巡店数", "目标", "剩余缺口", "未闭环问题"], ...bpEmployees.map((bp) => {
-      const item2 = calculateQuarterlyProgress(visits, bp.id, CURRENT_QUARTER);
-      return [bp.name, bp.brands[0], String(item2.uniqueVisitCount), "25", String(item2.gap), String(issues.filter((issue) => issue.assigneeId === bp.id && issue.status !== "closed").length)];
+    const rows = [["HRBP", "品牌", "达标口径", "去重巡店数", "目标", "剩余缺口", "未闭环问题"], ...bpEmployees.map((bp) => {
+      const rule = visitTargetFor(bp.name);
+      const item2 = progressOf(visits, bp);
+      return [bp.name, bp.brands[0], `${rule.target} 家/${rule.periodLabel}`, String(item2.uniqueVisitCount), String(item2.target), String(item2.gap), String(issues.filter((issue) => issue.assigneeId === bp.id && issue.status !== "closed").length)];
     })];
     const url = URL.createObjectURL(new Blob(["\uFEFF", rows.map((row) => row.join(",")).join("\n")], { type: "text/csv;charset=utf-8" }));
     const link = document.createElement("a");
@@ -44553,7 +44609,10 @@ function App() {
         /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { children: [
           /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "stat-value", children: [
             totalUnique,
-            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("small", { style: { fontSize: 12, color: "var(--muted)" }, children: " / 225" })
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("small", { style: { fontSize: 12, color: "var(--muted)" }, children: [
+              " / ",
+              totalTarget
+            ] })
           ] }),
           /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "stat-label", children: "BP 去重巡店合计" })
         ] })
@@ -44590,11 +44649,11 @@ function App() {
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card", children: [
         /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card-header", children: [
           /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { children: [
-            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-title", children: "BP 季度达标进度" }),
-            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-subtitle", children: "目标 25 家不同门店 · 复访不重复计数" })
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-title", children: "BP 巡店达标进度" }),
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-subtitle", children: "默认每月 15 家 · 指定人员每季度 25 家 · 复访不重复计数" })
           ] }),
           /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("span", { className: "badge badge-green", children: [
-            bpEmployees.filter((bp) => calculateQuarterlyProgress(visits, bp.id, CURRENT_QUARTER).completed).length,
+            bpEmployees.filter((bp) => progressOf(visits, bp).completed).length,
             " 人已达标"
           ] })
         ] }),
@@ -44602,14 +44661,15 @@ function App() {
           /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("thead", { children: /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("tr", { children: [
             /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "HRBP" }),
             /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "品牌" }),
-            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "季度进度" }),
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "进度" }),
             /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "已巡 / 目标" }),
             /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "剩余缺口" }),
             /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "未闭环" }),
             /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "状态" })
           ] }) }),
           /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("tbody", { children: bpEmployees.map((bp) => {
-            const item2 = calculateQuarterlyProgress(visits, bp.id, CURRENT_QUARTER);
+            const rule = visitTargetFor(bp.name);
+            const item2 = progressOf(visits, bp);
             const open = issues.filter((issue) => issue.assigneeId === bp.id && issue.status !== "closed").length;
             return /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("tr", { children: [
               /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("td", { children: /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "table-person", children: [
@@ -44626,7 +44686,14 @@ function App() {
               ] }) }),
               /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("td", { children: [
                 item2.uniqueVisitCount,
-                " / 25 家"
+                " / ",
+                item2.target,
+                " 家",
+                /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("span", { className: "table-sub", children: [
+                  "（",
+                  rule.periodLabel,
+                  "度）"
+                ] })
               ] }),
               /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("td", { children: [
                 item2.gap,
@@ -44893,19 +44960,19 @@ function App() {
     pageHeading("VISIT STANDARD", "巡店标准", "标准写在明处，复杂计算留在后台。"),
     /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "standard-hero", children: [
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { children: [
-        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("h2", { children: "每季度，至少走进 25 家不同门店" }),
-        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("p", { children: "以自然季度、巡店 BP 和门店编码去重统计。同店复访会被保留，但不重复计入达标数；只有已提交且未作废的巡店记录才有效。" })
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("h2", { children: "每月，至少走进 15 家不同门店" }),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("p", { children: "默认按自然月、巡店 BP 和门店编码去重统计；戴嘉伟、唐漂、程洁霞按自然季度 25 家。同店复访会被保留，但不重复计入达标数；只有已提交且未作废的巡店记录才有效。" })
       ] }),
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "standard-number", children: [
-        "25",
-        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("small", { children: "家 / 人 / 季度" })
+        "15",
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("small", { children: "家 / 人 / 月" })
       ] })
     ] }),
     /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "stack", children: [
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card", children: [
         /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card-header", children: [
           /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { children: [
-            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-title", children: "重点门店九项打标" }),
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-title", children: "重点门店十项打标" }),
             /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-subtitle", children: "每项异常 1 分 · 最近三个完整月 · 缺失不等于正常" })
           ] }),
           /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: "badge badge-green", children: "v1.0" })
@@ -45053,7 +45120,11 @@ function App() {
       ] }, item2.page)) }),
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "sidebar-bottom", children: [
         /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "sidebar-standard", children: [
-          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("strong", { children: "25 家 / 人 / 季度" }),
+          /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("strong", { children: [
+            targetRule.target,
+            " 家 / 人 / ",
+            targetRule.periodLabel
+          ] }),
           /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("p", { children: [
             "不同门店去重达标",
             /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("br", {}),
@@ -45083,10 +45154,7 @@ function App() {
           ] })
         ] }),
         /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "topbar-right", children: [
-          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("select", { className: "quarter-select", "aria-label": "季度", children: /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("option", { children: [
-            CURRENT_QUARTER,
-            " 自然季度"
-          ] }) }),
+          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("select", { className: "quarter-select", "aria-label": "达标周期", children: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("option", { children: targetRule.period === "month" ? `${currentMonth} 自然月` : `${CURRENT_QUARTER} 自然季度` }) }),
           /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("button", { className: "icon-button", onClick: () => navigate("standards"), children: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(CircleHelp, { size: 17 }) }),
           /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("button", { className: "avatar-button", onClick: () => navigate("profile"), children: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: "avatar", children: employee.name.slice(-2) }) })
         ] })

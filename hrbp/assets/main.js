@@ -15002,6 +15002,7 @@ var XIANGZHAN_BP_MAP = {
   陈坤: "刘林",
   肖湘: "曾令财"
 };
+var FULL_ACCESS_NAMES = ["杨师", "戴嘉伟", "李当", "胡芬", "朱芳"];
 var RISK_PHASE_BY_LEVEL = {
   极高风险: "本月",
   高风险: "次月",
@@ -44466,7 +44467,7 @@ function App() {
     };
   }, []);
   const risks = (0, import_react5.useMemo)(() => stores.map((store) => calculateRisk(store.id, metrics, today())), [stores, metrics]);
-  const recommendBrands = employee.role === "director" ? void 0 : employee.brands;
+  const recommendBrands = FULL_ACCESS_NAMES.includes(employee.name) || employee.role === "director" ? void 0 : employee.brands;
   const recommendBpId = employee.id;
   const warningsByCode = (0, import_react5.useMemo)(() => {
     const map = /* @__PURE__ */ new Map();
@@ -44512,8 +44513,11 @@ function App() {
     if (storeFilter === "wow") return top10(recommendations.filter((r) => r.warning?.monthCupWow !== null && r.warning?.monthCupWow !== void 0).sort((a, b) => a.warning.monthCupWow - b.warning.monthCupWow));
     if (storeFilter === "yoy") return top10(recommendations.filter((r) => r.warning?.monthCupYoy !== null && r.warning?.monthCupYoy !== void 0).sort((a, b) => a.warning.monthCupYoy - b.warning.monthCupYoy));
     if (storeFilter === "achieve") return top10(recommendations.filter((r) => r.warning?.salesAchieveRate !== null && r.warning?.salesAchieveRate !== void 0).sort((a, b) => a.warning.salesAchieveRate - b.warning.salesAchieveRate));
-    return recommendLimit ? recommendations.slice(0, recommendLimit) : recommendations;
-  }, [recommendations, storeFilter, recommendLimit, xiangzhanStores, stores, visits, employee.name]);
+    const levelOrder = { 极高风险: 0, 高风险: 1, 中风险: 2, 低风险: 3 };
+    const tagLevelByCode = new Map(tagDetails.map((d) => [d.storeCode, d.riskLevel]));
+    const sorted = [...recommendations].sort((a, b) => (levelOrder[tagLevelByCode.get(a.store.code) ?? ""] ?? 4) - (levelOrder[tagLevelByCode.get(b.store.code) ?? ""] ?? 4));
+    return recommendLimit ? sorted.slice(0, recommendLimit) : sorted;
+  }, [recommendations, storeFilter, recommendLimit, xiangzhanStores, stores, visits, employee.name, tagDetails]);
   const myRecommendations = recommendations;
   const currentMonth = getMonthKey(today());
   const progressOf = (allVisits, bp) => {
@@ -44789,7 +44793,7 @@ function App() {
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(Search, { size: 15 }),
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("input", { value: storeQuery, onChange: (e) => setStoreQuery(e.target.value), placeholder: "搜索门店名称、编码或品牌" })
       ] }),
-      /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "filter-chips", children: [["all", "高 / 极高风险"], ["cupeff", "杯效标红最多"], ["wow", "环比下降最大"], ["yoy", "同比下降最大"], ["achieve", "达成率最低"], ["xiangzhan", "巷战未获奖门店"]].map(([key, label]) => /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("button", { className: `chip ${storeFilter === key ? "active" : ""}`, onClick: () => setStoreFilter(key), children: label }, key)) })
+      /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "filter-chips", children: [["all", "按风险等级"], ["cupeff", "杯效标红最多"], ["wow", "环比下降最大"], ["yoy", "同比下降最大"], ["achieve", "达成率最低"], ["xiangzhan", "巷战未获奖门店"]].map(([key, label]) => /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("button", { className: `chip ${storeFilter === key ? "active" : ""}`, onClick: () => setStoreFilter(key), children: label }, key)) })
     ] }),
     /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "store-grid", children: displayedRecommendations.filter((item2) => `${item2.store.name}${item2.store.code}${item2.store.brand}`.toLowerCase().includes(storeQuery.toLowerCase())).map((recommendation) => /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(StoreCard, { recommendation, onDetail: () => setRiskDetail(recommendation), onVisit: () => openVisit(recommendation.store.id) }, recommendation.store.id)) }),
     !stores.length && /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(EmptyState, { title: "门店数据加载中", description: "门店清单来自在职数据聚合，若长时间为空请重新打开看板" }),

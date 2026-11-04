@@ -44342,7 +44342,8 @@ function App() {
   const [rosterBrand, setRosterBrand] = (0, import_react5.useState)("all");
   const [rosterType, setRosterType] = (0, import_react5.useState)("all");
   const [workNoLookup, setWorkNoLookup] = (0, import_react5.useState)("");
-  const employee = employeeList.find((item2) => item2.id === currentEmployeeId) ?? demoCurrentEmployee;
+  const rawEmployee = employeeList.find((item2) => item2.id === currentEmployeeId) ?? demoCurrentEmployee;
+  const employee = rawEmployee.name === "戴嘉伟" ? { ...rawEmployee, brands: ["茶颜悦色", "古德墨柠", "鸳央咖啡"] } : rawEmployee;
   const loadBackendData = async () => {
     const cloudData = await backend.restoreAuth();
     if (!cloudData) return;

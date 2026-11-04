@@ -14981,8 +14981,8 @@ var DEFAULT_EMPLOYEE_ID = "DEMO009";
 var QUARTERLY_VISIT_TARGET = 25;
 var RISK_RULES = [
   { key: "architectureLabor", label: "架构变动", description: "最近完整月有店长或核心伙伴离职、新入职" },
-  { key: "abcAllC", label: "ABC连续3月不好", description: "最近3个完整月ABC评级均为C" },
-  { key: "qcBelow80", label: "QC连续3月不好", description: "最近3个完整月QC均低于80" },
+  { key: "abcAllC", label: "ABC风险排名", description: "近3个月ABC评级排名：C越多、月份越近排名越靠前，点击查看明细" },
+  { key: "qcBelow80", label: "QC风险排名", description: "近3个月QC评分排名，不合格越多、月份越近排名越靠前，点击查看明细" },
   { key: "salesBelow100", label: "业绩连续3月不好", description: "最近3个完整月业绩达成率均低于100%" },
   { key: "hoursOver220", label: "工时超220H", description: "最近完整月月人均工时大于220小时" },
   { key: "hoursUnder167", label: "工时低167H", description: "最近完整月月人均工时小于167小时" },
@@ -14992,10 +14992,16 @@ var RISK_RULES = [
   { key: "noReward", label: "两大奖励预警", description: "最近完整月两大奖励达标为否" }
 ];
 var MONTHLY_VISIT_TARGET = 15;
-var QUARTERLY_TARGET_NAMES = ["戴嘉伟", "唐漂", "程洁霞"];
+var QUARTERLY_TARGET_NAMES = ["戴嘉伟", "唐漂", "程洁暇"];
 function visitTargetFor(employeeName) {
   return QUARTERLY_TARGET_NAMES.includes(employeeName) ? { period: "quarter", target: QUARTERLY_VISIT_TARGET, periodLabel: "季度" } : { period: "month", target: MONTHLY_VISIT_TARGET, periodLabel: "月" };
 }
+var XIANGZHAN_BP_MAP = {
+  从浩: "赵芬",
+  瞿兆邦: "邵晓宇",
+  陈坤: "刘林",
+  肖湘: "曾令财"
+};
 var RISK_PHASE_BY_LEVEL = {
   极高风险: "本月",
   高风险: "次月",
@@ -15737,6 +15743,48 @@ var supabaseBridge = {
       warnings: rows.map((row) => row.payload)
     };
   },
+  /** 读取最新一期门店打标明细（茶颜「门店筛选逻辑打标」）；未导入过返回 []。 */
+  async loadTagDetails() {
+    const months2 = await rest("/hr_store_tag_detail?select=report_month&order=report_month.desc&limit=1");
+    const latest = months2[0]?.report_month;
+    if (!latest) return [];
+    const rows = await restAll(`/hr_store_tag_detail?report_month=eq.${latest}&select=*`);
+    return rows.map((row) => ({
+      id: row.id,
+      reportMonth: row.report_month,
+      brand: row.brand,
+      storeCode: row.store_code,
+      storeName: row.store_name ?? "",
+      regionManager: row.region_manager ?? "",
+      districtManager: row.district_manager ?? "",
+      areaManager: row.area_manager ?? "",
+      abcM1: row.abc_m1 ?? void 0,
+      abcM2: row.abc_m2 ?? void 0,
+      abcM3: row.abc_m3 ?? void 0,
+      qcM1: row.qc_m1 ?? void 0,
+      qcM2: row.qc_m2 ?? void 0,
+      qcM3: row.qc_m3 ?? void 0,
+      achieveM1: row.achieve_m1 ?? void 0,
+      achieveM2: row.achieve_m2 ?? void 0,
+      achieveM3: row.achieve_m3 ?? void 0,
+      treeholeCount: row.treehole_count ?? void 0,
+      awardOk: row.award_ok ?? void 0
+    }));
+  },
+  /** 未获得巷战激励门店（整表） */
+  async loadXiangzhanStores() {
+    const rows = await restAll("/hr_xiangzhan_stores?select=*&order=region_manager.asc");
+    return rows.map((row) => ({
+      storeCode: row.store_code,
+      storeName: row.store_name ?? "",
+      regionManager: row.region_manager ?? "",
+      districtManager: row.district_manager ?? "",
+      areaManager: row.area_manager ?? "",
+      status: row.status ?? "",
+      openDate: row.open_date ?? "",
+      city: row.city ?? ""
+    }));
+  },
   async saveVisit(visit, issues, events) {
     await rest("/hr_visits", {
       method: "POST",
@@ -16048,6 +16096,51 @@ function applyIssueAction(issue, actor, action, options = {}) {
     },
     event: createIssueEvent(issue, actor.id, action, { ...options, createdAt })
   };
+}
+
+// src/features/tag-ranking.ts
+var TAG_DETAIL_LIMIT = 60;
+var MONTH_WEIGHTS = [3, 2, 1];
+function latestWeight(flags) {
+  for (let i = 0; i < MONTH_WEIGHTS.length; i += 1) {
+    if (flags[i]) return MONTH_WEIGHTS[i];
+  }
+  return 0;
+}
+function byStoreName(a, b) {
+  return a.storeName.localeCompare(b.storeName, "zh-Hans-CN");
+}
+function rankAbcRisk(details) {
+  return details.filter((d) => [d.abcM1, d.abcM2, d.abcM3].includes("C")).sort((a, b) => {
+    const grades = (d) => [d.abcM1, d.abcM2, d.abcM3];
+    const cCount = (d) => grades(d).filter((g) => g === "C").length;
+    const latestC = (d) => latestWeight(grades(d).map((g) => g === "C"));
+    const hasA = (d) => grades(d).includes("A");
+    return cCount(b) - cCount(a) || latestC(b) - latestC(a) || Number(hasA(a)) - Number(hasA(b)) || byStoreName(a, b);
+  }).slice(0, TAG_DETAIL_LIMIT);
+}
+function rankQcRisk(details) {
+  const failed = (g) => g === "不合格";
+  return details.filter((d) => [d.qcM1, d.qcM2, d.qcM3].some(failed)).sort((a, b) => {
+    const grades = (d) => [d.qcM1, d.qcM2, d.qcM3];
+    const failCount = (d) => grades(d).filter(failed).length;
+    const latestFail = (d) => latestWeight(grades(d).map(failed));
+    return failCount(b) - failCount(a) || latestFail(b) - latestFail(a) || byStoreName(a, b);
+  }).slice(0, TAG_DETAIL_LIMIT);
+}
+function salesBelowCount(d) {
+  return [d.achieveM1, d.achieveM2, d.achieveM3].filter((v) => v !== void 0 && v !== null && v < 80).length;
+}
+function rankSalesRisk(details) {
+  return details.filter((d) => salesBelowCount(d) > 0).sort(
+    (a, b) => salesBelowCount(b) - salesBelowCount(a) || (a.achieveM1 ?? Infinity) - (b.achieveM1 ?? Infinity) || byStoreName(a, b)
+  ).slice(0, TAG_DETAIL_LIMIT);
+}
+function rankTreehole(details) {
+  return [...details].sort((a, b) => (b.treeholeCount ?? 0) - (a.treeholeCount ?? 0) || byStoreName(a, b)).slice(0, TAG_DETAIL_LIMIT);
+}
+function rankAwardRisk(details) {
+  return details.filter((d) => d.awardOk === false).sort((a, b) => byStoreName(a, b)).slice(0, TAG_DETAIL_LIMIT);
 }
 
 // node_modules/xlsx/xlsx.mjs
@@ -43596,6 +43689,189 @@ function NewVisitModal({ employee, stores, visits, preselectedStoreId, modeLabel
     ] })
   ] }) });
 }
+function TagDetailModal({ kind, details, xiangzhan, reportMonth, onClose }) {
+  const abcBadge = (g) => !g ? /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: "badge badge-gray", children: "—" }) : /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: `badge ${g === "C" ? "badge-red" : g === "B" ? "badge-amber" : "badge-green"}`, children: g });
+  const qcBadge = (g) => !g ? /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: "badge badge-gray", children: "—" }) : /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: `badge ${g === "不合格" ? "badge-red" : g === "合格" ? "badge-green" : "badge-gray"}`, children: g });
+  const ach = (v) => v === void 0 || v === null ? /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: "badge badge-gray", children: "—" }) : /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("span", { className: `badge ${v < 80 ? "badge-red" : "badge-green"}`, children: [
+    v.toFixed(1),
+    "%"
+  ] });
+  const monthHeads = (() => {
+    const [y, m] = reportMonth.split("-").map(Number);
+    return [0, 1, 2].map((back) => {
+      const d = new Date(y, m - 1 - back, 1);
+      return `${d.getMonth() + 1}月`;
+    });
+  })();
+  let title = "";
+  let note = "";
+  let head = null;
+  let body = null;
+  if (kind === "xiangzhan") {
+    title = "未获得巷战激励门店";
+    note = `共 ${xiangzhan.length} 家门店从未获得巷战激励，按大区经理排序。`;
+    body = xiangzhan.map((s) => /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("tr", { children: [
+      /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("td", { children: [
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "table-title", children: s.storeName }),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "table-sub", children: s.storeCode })
+      ] }),
+      /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("td", { children: s.regionManager }),
+      /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("td", { children: s.districtManager }),
+      /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("td", { children: s.areaManager }),
+      /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("td", { children: s.city }),
+      /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("td", { children: s.openDate })
+    ] }, s.storeCode));
+    head = /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("tr", { children: [
+      /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "门店" }),
+      /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "大区经理" }),
+      /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "区经理" }),
+      /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "大店长" }),
+      /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "城市" }),
+      /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "开业时间" })
+    ] });
+  } else {
+    const common = (d) => /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("td", { children: [
+      /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "table-title", children: d.storeName }),
+      /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "table-sub", children: [
+        d.storeCode,
+        " · ",
+        d.regionManager
+      ] })
+    ] });
+    if (kind === "abcAllC") {
+      const rows = rankAbcRisk(details);
+      title = "ABC风险排名";
+      note = `近 3 个月出现过 C 的门店共 ${rows.length >= 60 ? "60+" : rows.length} 家，C 越多、拿 C 月份越近排名越靠前（最多展示 60 家）。`;
+      head = /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("tr", { children: [
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "门店" }),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("th", { children: [
+          "ABC ",
+          monthHeads[0]
+        ] }),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("th", { children: [
+          "ABC ",
+          monthHeads[1]
+        ] }),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("th", { children: [
+          "ABC ",
+          monthHeads[2]
+        ] })
+      ] });
+      body = rows.map((d) => /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("tr", { children: [
+        common(d),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("td", { children: abcBadge(d.abcM1) }),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("td", { children: abcBadge(d.abcM2) }),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("td", { children: abcBadge(d.abcM3) })
+      ] }, d.id));
+    } else if (kind === "qcBelow80") {
+      const rows = rankQcRisk(details);
+      title = "QC风险排名";
+      note = `近 3 个月出现过「不合格」的门店共 ${rows.length >= 60 ? "60+" : rows.length} 家，不合格越多、月份越近排名越靠前。`;
+      head = /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("tr", { children: [
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "门店" }),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("th", { children: [
+          "QC ",
+          monthHeads[0]
+        ] }),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("th", { children: [
+          "QC ",
+          monthHeads[1]
+        ] }),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("th", { children: [
+          "QC ",
+          monthHeads[2]
+        ] })
+      ] });
+      body = rows.map((d) => /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("tr", { children: [
+        common(d),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("td", { children: qcBadge(d.qcM1) }),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("td", { children: qcBadge(d.qcM2) }),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("td", { children: qcBadge(d.qcM3) })
+      ] }, d.id));
+    } else if (kind === "salesBelow100") {
+      const rows = rankSalesRisk(details);
+      title = "业绩达成预警";
+      note = `仅展示近 3 个月出现过达成率低于 80% 的门店（共 ${rows.length >= 60 ? "60+" : rows.length} 家），低于 80% 的次数越多排名越靠前。`;
+      head = /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("tr", { children: [
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "门店" }),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("th", { children: [
+          "达成率 ",
+          monthHeads[0]
+        ] }),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("th", { children: [
+          "达成率 ",
+          monthHeads[1]
+        ] }),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("th", { children: [
+          "达成率 ",
+          monthHeads[2]
+        ] })
+      ] });
+      body = rows.map((d) => /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("tr", { children: [
+        common(d),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("td", { children: ach(d.achieveM1) }),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("td", { children: ach(d.achieveM2) }),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("td", { children: ach(d.achieveM3) })
+      ] }, d.id));
+    } else if (kind === "treeHoleComplaints") {
+      const rows = rankTreehole(details);
+      title = "树洞投诉明细";
+      note = `全部门店树洞投诉条数（按条数降序，最多展示 60 家）。`;
+      head = /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("tr", { children: [
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "门店" }),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "区经理" }),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "大店长" }),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "树洞条数" })
+      ] });
+      body = rows.map((d) => /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("tr", { children: [
+        common(d),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("td", { children: d.districtManager || "—" }),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("td", { children: d.areaManager || "—" }),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("td", { children: /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("span", { className: `badge ${(d.treeholeCount ?? 0) >= 2 ? "badge-red" : (d.treeholeCount ?? 0) > 0 ? "badge-amber" : "badge-green"}`, children: [
+          d.treeholeCount ?? 0,
+          " 条"
+        ] }) })
+      ] }, d.id));
+    } else if (kind === "noReward") {
+      const rows = rankAwardRisk(details);
+      title = "两大奖励预警明细";
+      note = `近月两大奖励未达标门店共 ${rows.length} 家。`;
+      head = /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("tr", { children: [
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "门店" }),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "区经理" }),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "大店长" }),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "两大奖励" })
+      ] });
+      body = rows.map((d) => /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("tr", { children: [
+        common(d),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("td", { children: d.districtManager || "—" }),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("td", { children: d.areaManager || "—" }),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("td", { children: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: "badge badge-red", children: "未达标" }) })
+      ] }, d.id));
+    }
+  }
+  return /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "modal-backdrop", onMouseDown: (event) => event.target === event.currentTarget && onClose(), children: /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "modal modal-wide", children: [
+    /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "modal-header", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { children: [
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("h2", { children: title }),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("p", { children: note })
+      ] }),
+      /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("button", { className: "icon-button", onClick: onClose, children: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(X, { size: 18 }) })
+    ] }),
+    /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "modal-body", children: !details.length && kind !== "xiangzhan" ? /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(EmptyState, { title: "打标明细尚未导入", description: "请先执行 scripts/supabase/tag-detail.sql 建表，再用 import-tag-detail.mjs 导入茶颜数据" }) : /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "table-wrap", children: /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("table", { children: [
+      /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("thead", { children: head }),
+      /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("tbody", { children: body })
+    ] }) }) }),
+    /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "modal-footer", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("span", { className: "form-hint", children: [
+        "数据期：",
+        reportMonth,
+        "（近 3 个月口径）· 品牌：茶颜悦色"
+      ] }),
+      /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "modal-footer-right", children: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("button", { className: "button button-secondary", onClick: onClose, children: "关闭" }) })
+    ] })
+  ] }) });
+}
 function RiskDrawer({ recommendation, onClose, onVisit }) {
   const risk = recommendation.risk;
   const warning = recommendation.warning;
@@ -44058,6 +44334,9 @@ function App() {
   const [roster, setRoster] = (0, import_react5.useState)(null);
   const [stores, setStores] = (0, import_react5.useState)([]);
   const [weeklyReport, setWeeklyReport] = (0, import_react5.useState)(null);
+  const [tagDetails, setTagDetails] = (0, import_react5.useState)([]);
+  const [xiangzhanStores, setXiangzhanStores] = (0, import_react5.useState)([]);
+  const [tagModal, setTagModal] = (0, import_react5.useState)(null);
   const [rosterSummary, setRosterSummary] = (0, import_react5.useState)(null);
   const [rosterQuery, setRosterQuery] = (0, import_react5.useState)("");
   const [rosterBrand, setRosterBrand] = (0, import_react5.useState)("all");
@@ -44079,6 +44358,12 @@ function App() {
       setRosterSummary(summarizeRoster(personnel));
       const weekly = await supabaseBridge.loadWeeklyWarnings().catch(() => null);
       setWeeklyReport(weekly);
+      const [tags, xiangzhan] = await Promise.all([
+        supabaseBridge.loadTagDetails().catch(() => []),
+        supabaseBridge.loadXiangzhanStores().catch(() => [])
+      ]);
+      setTagDetails(tags);
+      setXiangzhanStores(xiangzhan);
     }
     const bound = await backend.currentEmployee();
     if (bound) setCurrentEmployeeId(bound.id);
@@ -44134,12 +44419,38 @@ function App() {
   const recommendations = (0, import_react5.useMemo)(() => recommendStores({ stores, visits, issues, riskSnapshots: risks, asOfDate: today(), brands: recommendBrands, bpId: recommendBpId, districts: recommendDistricts, warningsByCode }), [stores, visits, issues, risks, recommendBrands, recommendBpId, recommendDistricts, warningsByCode]);
   const displayedRecommendations = (0, import_react5.useMemo)(() => {
     const top10 = (list) => list.slice(0, 10);
+    if (storeFilter === "xiangzhan") {
+      const myRegions = Object.entries(XIANGZHAN_BP_MAP).filter(([, bp]) => bp === employee.name).map(([rm]) => rm);
+      return xiangzhanStores.filter((x) => !myRegions.length || myRegions.includes(x.regionManager)).map((x) => {
+        const store = stores.find((s) => s.code === x.storeCode) ?? {
+          id: `xz-${x.storeCode}`,
+          code: x.storeCode,
+          name: x.storeName,
+          brand: "茶颜悦色",
+          active: x.status === "营业",
+          region: x.city,
+          districtManager: x.districtManager,
+          areaManager: x.areaManager
+        };
+        return {
+          store,
+          risk: null,
+          warning: null,
+          reasons: [`巷战激励未获奖 · 大区经理：${x.regionManager} · ${x.city}`],
+          unvisited: !visits.some((v) => v.storeId === store.id && v.status === "submitted" && !v.voided),
+          overdueIssueCount: 0,
+          highSeverityIssueCount: 0,
+          lastVisitAt: null,
+          daysSinceLastVisit: null
+        };
+      });
+    }
     if (storeFilter === "cupeff") return top10(recommendations.filter((r) => r.warning && r.warning.activeDays > 0).sort((a, b) => b.warning.redRatio - a.warning.redRatio || b.warning.redDays - a.warning.redDays));
     if (storeFilter === "wow") return top10(recommendations.filter((r) => r.warning?.monthCupWow !== null && r.warning?.monthCupWow !== void 0).sort((a, b) => a.warning.monthCupWow - b.warning.monthCupWow));
     if (storeFilter === "yoy") return top10(recommendations.filter((r) => r.warning?.monthCupYoy !== null && r.warning?.monthCupYoy !== void 0).sort((a, b) => a.warning.monthCupYoy - b.warning.monthCupYoy));
     if (storeFilter === "achieve") return top10(recommendations.filter((r) => r.warning?.salesAchieveRate !== null && r.warning?.salesAchieveRate !== void 0).sort((a, b) => a.warning.salesAchieveRate - b.warning.salesAchieveRate));
     return recommendLimit ? recommendations.slice(0, recommendLimit) : recommendations;
-  }, [recommendations, storeFilter, recommendLimit]);
+  }, [recommendations, storeFilter, recommendLimit, xiangzhanStores, stores, visits, employee.name]);
   const myRecommendations = recommendations;
   const currentMonth = getMonthKey(today());
   const progressOf = (allVisits, bp) => {
@@ -44401,7 +44712,7 @@ function App() {
         weeklyReport.rangeLabel,
         "（更新至 ",
         weeklyReport.reportDate,
-        "）。杯效按日分档（50杯/档），低于同档位中位数标红。5 个维度各取最严重 10 家。",
+        "）。杯效按日分档（50杯/档），低于同档位中位数标红。墨柠 5 个维度各取最严重 10 家；「巷战未获奖门店」为茶颜维度，BP 仅见自己对接的大区经理门店。",
         recommendDistricts ? `已按管辖大店长过滤（${recommendDistricts.length} 个大店区）。` : ""
       ] })
     ] }),
@@ -44415,7 +44726,7 @@ function App() {
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(Search, { size: 15 }),
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("input", { value: storeQuery, onChange: (e) => setStoreQuery(e.target.value), placeholder: "搜索门店名称、编码或品牌" })
       ] }),
-      /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "filter-chips", children: [["all", "高 / 极高风险"], ["cupeff", "杯效标红最多"], ["wow", "环比下降最大"], ["yoy", "同比下降最大"], ["achieve", "达成率最低"]].map(([key, label]) => /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("button", { className: `chip ${storeFilter === key ? "active" : ""}`, onClick: () => setStoreFilter(key), children: label }, key)) })
+      /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "filter-chips", children: [["all", "高 / 极高风险"], ["cupeff", "杯效标红最多"], ["wow", "环比下降最大"], ["yoy", "同比下降最大"], ["achieve", "达成率最低"], ["xiangzhan", "巷战未获奖门店"]].map(([key, label]) => /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("button", { className: `chip ${storeFilter === key ? "active" : ""}`, onClick: () => setStoreFilter(key), children: label }, key)) })
     ] }),
     /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "store-grid", children: displayedRecommendations.filter((item2) => `${item2.store.name}${item2.store.code}${item2.store.brand}`.toLowerCase().includes(storeQuery.toLowerCase())).map((recommendation) => /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(StoreCard, { recommendation, onDetail: () => setRiskDetail(recommendation), onVisit: () => openVisit(recommendation.store.id) }, recommendation.store.id)) }),
     !stores.length && /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(EmptyState, { title: "门店数据加载中", description: "门店清单来自在职数据聚合，若长时间为空请重新打开看板" }),
@@ -44973,17 +45284,49 @@ function App() {
         /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card-header", children: [
           /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { children: [
             /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-title", children: "重点门店十项打标" }),
-            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-subtitle", children: "每项异常 1 分 · 最近三个完整月 · 缺失不等于正常" })
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-subtitle", children: "每项异常 1 分 · 最近三个完整月 · 缺失不等于正常 · 带 ↗ 的卡片可点击查看门店明细" })
           ] }),
           /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: "badge badge-green", children: "v1.0" })
         ] }),
-        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-body", children: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "rule-grid", children: RISK_RULES.map((rule, index) => /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "rule-card", children: [
-          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: "rule-index", children: String(index + 1).padStart(2, "0") }),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-body", children: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "rule-grid", children: RISK_RULES.map((rule, index) => {
+          const clickable = ["abcAllC", "qcBelow80", "salesBelow100", "treeHoleComplaints", "noReward"].includes(rule.key);
+          return /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "rule-card", style: clickable ? { cursor: "pointer" } : void 0, onClick: clickable ? () => setTagModal(rule.key) : void 0, children: [
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: "rule-index", children: String(index + 1).padStart(2, "0") }),
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { children: [
+              /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("strong", { children: [
+                rule.label,
+                clickable && /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { style: { color: "var(--green-700)", marginLeft: 6, fontSize: 11 }, children: "明细 ↗" })
+              ] }),
+              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("p", { children: rule.description })
+            ] })
+          ] }, rule.key);
+        }) }) })
+      ] }),
+      /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card-header", children: [
           /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { children: [
-            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("strong", { children: rule.label }),
-            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("p", { children: rule.description })
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-title", children: "未获得巷战激励门店" }),
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-subtitle", children: "从未获得巷战激励的茶颜门店，点击卡片查看明细（茶颜 BP 按大区经理对接：从浩-赵芬、瞿兆邦-邵晓宇、陈坤-刘林、肖湘-曾令财）" })
+          ] }),
+          /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("span", { className: "badge badge-orange", children: [
+            xiangzhanStores.length,
+            " 家"
           ] })
-        ] }, rule.key)) }) })
+        ] }),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-body", children: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "rule-grid", children: /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "rule-card", style: { cursor: "pointer" }, onClick: () => setTagModal("xiangzhan"), children: [
+          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: "rule-index", children: "街" }),
+          /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { children: [
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("strong", { children: [
+              "未获得巷战激励门店",
+              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { style: { color: "var(--green-700)", marginLeft: 6, fontSize: 11 }, children: "明细 ↗" })
+            ] }),
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("p", { children: [
+              "共 ",
+              xiangzhanStores.length,
+              " 家 · 点击查看门店、大区经理、城市与开业时间"
+            ] })
+          ] })
+        ] }) }) })
       ] }),
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card", children: [
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-header", children: /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { children: [
@@ -45198,6 +45541,7 @@ function App() {
         loadBackendData().catch((caught) => showToast(caught instanceof Error ? caught.message : "云端数据加载失败"));
       }
     }, onClose: () => setVisitModalOpen(false), onSave: saveVisit }),
+    tagModal && /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(TagDetailModal, { kind: tagModal, details: tagDetails, xiangzhan: xiangzhanStores, reportMonth: tagDetails[0]?.reportMonth ?? "2026-10", onClose: () => setTagModal(null) }),
     riskDetail && /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(RiskDrawer, { recommendation: riskDetail, onClose: () => setRiskDetail(null), onVisit: () => {
       setRiskDetail(null);
       openVisit(riskDetail.store.id);

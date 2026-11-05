@@ -15773,6 +15773,7 @@ var supabaseBridge = {
       hoursAvg: row.hours_avg ?? void 0,
       hoursOver220: row.hours_over_220 ?? void 0,
       hoursUnder167: row.hours_under_167 ?? void 0,
+      attendanceOver8Days: row.attendance_over_8_days ?? void 0,
       archChange: row.arch_change ?? void 0,
       scoreTotal: row.score_total ?? void 0,
       riskLevel: row.risk_level ?? void 0,
@@ -16151,10 +16152,13 @@ function rankAwardRisk(details) {
   return details.filter((d) => d.awardOk === false).sort((a, b) => byStoreName(a, b)).slice(0, TAG_DETAIL_LIMIT);
 }
 function rankHoursOver220(details) {
-  return details.filter((d) => (d.hoursOver220 ?? 0) > 0).sort((a, b) => (b.hoursAvg ?? 0) - (a.hoursAvg ?? 0) || byStoreName(a, b)).slice(0, TAG_DETAIL_LIMIT);
+  return details.filter((d) => (d.hoursOver220 ?? 0) > 0).sort((a, b) => (b.hoursOver220 ?? 0) - (a.hoursOver220 ?? 0) || (b.hoursAvg ?? 0) - (a.hoursAvg ?? 0) || byStoreName(a, b)).slice(0, TAG_DETAIL_LIMIT);
 }
 function rankHoursUnder167(details) {
-  return details.filter((d) => (d.hoursUnder167 ?? 0) > 0).sort((a, b) => (a.hoursAvg ?? Infinity) - (b.hoursAvg ?? Infinity) || byStoreName(a, b)).slice(0, TAG_DETAIL_LIMIT);
+  return details.filter((d) => (d.hoursUnder167 ?? 0) > 0).sort((a, b) => (b.hoursUnder167 ?? 0) - (a.hoursUnder167 ?? 0) || (a.hoursAvg ?? Infinity) - (b.hoursAvg ?? Infinity) || byStoreName(a, b)).slice(0, TAG_DETAIL_LIMIT);
+}
+function rankAttendanceOver8(details) {
+  return details.filter((d) => (d.attendanceOver8Days ?? 0) > 0).sort((a, b) => (b.attendanceOver8Days ?? 0) - (a.attendanceOver8Days ?? 0) || byStoreName(a, b)).slice(0, TAG_DETAIL_LIMIT);
 }
 function rankByRiskLevel(details, level) {
   return details.filter((d) => d.riskLevel === level).sort((a, b) => (b.scoreTotal ?? 0) - (a.scoreTotal ?? 0) || byStoreName(a, b)).slice(0, TAG_DETAIL_LIMIT);
@@ -43869,17 +43873,41 @@ function TagDetailModal({ kind, details, xiangzhan, reportMonth, onClose }) {
       const over = kind === "hoursOver220";
       const rows = over ? rankHoursOver220(details) : rankHoursUnder167(details);
       title = over ? "工时超 220H 明细" : "工时低 167H 明细";
-      note = `${over ? "月人均工时大于 220 小时" : "月人均工时小于 167 小时"}的门店共 ${rows.length >= 60 ? "60+" : rows.length} 家（按人均工时${over ? "降序" : "升序"}，最多展示 60 家）。`;
+      note = `全职工号当月出勤工时合计${over ? "大于 220 小时" : "小于 167 小时"}的人数大于 0 的门店共 ${rows.length >= 60 ? "60+" : rows.length} 家（按人数降序，最多展示 60 家）。`;
       head = /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("tr", { children: [
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "门店" }),
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "月人均工时" }),
-        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "标记值" }),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "人数" }),
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "区经理 / 大店长" })
       ] });
       body = rows.map((d) => /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("tr", { children: [
         common(d),
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("td", { children: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: "badge badge-red", children: d.hoursAvg !== void 0 ? `${d.hoursAvg}H` : "—" }) }),
-        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("td", { children: over ? d.hoursOver220 : d.hoursUnder167 }),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("td", { children: /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("span", { className: "badge badge-amber", children: [
+          over ? d.hoursOver220 : d.hoursUnder167,
+          " 人"
+        ] }) }),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("td", { children: [
+          d.districtManager || "—",
+          " / ",
+          d.areaManager || "—"
+        ] })
+      ] }, d.id));
+    } else if (kind === "attendanceOver8Days") {
+      const rows = rankAttendanceOver8(details);
+      title = "连续出勤大于 8 天明细";
+      note = `最近完整月有员工连续出勤大于 8 天的门店共 ${rows.length >= 60 ? "60+" : rows.length} 家（日工时≥4 小时算出勤，按人数降序，最多展示 60 家）。`;
+      head = /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("tr", { children: [
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "门店" }),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "连续出勤>8天人数" }),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "区经理 / 大店长" })
+      ] });
+      body = rows.map((d) => /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("tr", { children: [
+        common(d),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("td", { children: /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("span", { className: "badge badge-red", children: [
+          d.attendanceOver8Days ?? 0,
+          " 人"
+        ] }) }),
         /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("td", { children: [
           d.districtManager || "—",
           " / ",
@@ -43890,7 +43918,7 @@ function TagDetailModal({ kind, details, xiangzhan, reportMonth, onClose }) {
       const level = kind.slice(5);
       const rows = rankByRiskLevel(details, level);
       title = `${level}门店`;
-      note = `底表九项打标总分对应「${level}」的门店共 ${rows.length >= 60 ? "60+" : rows.length} 家，按异常总分降序（最多展示 60 家）。`;
+      note = `底表十项打标总分对应「${level}」的门店共 ${rows.length >= 60 ? "60+" : rows.length} 家，按异常总分降序（最多展示 60 家）。`;
       head = /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("tr", { children: [
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "门店" }),
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "异常总分" }),
@@ -43965,11 +43993,11 @@ function RiskDrawer({ recommendation, tagDetail, onClose, onVisit }) {
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "reason-box", children: anomalyFlags.length ? anomalyFlags.map((flag) => /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "reason", children: [
           /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: "badge badge-red", style: { marginRight: 6 }, children: "+1" }),
           flag
-        ] }, flag)) : /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "reason", children: "九项打标均正常，未命中异常项" }) }),
+        ] }, flag)) : /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "reason", children: "十项打标均正常，未命中异常项" }) }),
         /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "form-hint", style: { marginTop: 8 }, children: [
           "数据期 ",
           tagDetail.reportMonth,
-          " · 九项：架构变动 / ABC两月C档 / QC连续3月不好 / 业绩连续3月<80% / 工时超220H / 工时低167H / 高温门店 / 树洞≥2条 / 两大奖励未达标"
+          " · 十项：架构变动 / ABC两月C档 / QC连续3月不好 / 业绩连续3月<80% / 工时超220H / 工时低167H / 连续出勤>8天 / 低温门店 / 树洞≥2条 / 两大奖励未达标"
         ] })
       ] }),
       warning && /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)(import_jsx_runtime3.Fragment, { children: [
@@ -45396,7 +45424,7 @@ function App() {
     /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "standard-hero", children: [
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { children: [
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("h2", { children: "每月，至少走进 15 家不同门店" }),
-        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("p", { children: "默认按自然月、巡店 BP 和门店编码去重统计；戴嘉伟、唐漂、程洁霞按自然季度 25 家。同店复访会被保留，但不重复计入达标数；只有已提交且未作废的巡店记录才有效。" })
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("p", { children: "默认按自然月、巡店 BP 和门店编码去重统计；戴嘉伟、唐漂、程洁暇按自然季度 25 家。同店复访会被保留，但不重复计入达标数；只有已提交且未作废的巡店记录才有效。" })
       ] }),
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "standard-number", children: [
         "15",
@@ -45407,7 +45435,7 @@ function App() {
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card", children: [
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-header", children: /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { children: [
           /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-title", children: "风险等级与巡店节奏" }),
-          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-subtitle", children: "分值来自打标底表九项异常重算（每项 1 分），点击卡片查看对应等级门店" })
+          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-subtitle", children: "分值来自打标底表十项异常重算（每项 1 分），点击卡片查看对应等级门店" })
         ] }) }),
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-body", children: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "phase-flow", children: [["6+", "极高风险", "第一阶段 · 本月优先", "var(--red)"], ["4–5", "高风险", "第二阶段 · 次月", "var(--orange)"], ["2–3", "中风险", "第三阶段 · 季度内", "var(--amber)"], ["0–1", "低风险", "第四阶段 · 常规巡检", "var(--green-700)"]].map(([score, level, phase, color]) => {
           const count = tagDetails.filter((d) => d.riskLevel === level).length;
@@ -45431,7 +45459,7 @@ function App() {
           /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: "badge badge-green", children: "v1.0" })
         ] }),
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-body", children: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "rule-grid", children: RISK_RULES.map((rule, index) => {
-          const clickable = ["abcAllC", "qcBelow80", "salesBelow100", "treeHoleComplaints", "noReward", "hoursOver220", "hoursUnder167"].includes(rule.key);
+          const clickable = ["abcAllC", "qcBelow80", "salesBelow100", "treeHoleComplaints", "noReward", "hoursOver220", "hoursUnder167", "attendanceOver8Days"].includes(rule.key);
           return /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "rule-card", style: clickable ? { cursor: "pointer" } : void 0, onClick: clickable ? () => setTagModal(rule.key) : void 0, children: [
             /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: "rule-index", children: String(index + 1).padStart(2, "0") }),
             /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { children: [

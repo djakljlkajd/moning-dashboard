@@ -15003,6 +15003,9 @@ var XIANGZHAN_BP_MAP = {
   肖湘: "曾令财"
 };
 var FULL_ACCESS_NAMES = ["杨师", "戴嘉伟", "李当", "胡芬", "朱芳"];
+var EXTRA_ROOT_CAUSES = [
+  { key: "xiangzhanNoReward", label: "未获得巷战激励" }
+];
 var RISK_PHASE_BY_LEVEL = {
   极高风险: "本月",
   高风险: "次月",
@@ -43448,7 +43451,7 @@ function NewVisitModal({ employee, stores, visits, preselectedStoreId, modeLabel
   const submit = () => {
     if (!selectedStore || !checksValid) return;
     const id = crypto.randomUUID();
-    const causeLabels = RISK_RULES.filter((rule) => rootCauses.includes(rule.key)).map((rule) => rule.label);
+    const causeLabels = [...RISK_RULES, ...EXTRA_ROOT_CAUSES].filter((rule) => rootCauses.includes(rule.key)).map((rule) => rule.label);
     const visit = {
       id,
       storeId: selectedStore.id,
@@ -43613,7 +43616,7 @@ function NewVisitModal({ employee, stores, visits, preselectedStoreId, modeLabel
               /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: "required", children: "*" })
             ] }),
             /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "form-hint", style: { marginBottom: 8 }, children: "为什么会选择巡这家门店？基于选店标准十项勾选判断依据（可多选）" }),
-            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { style: { display: "flex", flexWrap: "wrap", gap: 8 }, children: RISK_RULES.map((rule) => {
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { style: { display: "flex", flexWrap: "wrap", gap: 8 }, children: [...RISK_RULES, ...EXTRA_ROOT_CAUSES].map((rule) => {
               const active = rootCauses.includes(rule.key);
               return /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("button", { type: "button", className: `button button-sm ${active ? "button-primary" : "button-secondary"}`, onClick: () => setRootCauses((current) => active ? current.filter((key) => key !== rule.key) : [...current, rule.key]), children: rule.label }, rule.key);
             }) })

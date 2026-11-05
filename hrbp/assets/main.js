@@ -44570,7 +44570,8 @@ function App() {
       if (myXiangzhanRegion) return tagByCode.get(code)?.regionManager === myXiangzhanRegion;
       if (recommendDistricts) {
         const area = tagByCode.get(code)?.areaManager;
-        return Boolean(area) && recommendDistricts.includes(area);
+        if (!area) return false;
+        return recommendDistricts.includes(area) || recommendDistricts.includes(`${area}大店区`);
       }
       return true;
     };

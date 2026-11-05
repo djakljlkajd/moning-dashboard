@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>广州人员风险看板 · 10月</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:"PingFang SC","Microsoft YaHei",sans-serif; background:#EDF2F9; color:#22304A; }
+/* ---- 渐变蓝头部 + 广州塔 ---- */
+.hero { position:relative; background:linear-gradient(120deg,#0A2A63 0%,#1256A8 55%,#2E8FE8 100%); padding:34px 0 64px; overflow:hidden; }
+.hero-inner { max-width:1240px; margin:0 auto; padding:0 28px; position:relative; z-index:2; }
+.hero h1 { color:#fff; font-size:24px; letter-spacing:1px; }
+.hero .sub { color:rgba(255,255,255,.72); font-size:12.5px; margin-top:6px; }
+.tower { position:absolute; right:48px; bottom:-30px; width:190px; opacity:.16; z-index:1; pointer-events:none; }
+.wrap { max-width:1240px; margin:0 auto; padding:0 28px 40px; }
+/* ---- 汇总卡（可点击） ---- */
+.cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:14px; margin-top:-42px; position:relative; z-index:3; }
+.card { background:#fff; border-radius:14px; padding:18px 18px 14px; box-shadow:0 6px 18px rgba(16,42,99,.10); cursor:pointer; transition:transform .15s,box-shadow .15s; border-top:3px solid transparent; }
+.card:hover { transform:translateY(-3px); box-shadow:0 10px 24px rgba(16,42,99,.16); }
+.card .num { font-size:30px; font-weight:800; line-height:1.1; }
+.card .lbl { font-size:12.5px; color:#7A879E; margin-top:4px; }
+.card .hint { font-size:11px; color:#B4BFD2; margin-top:6px; }
+.card.c-blue { border-top-color:#2E8FE8; } .card.c-blue .num { color:#1256A8; }
+.card.c-red { border-top-color:#E4574C; } .card.c-red .num { color:#C0392B; }
+.card.c-orange { border-top-color:#F0A35E; } .card.c-orange .num { color:#D35400; }
+.card.c-navy { border-top-color:#34495E; } .card.c-navy .num { color:#2C3E50; }
+.card.c-green { border-top-color:#52BE80; } .card.c-green .num { color:#1E8449; }
+/* ---- 面板 ---- */
+.panel { background:#fff; border-radius:14px; padding:20px 22px; box-shadow:0 2px 10px rgba(16,42,99,.07); margin-top:18px; }
+.panel h2 { font-size:15px; margin-bottom:14px; padding-left:10px; border-left:4px solid #1256A8; color:#1B3A6B; }
+.rules { display:grid; grid-template-columns:repeat(auto-fit,minmax(270px,1fr)); gap:10px; }
+.rule { background:#F5F8FD; border:1px solid #E3EBF7; border-radius:10px; padding:12px 14px; font-size:12.5px; line-height:1.75; }
+.rule b { display:block; font-size:13px; margin-bottom:4px; color:#1256A8; }
+.rule .src { color:#9AA7BC; font-size:11px; margin-top:4px; display:block; }
+.grid2 { display:grid; grid-template-columns:1fr 1fr; gap:22px; }
+@media(max-width:900px){ .grid2{grid-template-columns:1fr;} }
+/* ---- 条形图 ---- */
+.bar-row { display:flex; align-items:center; gap:10px; margin-bottom:9px; font-size:13px; }
+.bar-row .bk { width:74px; text-align:right; color:#5D6D7E; flex-shrink:0; }
+.bar-track { flex:1; background:#EFF3F9; border-radius:5px; height:20px; }
+.bar-fill { height:100%; border-radius:5px; }
+.bar-val { width:110px; font-weight:600; font-size:12.5px; flex-shrink:0; }
+.legend { display:flex; gap:14px; font-size:12px; color:#7A879E; margin-top:8px; flex-wrap:wrap; }
+.legend i { display:inline-block; width:10px; height:10px; border-radius:2px; margin-right:4px; }
+/* ---- 筛选 + 表格 ---- */
+.filters { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:12px; align-items:center; }
+.filters select, .filters input { padding:6px 10px; border:1px solid #D8E1EE; border-radius:8px; font-size:13px; background:#fff; color:#22304A; }
+table { width:100%; border-collapse:collapse; font-size:12.5px; }
+th { background:#1256A8; color:#fff; padding:9px 6px; text-align:center; font-weight:600; white-space:nowrap; position:sticky; top:0; cursor:pointer; user-select:none; z-index:2; }
+td { padding:7px 6px; border-bottom:1px solid #EFF3F9; text-align:center; white-space:nowrap; }
+tbody tr:hover td { background:#F5F8FD; }
+.score { display:inline-block; min-width:20px; padding:1px 5px; border-radius:4px; font-weight:700; font-size:12px; }
+.s0 { background:#F2F4F7; color:#B4BFD2; } .s1 { background:#FDF0E4; color:#CA6F1E; }
+.s2 { background:#FADFA8; color:#9C6D0B; } .s3 { background:#F6CBC6; color:#922B21; }
+.tier { padding:2px 9px; border-radius:10px; font-size:11.5px; font-weight:600; }
+.t-高风险 { background:#C0392B; color:#fff; } .t-较高风险 { background:#E67E22; color:#fff; }
+.t-中风险 { background:#F1C40F; color:#7D6608; } .t-低风险 { background:#D5F5E3; color:#1E8449; }
+.t-已离职 { background:#E5E8E8; color:#7F8C8D; }
+.tag { display:inline-block; background:#EBF2FC; color:#1256A8; border-radius:4px; padding:1px 5px; font-size:11px; margin:1px 2px; }
+.tag.mv { background:#E8DAEF; color:#6C3483; } .tag.pay { background:#FDEDEC; color:#922B21; }
+.total { font-size:14px; font-weight:800; color:#C0392B; }
+.note { font-size:12px; color:#9AA7BC; margin-top:10px; line-height:1.6; }
+/* ---- 弹窗明细 ---- */
+.mask { position:fixed; inset:0; background:rgba(10,42,99,.42); display:none; z-index:50; align-items:center; justify-content:center; padding:24px; }
+.mask.show { display:flex; }
+.modal { background:#fff; border-radius:14px; width:min(1080px,96vw); max-height:86vh; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 18px 50px rgba(10,42,99,.35); }
+.modal-head { padding:14px 18px; background:linear-gradient(120deg,#0A2A63,#2E8FE8); color:#fff; display:flex; justify-content:space-between; align-items:center; }
+.modal-head .t { font-size:15px; font-weight:700; }
+.modal-head .n { font-size:12px; opacity:.8; margin-left:8px; }
+.modal-close { background:rgba(255,255,255,.18); border:none; color:#fff; width:28px; height:28px; border-radius:50%; font-size:15px; cursor:pointer; }
+.modal-body { overflow:auto; padding:14px 18px 18px; }
+/* ---- 沟通记录 ---- */
+.comm-btn { background:#EBF2FC; color:#1256A8; border:1px solid #C9DCF5; border-radius:6px; padding:2px 8px; font-size:11.5px; cursor:pointer; white-space:nowrap; }
+.comm-btn:hover { background:#1256A8; color:#fff; }
+.comm-btn .cb { display:inline-block; background:#C0392B; color:#fff; border-radius:8px; font-size:10px; padding:0 5px; margin-left:3px; }
+.rec-item { border:1px solid #E3EBF7; border-radius:8px; padding:9px 12px; margin-bottom:8px; background:#F8FAFE; }
+.rec-item .rh { display:flex; justify-content:space-between; font-size:11.5px; color:#7A879E; margin-bottom:4px; }
+.rec-item .rh b { color:#1256A8; }
+.rec-item .rt { font-size:13px; line-height:1.6; white-space:pre-wrap; word-break:break-all; }
+.rec-item .rc { display:inline-block; font-size:11px; border-radius:4px; padding:0 6px; margin-top:5px; }
+.rc-ok { background:#D5F5E3; color:#1E8449; } .rc-watch { background:#FDF0E4; color:#CA6F1E; }
+.rc-again { background:#FADFA8; color:#9C6D0B; } .rc-leave { background:#F6CBC6; color:#922B21; }
+.rec-del { background:none; border:none; color:#C0C9D8; cursor:pointer; font-size:12px; }
+.rec-del:hover { color:#C0392B; }
+.rec-form { margin-top:12px; border-top:1px dashed #D8E1EE; padding-top:12px; }
+.rec-form input, .rec-form select, .rec-form textarea { width:100%; padding:7px 10px; border:1px solid #D8E1EE; border-radius:8px; font-size:13px; margin-bottom:8px; font-family:inherit; }
+.rec-form textarea { min-height:76px; resize:vertical; }
+.rec-submit { background:linear-gradient(120deg,#1256A8,#2E8FE8); color:#fff; border:none; border-radius:8px; padding:8px 22px; font-size:13.5px; font-weight:600; cursor:pointer; }
+.sync-tip { font-size:11.5px; color:#B04A3E; margin-left:auto; }
+.sync-tip.ok { color:#1E8449; }
+</style>
+</head>
+<body>
+<div class="hero">
+  <div class="hero-inner">
+    <h1>广州人员风险看板</h1>
+    <div class="sub">2026年10月 ｜ 工时 + 调动 + 薪资 三因素风险评估 ｜ 用途：一线1V1面谈 ｜ 生成于 2026-11-05</div>
+    <div class="sub" style="margin-top:2px"><span class="sync-tip" id="syncTip">云端连接中…</span></div>
+  </div>
+  <div class="tower"><svg viewBox="0 0 200 420" xmlns="http://www.w3.org/2000/svg"><line x1="100" y1="4" x2="100" y2="46" stroke="rgba(255,255,255,.9)" fill="none" stroke-width="1.6" stroke-width="3"/><ellipse cx="100" cy="56" rx="26" ry="8" stroke="rgba(255,255,255,.9)" fill="none" stroke-width="1.6"/><polyline points="72.0,60 73.4,68 74.8,76 76.0,84 77.2,92 78.3,100 79.4,108 80.3,116 81.2,124 82.0,132 82.8,140 83.4,148 83.9,156 84.4,164 84.8,172 85.1,180 85.3,188 85.4,196 85.4,204 85.4,212 85.2,220 84.9,228 84.6,236 84.1,244 83.5,252 82.9,260 82.1,268 81.2,276 80.3,284 79.2,292 78.0,300 76.7,308 75.3,316 73.7,324 72.1,332 70.3,340 68.5,348 66.5,356 64.3,364 62.1,372 59.8,380 57.3,388" stroke="rgba(255,255,255,.9)" fill="none" stroke-width="1.6" stroke-width="2.2"/><polyline points="128.0,60 126.6,68 125.2,76 124.0,84 122.8,92 121.7,100 120.6,108 119.7,116 118.8,124 118.0,132 117.2,140 116.6,148 116.1,156 115.6,164 115.2,172 114.9,180 114.7,188 114.6,196 114.6,204 114.6,212 114.8,220 115.1,228 115.4,236 115.9,244 116.5,252 117.1,260 117.9,268 118.8,276 119.7,284 120.8,292 122.0,300 123.3,308 124.7,316 126.3,324 127.9,332 129.7,340 131.5,348 133.5,356 135.7,364 137.9,372 140.2,380 142.7,388" stroke="rgba(255,255,255,.9)" fill="none" stroke-width="1.6" stroke-width="2.2"/><ellipse cx="100" cy="84" rx="24.0" ry="3.5" stroke="rgba(255,255,255,.9)" fill="none" stroke-width="1.6" stroke-width="1"/><ellipse cx="100" cy="106" rx="20.9" ry="3.5" stroke="rgba(255,255,255,.9)" fill="none" stroke-width="1.6" stroke-width="1"/><ellipse cx="100" cy="128" rx="18.4" ry="3.5" stroke="rgba(255,255,255,.9)" fill="none" stroke-width="1.6" stroke-width="1"/><ellipse cx="100" cy="150" rx="16.5" ry="3.5" stroke="rgba(255,255,255,.9)" fill="none" stroke-width="1.6" stroke-width="1"/><ellipse cx="100" cy="172" rx="15.2" ry="3.5" stroke="rgba(255,255,255,.9)" fill="none" stroke-width="1.6" stroke-width="1"/><ellipse cx="100" cy="194" rx="14.6" ry="3.5" stroke="rgba(255,255,255,.9)" fill="none" stroke-width="1.6" stroke-width="1"/><ellipse cx="100" cy="216" rx="14.7" ry="3.5" stroke="rgba(255,255,255,.9)" fill="none" stroke-width="1.6" stroke-width="1"/><ellipse cx="100" cy="238" rx="15.5" ry="3.5" stroke="rgba(255,255,255,.9)" fill="none" stroke-width="1.6" stroke-width="1"/><ellipse cx="100" cy="260" rx="17.1" ry="3.5" stroke="rgba(255,255,255,.9)" fill="none" stroke-width="1.6" stroke-width="1"/><ellipse cx="100" cy="282" rx="19.5" ry="3.5" stroke="rgba(255,255,255,.9)" fill="none" stroke-width="1.6" stroke-width="1"/><ellipse cx="100" cy="304" rx="22.7" ry="3.5" stroke="rgba(255,255,255,.9)" fill="none" stroke-width="1.6" stroke-width="1"/><ellipse cx="100" cy="326" rx="26.7" ry="3.5" stroke="rgba(255,255,255,.9)" fill="none" stroke-width="1.6" stroke-width="1"/><ellipse cx="100" cy="348" rx="31.5" ry="3.8" stroke="rgba(255,255,255,.9)" fill="none" stroke-width="1.6" stroke-width="1"/><ellipse cx="100" cy="370" rx="37.3" ry="4.5" stroke="rgba(255,255,255,.9)" fill="none" stroke-width="1.6" stroke-width="1"/><ellipse cx="100" cy="392" rx="44.0" ry="5.3" stroke="rgba(255,255,255,.9)" fill="none" stroke-width="1.6" stroke-width="1"/><line x1="76.0" y1="84" x2="120.9" y2="106" stroke="rgba(255,255,255,.9)" fill="none" stroke-width="1.6" stroke-width=".8" opacity=".7"/><line x1="124.0" y1="84" x2="79.1" y2="106" stroke="rgba(255,255,255,.9)" fill="none" stroke-width="1.6" stroke-width=".8" opacity=".7"/><line x1="79.1" y1="106" x2="118.4" y2="128" stroke="rgba(255,255,255,.9)" fill="none" stroke-width="1.6" stroke-width=".8" opacity=".7"/><line x1="120.9" y1="106" x2="81.6" y2="128" stroke="rgba(255,255,255,.9)" fill="none" stroke-width="1.6" stroke-width=".8" opacity=".7"/><line x1="81.6" y1="128" x2="116.5" y2="150" stroke="rgba(255,255,255,.9)" fill="none" stroke-width="1.6" stroke-width=".8" opacity=".7"/><line x1="118.4" y1="128" x2="83.5" y2="150" stroke="rgba(255,255,255,.9)" fill="none" stroke-width="1.6" stroke-width=".8" opacity=".7"/><line x1="83.5" y1="150" x2="115.2" y2="172" stroke="rgba(255,255,255,.9)" fill="none" stroke-width="1.6" stroke-width=".8" opacity=".7"/><line x1="116.5" y1="150" x2="84.8" y2="172" stroke="rgba(255,255,255,.9)" fill="none" stroke-width="1.6" stroke-width=".8" opacity=".7"/><line x1="84.8" y1="172" x2="114.6" y2="194" stroke="rgba(255,255,255,.9)" fill="none" stroke-width="1.6" stroke-width=".8" opacity=".7"/><line x1="115.2" y1="172" x2="85.4" y2="194" stroke="rgba(255,255,255,.9)" fill="none" stroke-width="1.6" stroke-width=".8" opacity=".7"/><line x1="85.4" y1="194" x2="114.7" y2="216" stroke="rgba(255,255,255,.9)" fill="none" stroke-width="1.6" stroke-width=".8" opacity=".7"/><line x1="114.6" y1="194" x2="85.3" y2="216" stroke="rgba(255,255,255,.9)" fill="none" stroke-width="1.6" stroke-width=".8" opacity=".7"/><line x1="85.3" y1="216" x2="115.5" y2="238" stroke="rgba(255,255,255,.9)" fill="none" stroke-width="1.6" stroke-width=".8" opacity=".7"/><line x1="114.7" y1="216" x2="84.5" y2="238" stroke="rgba(255,255,255,.9)" fill="none" stroke-width="1.6" stroke-width=".8" opacity=".7"/><line x1="84.5" y1="238" x2="117.1" y2="260" stroke="rgba(255,255,255,.9)" fill="none" stroke-width="1.6" stroke-width=".8" opacity=".7"/><line x1="115.5" y1="238" x2="82.9" y2="260" stroke="rgba(255,255,255,.9)" fill="none" stroke-width="1.6" stroke-width=".8" opacity=".7"/><line x1="82.9" y1="260" x2="119.5" y2="282" stroke="rgba(255,255,255,.9)" fill="none" stroke-width="1.6" stroke-width=".8" opacity=".7"/><line x1="117.1" y1="260" x2="80.5" y2="282" stroke="rgba(255,255,255,.9)" fill="none" stroke-width="1.6" stroke-width=".8" opacity=".7"/><line x1="80.5" y1="282" x2="122.7" y2="304" stroke="rgba(255,255,255,.9)" fill="none" stroke-width="1.6" stroke-width=".8" opacity=".7"/><line x1="119.5" y1="282" x2="77.3" y2="304" stroke="rgba(255,255,255,.9)" fill="none" stroke-width="1.6" stroke-width=".8" opacity=".7"/><line x1="77.3" y1="304" x2="126.7" y2="326" stroke="rgba(255,255,255,.9)" fill="none" stroke-width="1.6" stroke-width=".8" opacity=".7"/><line x1="122.7" y1="304" x2="73.3" y2="326" stroke="rgba(255,255,255,.9)" fill="none" stroke-width="1.6" stroke-width=".8" opacity=".7"/><line x1="73.3" y1="326" x2="131.5" y2="348" stroke="rgba(255,255,255,.9)" fill="none" stroke-width="1.6" stroke-width=".8" opacity=".7"/><line x1="126.7" y1="326" x2="68.5" y2="348" stroke="rgba(255,255,255,.9)" fill="none" stroke-width="1.6" stroke-width=".8" opacity=".7"/><line x1="68.5" y1="348" x2="137.3" y2="370" stroke="rgba(255,255,255,.9)" fill="none" stroke-width="1.6" stroke-width=".8" opacity=".7"/><line x1="131.5" y1="348" x2="62.7" y2="370" stroke="rgba(255,255,255,.9)" fill="none" stroke-width="1.6" stroke-width=".8" opacity=".7"/><line x1="62.7" y1="370" x2="144.0" y2="392" stroke="rgba(255,255,255,.9)" fill="none" stroke-width="1.6" stroke-width=".8" opacity=".7"/><line x1="137.3" y1="370" x2="56.0" y2="392" stroke="rgba(255,255,255,.9)" fill="none" stroke-width="1.6" stroke-width=".8" opacity=".7"/><line x1="52" y1="392" x2="148" y2="392" stroke="rgba(255,255,255,.9)" fill="none" stroke-width="1.6" stroke-width="3"/></svg></div>
+</div>
+<div class="wrap">
+  <div class="cards" id="cards"></div>
+
+  <div class="panel">
+    <h2>风险评分规则（总分 = 工时 + 调动 + 薪资，满分13分）</h2>
+    <div class="rules">
+      <div class="rule"><b>① 工时风险（R+S+T列，0–9分）</b>
+      R 连勤：连续出勤9-10天=1分、11-12天=2分、≥13天=3分<br>
+      S 单日>11h：1-2次=1分、3-4次=2分、≥5次=3分<br>
+      T 月度超工时（超202h部分）：≤20h=1分、20-36h=2分、>36h=3分
+      <span class="src">来源：广州中台看板 2026-10 全月考勤</span></div>
+      <div class="rule"><b>② 调动风险（N列，0–1分）</b>
+      E列最新门店 ≠ F列国庆门店 → 月中调店记1分，未调动0分
+      <span class="src">来源：人员信息表 E/F 列比对</span></div>
+      <div class="rule"><b>③ 薪资风险（M/O/P/Q列，0–3分）= A+B封顶3分</b>
+      A 收入水平（M列9月实发 vs 本职级中位数）：低于中位数=1分、低于85%=2分<br>
+      B 谈薪兑现（|Q差异|÷O谈薪）：缺口≥30%=1分、≥45%=2分
+      <span class="src">逻辑：回报低+承诺未兑现=离职两大诱因；职级内比较避免绝对额不可比；10月薪资未出暂用9月</span></div>
+      <div class="rule"><b>风险分级（1V1面谈优先级）</b>
+      ≥9分 <span class="tier t-高风险">高风险</span> 优先面谈 ｜ 7-8分 <span class="tier t-较高风险">较高风险</span><br>
+      5-6分 <span class="tier t-中风险">中风险</span> ｜ ≤4分 <span class="tier t-低风险">低风险</span>
+      <span class="src">职级薪资中位数：店长9,563 / 中级6,124 / 初级4,933 / 服务员4,660 / 见习生1,712 元</span></div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>风险分布与门店对比</h2>
+    <div class="grid2"><div id="tierbars"></div><div id="storebars"></div></div>
+  </div>
+
+  <div class="panel">
+    <h2>人员风险明细（点击表头排序；点击汇总卡可弹对应人群明细）</h2>
+    <div class="filters">
+      <select id="fTier"><option value="">全部风险等级</option><option>高风险</option><option>较高风险</option><option>中风险</option><option>低风险</option><option>已离职</option></select>
+      <select id="fStore"><option value="">全部门店</option></select>
+      <select id="fLv"><option value="">全部职级</option></select>
+      <input id="fName" placeholder="搜索姓名/工号" style="width:140px">
+      <span class="note" id="count" style="margin:0"></span>
+    </div>
+    <div style="overflow:auto; max-height:620px;">
+      <table><thead><tr>
+      <th data-k="rank">#</th><th data-k="name">姓名</th><th data-k="lv">职级</th><th data-k="store">门店</th>
+      <th data-k="hours">10月工时</th><th data-k="salary">9月实发</th>
+      <th data-k="R">R连勤</th><th data-k="S">S单日</th><th data-k="T">T超时</th><th data-k="N">N调动</th>
+      <th data-k="sal">薪资风险</th><th data-k="total">综合分</th><th data-k="tier">风险等级</th><th>风险标签（面谈要点）</th><th>沟通记录</th>
+      </tr></thead><tbody id="tbody"></tbody></table>
+    </div>
+    <div class="note">R/S/T/N 分值与 Excel 表一致；薪资风险 = A(收入水平)+B(谈薪兑现) 封顶3分；综合分 = R+S+T+N+薪资风险。已离职人员不参与排序，列于表末。</div>
+  </div>
+</div>
+
+<div class="mask" id="mask">
+  <div class="modal">
+    <div class="modal-head"><div><span class="t" id="mTitle"></span><span class="n" id="mCount"></span></div><button class="modal-close" onclick="closeModal()">✕</button></div>
+    <div class="modal-body" id="mBody"></div>
+  </div>
+</div>
+
+<div class="mask" id="commMask">
+  <div class="modal" style="width:min(640px,94vw)">
+    <div class="modal-head"><div><span class="t" id="cTitle"></span><span class="n" id="cSub"></span></div><button class="modal-close" onclick="closeComm()">✕</button></div>
+    <div class="modal-body">
+      <div id="cList"></div>
+      <div class="rec-form">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <input id="cBy" placeholder="记录人（你的名字）">
+          <select id="cConcl">
+            <option value="">沟通结论（选填）</option>
+            <option>风险解除</option><option>持续关注</option><option>需复谈</option><option>拟离职</option>
+          </select>
+        </div>
+        <textarea id="cText" placeholder="沟通内容：员工反馈、原因、约定事项…"></textarea>
+        <button class="rec-submit" onclick="submitComm()">保存记录</button>
+        <span class="note" style="display:inline-block;margin:0 0 0 10px">保存后全员实时可见</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const DATA = {"people": [{"name": "余迎", "id": "CY49760", "lv": "服务员", "area": "赵婷", "store": "白鹅潭万象城店", "store_from": "万菱汇店", "transferred": true, "status": "在职", "hours": 260, "salary": 4584.0, "N": 1, "R": 1, "S": 3, "T": 3, "A": 1, "B": 2, "sal": 3, "total": 11, "tags": ["连勤9-10天", "单日>11h≥5次", "月超工时>36h", "月中调店", "薪资低于职级中位", "谈薪缺口≥45%"], "tier": "高风险"}, {"name": "刘睿", "id": "CY50333", "lv": "服务员", "area": "万俊杰", "store": "白鹅潭万象城游园会店", "store_from": "白鹅潭万象城游园会店", "transferred": false, "status": "在职", "hours": 241, "salary": 3756.0, "N": 0, "R": 2, "S": 2, "T": 3, "A": 2, "B": 1, "sal": 3, "total": 10, "tags": ["连勤11-12天", "单日>11h 3-4次", "月超工时>36h", "薪资显著低于职级中位", "谈薪缺口≥30%"], "tier": "高风险"}, {"name": "黄看看", "id": "CY1238", "lv": "店长", "area": "赵婷", "store": "白鹅潭万象城店", "store_from": "万菱汇店", "transferred": true, "status": "在职", "hours": 257, "salary": 8942.0, "N": 1, "R": 1, "S": 3, "T": 3, "A": 1, "B": 0, "sal": 1, "total": 9, "tags": ["连勤9-10天", "单日>11h≥5次", "月超工时>36h", "月中调店", "薪资低于职级中位"], "tier": "高风险"}, {"name": "赵家颖", "id": "CY397", "lv": "服务员", "area": "万俊杰", "store": "白鹅潭万象城游园会店", "store_from": "白鹅潭万象城游园会店", "transferred": false, "status": "在职", "hours": 259, "salary": 3247.0, "N": 0, "R": 1, "S": 3, "T": 3, "A": 2, "B": 0, "sal": 2, "total": 9, "tags": ["连勤9-10天", "单日>11h≥5次", "月超工时>36h", "薪资显著低于职级中位"], "tier": "高风险"}, {"name": "苏雨欣", "id": "CY48398", "lv": "初级训练员", "area": "赵婷", "store": "白鹅潭万象城店", "store_from": "万菱汇店", "transferred": true, "status": "在职", "hours": 257.5, "salary": 5453.0, "N": 1, "R": 1, "S": 2, "T": 3, "A": 0, "B": 2, "sal": 2, "total": 9, "tags": ["连勤9-10天", "单日>11h 3-4次", "月超工时>36h", "月中调店", "谈薪缺口≥45%"], "tier": "高风险"}, {"name": "雷永吉", "id": "CY70716", "lv": "见习生", "area": "万俊杰", "store": "白鹅潭万象城游园会店", "store_from": "万菱汇店", "transferred": true, "status": "在职", "hours": 254, "salary": 2142, "N": 1, "R": 0, "S": 3, "T": 3, "A": 0, "B": 2, "sal": 2, "total": 9, "tags": ["单日>11h≥5次", "月超工时>36h", "月中调店", "谈薪缺口≥45%"], "tier": "高风险"}, {"name": "徐嘉鑫", "id": "CY70717", "lv": "见习生", "area": "万俊杰", "store": "白鹅潭万象城游园会店", "store_from": "白鹅潭万象城游园会店", "transferred": false, "status": "在职", "hours": 251.5, "salary": 1899.0, "N": 0, "R": 1, "S": 3, "T": 3, "A": 0, "B": 2, "sal": 2, "total": 9, "tags": ["连勤9-10天", "单日>11h≥5次", "月超工时>36h", "谈薪缺口≥45%"], "tier": "高风险"}, {"name": "张湘鄂", "id": "CY47657", "lv": "初级训练员", "area": "万俊杰", "store": "白鹅潭万象城游园会店", "store_from": "白鹅潭万象城游园会店", "transferred": false, "status": "在职", "hours": 243, "salary": 4680.0, "N": 0, "R": 1, "S": 3, "T": 3, "A": 1, "B": 1, "sal": 2, "total": 9, "tags": ["连勤9-10天", "单日>11h≥5次", "月超工时>36h", "薪资低于职级中位", "谈薪缺口≥30%"], "tier": "高风险"}, {"name": "崔海洋", "id": "CY15348", "lv": "中级训练员", "area": "万俊杰", "store": "白鹅潭万象城游园会店", "store_from": "白鹅潭万象城游园会店", "transferred": false, "status": "在职", "hours": 272, "salary": 5789.0, "N": 0, "R": 0, "S": 3, "T": 3, "A": 1, "B": 2, "sal": 3, "total": 9, "tags": ["单日>11h≥5次", "月超工时>36h", "薪资低于职级中位", "谈薪缺口≥45%"], "tier": "高风险"}, {"name": "张隽盛", "id": "CY33571", "lv": "初级训练员", "area": "万俊杰", "store": "白鹅潭万象城游园会店", "store_from": "白鹅潭万象城游园会店", "transferred": false, "status": "在职", "hours": 258.5, "salary": 4089.0, "N": 0, "R": 0, "S": 3, "T": 3, "A": 2, "B": 2, "sal": 3, "total": 9, "tags": ["单日>11h≥5次", "月超工时>36h", "薪资显著低于职级中位", "谈薪缺口≥45%"], "tier": "高风险"}, {"name": "张锦鸿", "id": "CY70734", "lv": "见习生", "area": "赵婷", "store": "白鹅潭万象城店", "store_from": "白鹅潭万象城店", "transferred": false, "status": "在职", "hours": 255.5, "salary": 1099.0, "N": 0, "R": 0, "S": 3, "T": 3, "A": 2, "B": 2, "sal": 3, "total": 9, "tags": ["单日>11h≥5次", "月超工时>36h", "薪资显著低于职级中位", "谈薪缺口≥45%"], "tier": "高风险"}, {"name": "邓雅升", "id": "CY70736", "lv": "见习生", "area": "赵婷", "store": "白鹅潭万象城店", "store_from": "白鹅潭万象城店", "transferred": false, "status": "在职", "hours": 250, "salary": 1134.0, "N": 0, "R": 0, "S": 3, "T": 3, "A": 2, "B": 1, "sal": 3, "total": 9, "tags": ["单日>11h≥5次", "月超工时>36h", "薪资显著低于职级中位", "谈薪缺口≥30%"], "tier": "高风险"}, {"name": "吴学汇", "id": "CY70740", "lv": "见习生", "area": "赵婷", "store": "白鹅潭万象城店", "store_from": "白鹅潭万象城店", "transferred": false, "status": "在职", "hours": 242.5, "salary": 1092.0, "N": 0, "R": 0, "S": 3, "T": 3, "A": 2, "B": 1, "sal": 3, "total": 9, "tags": ["单日>11h≥5次", "月超工时>36h", "薪资显著低于职级中位", "谈薪缺口≥30%"], "tier": "高风险"}, {"name": "鲁旭贵", "id": "CY918", "lv": "中级训练员", "area": "万俊杰", "store": "白鹅潭万象城游园会店", "store_from": "万菱汇店", "transferred": true, "status": "在职", "hours": 265, "salary": 5445.0, "N": 1, "R": 0, "S": 3, "T": 3, "A": 1, "B": 0, "sal": 1, "total": 8, "tags": ["单日>11h≥5次", "月超工时>36h", "月中调店", "薪资低于职级中位"], "tier": "较高风险"}, {"name": "曹缘广", "id": "CY36585", "lv": "中级训练员", "area": "万俊杰", "store": "白鹅潭万象城游园会店", "store_from": "白鹅潭万象城游园会店", "transferred": false, "status": "在职", "hours": 256, "salary": 6582.0, "N": 0, "R": 1, "S": 3, "T": 3, "A": 0, "B": 1, "sal": 1, "total": 8, "tags": ["连勤9-10天", "单日>11h≥5次", "月超工时>36h", "谈薪缺口≥30%"], "tier": "较高风险"}, {"name": "张方怡", "id": "CY48406", "lv": "服务员", "area": "赵婷", "store": "白鹅潭万象城店", "store_from": "万菱汇店", "transferred": true, "status": "在职", "hours": 255, "salary": 4735.0, "N": 1, "R": 1, "S": 2, "T": 3, "A": 0, "B": 1, "sal": 1, "total": 8, "tags": ["连勤9-10天", "单日>11h 3-4次", "月超工时>36h", "月中调店", "谈薪缺口≥30%"], "tier": "较高风险"}, {"name": "陈昊", "id": "CY46022", "lv": "中级训练员", "area": "赵婷", "store": "白鹅潭万象城店", "store_from": "万菱汇店", "transferred": true, "status": "在职", "hours": 252.5, "salary": 5988.0, "N": 1, "R": 2, "S": 1, "T": 3, "A": 1, "B": 0, "sal": 1, "total": 8, "tags": ["连勤11-12天", "单日>11h 1-2次", "月超工时>36h", "月中调店", "薪资低于职级中位"], "tier": "较高风险"}, {"name": "叶映", "id": "CY70723", "lv": "见习生", "area": "万俊杰", "store": "白鹅潭万象城游园会店", "store_from": "白鹅潭万象城游园会店", "transferred": false, "status": "在职", "hours": 243, "salary": 1860.0, "N": 0, "R": 1, "S": 3, "T": 3, "A": 0, "B": 1, "sal": 1, "total": 8, "tags": ["连勤9-10天", "单日>11h≥5次", "月超工时>36h", "谈薪缺口≥30%"], "tier": "较高风险"}, {"name": "曹尧", "id": "CY70721", "lv": "见习生", "area": "万俊杰", "store": "白鹅潭万象城游园会店", "store_from": "白鹅潭万象城游园会店", "transferred": false, "status": "在职", "hours": 241.5, "salary": 1934.0, "N": 0, "R": 1, "S": 3, "T": 3, "A": 0, "B": 1, "sal": 1, "total": 8, "tags": ["连勤9-10天", "单日>11h≥5次", "月超工时>36h", "谈薪缺口≥30%"], "tier": "较高风险"}, {"name": "王廷钰", "id": "CY858", "lv": "中级训练员", "area": "万俊杰", "store": "白鹅潭万象城游园会店", "store_from": "白鹅潭万象城游园会店", "transferred": false, "status": "在职", "hours": 270, "salary": 6854.0, "N": 0, "R": 0, "S": 3, "T": 3, "A": 0, "B": 2, "sal": 2, "total": 8, "tags": ["单日>11h≥5次", "月超工时>36h", "谈薪缺口≥45%"], "tier": "较高风险"}, {"name": "肖冰", "id": "CY16214", "lv": "店长", "area": "万俊杰", "store": "白鹅潭万象城游园会店", "store_from": "白鹅潭万象城游园会店", "transferred": false, "status": "在职", "hours": 269, "salary": 7143.0, "N": 0, "R": 0, "S": 3, "T": 3, "A": 2, "B": 0, "sal": 2, "total": 8, "tags": ["单日>11h≥5次", "月超工时>36h", "薪资显著低于职级中位"], "tier": "较高风险"}, {"name": "孙宁辉", "id": "CY12639", "lv": "中级训练员", "area": "万俊杰", "store": "白鹅潭万象城游园会店", "store_from": "白鹅潭万象城游园会店", "transferred": false, "status": "在职", "hours": 266, "salary": 6194.0, "N": 0, "R": 0, "S": 3, "T": 3, "A": 0, "B": 2, "sal": 2, "total": 8, "tags": ["单日>11h≥5次", "月超工时>36h", "谈薪缺口≥45%"], "tier": "较高风险"}, {"name": "丁晚婷", "id": "CY1132", "lv": "店长", "area": "万俊杰", "store": "白鹅潭万象城游园会店", "store_from": "白鹅潭万象城游园会店", "transferred": false, "status": "在职", "hours": 264, "salary": 10184.0, "N": 0, "R": 0, "S": 3, "T": 3, "A": 0, "B": 2, "sal": 2, "total": 8, "tags": ["单日>11h≥5次", "月超工时>36h", "谈薪缺口≥45%"], "tier": "较高风险"}, {"name": "陈念峰", "id": "CY7182", "lv": "中级训练员", "area": "赵婷", "store": "白鹅潭万象城店", "store_from": "白鹅潭万象城店", "transferred": false, "status": "在职", "hours": 264, "salary": 5225.0, "N": 0, "R": 0, "S": 3, "T": 3, "A": 1, "B": 1, "sal": 2, "total": 8, "tags": ["单日>11h≥5次", "月超工时>36h", "薪资低于职级中位", "谈薪缺口≥30%"], "tier": "较高风险"}, {"name": "邓鑫", "id": "CY29997", "lv": "中级训练员", "area": "万俊杰", "store": "白鹅潭万象城游园会店", "store_from": "白鹅潭万象城游园会店", "transferred": false, "status": "在职", "hours": 260.5, "salary": 6124.0, "N": 0, "R": 0, "S": 3, "T": 3, "A": 0, "B": 2, "sal": 2, "total": 8, "tags": ["单日>11h≥5次", "月超工时>36h", "谈薪缺口≥45%"], "tier": "较高风险"}, {"name": "丁利娜", "id": "CY316", "lv": "初级训练员", "area": "万俊杰", "store": "白鹅潭万象城游园会店", "store_from": "白鹅潭万象城游园会店", "transferred": false, "status": "在职", "hours": 253, "salary": 4431.0, "N": 0, "R": 0, "S": 3, "T": 3, "A": 1, "B": 1, "sal": 2, "total": 8, "tags": ["单日>11h≥5次", "月超工时>36h", "薪资低于职级中位", "谈薪缺口≥30%"], "tier": "较高风险"}, {"name": "苏锐", "id": "CY61008", "lv": "服务员", "area": "赵婷", "store": "白鹅潭万象城店", "store_from": "白鹅潭万象城店", "transferred": false, "status": "在职", "hours": 251, "salary": 4525.0, "N": 0, "R": 0, "S": 3, "T": 3, "A": 1, "B": 1, "sal": 2, "total": 8, "tags": ["单日>11h≥5次", "月超工时>36h", "薪资低于职级中位", "谈薪缺口≥30%"], "tier": "较高风险"}, {"name": "贺超", "id": "CY38227", "lv": "初级训练员", "area": "万俊杰", "store": "白鹅潭万象城游园会店", "store_from": "白鹅潭万象城游园会店", "transferred": false, "status": "在职", "hours": 243, "salary": 4532.0, "N": 0, "R": 0, "S": 3, "T": 3, "A": 1, "B": 1, "sal": 2, "total": 8, "tags": ["单日>11h≥5次", "月超工时>36h", "薪资低于职级中位", "谈薪缺口≥30%"], "tier": "较高风险"}, {"name": "刘家伦", "id": "CY47256", "lv": "初级训练员", "area": "万俊杰", "store": "白鹅潭万象城游园会店", "store_from": "白鹅潭万象城游园会店", "transferred": false, "status": "在职", "hours": 239, "salary": 4825.0, "N": 0, "R": 0, "S": 3, "T": 3, "A": 1, "B": 1, "sal": 2, "total": 8, "tags": ["单日>11h≥5次", "月超工时>36h", "薪资低于职级中位", "谈薪缺口≥30%"], "tier": "较高风险"}, {"name": "王乃金", "id": "CY39605", "lv": "初级训练员", "area": "赵婷", "store": "白鹅潭万象城店", "store_from": "白鹅潭万象城店", "transferred": false, "status": "在职", "hours": 262, "salary": 4257.0, "N": 0, "R": 0, "S": 2, "T": 3, "A": 1, "B": 2, "sal": 3, "total": 8, "tags": ["单日>11h 3-4次", "月超工时>36h", "薪资低于职级中位", "谈薪缺口≥45%"], "tier": "较高风险"}, {"name": "陈俊洋", "id": "CY70731", "lv": "见习生", "area": "赵婷", "store": "白鹅潭万象城店", "store_from": "白鹅潭万象城店", "transferred": false, "status": "在职", "hours": 258, "salary": 1319.0, "N": 0, "R": 0, "S": 2, "T": 3, "A": 2, "B": 1, "sal": 3, "total": 8, "tags": ["单日>11h 3-4次", "月超工时>36h", "薪资显著低于职级中位", "谈薪缺口≥30%"], "tier": "较高风险"}, {"name": "陈锐", "id": "CY50341", "lv": "初级训练员", "area": "赵婷", "store": "白鹅潭万象城店", "store_from": "万菱汇店", "transferred": true, "status": "在职", "hours": 245.5, "salary": 3974.0, "N": 1, "R": 0, "S": 1, "T": 3, "A": 2, "B": 1, "sal": 3, "total": 8, "tags": ["单日>11h 1-2次", "月超工时>36h", "月中调店", "薪资显著低于职级中位", "谈薪缺口≥30%"], "tier": "较高风险"}, {"name": "毛燕珍", "id": "CY70739", "lv": "见习生", "area": "赵婷", "store": "白鹅潭万象城店", "store_from": "白鹅潭万象城店", "transferred": false, "status": "在职", "hours": 239, "salary": 1122.0, "N": 0, "R": 0, "S": 2, "T": 3, "A": 2, "B": 1, "sal": 3, "total": 8, "tags": ["单日>11h 3-4次", "月超工时>36h", "薪资显著低于职级中位", "谈薪缺口≥30%"], "tier": "较高风险"}, {"name": "罗素芳", "id": "CY21610", "lv": "中级训练员", "area": "万俊杰", "store": "白鹅潭万象城游园会店", "store_from": "万菱汇店", "transferred": true, "status": "在职", "hours": 261.5, "salary": 7169.0, "N": 1, "R": 0, "S": 3, "T": 3, "A": 0, "B": 0, "sal": 0, "total": 7, "tags": ["单日>11h≥5次", "月超工时>36h", "月中调店"], "tier": "较高风险"}, {"name": "顾嘉鑫", "id": "CY44501", "lv": "初级训练员", "area": "赵婷", "store": "白鹅潭万象城店", "store_from": "白鹅潭万象城店", "transferred": false, "status": "在职", "hours": 268, "salary": 4935.0, "N": 0, "R": 0, "S": 3, "T": 3, "A": 0, "B": 1, "sal": 1, "total": 7, "tags": ["单日>11h≥5次", "月超工时>36h", "谈薪缺口≥30%"], "tier": "较高风险"}, {"name": "李欣怡", "id": "CY25844", "lv": "初级训练员", "area": "赵婷", "store": "白鹅潭万象城店", "store_from": "白鹅潭万象城店", "transferred": false, "status": "在职", "hours": 265.5, "salary": 4756.0, "N": 0, "R": 0, "S": 3, "T": 3, "A": 1, "B": 0, "sal": 1, "total": 7, "tags": ["单日>11h≥5次", "月超工时>36h", "薪资低于职级中位"], "tier": "较高风险"}, {"name": "冯奥", "id": "CY47371", "lv": "初级训练员", "area": "赵婷", "store": "白鹅潭万象城店", "store_from": "白鹅潭万象城店", "transferred": false, "status": "在职", "hours": 255, "salary": 5197.0, "N": 0, "R": 0, "S": 3, "T": 3, "A": 0, "B": 1, "sal": 1, "total": 7, "tags": ["单日>11h≥5次", "月超工时>36h", "谈薪缺口≥30%"], "tier": "较高风险"}, {"name": "旷仕林", "id": "CY61861", "lv": "服务员", "area": "赵婷", "store": "白鹅潭万象城店", "store_from": "白鹅潭万象城店", "transferred": false, "status": "在职", "hours": 249, "salary": 5608.0, "N": 0, "R": 0, "S": 3, "T": 3, "A": 0, "B": 1, "sal": 1, "total": 7, "tags": ["单日>11h≥5次", "月超工时>36h", "谈薪缺口≥30%"], "tier": "较高风险"}, {"name": "卢志佳", "id": "CY70729", "lv": "见习生", "area": "万俊杰", "store": "白鹅潭万象城游园会店", "store_from": "白鹅潭万象城游园会店", "transferred": false, "status": "在职", "hours": 248.5, "salary": 1967.0, "N": 0, "R": 0, "S": 3, "T": 3, "A": 0, "B": 1, "sal": 1, "total": 7, "tags": ["单日>11h≥5次", "月超工时>36h", "谈薪缺口≥30%"], "tier": "较高风险"}, {"name": "范晶", "id": "CY70726", "lv": "见习生", "area": "万俊杰", "store": "白鹅潭万象城游园会店", "store_from": "白鹅潭万象城游园会店", "transferred": false, "status": "在职", "hours": 248, "salary": 2005.0, "N": 0, "R": 0, "S": 3, "T": 3, "A": 0, "B": 1, "sal": 1, "total": 7, "tags": ["单日>11h≥5次", "月超工时>36h", "谈薪缺口≥30%"], "tier": "较高风险"}, {"name": "罗清青", "id": "CY24345", "lv": "中级训练员", "area": "赵婷", "store": "白鹅潭万象城店", "store_from": "万菱汇店", "transferred": true, "status": "在职", "hours": 248, "salary": 6212.0, "N": 1, "R": 0, "S": 2, "T": 3, "A": 0, "B": 1, "sal": 1, "total": 7, "tags": ["单日>11h 3-4次", "月超工时>36h", "月中调店", "谈薪缺口≥30%"], "tier": "较高风险"}, {"name": "张文俊", "id": "CY29105", "lv": "初级训练员", "area": "万俊杰", "store": "白鹅潭万象城游园会店", "store_from": "万菱汇店", "transferred": true, "status": "在职", "hours": 239, "salary": 5541.0, "N": 1, "R": 0, "S": 2, "T": 3, "A": 0, "B": 1, "sal": 1, "total": 7, "tags": ["单日>11h 3-4次", "月超工时>36h", "月中调店", "谈薪缺口≥30%"], "tier": "较高风险"}, {"name": "张芷菁", "id": "CY44793", "lv": "初级训练员", "area": "赵婷", "store": "白鹅潭万象城店", "store_from": "万菱汇店", "transferred": true, "status": "在职", "hours": 254, "salary": 4933.0, "N": 1, "R": 0, "S": 1, "T": 3, "A": 0, "B": 2, "sal": 2, "total": 7, "tags": ["单日>11h 1-2次", "月超工时>36h", "月中调店", "谈薪缺口≥45%"], "tier": "较高风险"}, {"name": "宾灵芝", "id": "CY10532", "lv": "中级训练员", "area": "赵婷", "store": "白鹅潭万象城店", "store_from": "白鹅潭万象城店", "transferred": false, "status": "在职", "hours": 248.5, "salary": 5952.0, "N": 0, "R": 0, "S": 2, "T": 3, "A": 1, "B": 1, "sal": 2, "total": 7, "tags": ["单日>11h 3-4次", "月超工时>36h", "薪资低于职级中位", "谈薪缺口≥30%"], "tier": "较高风险"}, {"name": "肖园园", "id": "CY61641", "lv": "服务员", "area": "万俊杰", "store": "白鹅潭万象城游园会店", "store_from": "白鹅潭万象城游园会店", "transferred": false, "status": "在职", "hours": 238.5, "salary": 3709.0, "N": 0, "R": 0, "S": 2, "T": 3, "A": 2, "B": 0, "sal": 2, "total": 7, "tags": ["单日>11h 3-4次", "月超工时>36h", "薪资显著低于职级中位"], "tier": "较高风险"}, {"name": "饶永斌", "id": "CY70732", "lv": "见习生", "area": "赵婷", "store": "白鹅潭万象城店", "store_from": "白鹅潭万象城店", "transferred": false, "status": "在职", "hours": 243, "salary": 1070.0, "N": 0, "R": 0, "S": 1, "T": 3, "A": 2, "B": 1, "sal": 3, "total": 7, "tags": ["单日>11h 1-2次", "月超工时>36h", "薪资显著低于职级中位", "谈薪缺口≥30%"], "tier": "较高风险"}, {"name": "李鑫江", "id": "CY70738", "lv": "见习生", "area": "赵婷", "store": "白鹅潭万象城店", "store_from": "万菱汇店", "transferred": true, "status": "在职", "hours": 231.5, "salary": 1344.0, "N": 1, "R": 0, "S": 1, "T": 2, "A": 2, "B": 1, "sal": 3, "total": 7, "tags": ["单日>11h 1-2次", "月超工时20-36h", "月中调店", "薪资显著低于职级中位", "谈薪缺口≥30%"], "tier": "较高风险"}, {"name": "鄢金焱", "id": "CY31304", "lv": "店长", "area": "赵婷", "store": "白鹅潭万象城店", "store_from": "白鹅潭万象城店", "transferred": false, "status": "在职", "hours": 264, "salary": 10448.0, "N": 0, "R": 0, "S": 3, "T": 3, "A": 0, "B": 0, "sal": 0, "total": 6, "tags": ["单日>11h≥5次", "月超工时>36h"], "tier": "中风险"}, {"name": "范宇航", "id": "CY2076", "lv": "中级训练员", "area": "万俊杰", "store": "白鹅潭万象城游园会店", "store_from": "白鹅潭万象城游园会店", "transferred": false, "status": "在职", "hours": 262, "salary": 7017.0, "N": 0, "R": 0, "S": 3, "T": 3, "A": 0, "B": 0, "sal": 0, "total": 6, "tags": ["单日>11h≥5次", "月超工时>36h"], "tier": "中风险"}, {"name": "黄雪宇", "id": "CY70724", "lv": "见习生", "area": "万俊杰", "store": "白鹅潭万象城游园会店", "store_from": "白鹅潭万象城游园会店", "transferred": false, "status": "在职", "hours": 251.5, "salary": 1942.0, "N": 0, "R": 0, "S": 3, "T": 3, "A": 0, "B": 0, "sal": 0, "total": 6, "tags": ["单日>11h≥5次", "月超工时>36h"], "tier": "中风险"}, {"name": "梁思宇", "id": "CY46367", "lv": "服务员", "area": "万俊杰", "store": "白鹅潭万象城游园会店", "store_from": "白鹅潭万象城游园会店", "transferred": false, "status": "在职", "hours": 247.5, "salary": 6221.0, "N": 0, "R": 0, "S": 3, "T": 3, "A": 0, "B": 0, "sal": 0, "total": 6, "tags": ["单日>11h≥5次", "月超工时>36h"], "tier": "中风险"}, {"name": "张馨", "id": "CY70725", "lv": "见习生", "area": "万俊杰", "store": "白鹅潭万象城游园会店", "store_from": "白鹅潭万象城游园会店", "transferred": false, "status": "在职", "hours": 245.5, "salary": 1894.0, "N": 0, "R": 1, "S": 2, "T": 3, "A": 0, "B": 0, "sal": 0, "total": 6, "tags": ["连勤9-10天", "单日>11h 3-4次", "月超工时>36h"], "tier": "中风险"}, {"name": "凌海变", "id": "CY70720", "lv": "见习生", "area": "万俊杰", "store": "白鹅潭万象城游园会店", "store_from": "白鹅潭万象城游园会店", "transferred": false, "status": "在职", "hours": 253, "salary": 1914.0, "N": 0, "R": 0, "S": 2, "T": 3, "A": 0, "B": 1, "sal": 1, "total": 6, "tags": ["单日>11h 3-4次", "月超工时>36h", "谈薪缺口≥30%"], "tier": "中风险"}, {"name": "郑丽丽", "id": "CY48799", "lv": "服务员", "area": "赵婷", "store": "白鹅潭万象城店", "store_from": "万菱汇店", "transferred": true, "status": "在职", "hours": 251.5, "salary": 4519.0, "N": 1, "R": 0, "S": 1, "T": 3, "A": 1, "B": 0, "sal": 1, "total": 6, "tags": ["单日>11h 1-2次", "月超工时>36h", "月中调店", "薪资低于职级中位"], "tier": "中风险"}, {"name": "杨璇", "id": "CY45847", "lv": "服务员", "area": "赵婷", "store": "白鹅潭万象城店", "store_from": "白鹅潭万象城店", "transferred": false, "status": "在职", "hours": 250.5, "salary": 4814.0, "N": 0, "R": 0, "S": 2, "T": 3, "A": 0, "B": 1, "sal": 1, "total": 6, "tags": ["单日>11h 3-4次", "月超工时>36h", "谈薪缺口≥30%"], "tier": "中风险"}, {"name": "刘玲", "id": "CY63710", "lv": "服务员", "area": "赵婷", "store": "白鹅潭万象城店", "store_from": "白鹅潭万象城店", "transferred": false, "status": "在职", "hours": 250.5, "salary": 5090.0, "N": 0, "R": 0, "S": 2, "T": 3, "A": 0, "B": 1, "sal": 1, "total": 6, "tags": ["单日>11h 3-4次", "月超工时>36h", "谈薪缺口≥30%"], "tier": "中风险"}, {"name": "何涟", "id": "CY34775", "lv": "初级训练员", "area": "赵婷", "store": "白鹅潭万象城店", "store_from": "万菱汇店", "transferred": true, "status": "在职", "hours": 245, "salary": 5219.0, "N": 1, "R": 0, "S": 1, "T": 3, "A": 0, "B": 1, "sal": 1, "total": 6, "tags": ["单日>11h 1-2次", "月超工时>36h", "月中调店", "谈薪缺口≥30%"], "tier": "中风险"}, {"name": "陈代佳", "id": "CY44494", "lv": "初级训练员", "area": "赵婷", "store": "白鹅潭万象城店", "store_from": "万菱汇店", "transferred": true, "status": "在职", "hours": 244, "salary": 5257.0, "N": 1, "R": 0, "S": 1, "T": 3, "A": 0, "B": 1, "sal": 1, "total": 6, "tags": ["单日>11h 1-2次", "月超工时>36h", "月中调店", "谈薪缺口≥30%"], "tier": "中风险"}, {"name": "田佳麟", "id": "CY4110", "lv": "中级训练员", "area": "万俊杰", "store": "白鹅潭万象城游园会店", "store_from": "白鹅潭万象城游园会店", "transferred": false, "status": "在职", "hours": 235, "salary": 5512.0, "N": 0, "R": 0, "S": 3, "T": 2, "A": 1, "B": 0, "sal": 1, "total": 6, "tags": ["单日>11h≥5次", "月超工时20-36h", "薪资低于职级中位"], "tier": "中风险"}, {"name": "张加诚", "id": "CY70718", "lv": "见习生", "area": "万俊杰", "store": "白鹅潭万象城游园会店", "store_from": "万菱汇店", "transferred": true, "status": "在职", "hours": 232, "salary": 1855.0, "N": 1, "R": 0, "S": 2, "T": 2, "A": 0, "B": 1, "sal": 1, "total": 6, "tags": ["单日>11h 3-4次", "月超工时20-36h", "月中调店", "谈薪缺口≥30%"], "tier": "中风险"}, {"name": "许桓瑞", "id": "CY70735", "lv": "见习生", "area": "赵婷", "store": "白鹅潭万象城店", "store_from": "万菱汇店", "transferred": true, "status": "在职", "hours": 229, "salary": 1031.0, "N": 1, "R": 0, "S": 1, "T": 2, "A": 2, "B": 0, "sal": 2, "total": 6, "tags": ["单日>11h 1-2次", "月超工时20-36h", "月中调店", "薪资显著低于职级中位"], "tier": "中风险"}, {"name": "吕珊珊", "id": "CY70733", "lv": "见习生", "area": "赵婷", "store": "白鹅潭万象城店", "store_from": "白鹅潭万象城店", "transferred": false, "status": "在职", "hours": 225.5, "salary": 1123.0, "N": 0, "R": 0, "S": 2, "T": 2, "A": 2, "B": 0, "sal": 2, "total": 6, "tags": ["单日>11h 3-4次", "月超工时20-36h", "薪资显著低于职级中位"], "tier": "中风险"}, {"name": "徐笑笑", "id": "CY39861", "lv": "初级训练员", "area": "赵婷", "store": "白鹅潭万象城店", "store_from": "白鹅潭万象城店", "transferred": false, "status": "在职", "hours": 259.5, "salary": 5332.0, "N": 0, "R": 0, "S": 1, "T": 3, "A": 0, "B": 1, "sal": 1, "total": 5, "tags": ["单日>11h 1-2次", "月超工时>36h", "谈薪缺口≥30%"], "tier": "中风险"}, {"name": "李婉莹", "id": "CY2664", "lv": "初级训练员", "area": "赵婷", "store": "白鹅潭万象城店", "store_from": "白鹅潭万象城店", "transferred": false, "status": "在职", "hours": 243.5, "salary": 5706.0, "N": 0, "R": 0, "S": 1, "T": 3, "A": 0, "B": 1, "sal": 1, "total": 5, "tags": ["单日>11h 1-2次", "月超工时>36h", "谈薪缺口≥30%"], "tier": "中风险"}, {"name": "符琴", "id": "CY70727", "lv": "见习生", "area": "万俊杰", "store": "白鹅潭万象城游园会店", "store_from": "白鹅潭万象城游园会店", "transferred": false, "status": "在职", "hours": 239.5, "salary": 1874.0, "N": 0, "R": 0, "S": 1, "T": 3, "A": 0, "B": 1, "sal": 1, "total": 5, "tags": ["单日>11h 1-2次", "月超工时>36h", "谈薪缺口≥30%"], "tier": "中风险"}, {"name": "陈袁一丁", "id": "CY51121", "lv": "服务员", "area": "赵婷", "store": "白鹅潭万象城店", "store_from": "万菱汇店", "transferred": true, "status": "在职", "hours": 214.5, "salary": 4958.0, "N": 1, "R": 0, "S": 1, "T": 1, "A": 0, "B": 2, "sal": 2, "total": 5, "tags": ["单日>11h 1-2次", "月超工时≤20h", "月中调店", "谈薪缺口≥45%"], "tier": "中风险"}, {"name": "胡越", "id": "CY70722", "lv": "见习生", "area": "万俊杰", "store": "白鹅潭万象城游园会店", "store_from": "白鹅潭万象城游园会店", "transferred": false, "status": "在职", "hours": 192, "salary": 1570.0, "N": 0, "R": 0, "S": 2, "T": 0, "A": 1, "B": 2, "sal": 3, "total": 5, "tags": ["单日>11h 3-4次", "薪资低于职级中位", "谈薪缺口≥45%"], "tier": "中风险"}, {"name": "谭星妤", "id": "CY70730", "lv": "见习生", "area": "万俊杰", "store": "白鹅潭万象城游园会店", "store_from": "白鹅潭万象城游园会店", "transferred": false, "status": "在职", "hours": 227.5, "salary": 1882.0, "N": 0, "R": 0, "S": 2, "T": 2, "A": 0, "B": 0, "sal": 0, "total": 4, "tags": ["单日>11h 3-4次", "月超工时20-36h"], "tier": "低风险"}, {"name": "黄仕炜", "id": "611X黄仕炜", "lv": "见习生", "area": "广州市新人组离职", "store": "市新人组离职", "store_from": "/", "transferred": false, "status": "离职", "hours": null, "salary": 411, "N": 0, "R": 0, "S": 0, "T": 0, "A": 2, "B": 0, "sal": 2, "total": 2, "tags": ["薪资显著低于职级中位"], "tier": "已离职"}, {"name": "黄萱", "id": "1523黄萱", "lv": "见习生", "area": "广州市新人组离职", "store": "市新人组离职", "store_from": "/", "transferred": false, "status": "离职", "hours": null, "salary": 548, "N": 0, "R": 0, "S": 0, "T": 0, "A": 2, "B": 0, "sal": 2, "total": 2, "tags": ["薪资显著低于职级中位"], "tier": "已离职"}], "stats": {"total": 70, "active": 68, "left": 2, "high": 13, "mid_high": 34, "mid": 20, "low": 1, "avg_hours": 249.4, "transferred": 19, "med_salary": {"服务员": 4660, "店长": 9563, "中级训练员": 6124, "初级训练员": 4933, "见习生": 1712}}};
+const tierColor = {'高风险':'#C0392B','较高风险':'#E67E22','中风险':'#F1C40F','低风险':'#27AE60','已离职':'#B2BABB'};
+const s = DATA.stats;
+
+// ---- 汇总卡（点击弹明细） ----
+const cardDefs = [
+  {cls:'c-blue', num:s.active, lbl:'在职人数（另'+s.left+'人离职）', key:'active'},
+  {cls:'c-red', num:s.high, lbl:'高风险（≥9分）优先面谈', key:'high'},
+  {cls:'c-orange', num:s.mid_high, lbl:'较高风险（7-8分）', key:'midhigh'},
+  {cls:'c-navy', num:s.avg_hours+'h', lbl:'10月人均工时', key:'hours'},
+  {cls:'c-green', num:s.transferred, lbl:'月中调店人数', key:'moved'},
+];
+document.getElementById('cards').innerHTML = cardDefs.map(c=>
+  `<div class="card ${c.cls}" onclick="openDetail('${c.key}')"><div class="num">${c.num}</div><div class="lbl">${c.lbl}</div><div class="hint">点击查看明细 ›</div></div>`).join('');
+
+function pickPeople(key){
+  const act = DATA.people.filter(p=>p.status!=='离职');
+  if (key==='active') return ['在职人员明细（按综合分降序）', act.slice().sort((a,b)=>b.total-a.total)];
+  if (key==='high') return ['高风险人员（≥9分）· 优先面谈', act.filter(p=>p.tier==='高风险').sort((a,b)=>b.total-a.total)];
+  if (key==='midhigh') return ['较高风险人员（7-8分）', act.filter(p=>p.tier==='较高风险').sort((a,b)=>b.total-a.total)];
+  if (key==='hours') return ['10月工时排名（降序）', act.filter(p=>p.hours!=null).sort((a,b)=>b.hours-a.hours)];
+  if (key==='moved') return ['月中调店人员（E最新门店≠F国庆门店）', act.filter(p=>p.transferred).sort((a,b)=>b.total-a.total)];
+  return ['', []];
+}
+function openDetail(key){
+  const [title, ps] = pickPeople(key);
+  document.getElementById('mTitle').textContent = title;
+  document.getElementById('mCount').textContent = '共 '+ps.length+' 人';
+  document.getElementById('mBody').innerHTML = '<table><thead><tr><th>#</th><th>姓名</th><th>职级</th><th>门店</th>'+
+    (key==='moved'?'<th>国庆门店 →</th>':'')+
+    '<th>10月工时</th><th>9月实发</th><th>R</th><th>S</th><th>T</th><th>N</th><th>薪资风险</th><th>综合分</th><th>等级</th><th style="min-width:200px">风险标签</th></tr></thead><tbody>'+
+    ps.map((p,i)=>`<tr><td>${i+1}</td><td style="font-weight:600">${p.name}</td><td>${p.lv}</td><td>${p.store}</td>`+
+      (key==='moved'?`<td style="color:#6C3483">${p.store_from}</td>`:'')+
+      `<td>${p.hours??'—'}</td><td>¥${Number(p.salary).toLocaleString()}</td>`+
+      `<td><span class="score s${p.R}">${p.R}</span></td><td><span class="score s${p.S}">${p.S}</span></td><td><span class="score s${p.T}">${p.T}</span></td><td><span class="score s${p.N}">${p.N}</span></td><td><span class="score s${p.sal}">${p.sal}</span></td>`+
+      `<td class="total">${p.total}</td><td><span class="tier t-${p.tier}">${p.tier}</span></td><td style="text-align:left;white-space:normal">${p.tags.map(t=>`<span class="tag${t==='月中调店'?' mv':(t.includes('薪资')||t.includes('缺口'))?' pay':''}">${t}</span>`).join('')}</td></tr>`).join('')+
+    '</tbody></table>';
+  document.getElementById('mask').classList.add('show');
+}
+function closeModal(){ document.getElementById('mask').classList.remove('show'); }
+document.getElementById('mask').addEventListener('click', e=>{ if(e.target.id==='mask') closeModal(); });
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeModal(); });
+
+// ---- 风险分布 ----
+const tiers = ['高风险','较高风险','中风险','低风险'];
+const tc = tiers.map(t => [t, DATA.people.filter(p=>p.tier===t).length]);
+const tmax = Math.max(...tc.map(x=>x[1]));
+document.getElementById('tierbars').innerHTML = '<div style="font-size:13px;font-weight:600;margin-bottom:10px;color:#1B3A6B">风险等级分布（在职）</div>' +
+ tc.map(([t,n])=>`<div class="bar-row"><span class="bk">${t}</span><div class="bar-track"><div class="bar-fill" style="width:${n/tmax*100}%;background:${tierColor[t]}"></div></div><span class="bar-val">${n}人</span></div>`).join('');
+
+// ---- 门店对比 ----
+const stores = [...new Set(DATA.people.filter(p=>p.status!=='离职').map(p=>p.store))];
+const sdata = stores.map(st=>{
+  const ps = DATA.people.filter(p=>p.store===st && p.status!=='离职');
+  return [st, ps.length, ps.filter(p=>p.tier==='高风险').length, (ps.reduce((a,p)=>a+p.total,0)/ps.length).toFixed(1)];
+});
+const smax = Math.max(...sdata.map(x=>x[3]));
+document.getElementById('storebars').innerHTML = '<div style="font-size:13px;font-weight:600;margin-bottom:10px;color:#1B3A6B">各门店平均综合风险分 / 高风险人数</div>' +
+ sdata.map(([st,n,h,avg])=>`<div class="bar-row"><span class="bk" style="width:118px">${st}</span><div class="bar-track"><div class="bar-fill" style="width:${avg/smax*100}%;background:linear-gradient(90deg,#1256A8,#2E8FE8)"></div></div><span class="bar-val">${avg}分 · <b style="color:#C0392B">${h}</b>人高危</span></div>`).join('');
+
+// ---- 明细表 ----
+const tbody = document.getElementById('tbody');
+let sortK = 'total', sortD = -1;
+function tagHtml(p){
+  return p.tags.map(t=>{
+    let cls = 'tag';
+    if (t==='月中调店') cls += ' mv';
+    if (t.includes('薪资') || t.includes('缺口')) cls += ' pay';
+    return `<span class="${cls}">${t}</span>`;
+  }).join('');
+}
+function render(){
+  const ft = fTier.value, fs = fStore.value, fl = fLv.value, fn = fName.value.trim();
+  let ps = DATA.people.filter(p=>(!ft||p.tier===ft)&&(!fs||p.store===fs)&&(!fl||p.lv===fl)&&(!fn||p.name.includes(fn)||(p.id||'').includes(fn)));
+  ps.sort((a,b)=>{
+    let va=a[sortK], vb=b[sortK];
+    if (va==null) va=-1e9; if (vb==null) vb=-1e9;
+    return (va>vb?1:va<vb?-1:0)*sortD || b.total-a.total;
+  });
+  document.getElementById('count').textContent = `共 ${ps.length} 人`;
+  tbody.innerHTML = ps.map((p,i)=>`<tr>
+    <td>${i+1}</td><td style="font-weight:600">${p.name}${p.transferred?'<span class="tag mv">调店</span>':''}</td>
+    <td>${p.lv}</td><td>${p.store}</td>
+    <td>${p.hours??'—'}</td><td>¥${Number(p.salary).toLocaleString()}</td>
+    <td><span class="score s${p.R}">${p.R}</span></td><td><span class="score s${p.S}">${p.S}</span></td>
+    <td><span class="score s${p.T}">${p.T}</span></td><td><span class="score s${p.N}">${p.N}</span></td>
+    <td><span class="score s${p.sal}">${p.sal}</span></td><td class="total">${p.total}</td>
+    <td><span class="tier t-${p.tier}">${p.tier}</span></td>
+    <td style="text-align:left;white-space:normal;min-width:220px">${tagHtml(p)}</td>
+    <td><button class="comm-btn" onclick="openComm('${p.id}')">沟通记录${recCount(p.id)?`<span class="cb">${recCount(p.id)}</span>`:''}</button></td></tr>`).join('');
+}
+document.querySelectorAll('th[data-k]').forEach(th=>th.onclick=()=>{
+  const k=th.dataset.k; if(k==='rank')return;
+  if(sortK===k) sortD*=-1; else {sortK=k; sortD=k==='name'||k==='store'||k==='lv'?1:-1;}
+  render();
+});
+['fTier','fStore','fLv','fName'].forEach(id=>document.getElementById(id).oninput=render);
+[...new Set(DATA.people.map(p=>p.store))].forEach(st=>fStore.add(new Option(st,st)));
+[...new Set(DATA.people.map(p=>p.lv))].forEach(l=>fLv.add(new Option(l,l)));
+
+/* ============ 沟通记录 · Supabase 多人协作 ============
+   与墨柠系看板同一协作策略：操作先入本机队列并即时生效，
+   推送时先拉云端最新、重放未确认操作后整体 upsert，避免互相覆盖。 */
+const SUPA_URL='https://tclfmnfvlrlxquiojjya.supabase.co';
+const SUPA_KEY='sb_publishable_6sa-Pz6dX0BSlTJX3gNiRA_CbtZkf_b';
+const SUPA_TABLE='violation_data';
+const SUPA_ID=150;                 // 广州人员风险看板·沟通记录专用行
+const LS_REC='gzrisk_rec_backup', LS_PD='gzrisk_pending', LS_BY='gzrisk_by';
+let REC={}, PEND=[], cloudOK=false, syncing=false;
+
+function recCount(pid){ return (REC[pid]||[]).length; }
+function normCloud(d){ d=(d&&typeof d==='object')?d:{}; d.records=(d.records&&typeof d.records==='object')?d.records:{}; return d; }
+function applyOp(c,op){
+  if(!op||!op.t) return c;
+  c.records=c.records||{};
+  if(op.t==='rec.add'){
+    const arr=c.records[op.pid]||[];
+    if(!arr.some(r=>r.ts===op.v.ts&&r.by===op.v.by)) c.records[op.pid]=arr.concat([op.v]);
+  }else if(op.t==='rec.del'){
+    c.records[op.pid]=(c.records[op.pid]||[]).filter(r=>!(r.ts===op.ts&&r.by===op.by));
+  }
+  return c;
+}
+function setSync(msg,ok){ const el=document.getElementById('syncTip'); el.textContent=msg; el.className='sync-tip'+(ok?' ok':''); }
+function saveLocal(){ try{ localStorage.setItem(LS_REC,JSON.stringify(REC)); localStorage.setItem(LS_PD,JSON.stringify(PEND)); }catch(e){} }
+function loadLocal(){
+  try{ const r=JSON.parse(localStorage.getItem(LS_REC)||'{}'); REC=(r&&typeof r==='object')?r:{}; }catch(e){ REC={}; }
+  try{ PEND=JSON.parse(localStorage.getItem(LS_PD)||'[]'); if(!Array.isArray(PEND)) PEND=[]; }catch(e){ PEND=[]; }
+}
+async function fetchCloud(){
+  const res=await fetch(SUPA_URL+'/rest/v1/'+SUPA_TABLE+'?id=eq.'+SUPA_ID+'&select=data',{
+    headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY}});
+  if(!res.ok) throw new Error('supabase '+res.status);
+  const rows=await res.json();
+  return normCloud(rows&&rows.length?rows[0].data:null);
+}
+async function loadCloud(){
+  loadLocal();
+  try{
+    let c=await fetchCloud();
+    PEND.forEach(op=>applyOp(c,op));
+    REC=c.records; cloudOK=true; saveLocal();
+    setSync('云端协作已连接 · 沟通记录全员实时同步'+(PEND.length?` · ${PEND.length}条待同步`:''),true);
+    if(PEND.length) flushPending();
+  }catch(e){
+    cloudOK=false;
+    setSync('云端暂不可用，已切换本机缓存模式（联网后自动补推）'+(PEND.length?` · ${PEND.length}条待同步`:''),false);
+  }
+  render();
+}
+async function flushPending(){
+  if(syncing) return false;
+  if(!PEND.length){ if(cloudOK) setSync('云端协作已连接 · 沟通记录全员实时同步',true); return true; }
+  syncing=true;
+  try{
+    const remote=await fetchCloud();
+    const ops=PEND.slice();
+    ops.forEach(op=>applyOp(remote,op));
+    const res=await fetch(SUPA_URL+'/rest/v1/'+SUPA_TABLE,{
+      method:'POST',
+      headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY,'Content-Type':'application/json','Prefer':'resolution=merge-duplicates,return=minimal'},
+      body:JSON.stringify({id:SUPA_ID,data:remote,updated_at:new Date().toISOString()})
+    });
+    if(!res.ok) throw new Error('sync '+res.status);
+    PEND=PEND.slice(ops.length); REC=remote.records; cloudOK=true; syncing=false; saveLocal();
+    setSync('云端协作已连接 · 沟通记录全员实时同步'+(PEND.length?` · ${PEND.length}条待同步`:''),true);
+    if(PEND.length) return flushPending();
+    return true;
+  }catch(e){
+    syncing=false; cloudOK=false;
+    setSync('云端写入失败，改动已留在本机（联网后自动补推）'+(PEND.length?` · ${PEND.length}条待同步`:''),false);
+    return false;
+  }
+}
+async function commit(op){
+  if(op){ PEND.push(op); const c={records:REC}; applyOp(c,op); REC=c.records; saveLocal(); }
+  render(); return flushPending();
+}
+
+/* ---- 沟通记录弹窗 ---- */
+let curPid=null;
+const conclCls={'风险解除':'rc-ok','持续关注':'rc-watch','需复谈':'rc-again','拟离职':'rc-leave'};
+function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function fmtTs(ts){ const d=new Date(ts); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0'); }
+function openComm(pid){
+  curPid=pid;
+  const p=DATA.people.find(x=>x.id===pid); if(!p) return;
+  document.getElementById('cTitle').textContent=p.name+' · 沟通记录';
+  document.getElementById('cSub').textContent=`${p.lv} ｜ ${p.store} ｜ 综合${p.total}分 ${p.tier}`;
+  document.getElementById('cBy').value=localStorage.getItem(LS_BY)||'';
+  renderRecList();
+  document.getElementById('commMask').classList.add('show');
+}
+function closeComm(){ document.getElementById('commMask').classList.remove('show'); }
+document.getElementById('commMask').addEventListener('click',e=>{ if(e.target.id==='commMask') closeComm(); });
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeComm(); });
+function renderRecList(){
+  const arr=(REC[curPid]||[]).slice().sort((a,b)=>(b.ts||'').localeCompare(a.ts||''));
+  document.getElementById('cList').innerHTML = arr.length ? arr.map(r=>`
+    <div class="rec-item">
+      <div class="rh"><span><b>${esc(r.by)}</b> · ${fmtTs(r.ts)}</span><button class="rec-del" onclick="delComm('${r.ts}','${esc(r.by)}')">删除</button></div>
+      <div class="rt">${esc(r.text)}</div>
+      ${r.concl?`<span class="rc ${conclCls[r.concl]||'rc-watch'}">${esc(r.concl)}</span>`:''}
+    </div>`).join('')
+    : '<div class="note" style="text-align:center;padding:18px 0">暂无沟通记录，完成1V1面谈后在下方登记</div>';
+}
+async function submitComm(){
+  const by=document.getElementById('cBy').value.trim();
+  const text=document.getElementById('cText').value.trim();
+  const concl=document.getElementById('cConcl').value;
+  if(!by){ alert('请填写记录人'); return; }
+  if(!text){ alert('请填写沟通内容'); return; }
+  localStorage.setItem(LS_BY,by);
+  const v={by, text, concl, ts:new Date().toISOString()};
+  document.getElementById('cText').value=''; document.getElementById('cConcl').value='';
+  await commit({t:'rec.add', pid:curPid, v});
+  renderRecList();
+}
+async function delComm(ts,by){
+  if(!confirm('删除这条沟通记录？')) return;
+  await commit({t:'rec.del', pid:curPid, ts, by});
+  renderRecList();
+}
+
+render();
+loadCloud();
+// 每60秒静默拉取一次他人新增的记录
+setInterval(()=>{ if(!syncing) loadCloud(); }, 60000);
+</script>
+</body></html>

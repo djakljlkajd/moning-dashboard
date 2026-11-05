@@ -44560,11 +44560,12 @@ function App() {
         };
       });
     }
-    if (storeFilter === "cupeff") return top10(recommendations.filter((r) => r.warning && r.warning.activeDays > 0).sort((a, b) => b.warning.redRatio - a.warning.redRatio || b.warning.redDays - a.warning.redDays));
-    if (storeFilter === "wow") return top10(recommendations.filter((r) => r.warning?.monthCupWow !== null && r.warning?.monthCupWow !== void 0).sort((a, b) => a.warning.monthCupWow - b.warning.monthCupWow));
-    if (storeFilter === "yoy") return top10(recommendations.filter((r) => r.warning?.monthCupYoy !== null && r.warning?.monthCupYoy !== void 0).sort((a, b) => a.warning.monthCupYoy - b.warning.monthCupYoy));
-    if (storeFilter === "achieve") return top10(recommendations.filter((r) => r.warning?.salesAchieveRate !== null && r.warning?.salesAchieveRate !== void 0).sort((a, b) => a.warning.salesAchieveRate - b.warning.salesAchieveRate));
     const levelOrder = { 极高风险: 0, 高风险: 1, 中风险: 2, 低风险: 3 };
+    if (storeFilter.startsWith("flag:")) {
+      const flag = storeFilter.slice(5);
+      const sorted2 = [...recommendations].filter((r) => tagByCode.get(r.store.code)?.anomalyFlags?.includes(flag)).sort((a, b) => (tagByCode.get(b.store.code)?.scoreTotal ?? 0) - (tagByCode.get(a.store.code)?.scoreTotal ?? 0) || (levelOrder[tagByCode.get(a.store.code)?.riskLevel ?? ""] ?? 4) - (levelOrder[tagByCode.get(b.store.code)?.riskLevel ?? ""] ?? 4));
+      return recommendLimit ? sorted2.slice(0, recommendLimit) : sorted2;
+    }
     const sorted = [...recommendations].sort((a, b) => (levelOrder[tagByCode.get(a.store.code)?.riskLevel ?? ""] ?? 4) - (levelOrder[tagByCode.get(b.store.code)?.riskLevel ?? ""] ?? 4));
     return recommendLimit ? sorted.slice(0, recommendLimit) : sorted;
   }, [recommendations, storeFilter, recommendLimit, xiangzhanStores, stores, visits, employee.name, tagDetails]);
@@ -44829,13 +44830,13 @@ function App() {
         weeklyReport.rangeLabel,
         "（更新至 ",
         weeklyReport.reportDate,
-        "）。杯效按日分档（50杯/档），低于同档位中位数标红。墨柠 5 个维度各取最严重 10 家；「巷战未获奖门店」为茶颜维度，BP 仅见自己对接的大区经理门店。",
+        "）。推荐筛选对应巡店标准十项打标：点任一事项，只看命中该异常项的门店（按异常总分降序）；「巷战未获奖门店」为茶颜维度，BP 仅见自己对接的大区经理门店。",
         recommendDistricts ? `已按管辖大店长过滤（${recommendDistricts.length} 个大店区）。` : ""
       ] })
     ] }),
     !weeklyReport && /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "inline-notice green", children: [
       /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(Sparkles, { size: 16 }),
-      /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { children: "墨柠周报数据尚未导入，导入后按杯效标红/业绩达成/杯数环比同比推荐问题门店。" })
+      /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { children: "墨柠周报数据尚未导入；推荐筛选对应巡店标准十项打标事项，「巷战未获奖门店」为茶颜维度。" })
     ] }),
     /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { style: { height: 18 } }),
     /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card filter-bar", children: [
@@ -44843,7 +44844,7 @@ function App() {
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(Search, { size: 15 }),
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("input", { value: storeQuery, onChange: (e) => setStoreQuery(e.target.value), placeholder: "搜索门店名称、编码或品牌" })
       ] }),
-      /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "filter-chips", children: [["all", "按风险等级"], ["cupeff", "杯效标红最多"], ["wow", "环比下降最大"], ["yoy", "同比下降最大"], ["achieve", "达成率最低"], ["xiangzhan", "巷战未获奖门店"]].map(([key, label]) => /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("button", { className: `chip ${storeFilter === key ? "active" : ""}`, onClick: () => setStoreFilter(key), children: label }, key)) })
+      /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "filter-chips", children: [["all", "按风险等级"], ...[["架构变动", "架构变动"], ["ABC出现2月C档", "ABC两月C档"], ["QC连续3月不好", "QC连续3月不好"], ["业绩连续3月<80%", "业绩连续<80%"], ["工时超220H", "工时超220H"], ["工时低167H", "工时低167H"], ["连续出勤>8天人数", "连续出勤>8天"], ["树洞投诉预警", "树洞≥2条"], ["两大奖励预警", "两大奖励未达标"]].map(([flag, label]) => [`flag:${flag}`, label]), ["xiangzhan", "巷战未获奖门店"]].map(([key, label]) => /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("button", { className: `chip ${storeFilter === key ? "active" : ""}`, onClick: () => setStoreFilter(String(key)), children: label }, key)) })
     ] }),
     /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "store-grid", children: displayedRecommendations.filter((item2) => `${item2.store.name}${item2.store.code}${item2.store.brand}`.toLowerCase().includes(storeQuery.toLowerCase())).map((recommendation) => /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(StoreCard, { recommendation, tagDetail: tagByCode.get(recommendation.store.code), onDetail: () => setRiskDetail(recommendation), onVisit: () => openVisit(recommendation.store.id) }, recommendation.store.id)) }),
     !stores.length && /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(EmptyState, { title: "门店数据加载中", description: "门店清单来自在职数据聚合，若长时间为空请重新打开看板" }),

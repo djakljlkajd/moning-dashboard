@@ -14986,7 +14986,7 @@ var RISK_RULES = [
   { key: "salesBelow100", label: "业绩连续3月不好", description: "最近3个完整月业绩达成率均低于100%" },
   { key: "hoursOver220", label: "工时超220H", description: "最近完整月月人均工时大于220小时" },
   { key: "hoursUnder167", label: "工时低167H", description: "最近完整月月人均工时小于167小时" },
-  { key: "attendanceOver8Days", label: "连续出勤>8天人数", description: "最近完整月有员工连续出勤大于8天" },
+  { key: "attendanceOver8Days", label: "连续出勤>8天人数", description: "最近完整月有员工连续出勤大于8天（国庆高峰10/1-10/7不计入）" },
   { key: "lowTemperature", label: "低温门店", description: "最近完整月标记为低温门店" },
   { key: "treeHoleComplaints", label: "树洞投诉预警", description: "最近完整月树洞投诉不少于2条" },
   { key: "noReward", label: "两大奖励预警", description: "最近完整月两大奖励达标为否" }
@@ -43896,7 +43896,7 @@ function TagDetailModal({ kind, details, xiangzhan, reportMonth, onClose }) {
     } else if (kind === "attendanceOver8Days") {
       const rows = rankAttendanceOver8(details);
       title = "连续出勤大于 8 天明细";
-      note = `最近完整月有员工连续出勤大于 8 天的门店共 ${rows.length >= 60 ? "60+" : rows.length} 家（日工时≥4 小时算出勤，按人数降序，最多展示 60 家）。`;
+      note = `最近完整月有员工连续出勤大于 8 天的门店共 ${rows.length >= 60 ? "60+" : rows.length} 家（日工时≥4 小时算出勤，国庆高峰 10/1-10/7 不计入连勤；按人数降序，最多展示 60 家）。`;
       head = /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("tr", { children: [
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "门店" }),
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "连续出勤>8天人数" }),

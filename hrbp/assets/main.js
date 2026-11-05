@@ -16021,7 +16021,6 @@ function recommendStores(options) {
     const phase = risk?.phase ?? "本月";
     const warning = options.warningsByCode?.get(store.code) ?? null;
     const reasons = [];
-    if (warning && warning.level !== "ok") reasons.push(...warning.anomalies.slice(0, 2));
     if (!warning) {
       if (!risk || risk.missingCount > 0) reasons.push(`风险数据待补充（${risk?.missingCount ?? 9}项缺失），需优先核查`);
       else if (risk.knownScore >= 4) reasons.push(`${risk.riskLevel}，十项规则命中${risk.knownScore}项，安排在${phase}巡店`);
@@ -44210,17 +44209,6 @@ function StoreCard({ recommendation, tagDetail, onDetail, onVisit }) {
       ] }),
       recommendation.unvisited && /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: "badge badge-orange", children: "本季未巡" })
     ] }),
-    warning && /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "store-info", style: { marginTop: 2 }, children: /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("span", { style: { color: warning.redRatio >= 0.6 ? "var(--red)" : "var(--amber)", fontWeight: 600 }, children: [
-      /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(Clock3, { size: 13 }),
-      "杯效低于同档中位数 ",
-      warning.redDays,
-      "/",
-      warning.activeDays,
-      " 天（",
-      Math.round(warning.redRatio * 100),
-      "%）"
-    ] }) }),
-    warning && warning.tags.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { style: { display: "flex", gap: 6, flexWrap: "wrap", marginTop: 4 }, children: warning.tags.map((tag) => /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: "badge badge-red", style: { fontWeight: 500 }, children: tag }, tag)) }),
     tagDetail && /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { style: { marginTop: 6 }, children: [
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "form-hint", style: { marginBottom: 5 }, children: [
         "风险原因（异常总分 ",
@@ -45417,6 +45405,24 @@ function App() {
     ] }),
     /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "stack", children: [
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-header", children: /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { children: [
+          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-title", children: "风险等级与巡店节奏" }),
+          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-subtitle", children: "分值来自打标底表九项异常重算（每项 1 分），点击卡片查看对应等级门店" })
+        ] }) }),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-body", children: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "phase-flow", children: [["6+", "极高风险", "第一阶段 · 本月优先", "var(--red)"], ["4–5", "高风险", "第二阶段 · 次月", "var(--orange)"], ["2–3", "中风险", "第三阶段 · 季度内", "var(--amber)"], ["0–1", "低风险", "第四阶段 · 常规巡检", "var(--green-700)"]].map(([score, level, phase, color]) => {
+          const count = tagDetails.filter((d) => d.riskLevel === level).length;
+          return /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "phase-card", style: { cursor: "pointer" }, onClick: () => setTagModal(`risk:${level}`), children: [
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "phase-score", style: { color }, children: score }),
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("strong", { children: [
+              level,
+              " ",
+              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { style: { fontSize: 12, color: "var(--muted)" }, children: tagDetails.length ? `${count} 家` : "待导入" })
+            ] }),
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("p", { children: phase })
+          ] }, level);
+        }) }) })
+      ] }),
+      /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card", children: [
         /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card-header", children: [
           /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { children: [
             /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-title", children: "重点门店十项打标" }),
@@ -45463,24 +45469,6 @@ function App() {
             ] })
           ] })
         ] }) }) })
-      ] }),
-      /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card", children: [
-        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-header", children: /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { children: [
-          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-title", children: "风险等级与巡店节奏" }),
-          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-subtitle", children: "分值来自打标底表九项异常重算（每项 1 分），点击卡片查看对应等级门店" })
-        ] }) }),
-        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-body", children: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "phase-flow", children: [["6+", "极高风险", "第一阶段 · 本月优先", "var(--red)"], ["4–5", "高风险", "第二阶段 · 次月", "var(--orange)"], ["2–3", "中风险", "第三阶段 · 季度内", "var(--amber)"], ["0–1", "低风险", "第四阶段 · 常规巡检", "var(--green-700)"]].map(([score, level, phase, color]) => {
-          const count = tagDetails.filter((d) => d.riskLevel === level).length;
-          return /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "phase-card", style: { cursor: "pointer" }, onClick: () => setTagModal(`risk:${level}`), children: [
-            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "phase-score", style: { color }, children: score }),
-            /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("strong", { children: [
-              level,
-              " ",
-              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { style: { fontSize: 12, color: "var(--muted)" }, children: tagDetails.length ? `${count} 家` : "待导入" })
-            ] }),
-            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("p", { children: phase })
-          ] }, level);
-        }) }) })
       ] }),
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card", children: [
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-header", children: /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { children: [

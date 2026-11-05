@@ -44434,6 +44434,7 @@ function App() {
   const [issueDetailId, setIssueDetailId] = (0, import_react5.useState)(null);
   const [toast, setToast] = (0, import_react5.useState)(null);
   const [storeFilter, setStoreFilter] = (0, import_react5.useState)("all");
+  const [mineOnly, setMineOnly] = (0, import_react5.useState)(false);
   const [storeQuery, setStoreQuery] = (0, import_react5.useState)("");
   const [issueFilter, setIssueFilter] = (0, import_react5.useState)("all");
   const [issueQuery, setIssueQuery] = (0, import_react5.useState)("");
@@ -44530,6 +44531,8 @@ function App() {
     return districts === null || districts.length === 0 ? void 0 : districts;
   }, [employee]);
   const recommendLimit = employee.role === "bp" ? 10 : void 0;
+  const myXiangzhanRegion = Object.entries(XIANGZHAN_BP_MAP).find(([, bp]) => bp === employee.name)?.[0];
+  const hasOwnScope = Boolean(myXiangzhanRegion || recommendDistricts);
   const recommendations = (0, import_react5.useMemo)(() => recommendStores({ stores, visits, issues, riskSnapshots: risks, asOfDate: today(), brands: recommendBrands, bpId: recommendBpId, districts: recommendDistricts, warningsByCode }), [stores, visits, issues, risks, recommendBrands, recommendBpId, recommendDistricts, warningsByCode]);
   const tagByCode = new Map(tagDetails.map((d) => [d.storeCode, d]));
   const displayedRecommendations = (0, import_react5.useMemo)(() => {
@@ -44560,15 +44563,24 @@ function App() {
         };
       });
     }
+    const inMyScope = (code) => {
+      if (myXiangzhanRegion) return tagByCode.get(code)?.regionManager === myXiangzhanRegion;
+      if (recommendDistricts) {
+        const area = tagByCode.get(code)?.areaManager;
+        return Boolean(area) && recommendDistricts.includes(area);
+      }
+      return true;
+    };
+    const base = mineOnly ? recommendations.filter((r) => inMyScope(r.store.code)) : recommendations;
     const levelOrder = { 极高风险: 0, 高风险: 1, 中风险: 2, 低风险: 3 };
     if (storeFilter.startsWith("flag:")) {
       const flag = storeFilter.slice(5);
-      const sorted2 = [...recommendations].filter((r) => tagByCode.get(r.store.code)?.anomalyFlags?.includes(flag)).sort((a, b) => (tagByCode.get(b.store.code)?.scoreTotal ?? 0) - (tagByCode.get(a.store.code)?.scoreTotal ?? 0) || (levelOrder[tagByCode.get(a.store.code)?.riskLevel ?? ""] ?? 4) - (levelOrder[tagByCode.get(b.store.code)?.riskLevel ?? ""] ?? 4));
+      const sorted2 = [...base].filter((r) => tagByCode.get(r.store.code)?.anomalyFlags?.includes(flag)).sort((a, b) => (tagByCode.get(b.store.code)?.scoreTotal ?? 0) - (tagByCode.get(a.store.code)?.scoreTotal ?? 0) || (levelOrder[tagByCode.get(a.store.code)?.riskLevel ?? ""] ?? 4) - (levelOrder[tagByCode.get(b.store.code)?.riskLevel ?? ""] ?? 4));
       return recommendLimit ? sorted2.slice(0, recommendLimit) : sorted2;
     }
-    const sorted = [...recommendations].sort((a, b) => (levelOrder[tagByCode.get(a.store.code)?.riskLevel ?? ""] ?? 4) - (levelOrder[tagByCode.get(b.store.code)?.riskLevel ?? ""] ?? 4));
+    const sorted = [...base].sort((a, b) => (levelOrder[tagByCode.get(a.store.code)?.riskLevel ?? ""] ?? 4) - (levelOrder[tagByCode.get(b.store.code)?.riskLevel ?? ""] ?? 4));
     return recommendLimit ? sorted.slice(0, recommendLimit) : sorted;
-  }, [recommendations, storeFilter, recommendLimit, xiangzhanStores, stores, visits, employee.name, tagDetails]);
+  }, [recommendations, storeFilter, mineOnly, myXiangzhanRegion, recommendDistricts, recommendLimit, xiangzhanStores, stores, visits, employee.name, tagDetails]);
   const myRecommendations = recommendations;
   const currentMonth = getMonthKey(today());
   const progressOf = (allVisits, bp) => {
@@ -44830,7 +44842,7 @@ function App() {
         weeklyReport.rangeLabel,
         "（更新至 ",
         weeklyReport.reportDate,
-        "）。推荐筛选对应巡店标准十项打标：点任一事项，只看命中该异常项的门店（按异常总分降序）；「巷战未获奖门店」为茶颜维度，BP 仅见自己对接的大区经理门店。",
+        "）。推荐筛选对应巡店标准十项打标：点任一事项，只看命中该异常项的门店（按异常总分降序）；「仅我负责的门店」按管辖口径（茶颜按大区经理、墨柠按大店长）过滤，可与事项筛选叠加；「巷战未获奖门店」为茶颜维度。",
         recommendDistricts ? `已按管辖大店长过滤（${recommendDistricts.length} 个大店区）。` : ""
       ] })
     ] }),
@@ -44844,7 +44856,10 @@ function App() {
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(Search, { size: 15 }),
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("input", { value: storeQuery, onChange: (e) => setStoreQuery(e.target.value), placeholder: "搜索门店名称、编码或品牌" })
       ] }),
-      /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "filter-chips", children: [["all", "按风险等级"], ...[["架构变动", "架构变动"], ["ABC出现2月C档", "ABC两月C档"], ["QC连续3月不好", "QC连续3月不好"], ["业绩连续3月<80%", "业绩连续<80%"], ["工时超220H", "工时超220H"], ["工时低167H", "工时低167H"], ["连续出勤>8天人数", "连续出勤>8天"], ["树洞投诉预警", "树洞≥2条"], ["两大奖励预警", "两大奖励未达标"]].map(([flag, label]) => [`flag:${flag}`, label]), ["xiangzhan", "巷战未获奖门店"]].map(([key, label]) => /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("button", { className: `chip ${storeFilter === key ? "active" : ""}`, onClick: () => setStoreFilter(String(key)), children: label }, key)) })
+      /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "filter-chips", children: [
+        [["all", "按风险等级"], ...[["架构变动", "架构变动"], ["ABC出现2月C档", "ABC两月C档"], ["QC连续3月不好", "QC连续3月不好"], ["业绩连续3月<80%", "业绩连续<80%"], ["工时超220H", "工时超220H"], ["工时低167H", "工时低167H"], ["连续出勤>8天人数", "连续出勤>8天"], ["树洞投诉预警", "树洞≥2条"], ["两大奖励预警", "两大奖励未达标"]].map(([flag, label]) => [`flag:${flag}`, label]), ["xiangzhan", "巷战未获奖门店"]].map(([key, label]) => /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("button", { className: `chip ${storeFilter === key ? "active" : ""}`, onClick: () => setStoreFilter(String(key)), children: label }, key)),
+        hasOwnScope && /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("button", { className: `chip ${mineOnly ? "active" : ""}`, onClick: () => setMineOnly((v) => !v), style: { marginLeft: 8, borderStyle: "dashed" }, children: mineOnly ? "✓ 仅我负责的门店" : "仅我负责的门店" })
+      ] })
     ] }),
     /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "store-grid", children: displayedRecommendations.filter((item2) => `${item2.store.name}${item2.store.code}${item2.store.brand}`.toLowerCase().includes(storeQuery.toLowerCase())).map((recommendation) => /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(StoreCard, { recommendation, tagDetail: tagByCode.get(recommendation.store.code), onDetail: () => setRiskDetail(recommendation), onVisit: () => openVisit(recommendation.store.id) }, recommendation.store.id)) }),
     !stores.length && /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(EmptyState, { title: "门店数据加载中", description: "门店清单来自在职数据聚合，若长时间为空请重新打开看板" }),

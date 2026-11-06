@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>HRBP 赛马积分榜 · 古德墨柠</title>
+<title>湖南HRBP组工作事项督办 · 古德墨柠</title>
 <style>
 :root{
   --green-950:#132740; --green-900:#1d3a5f; --green-800:#2a5480; --green-700:#35689e;
@@ -136,21 +136,20 @@ tr:last-child td{border-bottom:0}
 
 <aside class="sidebar">
   <div class="brand">
-    <div class="brand-mark">赛</div>
+    <div class="brand-mark">督</div>
     <div>
-      <div class="brand-name">HRBP 赛马积分榜</div>
-      <div class="brand-sub">GUDM · PK ARENA</div>
+      <div class="brand-name">湖南HRBP组工作事项督办</div>
+      <div class="brand-sub">GUDM · HUNAN TEAM</div>
     </div>
   </div>
 
-  <div class="nav-section">赛马</div>
-  <button class="nav-item active" data-page="overview"><i class="dot"></i><span>赛马总览</span></button>
+  <div class="nav-section">工作</div>
+  <button class="nav-item active" data-page="overview"><i class="dot"></i><span>工作总览</span></button>
   <button class="nav-item" data-page="rank"><i class="dot"></i><span>积分榜</span><em class="nav-badge">9</em></button>
-  <button class="nav-item" data-page="ledger"><i class="dot"></i><span>加扣分明细</span><em class="nav-badge" id="ledgerBadge">0</em></button>
 
   <div class="nav-section">规则</div>
   <button class="nav-item" data-page="rules"><i class="dot"></i><span>规则总表</span></button>
-  <button class="nav-item" data-page="season"><i class="dot"></i><span>赛季与奖惩</span></button>
+  <button class="nav-item" data-page="season"><i class="dot"></i><span>周期与奖惩</span></button>
 
   <div class="nav-section">过程追踪</div>
   <button class="nav-item" data-page="weekly"><i class="dot"></i><span>周三件事追踪</span></button>
@@ -165,7 +164,7 @@ tr:last-child td{border-bottom:0}
       <div class="avatar">BP</div>
       <div>
         <div class="sidebar-user-name">HRBP 团队</div>
-        <div class="sidebar-user-role">9 人 · 2026 年 11 月赛季</div>
+        <div class="sidebar-user-role">9 人 · 2026 年 11 月</div>
       </div>
     </div>
   </div>
@@ -173,8 +172,7 @@ tr:last-child td{border-bottom:0}
 
 <div class="main-shell">
   <div class="topbar">
-    <h1 id="pageTitle">赛马总览</h1>
-    <span class="demo-pill">参赛名单 = 12 名 HRBP · 加扣分为示例数据</span>
+    <h1 id="pageTitle">工作总览</h1>
     <div class="topbar-right">数据更新至 <b id="updatedAt">2026-11-06 16:00</b></div>
   </div>
 
@@ -182,8 +180,8 @@ tr:last-child td{border-bottom:0}
   <section class="page show" id="page-overview">
     <div class="hero">
       <div>
-        <div class="hero-kicker">2026 年 11 月赛季 · 第 1 周</div>
-        <h2>完成好的加分，延期超时的扣分</h2>
+        <div class="hero-kicker">2026 年 11 月 · 第 1 周</div>
+        <h2>湖南 HRBP 组 · 工作事项督办</h2>
         <div class="hero-copy">
           参赛 <strong>9 名 HRBP</strong>（茶颜 4 / 墨柠 2 / 鸳央·谢永林 1 / 招募项目·戴嘉伟、程洁暇 2），基础分 <strong>100 分</strong>。<br>
           对接辖区即巡店看板中的大区 / 大店长所辖门店，走访与台账数据按辖区归集到本人。<br>
@@ -203,23 +201,23 @@ tr:last-child td{border-bottom:0}
         <div id="rankPreview"></div>
       </div>
       <div class="card">
-        <h3>近 7 天加扣分动态 <span class="sub">来自台账自动同步</span></h3>
-        <div id="recentFeed"></div>
+        <h3>加扣分动态 <span class="sub">台账接入后自动展示</span></h3>
+        <div class="todo-empty">加扣分台账待接入，接入后此处展示每日动态明细</div>
       </div>
     </div>
 
     <div class="grid-4" style="margin-top:20px">
       <div class="stat-mini"><div class="l">本周应完成事项</div><div class="v" id="stTodo">-</div></div>
       <div class="stat-mini"><div class="l">按时完成率</div><div class="v" id="stRate">-</div></div>
-      <div class="stat-mini"><div class="l">本周扣分（全团队）</div><div class="v" id="stMinus">-</div></div>
-      <div class="stat-mini"><div class="l">本周加分（全团队）</div><div class="v" id="stPlus">-</div></div>
+      <div class="stat-mini"><div class="l">绿灯人数</div><div class="v" id="stGreen">-</div></div>
+      <div class="stat-mini"><div class="l">红黄灯人数</div><div class="v" id="stWarn">-</div></div>
     </div>
   </section>
 
   <!-- ========== 积分榜 ========== -->
   <section class="page" id="page-rank">
     <div class="card">
-      <h3>积分榜 · 2026 年 11 月赛季 <span class="sub">基础分 100 + 加分 − 扣分</span></h3>
+      <h3>积分榜 · 2026 年 11 月 <span class="sub">基础分 100 + 加分 − 扣分</span></h3>
       <div class="filter-bar">
         品牌：
         <select id="rankBrand">
@@ -240,29 +238,10 @@ tr:last-child td{border-bottom:0}
     </div>
   </section>
 
-  <!-- ========== 加扣分明细 ========== -->
-  <section class="page" id="page-ledger">
-    <div class="card">
-      <h3>加扣分明细台账 <span class="sub">每条记录均可申诉，48h 内复核</span></h3>
-      <div class="filter-bar">
-        <select id="ldMember"><option value="">全部人员</option></select>
-        <select id="ldType"><option value="">加分 + 扣分</option><option value="plus">仅加分</option><option value="minus">仅扣分</option></select>
-        <select id="ldCycle"><option value="">全部周期</option><option>日</option><option>周</option><option>月</option><option>季</option></select>
-        <span class="result-count" id="ldCount"></span>
-      </div>
-      <table id="ledgerTable">
-        <thead><tr>
-          <th>日期</th><th>姓名</th><th>触发事项</th><th>周期</th><th>判定口径</th><th>分值</th><th>状态</th>
-        </tr></thead>
-        <tbody></tbody>
-      </table>
-    </div>
-  </section>
-
   <!-- ========== 规则总表（内置） ========== -->
   <section class="page" id="page-rules">
     <div class="mechanism-note">
-      <b>规则内置说明：</b>以下每条规则的「判定口径」与「数据来源」均直接取自《总部运营 HRBP 团队管理机制》已有动作与台账（日报 18 点 / 周一 3 件事 / 周五复盘 / 28 日出差规划 / 季度交付），<b>不新增任何填报负担</b>。权重为本团队内部约定，可在周会上提案调整。
+      <b>规则内置说明：</b>以下每条规则的「判定口径」与「数据来源」均直接取自《总部运营 HRBP 团队管理机制》已有动作与台账（周报周一 24 点 / 周一 3 件事 / 周五复盘 / 28 日出差规划 / 季度交付），<b>不新增任何填报负担</b>。权重为本团队内部约定，可在周会上提案调整。
     </div>
     <div class="card">
       <h3>规则总表 <span class="sub" id="rulesCount"></span></h3>
@@ -291,16 +270,16 @@ tr:last-child td{border-bottom:0}
     </div>
   </section>
 
-  <!-- ========== 赛季与奖惩 ========== -->
+  <!-- ========== 周期与奖惩 ========== -->
   <section class="page" id="page-season">
     <div class="grid-2">
       <div class="card">
-        <h3>赛季节奏</h3>
+        <h3>周期节奏</h3>
         <table>
           <thead><tr><th>周期</th><th>动作</th><th>产出</th></tr></thead>
           <tbody>
             <tr><td><span class="badge b-green">周排名</span></td><td>每周五复盘后刷新积分榜，周一例会通报</td><td>快反馈，不挂钩奖惩</td></tr>
-            <tr><td><span class="badge b-orange">月赛季</span></td><td>自然月结算，月末清零基础分重开</td><td>月度 TOP3 / 末位名单</td></tr>
+            <tr><td><span class="badge b-orange">月度周期</span></td><td>自然月结算，月末清零基础分重开</td><td>月度 TOP3 / 末位名单</td></tr>
             <tr><td><span class="badge b-red">季大奖</span></td><td>季度总分 = 3 个月均分</td><td>挂钩 HRBP-PPR 与年度评优</td></tr>
           </tbody>
         </table>
@@ -422,16 +401,9 @@ const RULES = [
   {cat:"加分项",item:"走访超额",std:"周走访 ≥5 家且有问题闭环记录",source:"门店走访工具",score:+1},
 ];
 
-const LEDGER = [
-  {date:"11-06",mid:8,type:"plus",item:"诀窍分享被收录",cycle:"周",std:"案例入库",score:3,status:"已生效"},
-  {date:"11-06",mid:6,type:"minus",item:"出差规划未交",cycle:"月",std:"28 日节点逾期",score:-5,status:"申诉中"},
-  {date:"11-05",mid:4,type:"plus",item:"走访超额且闭环",cycle:"周",std:"周走访 6 家",score:1,status:"已生效"},
-  {date:"11-05",mid:4,type:"minus",item:"周事项 2 未完成",cycle:"周",std:"无说明",score:-3,status:"已生效"},
-  {date:"11-04",mid:2,type:"minus",item:"日报超时",cycle:"日",std:"18:20 提交",score:-1,status:"已生效"},
-  {date:"11-04",mid:9,type:"minus",item:"红色预警未改善",cycle:"月",std:"连续 2 月红色",score:-3,status:"已生效"},
-  {date:"11-03",mid:1,type:"plus",item:"跨市场支援",cycle:"周",std:"支援河西 2 天",score:2,status:"已生效"},
-  {date:"11-03",mid:6,type:"minus",item:"异常滞留未升级",cycle:"日",std:"滞留 48h",score:-2,status:"已生效"},
-];
+/* 加扣分台账：示例数据已移除，接入真实台账后在下方填充，格式：
+   {date:"11-06",mid:成员id,type:"plus"|"minus",item:"事项",cycle:"日|周|月|季",std:"判定口径",score:±n,status:"已生效|申诉中"} */
+const LEDGER = [];
 
 const WEEKLY = [
   {mid:1, tasks:[["离职面谈 3 人","done"],["走访 3 家","done"],["HC 测算校准","doing"]]},
@@ -470,21 +442,12 @@ function renderOverview(){
     </div>`;
   }).join("");
 
-  const feed = [...LEDGER].slice(0,6);
-  document.getElementById("recentFeed").innerHTML = feed.map(l=>`
-    <div class="rank-row">
-      <span class="badge ${l.type==='plus'?'b-green':'b-red'}">${l.type==='plus'?'加':'扣'}</span>
-      <div style="flex:1"><div class="rank-name" style="min-width:0">${name(l.mid)} · ${l.item}</div>
-      <div class="rank-market">11-${l.date.split('-')[1]||l.date} · ${l.std}</div></div>
-      <div class="${l.score>0?'score-pos':'score-neg'}">${l.score>0?'+'+l.score:l.score}</div>
-    </div>`).join("");
-
   let todo=0,done=0;
   WEEKLY.forEach(w=>w.tasks.forEach(t=>{todo++;if(t[1]==='done')done++;}));
   document.getElementById("stTodo").innerHTML = todo+" <small>件</small>";
   document.getElementById("stRate").innerHTML = Math.round(done/todo*100)+"<small>%</small>";
-  document.getElementById("stMinus").innerHTML = "−"+LEDGER.filter(l=>l.type==='minus').reduce((a,b)=>a+Math.abs(b.score),0)+" <small>分</small>";
-  document.getElementById("stPlus").innerHTML = "+"+LEDGER.filter(l=>l.type==='plus').reduce((a,b)=>a+b.score,0)+" <small>分</small>";
+  document.getElementById("stGreen").innerHTML = MEMBERS.filter(m=>lamp(m)[0]==="绿灯").length+" <small>人</small>";
+  document.getElementById("stWarn").innerHTML = MEMBERS.filter(m=>lamp(m)[0]!=="绿灯").length+" <small>人</small>";
 }
 
 function renderRank(){
@@ -508,25 +471,6 @@ function renderRank(){
   }).join("");
 }
 document.getElementById("rankBrand").addEventListener("change",renderRank);
-
-function renderLedger(){
-  const sel = document.getElementById("ldMember");
-  if(!sel.dataset.init){
-    MEMBERS.forEach(m=>{const o=document.createElement("option");o.value=m.id;o.textContent=m.name;sel.appendChild(o);});
-    sel.dataset.init=1;
-    ["ldMember","ldType","ldCycle"].forEach(id=>document.getElementById(id).addEventListener("change",renderLedger));
-    document.getElementById("ledgerBadge").textContent = LEDGER.length;
-  }
-  const fm=sel.value, ft=document.getElementById("ldType").value, fc=document.getElementById("ldCycle").value;
-  const rows = LEDGER.filter(l=>(!fm||l.mid==fm)&&(!ft||l.type===ft)&&(!fc||l.cycle===fc));
-  document.getElementById("ldCount").textContent = `共 ${rows.length} 条`;
-  document.querySelector("#ledgerTable tbody").innerHTML = rows.map(l=>`<tr>
-    <td>2026-${l.date}</td><td><b>${name(l.mid)}</b></td><td>${l.item}</td>
-    <td><span class="badge b-gray">${l.cycle}</span></td><td style="color:var(--muted)">${l.std}</td>
-    <td class="${l.score>0?'score-pos':'score-neg'}">${l.score>0?'+'+l.score:l.score}</td>
-    <td><span class="badge ${l.status==='已生效'?'b-green':'b-amber'}">${l.status}</span></td>
-  </tr>`).join("");
-}
 
 function renderRules(){
   const cat=document.getElementById("ruleCat").value, w=document.getElementById("ruleWeight").value;
@@ -610,7 +554,7 @@ document.getElementById("todoFilter").addEventListener("change",renderTodos);
 })();
 
 /* ================= 导航 ================= */
-const TITLES = {overview:"赛马总览",rank:"积分榜",ledger:"加扣分明细",rules:"规则总表",season:"赛季与奖惩",weekly:"周三件事追踪",todo:"待办事项"};
+const TITLES = {overview:"工作总览",rank:"积分榜",rules:"规则总表",season:"周期与奖惩",weekly:"周三件事追踪",todo:"待办事项"};
 document.querySelectorAll(".nav-item").forEach(btn=>{
   btn.addEventListener("click",()=>{
     document.querySelectorAll(".nav-item").forEach(b=>b.classList.remove("active"));
@@ -619,7 +563,6 @@ document.querySelectorAll(".nav-item").forEach(btn=>{
     document.querySelectorAll(".page").forEach(s=>s.classList.remove("show"));
     document.getElementById("page-"+p).classList.add("show");
     document.getElementById("pageTitle").textContent = TITLES[p];
-    if(p==="ledger") renderLedger();
     if(p==="weekly") renderWeekly();
   });
 });

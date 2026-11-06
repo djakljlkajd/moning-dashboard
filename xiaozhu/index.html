@@ -362,7 +362,7 @@ select.cell-input{padding:4px 6px;}
     <div class="description-bar">
       <div class="description-bar-title">门店宣发回传与记录</div>
       <div class="description-list">
-        <div class="description-item"><strong>11.16 每店发布 1 篇小红书</strong>，可多发，以单篇最高加权点赞参与排名；发布率目标 100%</div>
+        <div class="description-item"><strong>每店发布 1 篇小红书，11月7日18点前完成</strong>，可多发，以单篇最高加权点赞参与排名；发布率目标 100%</div>
         <div class="description-item">必带话题 <strong>#茶颜青柠乳茶 #古德墨柠青柠乳茶节</strong>，文案出现「青柠乳茶」「墨柠节」关键词，带齐率 100%</div>
         <div class="description-item">发布后 <strong>24h 内</strong>回填：笔记链接、发布账号、内容形式、点赞/评论/收藏；加权点赞与排名自动计算</div>
         <div class="description-item">发布后严禁删帖、改话题；违规计入抽检不合格</div>
@@ -866,7 +866,7 @@ function renderOverview(){
 
   const cards=[
     {l:'覆盖门店',v:m.storeCount,u:'家',s:m.mgrCount+' 位大店长分管',hl:false},
-    {l:'宣发完成',v:all.done,u:'家',s:'目标 11.16 发布率 100%',hl:true},
+    {l:'宣发完成',v:all.done,u:'家',s:'11月7日18点前发布率 100%',hl:true},
     {l:'话题带齐',v:all.topic,u:'家',s:'双话题带齐率目标 100%',hl:false},
     {l:'数据回传',v:all.fb,u:'家',s:'发布后 24h 内回填点赞',hl:false},
     {l:'加权点赞合计',v:all.weighted,u:'',s:'实际点赞 '+all.likes+' · 视频 '+all.video+' 篇',hl:true},
@@ -914,7 +914,7 @@ function renderOverview(){
     .filter(x=>x.v!==null&&x.v>0)
     .sort((a,b)=>b.v-a.v).slice(0,15);
   let h=`<thead><tr><th>排名</th><th>门店</th><th>大店长</th><th>BP</th><th>内容形式</th><th class="num">实际点赞</th><th class="num">加权点赞</th><th class="num">评论</th><th class="num">收藏</th><th>话题</th><th>笔记链接</th></tr></thead><tbody>`;
-  if(!top.length) h+=`<tr><td colspan="11" style="text-align:center;color:#95a5a6;padding:26px">暂无回传数据 —— 11.16 发布后由各店回填点赞，看板自动计算加权与排名</td></tr>`;
+  if(!top.length) h+=`<tr><td colspan="11" style="text-align:center;color:#95a5a6;padding:26px">暂无回传数据 —— 发布后由各店回填点赞，看板自动计算加权与排名</td></tr>`;
   top.forEach(x=>{
     const r=rk[x.s.store]||'-';
     h+=`<tr><td><span class="${r===1?'rank-1':(r===2?'rank-2':(r===3?'rank-3':''))}">${r}</span></td>`+
@@ -1122,7 +1122,7 @@ function openStoreModal(store){
   const rk=rankMap();
   document.getElementById('storeTitle').textContent='宣发回填 · '+shortStore(store);
   let h=`<div class="modal-sub"><strong>${esc(store)}</strong> · 大店长 ${esc(rec.mgr)} · BP ${esc(rec.bp)} · 编码 ${rec.code?esc(rec.code):'<span style="color:#c47a00;font-weight:600">待补</span>'}<br>
-    口径：视频 ×${VW}、图文 ×${IW}；11.16 每店发布 1 篇，可多发以单篇最高加权点赞参与排名；发布后 24h 内完成回填。</div>`;
+    口径：视频 ×${VW}、图文 ×${IW}；每店发布 1 篇，11月7日18点前完成，可多发以单篇最高加权点赞参与排名；发布后 24h 内完成回填。</div>`;
   h+=`<div class="form-row">
     <div class="form-item"><label>发布状态</label>
       <select id="sd_done">

@@ -14924,6 +14924,15 @@ var Target = createLucideIcon("Target", [
   ["circle", { cx: "12", cy: "12", r: "2", key: "1c9p78" }]
 ]);
 
+// node_modules/lucide-react/dist/esm/icons/trash-2.js
+var Trash2 = createLucideIcon("Trash2", [
+  ["path", { d: "M3 6h18", key: "d0wm0j" }],
+  ["path", { d: "M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6", key: "4alrt4" }],
+  ["path", { d: "M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2", key: "v07s0e" }],
+  ["line", { x1: "10", x2: "10", y1: "11", y2: "17", key: "1uufr5" }],
+  ["line", { x1: "14", x2: "14", y1: "11", y2: "17", key: "xtxkd" }]
+]);
+
 // node_modules/lucide-react/dist/esm/icons/triangle-alert.js
 var TriangleAlert = createLucideIcon("TriangleAlert", [
   [
@@ -15484,6 +15493,14 @@ var cloudBridge = {
     if (created.error) throw created.error instanceof Error ? created.error : new Error(String(created.error));
     return true;
   },
+  /** 删除问题及其全部时间线事件（测试数据清理用，先删事件再删问题）。 */
+  async deleteIssue(issueId) {
+    const client = await getClient();
+    if (!client) return false;
+    await client.database.from("hr_issue_events").delete().eq("issue_id", issueId);
+    await client.database.from("hr_issues").delete().eq("id", issueId);
+    return true;
+  },
   async signOut() {
     const client = await getClient();
     if (client) await client.auth.signOut();
@@ -15880,6 +15897,12 @@ var supabaseBridge = {
         comment: event.comment ?? null
       })
     });
+    return true;
+  },
+  /** 删除问题及其全部时间线事件（测试数据清理用，先删事件再删问题）。 */
+  async deleteIssue(issueId) {
+    await rest(`/hr_issue_events?issue_id=eq.${encodeURIComponent(issueId)}`, { method: "DELETE", headers: { Prefer: "return=minimal" } });
+    await rest(`/hr_issues?id=eq.${encodeURIComponent(issueId)}`, { method: "DELETE", headers: { Prefer: "return=minimal" } });
     return true;
   },
   async signOut() {
@@ -44066,7 +44089,7 @@ function RiskDrawer({ recommendation, tagDetail, onClose, onVisit }) {
     ] })
   ] }) });
 }
-function IssueDrawer({ issue, employee, employees, stores, events, onClose, onAction, onEdit }) {
+function IssueDrawer({ issue, employee, employees, stores, events, onClose, onAction, onEdit, onDelete }) {
   const [comment, setComment] = (0, import_react5.useState)("");
   const [editing, setEditing] = (0, import_react5.useState)(false);
   const [editForm, setEditForm] = (0, import_react5.useState)({ description: issue.description ?? "", severity: issue.severity, dueDate: issue.dueDate, responsibleName: issue.responsibleName ?? "" });
@@ -44210,6 +44233,13 @@ function IssueDrawer({ issue, employee, employees, stores, events, onClose, onAc
           ] }),
           event.comment && /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "timeline-comment", children: event.comment })
         ] }, event.id)) }) : /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("p", { className: "form-hint", children: "暂无处理记录" })
+      ] }),
+      (issue.reporterId === employee.id || employee.role === "director") && /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "detail-section", style: { borderTop: "1px solid var(--border)", paddingTop: 14 }, children: [
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("button", { className: "button button-danger button-sm", onClick: () => onDelete(issue), children: [
+          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(Trash2, { size: 14 }),
+          "删除问题"
+        ] }),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "form-hint", style: { marginTop: 6 }, children: "删除后该问题及全部时间线记录一并移除，不可恢复。仅限问题创建人或总负责人操作，测试数据清理用。" })
       ] })
     ] })
   ] }) });
@@ -44666,6 +44696,15 @@ function App() {
     setEvents((current) => [...current, event]);
     persistIssue(nextIssue, event);
     showToast("问题信息已更新并写入时间线");
+  };
+  const handleIssueDelete = (issue) => {
+    if (!window.confirm(`确定删除问题「${issue.title}」？
+删除后不可恢复（问题记录与全部时间线一并移除）。`)) return;
+    if (backendEnabled) backend.deleteIssue(issue.id).catch(() => showToast("云端删除失败，请重试"));
+    setIssues((current) => current.filter((item2) => item2.id !== issue.id));
+    setEvents((current) => current.filter((item2) => item2.issueId !== issue.id));
+    setIssueDetailId(null);
+    showToast("问题已删除");
   };
   const pageHeading = (eyebrow, title, description, action) => /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "page-heading", children: [
     /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { children: [
@@ -45725,7 +45764,7 @@ function App() {
       setRiskDetail(null);
       openVisit(riskDetail.store.id);
     } }),
-    issueDetail && /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(IssueDrawer, { issue: issueDetail, employee, employees: employeeList, stores, events, onClose: () => setIssueDetailId(null), onAction: handleIssueAction, onEdit: handleIssueEdit }),
+    issueDetail && /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(IssueDrawer, { issue: issueDetail, employee, employees: employeeList, stores, events, onClose: () => setIssueDetailId(null), onAction: handleIssueAction, onEdit: handleIssueEdit, onDelete: handleIssueDelete }),
     backendEnabled && !cloudReady && (usingSupabase ? /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(SupabaseAuthGate, { error: cloudError, onBound: (bound) => {
       setCurrentEmployeeId(bound.id);
       setCloudError(null);
@@ -45840,6 +45879,7 @@ lucide-react/dist/esm/icons/shield-check.js:
 lucide-react/dist/esm/icons/sparkles.js:
 lucide-react/dist/esm/icons/store.js:
 lucide-react/dist/esm/icons/target.js:
+lucide-react/dist/esm/icons/trash-2.js:
 lucide-react/dist/esm/icons/triangle-alert.js:
 lucide-react/dist/esm/icons/upload.js:
 lucide-react/dist/esm/icons/user-round.js:

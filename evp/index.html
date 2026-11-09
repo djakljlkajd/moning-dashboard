@@ -51,7 +51,7 @@ th{background:var(--teal-light);color:var(--brand-dark);white-space:nowrap}
 .note-strip{background:#eef7f1;border:1px solid #bfe3d2;color:#085041;border-radius:10px;padding:10px 16px;font-size:13px;margin-bottom:16px}
 .modal-mask{position:fixed;inset:0;background:rgba(0,0,0,.4);display:none;z-index:100;align-items:flex-start;justify-content:center;overflow:auto}
 .modal-mask.show{display:flex}
-.modal{background:#fff;border-radius:12px;padding:22px 24px;width:680px;max-width:94vw;margin:30px auto}
+.modal{background:#fff;border-radius:12px;padding:22px 24px;width:720px;max-width:94vw;margin:30px auto}
 .modal h3{color:var(--brand-dark);margin-bottom:6px;font-size:16px}
 .modal .sub{font-size:12px;color:var(--sub);margin-bottom:14px}
 .fgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px 14px}
@@ -59,8 +59,11 @@ th{background:var(--teal-light);color:var(--brand-dark);white-space:nowrap}
 .fitem label{display:block;font-size:12px;color:var(--sub);margin-bottom:4px}
 .fitem input,.fitem select,.fitem textarea{width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:8px;font-size:13px;font-family:inherit}
 .fitem textarea{resize:vertical;min-height:52px}
-.sat-row{display:grid;grid-template-columns:120px 1fr;gap:10px;align-items:center;margin-bottom:8px}
+.grp-head{display:flex;align-items:center;gap:8px;margin:14px 0 8px;font-size:13px;font-weight:700}
+.grp-head .dot{width:10px;height:10px;border-radius:50%;display:inline-block}
+.sat-row{display:grid;grid-template-columns:150px 1fr;gap:10px;align-items:center;margin-bottom:8px}
 .sat-row .name{font-size:13px}
+.sat-row .name .short{color:var(--sub);font-size:11.5px;margin-left:4px}
 .stars{display:flex;gap:4px}
 .stars button{border:1px solid var(--line);background:#fff;border-radius:6px;width:34px;height:30px;cursor:pointer;font-size:13px}
 .stars button.on{background:var(--teal);color:#fff;border-color:var(--teal)}
@@ -71,6 +74,14 @@ th{background:var(--teal-light);color:var(--brand-dark);white-space:nowrap}
 .emp-pick div:hover{background:var(--teal-light)}
 .quad{background:#fff}
 .summary-box{background:#fff;border:1px solid var(--line);border-radius:10px;padding:16px 18px;white-space:pre-wrap;font-size:13.5px;line-height:1.9;font-family:inherit}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:12px;color:var(--sub);margin:6px 0 4px}
+.legend span{display:inline-flex;align-items:center;gap:5px}
+.legend i{width:10px;height:10px;border-radius:50%;display:inline-block}
+.sub-line{display:flex;align-items:center;gap:8px;margin-bottom:4px;font-size:12.5px}
+.sub-line .nm{width:120px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sub-line .bars{flex:1}
+.sub-line .mini{height:10px;background:#f0eeec;border-radius:5px;position:relative;overflow:hidden;flex:1}
+.sub-line .mini i{position:absolute;left:0;top:0;height:100%;border-radius:5px;display:block}
 </style>
 </head>
 <body>
@@ -89,7 +100,7 @@ th{background:var(--teal-light);color:var(--brand-dark);white-space:nowrap}
 
 <!-- 总览 -->
 <div class="page active" id="page-overview">
-  <div class="note-strip">EVP 五项：薪酬福利 / 发展机会 / 组织名望 / 伙伴·氛围 / 工作·岗位。核心算法：<b>留任缺口 = 关注度 − 满意度</b>——店长认为重要但现状满意度低的项，就是最能留住他们的抓手。当店长提出离职再沟通已经很晚，本看板的目标是<b>在离职想法出现之前摸清底牌</b>。</div>
+  <div class="note-strip">EVP 采集颗粒度：<b>5 大项 × 20 小项</b>（薪酬福利 3 项 / 发展机会 3 项 / 组织名望 4 项 / 伙伴·氛围 4 项 / 工作·岗位 6 项）。核心算法：<b>留任缺口 = 关注度 − 满意度</b>——店长认为重要但现状满意度低的小项，就是最能留住他们的抓手。当店长提出离职再沟通已经很晚，本看板的目标是<b>在离职想法出现之前摸清底牌</b>。</div>
   <div class="cards-row" id="ovCards"></div>
   <div class="card">
     <h3>1 号位走店进度（Q4 硬指标 25 家/人）</h3>
@@ -121,12 +132,12 @@ th{background:var(--teal-light);color:var(--brand-dark);white-space:nowrap}
     <table id="tkTable">
       <thead><tr>
         <th>日期</th><th>品牌</th><th>店长</th><th>门店</th><th>沟通人</th><th>角色</th>
-        <th>Top2 关注</th><th>满意度</th><th>留任因子</th><th>成长意愿</th><th>风险</th><th>操作</th>
+        <th>Top2 关注（小项）</th><th>各大项均分</th><th>最低小项</th><th>留任因子</th><th>成长意愿</th><th>风险</th><th>操作</th>
       </tr></thead>
       <tbody></tbody>
     </table>
     </div>
-    <p class="muted" style="margin-top:8px">满意度 1~5 分；Top2 关注 = 店长认为对「留在这里」最重要的两项；留任因子 = 只改善一件事最能留下来的那个。全部云端实时同步。</p>
+    <p class="muted" style="margin-top:8px">小项满意度 1~5 分（每卡 20 项全打）；Top2 关注 = 店长认为对「留在这里」最重要的两个<b>小项</b>；各大项均分 = 该项下小项满意度均值；最低小项 = 全卡打分最低的那一项。全部云端实时同步。</p>
   </div>
 </div>
 
@@ -173,7 +184,7 @@ th{background:var(--teal-light);color:var(--brand-dark);white-space:nowrap}
 <div class="modal-mask" id="mask">
   <div class="modal">
     <h3 id="mTitle">店长 EVP 沟通卡</h3>
-    <div class="sub">10 分钟沟通 · 3 分钟登记。五项各打一个现状满意度（1~5），再选出店长认为「留下来」最重要的 2 项。</div>
+    <div class="sub">10 分钟沟通 · 5 分钟登记。5 大项 20 个小项各打一个现状满意度（1~5），再选出店长认为「留下来」最重要的 2 个小项。</div>
     <input type="hidden" id="talkId">
     <div class="fgrid">
       <div class="fitem full">
@@ -190,12 +201,12 @@ th{background:var(--teal-light);color:var(--brand-dark);white-space:nowrap}
       <div class="fitem"><label>沟通人角色 *</label><select id="mRole"><option>1号位</option><option>HRBP</option></select></div>
       <div class="fitem"><label>沟通方式</label><select id="mWay"><option>面对面</option><option>视频</option><option>电话</option></select></div>
     </div>
-    <h3 class="sec" style="margin-top:14px">五项现状满意度（1 很差 ~ 5 很好）</h3>
+    <h3 class="sec" style="margin-top:14px">小项现状满意度（1 很差 ~ 5 很好）· 按大项分组</h3>
     <div id="satRows"></div>
     <div class="fgrid" style="margin-top:10px">
-      <div class="fitem"><label>Top1 关注（最重要）*</label><select id="mTop1"></select></div>
-      <div class="fitem"><label>Top2 关注（次重要）</label><select id="mTop2"></select></div>
-      <div class="fitem"><label>留任因子归类</label><select id="mKeepCat"></select></div>
+      <div class="fitem"><label>Top1 关注小项（最重要）*</label><select id="mTop1"></select></div>
+      <div class="fitem"><label>Top2 关注小项（次重要）</label><select id="mTop2"></select></div>
+      <div class="fitem"><label>留任因子归类（小项）</label><select id="mKeepCat"></select></div>
       <div class="fitem"><label>成长意愿</label><select id="mGrowth">
         <option>暂无明显意愿</option><option>想晋升（大店长方向）</option><option>想带更大/更好门店</option><option>想跨品牌发展</option><option>想转职能岗</option>
       </select></div>
@@ -216,14 +227,42 @@ th{background:var(--teal-light);color:var(--brand-dark);white-space:nowrap}
 <script>
 /* ============ 基础 ============ */
 const POOL = POOL_DATA.pool;
-const KEYS = [
-  {k:"pay",    n:"薪酬福利"},
-  {k:"growth", n:"发展机会"},
-  {k:"fame",   n:"组织名望"},
-  {k:"team",   n:"伙伴·氛围"},
-  {k:"job",    n:"工作·岗位"},
+/* 5 大项 × 20 小项 */
+const GROUPS=[
+  {k:"pay", n:"薪酬福利", c:"#c8331f", subs:[
+    {k:"pay_base",    n:"基础薪资与调薪", short:"薪资"},
+    {k:"pay_welfare", n:"福利保障", short:"福利"},
+    {k:"pay_extra",   n:"激励与额外收入", short:"激励"}]},
+  {k:"growth", n:"发展机会", c:"#2563eb", subs:[
+    {k:"growth_personal", n:"个人成长与培训", short:"成长"},
+    {k:"growth_career",   n:"晋升通道", short:"晋升"},
+    {k:"growth_org",      n:"轮岗/跨品牌机会", short:"轮岗"}]},
+  {k:"fame", n:"组织名望", c:"#8b5cf6", subs:[
+    {k:"fame_rep",    n:"品牌口碑与社会声望", short:"口碑"},
+    {k:"fame_market", n:"市场地位与竞争力", short:"市场"},
+    {k:"fame_scale",  n:"规模扩张前景", short:"扩张"},
+    {k:"fame_value",  n:"品牌价值观认同", short:"价值观"}]},
+  {k:"team", n:"伙伴·氛围", c:"#0f6e56", subs:[
+    {k:"team_leader",  n:"直属上级（大店长）关系", short:"上级"},
+    {k:"team_peer",    n:"伙伴关系", short:"伙伴"},
+    {k:"team_cohesion",n:"团队凝聚力", short:"凝聚力"},
+    {k:"team_culture", n:"文化氛围认同", short:"文化"}]},
+  {k:"job", n:"工作·岗位", c:"#d97706", subs:[
+    {k:"job_innovation", n:"工作有趣与创新性", short:"有趣"},
+    {k:"job_impact",     n:"成就感与意义", short:"成就"},
+    {k:"job_fit",        n:"人岗匹配与胜任", short:"匹配"},
+    {k:"job_location",   n:"门店位置与通勤", short:"通勤"},
+    {k:"job_balance",    n:"工作强度与生活平衡", short:"强度"},
+    {k:"job_stability",  n:"工作稳定性", short:"稳定"}]},
 ];
-const KNAME = Object.fromEntries(KEYS.map(x=>[x.k,x.n]));
+const SUBS=GROUPS.flatMap(g=>g.subs);
+const SUB=Object.fromEntries(SUBS.map(s=>[s.k,s]));
+const KNAME=Object.fromEntries(SUBS.map(s=>[s.k,s.n]));
+const SHORT=Object.fromEntries(SUBS.map(s=>[s.k,s.short]));
+const GNAME=Object.fromEntries(GROUPS.map(g=>[g.k,g.n]));
+const GCOLOR=Object.fromEntries(GROUPS.map(g=>[g.k,g.c]));
+const G_OF=Object.fromEntries(SUBS.map(s=>[s.k,s.k.split('_')[0]]));
+function subLabel(k){ return GNAME[G_OF[k]]+'·'+SHORT[k]; }
 const QUOTA = {"墨柠":0.8, "茶颜":3, "鸳央":0.4};
 const LEAD_TARGET = {"茶颜":25, "墨柠":25, "鸳央":25};
 const LEAD_OF = {"茶颜":"朱芳", "墨柠":"李当", "鸳央":"胡芬"};
@@ -374,6 +413,17 @@ function thisQuarter(){
 }
 
 /* ============ 沟通登记 ============ */
+function talkGroupAvg(t){
+  return GROUPS.map(g=>{
+    const vals=g.subs.map(s=>t.sat&&t.sat[s.k]).filter(Boolean);
+    return {g:g.k, n:g.n, v:vals.length?vals.reduce((a,b)=>a+b,0)/vals.length:0};
+  });
+}
+function lowestSub(t){
+  let best=null;
+  SUBS.forEach(s=>{ const v=t.sat&&t.sat[s.k]; if(v&&(!best||v<best.v)) best={k:s.k,v}; });
+  return best;
+}
 function renderTalks(){
   const fb=document.getElementById('tkBrand').value, fr=document.getElementById('tkRole').value,
         frk=document.getElementById('tkRisk').value;
@@ -384,23 +434,28 @@ function renderTalks(){
   if(frk==='no') list=list.filter(t=>!t.risk);
   document.getElementById('tkCount').textContent='共 '+list.length+' 张沟通卡';
   document.querySelector('#tkTable tbody').innerHTML=list.map(t=>{
-    const sat=KEYS.map(k=>t.sat&&t.sat[k.k]?`<span class="tag ${t.sat[k.k]<=2?'bad':t.sat[k.k]<=3?'warn':'ok'}">${k.n.slice(0,2)} ${t.sat[k.k]}</span>`:'').join(' ');
-    const top=(t.top||[]).map(k=>`<span class="tag grey">${esc(KNAME[k]||k)}</span>`).join(' ');
+    const gavg=talkGroupAvg(t).map(x=>x.v?`<span class="tag ${x.v<=2.5?'bad':x.v<=3.5?'warn':'ok'}" title="${esc(x.n)}">${esc(x.n.slice(0,2))} ${x.v.toFixed(1)}</span>`:'').join(' ');
+    const low=lowestSub(t);
+    const lowHtml=low?`<span class="tag bad" title="${esc(KNAME[low.k])}">${esc(SHORT[low.k])} ${low.v}</span>`:'<span class="muted">—</span>';
+    const top=(t.top||[]).map(k=>`<span class="tag grey" title="${esc(KNAME[k])}">${esc(SHORT[k]||k)}</span>`).join(' ');
     return `<tr><td>${fmtD(t.date)}</td><td>${brandTag(t.brand)}</td><td><b>${esc(t.name)}</b></td><td>${esc(t.store)}</td>
       <td>${esc(t.talker)}</td><td>${t.role==='1号位'?'<span class="tag ok">1号位</span>':'<span class="tag blue">HRBP</span>'}</td>
-      <td>${top}</td><td>${sat}</td><td>${esc(t.keep||'')}</td><td>${esc(t.growth||'')}</td>
+      <td>${top}</td><td style="white-space:nowrap">${gavg}</td><td>${lowHtml}</td><td>${esc(t.keep||'')}</td><td>${esc(t.growth||'')}</td>
       <td>${t.risk?`<span class="tag bad">${esc(t.risk)}</span>`:'<span class="tag grey">无</span>'}</td>
       <td style="white-space:nowrap"><button class="btn sm ghost" onclick="openModal('${t.id}')">编辑</button> <button class="btn sm ghost" onclick="delTalk('${t.id}')">删除</button></td></tr>`;
-  }).join('')||'<tr><td colspan="12" class="muted" style="text-align:center;padding:20px">暂无沟通卡，点击「新增沟通卡」开始采集</td></tr>';
+  }).join('')||'<tr><td colspan="13" class="muted" style="text-align:center;padding:20px">暂无沟通卡，点击「新增沟通卡」开始采集</td></tr>';
 }
 
 /* ============ 沟通卡弹窗 ============ */
 let curEmp=null, satState={};
 function starRows(){
-  document.getElementById('satRows').innerHTML=KEYS.map(k=>
-    `<div class="sat-row"><div class="name">${k.n}</div><div class="stars" id="stars-${k.k}">${
-      [1,2,3,4,5].map(v=>`<button type="button" data-v="${v}" onclick="setSat('${k.k}',${v})">${v}</button>`).join('')}</div></div>`).join('');
-  KEYS.forEach(k=>paintStars(k.k, satState[k.k]||0));
+  document.getElementById('satRows').innerHTML=GROUPS.map(g=>
+    `<div class="grp-head"><span class="dot" style="background:${g.c}"></span>${g.n}</div>`+
+    g.subs.map(s=>
+      `<div class="sat-row"><div class="name">${esc(s.short)}<span class="short">${esc(s.n)}</span></div><div class="stars" id="stars-${s.k}">${
+        [1,2,3,4,5].map(v=>`<button type="button" data-v="${v}" onclick="setSat('${s.k}',${v})">${v}</button>`).join('')}</div></div>`).join('')
+  ).join('');
+  SUBS.forEach(s=>paintStars(s.k, satState[s.k]||0));
 }
 function paintStars(k,v){
   document.querySelectorAll(`#stars-${k} button`).forEach(b=>b.classList.toggle('on', Number(b.dataset.v)<=v));
@@ -420,7 +475,7 @@ function openModal(id){
   document.getElementById('mRole').value=t?(t.role||'1号位'):'1号位';
   document.getElementById('mWay').value=t?(t.way||'面对面'):'面对面';
   satState=(t&&t.sat)?Object.assign({},t.sat):{};
-  KEYS.forEach(k=>paintStars(k.k, satState[k.k]||0));
+  SUBS.forEach(s=>paintStars(s.k, satState[s.k]||0));
   document.getElementById('mTop1').value=t&&t.top?t.top[0]||'':'';
   document.getElementById('mTop2').value=t&&t.top?t.top[1]||'':'';
   document.getElementById('mKeepCat').value=t?(t.keepCat||''):'';
@@ -434,7 +489,8 @@ function openModal(id){
 }
 function closeModal(){ document.getElementById('mask').classList.remove('show'); }
 function fillSelects(){
-  const opts=`<option value="">（未选）</option>`+KEYS.map(k=>`<option value="${k.k}">${k.n}</option>`).join('');
+  const opts=`<option value="">（未选）</option>`+GROUPS.map(g=>
+    `<optgroup label="${g.n}">`+g.subs.map(s=>`<option value="${s.k}">${s.short} · ${s.n}</option>`).join('')+`</optgroup>`).join('');
   ['mTop1','mTop2','mKeepCat'].forEach(id=>document.getElementById(id).innerHTML=opts);
 }
 function pickEmp(){
@@ -456,10 +512,10 @@ function saveTalk(){
   const talker=document.getElementById('mTalker').value.trim();
   if(!curEmp){ alert('请先从底池选择店长'); return; }
   if(!talker){ alert('请填写沟通人'); return; }
-  const nSat=KEYS.filter(k=>satState[k.k]).length;
-  if(nSat<5){ alert('五项满意度请全部打分（1~5）'); return; }
+  const nSat=SUBS.filter(s=>satState[s.k]).length;
+  if(nSat<20){ alert('20 个小项满意度请全部打分（1~5），当前已打 '+nSat+' 项'); return; }
   const t1=document.getElementById('mTop1').value;
-  if(!t1){ alert('请选择 Top1 关注项'); return; }
+  if(!t1){ alert('请选择 Top1 关注小项'); return; }
   localStorage.setItem('evp_me',talker);
   const t2=document.getElementById('mTop2').value;
   const fields={
@@ -484,10 +540,10 @@ function delTalk(id){
   if(t&&confirm(`确认删除「${t.name}」这张沟通卡？`)) doOp({t:'del', id:id});
 }
 function exportCSV(){
-  const head=['日期','品牌','店长','工号','门店','职位','沟通人','角色','方式',...KEYS.map(k=>k.n+'满意度'),'Top关注','留任因子归类','留任因子原话','成长意愿','风险信号','风险说明'];
+  const head=['日期','品牌','店长','工号','门店','职位','沟通人','角色','方式',...SUBS.map(s=>SHORT[s.k]),'Top关注小项','留任因子归类（小项）','留任因子原话','成长意愿','风险信号','风险说明'];
   const rows=TALKS.map(t=>[t.date,t.brand,t.name,t.empId,t.store,t.position,t.talker,t.role,t.way||'',
-    ...KEYS.map(k=>t.sat?t.sat[k.k]:''),(t.top||[]).map(k=>KNAME[k]).join('+'),t.keepCat||'',t.keep||'',t.growth||'',t.risk||'',t.riskText||'']);
-  const csv='﻿'+[head,...rows].map(r=>r.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(',')).join('\r\n');
+    ...SUBS.map(s=>t.sat?t.sat[s.k]:''),(t.top||[]).map(k=>subLabel(k)).join('+'),t.keepCat?subLabel(t.keepCat):'',t.keep||'',t.growth||'',t.risk||'',t.riskText||'']);
+  const csv='\ufeff'+[head,...rows].map(r=>r.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(',')).join('\r\n');
   const a=document.createElement('a');
   a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));
   a.download='EVP店长沟通数据_'+new Date().toISOString().slice(0,10)+'.csv';
@@ -498,12 +554,17 @@ function exportCSV(){
 function stat(list){
   const n=list.length||1;
   const out={n:list.length};
-  KEYS.forEach(k=>{
-    const satVals=list.map(t=>t.sat?t.sat[k.k]:null).filter(Boolean);
-    out[k.k]={sat: satVals.length? satVals.reduce((a,b)=>a+b,0)/satVals.length : 0,
-              top: list.filter(t=>(t.top||[]).includes(k.k)).length};
+  SUBS.forEach(s=>{
+    const satVals=list.map(t=>t.sat?t.sat[s.k]:null).filter(Boolean);
+    out[s.k]={sat: satVals.length? satVals.reduce((a,b)=>a+b,0)/satVals.length : 0,
+              top: list.filter(t=>(t.top||[]).includes(s.k)).length};
   });
-  KEYS.forEach(k=>{ out[k.k].gap = out[k.k].top/n*100 - (out[k.k].sat-1)/4*100; });
+  SUBS.forEach(s=>{ out[s.k].gap = out[s.k].top/n*100 - (out[s.k].sat-1)/4*100; });
+  GROUPS.forEach(g=>{
+    const vals=g.subs.map(s=>out[s.k].sat).filter(v=>v>0);
+    out['_'+g.k]= vals.length? vals.reduce((a,b)=>a+b,0)/vals.length : 0;
+    out['_top'+g.k]= g.subs.reduce((a,s)=>a+out[s.k].top,0);
+  });
   return out;
 }
 function renderProfile(){
@@ -513,55 +574,71 @@ function renderProfile(){
   const box=document.getElementById('pfContent');
   if(list.length<3){ box.innerHTML=`<p class="muted" style="padding:16px">沟通卡不足 3 张，数据暂不具备画像意义（当前 ${list.length} 张）。先去「沟通登记」采集。</p>`; return; }
   const st=stat(list);
-  const rankTop=KEYS.slice().sort((a,b)=>st[b.k].top-st[a.k].top);
-  const rankSat=KEYS.slice().sort((a,b)=>st[a.k].sat-st[b.k].sat);
+  const rankTop=SUBS.slice().sort((a,b)=>st[b.k].top-st[a.k].top);
+  const rankSat=SUBS.slice().sort((a,b)=>st[a.k].sat-st[b.k].sat);
+  const rankGap=SUBS.slice().sort((a,b)=>st[b.k].gap-st[a.k].gap);
   let html=`<div class="cards-row">`+
     `<div class="stat"><div class="num">${st.n}</div><div class="lbl">样本沟通卡数</div></div>`+
-    rankTop.slice(0,1).map(k=>`<div class="stat"><div class="num">${KNAME[k.k]}</div><div class="lbl">关注度第 1（${st[k.k].top} 票）</div></div>`).join('')+
-    rankSat.slice(0,1).map(k=>`<div class="stat warn"><div class="num">${KNAME[k.k]}</div><div class="lbl">满意度最低（${st[k.k].sat.toFixed(1)} 分）</div></div>`).join('')+
-    rankTop.slice().sort((a,b)=>st[b.k].gap-st[a.k].gap).slice(0,1).map(k=>`<div class="stat bad"><div class="num">${KNAME[k.k]}</div><div class="lbl">留任缺口最大</div></div>`).join('')+`</div>`;
-  // 关注度 & 满意度 & 缺口 对比条
-  html+=`<h3 class="sec">五项对比：关注度（Top2 票数占比） / 满意度 / 留任缺口</h3>`;
-  const maxTop=Math.max(...KEYS.map(k=>st[k.k].top),1);
-  html+=KEYS.map(k=>{
-    const pct=st[k.k].top/maxTop*100;
-    const gap=st[k.k].gap;
-    const gc=gap>15?'bad':gap>0?'warn':'ok';
+    rankTop.slice(0,1).map(k=>`<div class="stat"><div class="num">${SHORT[k.k]}</div><div class="lbl">关注度第 1 小项（${GNAME[G_OF[k.k]]}·${st[k.k].top} 票）</div></div>`).join('')+
+    rankSat.slice(0,1).map(k=>`<div class="stat warn"><div class="num">${SHORT[k.k]}</div><div class="lbl">满意度最低小项（${st[k.k].sat.toFixed(1)} 分）</div></div>`).join('')+
+    rankGap.slice(0,1).map(k=>`<div class="stat bad"><div class="num">${SHORT[k.k]}</div><div class="lbl">留任缺口最大小项</div></div>`).join('')+`</div>`;
+  // 大项概览
+  html+=`<h3 class="sec">五大项概览（小项满意度均值 / 关注票合计）</h3>`;
+  html+=GROUPS.map(g=>{
+    const gs=st['_'+g.k], gt=st['_top'+g.k];
+    const pct=Math.max(gs? (gs-1)/4*100 : 0, 4);
     return `<div style="margin-bottom:10px">
       <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:3px">
-        <span><b>${k.n}</b>　满意度 ${st[k.k].sat.toFixed(1)} 分 · 关注 ${st[k.k].top} 票（${(st[k.k].top/st.n*100).toFixed(0)}%）</span>
-        <span class="tag ${gc}">缺口 ${gap>=0?'+':''}${gap.toFixed(0)}</span></div>
-      <div class="bar-wrap" style="height:16px"><div class="bar-fill" style="width:${pct}%;background:var(--teal);opacity:.85"></div></div></div>`;
+        <span><span class="dot" style="display:inline-block;width:9px;height:9px;border-radius:50%;background:${g.c};margin-right:6px"></span><b>${g.n}</b></span>
+        <span class="muted">均分 ${gs.toFixed(1)} 分 · 关注 ${gt} 票</span></div>
+      <div class="bar-wrap" style="height:14px"><div class="bar-fill" style="width:${pct}%;background:${g.c};opacity:.85"></div></div></div>`;
   }).join('');
+  // 20 小项明细
+  html+=`<h3 class="sec">20 小项明细：满意度 · 关注度 · 留任缺口（按大项分组）</h3>`;
+  html+=GROUPS.map(g=>
+    `<div class="grp-head"><span class="dot" style="background:${g.c}"></span>${g.n}（大项均分 ${st['_'+g.k].toFixed(1)}）</div>`+
+    g.subs.map(s=>{
+      const v=st[s.k];
+      const gap=v.gap, gc=gap>15?'bad':gap>0?'warn':'ok';
+      const satPct=v.sat?(v.sat-1)/4*100:0;
+      return `<div class="sub-line">
+        <span class="nm" title="${esc(s.n)}">${esc(s.short)}<span class="muted" style="font-size:11px"> ${esc(s.n)}</span></span>
+        <span class="mini" style="height:10px"><i style="width:${Math.max(satPct,3)}%;background:${g.c};opacity:.8"></i></span>
+        <span style="width:170px;white-space:nowrap;text-align:right">满意度 ${v.sat?v.sat.toFixed(1):'—'} · 关注 ${v.top} 票 <span class="tag ${gc}">缺口 ${gap>=0?'+':''}${gap.toFixed(0)}</span></span>
+      </div>`;
+    }).join('')
+  ).join('');
   // 四象限
-  html+=`<h3 class="sec">四象限矩阵（x=满意度，y=关注度占比）</h3>`+quadChart(st);
-  html+=`<p class="muted">右上＝留任支柱（重要且满意，对外讲 EVP 的素材）；左上＝<b>留任风险区（重要但不满意，最优先改善）</b>；左下＝低优先级；右下＝锦上添花。</p>`;
-  // 分品牌对比（仅全部品牌时）
+  html+=`<h3 class="sec">四象限矩阵（x=小项满意度，y=小项关注度票数 · 颜色=大项）</h3>`+
+    `<div class="legend">`+GROUPS.map(g=>`<span><i style="background:${g.c}"></i>${g.n}</span>`).join('')+`</div>`+
+    quadChart(st);
+  html+=`<p class="muted">右上＝留任支柱（重要且满意，对外讲 EVP 的素材）；左上＝<b>留任风险区（重要但不满意，最优先改善）</b>；左下＝低优先级；右下＝锦上添花。散点为 20 个小项，颜色对应所属大项。</p>`;
+  // 分品牌对比（仅全部品牌时，大项均分口径）
   if(!fb){
-    html+=`<h3 class="sec">三品牌对比（各项满意度均值）</h3>`;
-    html+=`<table><tr><th>品牌</th>${KEYS.map(k=>`<th>${k.n}</th>`).join('')}<th>样本</th></tr>`+
+    html+=`<h3 class="sec">三品牌对比（五大项满意度均值）</h3>`;
+    html+=`<table><tr><th>品牌</th>${GROUPS.map(g=>`<th>${g.n}</th>`).join('')}<th>样本</th></tr>`+
       ['茶颜','鸳央','墨柠'].map(b=>{
         const s2=stat(TALKS.filter(t=>(t.date||'')>=q.start&&t.brand===b));
         if(!s2.n) return '';
-        return `<tr><td>${brandTag(b)}</td>${KEYS.map(k=>{
-          const v=s2[k.k].sat; return `<td>${v?v.toFixed(1):'—'}</td>`;}).join('')}<td>${s2.n}</td></tr>`;
+        return `<tr><td>${brandTag(b)}</td>${GROUPS.map(g=>{
+          const v=s2['_'+g.k]; return `<td>${v?v.toFixed(1):'—'}</td>`;}).join('')}<td>${s2.n}</td></tr>`;
       }).join('')+'</table>';
   }
   document.getElementById('pfNote').textContent=`样本：${st.n} 张沟通卡（${q.label}）`;
   box.innerHTML=html;
 }
 function quadChart(st){
-  const W=760,H=380,pad=52;
+  const W=820,H=400,pad=54;
   const iw=W-pad*2, ih=H-pad*2;
   const cx=pad+iw/2, cy=pad+ih/2;
-  const maxTop=Math.max(...KEYS.map(k=>st[k.k].top),1);
-  const yMax=Math.max(st.n*0.6,1);
-  const pts=KEYS.map(k=>{
-    const x=pad+iw*((st[k.k].sat-1)/4);
-    const y=pad+ih*(1-st[k.k].top/yMax);
-    return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="11" fill="#0f6e56" opacity="0.85"/>
-      <text x="${x.toFixed(1)}" y="${(y-18).toFixed(1)}" font-size="12" fill="#2b2b2b" text-anchor="middle" font-weight="500">${k.n}</text>
-      <text x="${x.toFixed(1)}" y="${(y+4).toFixed(1)}" font-size="10.5" fill="#fff" text-anchor="middle">${st[k.k].top}票/${st[k.k].sat.toFixed(1)}分</text>`;
+  const maxTop=Math.max(...SUBS.map(s=>st[s.k].top),1);
+  const yMax=maxTop*1.15;
+  const pts=SUBS.map(s=>{
+    const x=pad+iw*((st[s.k].sat-1)/4);
+    const y=pad+ih*(1-st[s.k].top/yMax);
+    const c=GCOLOR[G_OF[s.k]];
+    return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="7" fill="${c}" opacity="0.85"/>
+      <text x="${x.toFixed(1)}" y="${(y-11).toFixed(1)}" font-size="10.5" fill="#2b2b2b" text-anchor="middle" font-weight="500">${s.short}</text>`;
   });
   return `<svg viewBox="0 0 ${W} ${H}" width="100%" class="quad" role="img">
     <rect x="${pad}" y="${pad}" width="${iw/2}" height="${ih/2}" fill="#fde8e8" opacity="0.6"/>
@@ -597,9 +674,9 @@ function renderRisk(){
     :'<p class="muted">暂无</p>';
   const kf=TALKS.filter(t=>(t.date||'')>=q.start&&t.keep);
   document.getElementById('kfList').innerHTML=kf.length?
-    `<table><tr><th>日期</th><th>品牌</th><th>店长</th><th>留任因子原话</th><th>归类</th></tr>`+
+    `<table><tr><th>日期</th><th>品牌</th><th>店长</th><th>留任因子原话</th><th>归类（小项）</th></tr>`+
     kf.map(t=>`<tr><td>${fmtD(t.date)}</td><td>${brandTag(t.brand)}</td><td>${esc(t.name)}</td><td>${esc(t.keep)}</td>
-      <td>${t.keepCat?`<span class="tag grey">${esc(KNAME[t.keepCat])}</span>`:'—'}</td></tr>`).join('')+`</table>`
+      <td>${t.keepCat?`<span class="tag grey">${esc(subLabel(t.keepCat))}</span>`:'—'}</td></tr>`).join('')+`</table>`
     :'<p class="muted">暂无留任因子记录</p>';
 }
 
@@ -614,24 +691,26 @@ function renderReport(){
     const uniq=new Set(list.map(t=>t.empId)).size;
     const leadN=new Set(list.filter(t=>t.role==='1号位').map(t=>t.empId)).size;
     const hrbpN=new Set(list.filter(t=>t.role==='HRBP').map(t=>t.empId)).size;
-    const rankTop=KEYS.slice().sort((x,y)=>st[y.k].top-st[x.k].top);
-    const rankSat=KEYS.slice().sort((x,y)=>st[x.k].sat-st[y.k].sat);
-    const rankGap=KEYS.slice().sort((x,y)=>st[y.k].gap-st[x.k].gap);
+    const rankTop=SUBS.slice().sort((x,y)=>st[y.k].top-st[x.k].top);
+    const rankSat=SUBS.slice().sort((x,y)=>st[x.k].sat-st[y.k].sat);
+    const rankGap=SUBS.slice().sort((x,y)=>st[y.k].gap-st[x.k].gap);
+    const gRank=GROUPS.slice().sort((a,b2)=>st['_'+b2.k]-st['_'+a.k]);
     const poolN=POOL.filter(p=>p.brand===b).length;
     const risky=list.filter(t=>t.risk).length;
     const grow=list.filter(t=>t.growth&&t.growth!=='暂无明显意愿').length;
     const keepList=list.filter(t=>t.keep).slice(0,5);
     return `<div class="card"><h3>${brandTag(b)} ${b} · 1号位 ${LEAD_OF[b]} · ${q.label} EVP 沟通产出</h3>
     <ul>
-      <li><b>覆盖</b>：本季沟通店长 <b>${uniq}</b> 人（覆盖率 ${(uniq/poolN*100).toFixed(0)}%，底池 ${poolN} 人），其中 1 号位 ${LEAD_OF[b]} 走店 ${leadN} 家（硬指标 25 家，完成 ${(leadN/25*100).toFixed(0)}%）、HRBP 采集 ${hrbpN} 家，共 ${list.length} 张沟通卡。</li>
-      <li><b>关注度排序</b>：${rankTop.map(k=>`${k.n}（${st[k.k].top} 票）`).join(' ＞ ')}。</li>
-      <li><b>满意度现状</b>：最低三项 ${rankSat.slice(0,3).map(k=>`${k.n} ${st[k.k].sat.toFixed(1)} 分`).join('、')}。</li>
-      <li><b>留任缺口 Top3（关注度-满意度）</b>：${rankGap.slice(0,3).map(k=>`${k.n}（缺口 ${st[k.k].gap>=0?'+':''}${st[k.k].gap.toFixed(0)}）`).join('、')} —— <b>这是最能让本品牌店长愿意留下来的抓手</b>。</li>
+      <li><b>覆盖</b>：本季沟通店长 <b>${uniq}</b> 人（覆盖率 ${(uniq/poolN*100).toFixed(0)}%，底池 ${poolN} 人），其中 1 号位 ${LEAD_OF[b]} 走店 ${leadN} 家（硬指标 25 家，完成 ${(leadN/25*100).toFixed(0)}%）、HRBP 采集 ${hrbpN} 家，共 ${list.length} 张沟通卡（每卡 20 小项）。</li>
+      <li><b>关注度 Top5 小项</b>：${rankTop.slice(0,5).map(k=>`${subLabel(k.k)}（${st[k.k].top} 票）`).join(' ＞ ')}。</li>
+      <li><b>满意度最低三项小项</b>：${rankSat.slice(0,3).map(k=>`${subLabel(k.k)} ${st[k.k].sat.toFixed(1)} 分`).join('、')}。</li>
+      <li><b>大项满意度排序</b>：${gRank.map(g=>`${g.n} ${st['_'+g.k].toFixed(1)}`).join(' ＞ ')}。</li>
+      <li><b>留任缺口 Top3 小项（关注度-满意度）</b>：${rankGap.slice(0,3).map(k=>`${subLabel(k.k)}（缺口 ${st[k.k].gap>=0?'+':''}${st[k.k].gap.toFixed(0)}）`).join('、')} —— <b>这是最能让本品牌店长愿意留下来的抓手</b>。</li>
       <li><b>风险与成长</b>：沟通中标记离职风险 ${risky} 人（已转离职台账跟进）；有成长意愿 ${grow} 人（岗位成长前置池）。</li>
       ${keepList.length?`<li><b>店长留任因子原话（节选）</b>：${keepList.map(t=>`${esc(t.name)}「${esc(t.keep)}」`).join('；')}</li>`:''}
     </ul></div>`;
   }).join('');
-  box.innerHTML=parts+`<p class="muted">以上三段即各品牌 1 号位的季度「单独产出内容」，可分别复制进汇报；配合四象限图与 CSV 明细即为完整季度 EVP 沟通报告。</p>`;
+  box.innerHTML=parts+`<p class="muted">以上三段即各品牌 1 号位的季度「单独产出内容」，可分别复制进汇报；配合四象限图（20 小项散点）与 CSV 明细即为完整季度 EVP 沟通报告。</p>`;
 }
 function copySummary(){
   const q=thisQuarter();

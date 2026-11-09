@@ -506,7 +506,7 @@
 
 </div>
 
-<script src="data.js?v=20261102b"></script>
+<script src="data.js?v=20261109a"></script>
 <!-- v=20261027a: 数据刷新至10/27 -->
 <!-- v=20261016a: 第一排新增大店长年假卡片 + 大店长排休日期区间登记（云端 nov_mgr_rest_dates） -->
 <!-- v=20260916a: 新增休息日期区间（起止日期多段填写+校验+明细显示） -->
@@ -971,7 +971,18 @@ async function loadSepRest() {
 
 async function saveSepRest() {
     try {
-        const payload = Object.assign({}, legacyRestData, {
+        // 保存前先拉云端最新 data 做合并底座，防止并发保存时用本页旧快照冲掉别人刚写的数据
+        let latest = legacyRestData;
+        try {
+            const r0 = await fetch(SUPA_URL + '/rest/v1/' + SUPA_TABLE + '?id=eq.' + SUPA_ID + '&select=data', {
+                headers: { 'apikey': SUPA_KEY, 'Authorization': 'Bearer ' + SUPA_KEY }
+            });
+            if (r0.ok) {
+                const rows0 = await r0.json();
+                if (rows0 && rows0.length) latest = rows0[0].data || {};
+            }
+        } catch (e0) { /* 拉取失败则退回加载时快照 */ }
+        const payload = Object.assign({}, latest, {
             nov_rest_emp: sepRestCache,
             nov_rest_dates: sepRestDatesCache,
             nov_mgr_rest_dates: mgrRestDatesCache

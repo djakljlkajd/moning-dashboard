@@ -834,12 +834,12 @@
 
 </div><!-- end container -->
 
-<script src="data.js?v=20261021a"></script>
-<script src="stores.js?v=20261021a"></script>
-<script src="details.js?v=20261021a"></script>
-<script src="staff_lookup.js?v=20261021a"></script>
-<script src="store_base.js?v=20261021a"></script>
-<script src="roster.js?v=20261021a"></script>
+<script src="data.js?v=20261109a"></script>
+<script src="stores.js?v=20261109a"></script>
+<script src="details.js?v=20261109a"></script>
+<script src="staff_lookup.js?v=20261109a"></script>
+<script src="store_base.js?v=20261109a"></script>
+<script src="roster.js?v=20261109a"></script>
 <script>
 const D = window.DASHBOARD_DATA;
 let specialLeaveExtra = [];
@@ -1760,10 +1760,19 @@ switchTab('manager');
 const SUPA_URL_SL = 'https://tclfmnfvlrlxquiojjya.supabase.co';
 const SUPA_KEY_SL = 'sb_publishable_6sa-Pz6dX0BSlTJX3gNiRA_CbtZkf_b';
 const SUPA_TABLE_SL = 'violation_data';
+// 2026-11-09：HC 数据改存独立行（id=999），与工时看板共用行 id=1 彻底解耦。
+// 背景：工时看板 syncViolationData() 用整列覆盖 PATCH 写 id=1，两次抹掉 HC 全部线上数据。
+const SUPA_ROW_SL = 999;
+const SUPA_LEGACY_ROW_SL = 1;   // 仅用于一次性迁移兜底
+const HC_DATA_KEYS = ['special_leave_extra','special_leave_hidden','special_leave_visit','special_leave_type','special_leave_finish','pre_leave_extra','pre_leave_hidden','airport_cert_extra','airport_cert_hidden','store_hc_extra','store_hc_hidden','new_hires_full_extra','new_hires_student_extra'];
+function slUrl(qs) { return SUPA_URL_SL + '/rest/v1/' + SUPA_TABLE_SL + '?id=eq.' + SUPA_ROW_SL + (qs || ''); }
+function slHeaders() { return { 'apikey': SUPA_KEY_SL, 'Authorization': 'Bearer ' + SUPA_KEY_SL }; }
 let slSyncTimer = null;
 let slWriteLock = false;
 // 同步进行中又产生的新变更：不丢弃，标记 pending，等本轮写完立刻补推一次
 let slSyncPending = false;
+// 回读校验连续失败次数，达到上限停止重推（防止接口异常时死循环）
+let slVerifyFailCount = 0;
 
 function genSLId() { return 'sl_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8); }
 
@@ -1823,13 +1832,27 @@ function slRestoreFromLocal() {
 
 async function loadSpecialLeaveExtra() {
     try {
-        const res = await fetch(SUPA_URL_SL + '/rest/v1/' + SUPA_TABLE_SL + '?id=eq.1&select=data', {
-            headers: { 'apikey': SUPA_KEY_SL, 'Authorization': 'Bearer ' + SUPA_KEY_SL }
-        });
+        const res = await fetch(slUrl('&select=data'), { headers: slHeaders() });
         if (!res.ok) throw new Error('supabase ' + res.status);
         const rows = await res.json();
         if (rows && rows.length) {
             const data = rows[0].data || {};
+            // 迁移兜底：独立行首次启用时（HC 键为空），从旧共享行 id=1 一次性搬数据过来
+            if (!data.special_leave_extra || !data.special_leave_extra.length) {
+                try {
+                    const lr = await fetch(SUPA_URL_SL + '/rest/v1/' + SUPA_TABLE_SL + '?id=eq.' + SUPA_LEGACY_ROW_SL + '&select=data', { headers: slHeaders() });
+                    if (lr.ok) {
+                        const lrows = await lr.json();
+                        const legacy = (lrows && lrows.length) ? (lrows[0].data || {}) : {};
+                        HC_DATA_KEYS.forEach(function(k) {
+                            var lv = legacy[k];
+                            if (!lv) return;
+                            var n = Array.isArray(lv) ? lv.length : Object.keys(lv).length;
+                            if (n > 0) data[k] = lv;
+                        });
+                    }
+                } catch(e3) { /* 旧行读不到不影响主流程 */ }
+            }
             const cloudData = data.special_leave_extra || [];
             const cloudHidden = data.special_leave_hidden || [];
             const localData = JSON.parse(localStorage.getItem('hc_special_leave_extra') || '[]');
@@ -1933,9 +1956,7 @@ async function syncSpecialLeaveExtra() {
     updateSyncStatus('syncing');
     try {
         slBackupToLocal();
-        const readRes = await fetch(SUPA_URL_SL + '/rest/v1/' + SUPA_TABLE_SL + '?id=eq.1&select=data', {
-            headers: { 'apikey': SUPA_KEY_SL, 'Authorization': 'Bearer ' + SUPA_KEY_SL }
-        });
+        const readRes = await fetch(slUrl('&select=data'), { headers: slHeaders() });
         if (!readRes.ok) throw new Error('read ' + readRes.status);
         const rows = await readRes.json();
         const curData = (rows && rows.length) ? (rows[0].data || {}) : {};
@@ -1952,26 +1973,44 @@ async function syncSpecialLeaveExtra() {
         curData.store_hc_hidden = storeHcHidden;
         curData.new_hires_full_extra = newHiresFullExtra;
         curData.new_hires_student_extra = newHiresStudentExtra;
-        const writeRes = await fetch(SUPA_URL_SL + '/rest/v1/' + SUPA_TABLE_SL + '?id=eq.1', {
-            method: 'PATCH',
-            headers: {
-                'apikey': SUPA_KEY_SL, 'Authorization': 'Bearer ' + SUPA_KEY_SL,
-                'Content-Type': 'application/json', 'Prefer': 'return=minimal'
-            },
-            body: JSON.stringify({ data: curData, updated_at: new Date().toISOString() })
-        });
+        let writeRes;
+        if (rows && rows.length) {
+            writeRes = await fetch(slUrl(), {
+                method: 'PATCH',
+                headers: Object.assign(slHeaders(), {
+                    'Content-Type': 'application/json', 'Prefer': 'return=minimal'
+                }),
+                body: JSON.stringify({ data: curData, updated_at: new Date().toISOString() })
+            });
+        } else {
+            // 独立行还没建立 → 直接插入，避免 PATCH 命中 0 行却静默返回成功
+            writeRes = await fetch(SUPA_URL_SL + '/rest/v1/' + SUPA_TABLE_SL, {
+                method: 'POST',
+                headers: Object.assign(slHeaders(), {
+                    'Content-Type': 'application/json', 'Prefer': 'return=minimal'
+                }),
+                body: JSON.stringify({ id: SUPA_ROW_SL, data: curData, updated_at: new Date().toISOString() })
+            });
+        }
         if (!writeRes.ok) { const t = await writeRes.text(); throw new Error('write ' + writeRes.status + ' ' + t); }
         // 回读校验：确认云端条数与本地一致，防止 RLS/网络导致"假成功"
         try {
-            const verifyRes = await fetch(SUPA_URL_SL + '/rest/v1/' + SUPA_TABLE_SL + '?id=eq.1&select=data', {
-                headers: { 'apikey': SUPA_KEY_SL, 'Authorization': 'Bearer ' + SUPA_KEY_SL }
-            });
+            const verifyRes = await fetch(slUrl('&select=data'), { headers: slHeaders() });
             if (verifyRes.ok) {
                 const vrows = await verifyRes.json();
                 const cloudExtra = (vrows && vrows.length) ? ((vrows[0].data || {}).special_leave_extra || []) : null;
                 if (cloudExtra && cloudExtra.length !== specialLeaveExtra.length) {
-                    // 云端没写进去（或被其他端覆盖）→ 补推一次
-                    slSyncPending = true;
+                    // 云端没写进去（或被其他端覆盖）→ 补推一次，但最多重试 2 次，避免死循环打爆接口
+                    if (slVerifyFailCount < 2) {
+                        slVerifyFailCount++;
+                        slSyncPending = true;
+                    } else {
+                        console.warn('云端回读连续不一致，停止重试');
+                        updateSyncStatus('error');
+                        slVerifyFailCount = 0;
+                    }
+                } else {
+                    slVerifyFailCount = 0;
                 }
             }
         } catch(e2) { /* 校验失败不阻断主流程 */ }
@@ -2641,7 +2680,7 @@ loadSpecialLeaveExtra();
 </script>
 <script>
 function switchDashboard(sel){
-    var map={hours:'https://djakljlkajd.github.io/moning-dashboard/',turnover:'https://djakljlkajd.github.io/moning-dashboard/turnover/',annual:'https://djakljlkajd.github.io/moning-dashboard/annual-leave/',current:location.href};
+    var map={hours:'https://djakljlkajd.github.io/moning-dashboard/',turnover:'https://2a73735a1c624120bd63c94f8f741ddb.app.codebuddy.work',annual:'https://djakljlkajd.github.io/moning-dashboard/annual-leave/',current:location.href};
     if(sel.value!=='current' && map[sel.value]) window.location.href = map[sel.value];
 }
 </script>

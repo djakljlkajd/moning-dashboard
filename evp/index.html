@@ -87,11 +87,12 @@ th{background:var(--teal-light);color:var(--brand-dark);white-space:nowrap}
 <body>
 <header>
   <h1>三品牌 EVP 店长沟通看板</h1>
-  <div class="meta">Q4 走店硬指标：1 号位 25 家/季度（茶颜-朱芳 · 墨柠-李当 · 鸳央-胡芬）｜HRBP 巡店顺带采集｜店长月度离职红线：墨柠 0.8 · 茶颜 3 · 鸳央 0.4</div>
+  <div class="meta">Q4 双轨巡店采集：1 号位走店 + HRBP 专员巡店，按覆盖节奏推进（茶颜-朱芳 · 墨柠-李当 · 鸳央-胡芬）｜店长月度离职红线：墨柠 0.8 · 茶颜 3 · 鸳央 0.4｜落地方案：<a href="../evp-plan/" target="_blank" style="color:#ffe9a8">查看方案 →</a></div>
   <span class="sync-tip" id="syncTip">正在连接云端…</span>
 </header>
 <nav>
   <button class="active" data-page="overview" onclick="showPage('overview')">📊 总览进度</button>
+  <button data-page="track" onclick="showPage('track')">🎯 落地追踪</button>
   <button data-page="talk" onclick="showPage('talk')">📝 沟通登记</button>
   <button data-page="profile" onclick="showPage('profile')">📈 EVP 画像</button>
   <button data-page="risk" onclick="showPage('risk')">🚨 风险与成长</button>
@@ -103,7 +104,7 @@ th{background:var(--teal-light);color:var(--brand-dark);white-space:nowrap}
   <div class="note-strip">EVP 采集颗粒度：<b>5 大项 × 20 小项</b>（薪酬福利 3 项 / 发展机会 3 项 / 组织名望 4 项 / 伙伴·氛围 4 项 / 工作·岗位 6 项）。核心算法：<b>留任缺口 = 关注度 − 满意度</b>——店长认为重要但现状满意度低的小项，就是最能留住他们的抓手。当店长提出离职再沟通已经很晚，本看板的目标是<b>在离职想法出现之前摸清底牌</b>。</div>
   <div class="cards-row" id="ovCards"></div>
   <div class="card">
-    <h3>1 号位走店进度（Q4 硬指标 25 家/人）</h3>
+    <h3>1 号位走店覆盖进度（不设家数硬指标 · 覆盖 = 去重店长数 / 品牌底池）</h3>
     <div id="ovLead"></div>
   </div>
   <div class="card">
@@ -115,6 +116,15 @@ th{background:var(--teal-light);color:var(--brand-dark);white-space:nowrap}
     <p class="muted" style="margin-bottom:10px">本月已离职店长数来自「三品牌店长离职沟通看板」台账（状态=已离职）；未登记时显示 0，请以离职台账为准。</p>
     <div id="ovQuota"></div>
   </div>
+</div>
+
+<!-- 落地追踪 -->
+<div class="page" id="page-track">
+  <div class="note-strip">Q4 落地推进：<b>不设家数硬指标</b>，按覆盖节奏推进。核心产出 = 各品牌《店长留任关键因素报告》——打分给量级，<b>留任因子原话给证据</b>。中期检查 11/30：三品牌累计 ≥100 张。完整方案见 <a href="../evp-plan/" target="_blank" style="color:var(--teal)">evp-plan/</a>。</div>
+  <div class="card"><h3>周进度（11/10 起分周 · 各品牌沟通卡数）</h3><div id="trWeek"></div></div>
+  <div class="card"><h3>团队进度（按沟通人 · 1 号位 + HRBP 双轨）</h3><div id="trTeam"></div></div>
+  <div class="card"><h3>💬 留任因子墙（店长原话按小项聚类 · 核心产出实时版）</h3><div id="trKeep"></div></div>
+  <div class="card"><h3>大店区覆盖（已沟通店长 / 底池 · 盲区置顶）</h3><div id="trArea"></div></div>
 </div>
 
 <!-- 沟通登记 -->
@@ -264,7 +274,6 @@ const GCOLOR=Object.fromEntries(GROUPS.map(g=>[g.k,g.c]));
 const G_OF=Object.fromEntries(SUBS.map(s=>[s.k,s.k.split('_')[0]]));
 function subLabel(k){ return GNAME[G_OF[k]]+'·'+SHORT[k]; }
 const QUOTA = {"墨柠":0.8, "茶颜":3, "鸳央":0.4};
-const LEAD_TARGET = {"茶颜":25, "墨柠":25, "鸳央":25};
 const LEAD_OF = {"茶颜":"朱芳", "墨柠":"李当", "鸳央":"胡芬"};
 const QUARTER = "Q4(10-12月)";
 
@@ -272,6 +281,7 @@ function showPage(p){
   document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('active', b.dataset.page===p));
   document.querySelectorAll('.page').forEach(d=>d.classList.toggle('active', d.id==='page-'+p));
   if(p==='overview') renderOverview();
+  if(p==='track') renderTrack();
   if(p==='talk') renderTalks();
   if(p==='profile') renderProfile();
   if(p==='risk') renderRisk();
@@ -280,6 +290,11 @@ function showPage(p){
 function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 function brandTag(b){ const c=b==='茶颜'?'ty':b==='鸳央'?'yy':'mn'; return '<span class="tag '+c+'">'+esc(b)+'</span>'; }
 function fmtD(s){ return s?esc(s):'<span class="muted">—</span>'; }
+function mondayOf(d){
+  const dt=new Date(d); const day=(dt.getDay()+6)%7;
+  dt.setDate(dt.getDate()-day);
+  return `${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}-${String(dt.getDate()).padStart(2,'0')}`;
+}
 
 /* ============ Supabase 协作（id=41 EVP / id=40 离职台账） ============ */
 const SUPA_URL='https://tclfmnfvlrlxquiojjya.supabase.co';
@@ -352,6 +367,7 @@ function doOp(op){
 function refreshAll(){
   const act=document.querySelector('nav button.active').dataset.page;
   if(act==='overview') renderOverview();
+  if(act==='track') renderTrack();
   if(act==='talk') renderTalks();
   if(act==='profile') renderProfile();
   if(act==='risk') renderRisk();
@@ -362,26 +378,33 @@ function refreshAll(){
 function renderOverview(){
   const q=thisQuarter();
   const qTalks=TALKS.filter(t=>(t.date||'')>=q.start);
+  const nowM=mondayOf(new Date());
+  const pd=new Date(); pd.setDate(pd.getDate()-7);
+  const prevM=mondayOf(pd);
+  const wkNow=qTalks.filter(t=>t.date>=nowM).length;
+  const wkPrev=qTalks.filter(t=>t.date>=prevM&&t.date<nowM).length;
   const cards=[
     [qTalks.length,'Q4 累计沟通店长数',''],
     [new Set(qTalks.map(t=>t.empId)).size,'沟通覆盖店长（去重）','blue'],
-    [qTalks.filter(t=>t.risk).length,'沟通中标记风险店长','warn'],
+    [wkNow,'本周沟通卡（上周 '+wkPrev+' 张）','warn'],
+    [qTalks.filter(t=>t.risk).length,'沟通中标记风险店长',''],
     [qTalks.filter(t=>t.growth&&t.growth!=='暂无明显意愿').length,'有成长意愿店长','ok'],
     [qTalks.filter(t=>t.role==='1号位').length,'1号位走店累计',''],
     [qTalks.filter(t=>t.role==='HRBP').length,'HRBP 采集累计',''],
   ];
   document.getElementById('ovCards').innerHTML=cards.map(c=>
     `<div class="stat ${c[2]}"><div class="num">${c[0]}</div><div class="lbl">${c[1]}</div></div>`).join('');
-  // 1号位进度
+  // 1号位覆盖进度（不设家数硬指标）
   document.getElementById('ovLead').innerHTML=['茶颜','鸳央','墨柠'].map(b=>{
+    const poolN=POOL.filter(p=>p.brand===b).length||1;
     const n=new Set(qTalks.filter(t=>t.brand===b&&t.role==='1号位').map(t=>t.empId)).size;
-    const target=LEAD_TARGET[b], pct=Math.min(n/target*100,100);
-    const cls=pct>=100?'':(pct>=50?'warn':'');
+    const pct=Math.min(n/poolN*100,100);
+    const cls=pct>=30?'':(pct>=10?'warn':'');
     return `<div style="margin-bottom:12px">
       <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px">
-        <span>${brandTag(b)} <b>${LEAD_OF[b]}</b>（${b} 1号位）</span>
-        <span class="muted">${n} / ${target} 家 · ${pct.toFixed(0)}%</span></div>
-      <div class="bar-wrap"><div class="bar-fill ${cls}" style="width:${pct}%"></div><div class="bar-txt">${n}/${target}</div></div></div>`;
+        <span>${brandTag(b)} <b>${LEAD_OF[b]}</b>（1号位走店覆盖）</span>
+        <span class="muted">已覆盖 ${n} / ${poolN} 家底池 · ${pct.toFixed(0)}%</span></div>
+      <div class="bar-wrap"><div class="bar-fill ${cls}" style="width:${pct}%"></div><div class="bar-txt">${n}/${poolN}</div></div></div>`;
   }).join('');
   // HRBP 进度
   const byH={}
@@ -410,6 +433,104 @@ function thisQuarter(){
   const y=2026, m=new Date().getMonth()+1;
   const qs=[[10,1],[7,1],[4,1],[1,1]][Math.floor((m-1)/3)];
   return {label:`${y} Q${Math.floor((m-1)/3)+1}`, start:`${y}-${String(qs[0]).padStart(2,'0')}-01`};
+}
+
+/* ============ 落地追踪 ============ */
+function renderTrack(){
+  const q=thisQuarter();
+  const qTalks=TALKS.filter(t=>(t.date||'')>=q.start);
+  // 周进度：2026-11-10 起分 8 周
+  const weeks=[];
+  { let d=new Date('2026-11-10T00:00:00');
+    for(let i=0;i<8;i++){
+      const s=mondayOf(d);
+      const e=new Date(s+'T00:00:00'); e.setDate(e.getDate()+7);
+      weeks.push({s:s, e:e.toISOString().slice(0,10), label:'W'+(i+1)});
+      d=e;
+    } }
+  const today=new Date().toISOString().slice(0,10);
+  document.getElementById('trWeek').innerHTML='<table><tr><th>周次</th><th>日期区间</th><th>茶颜</th><th>鸳央</th><th>墨柠</th><th>合计</th><th>状态</th></tr>'+
+    weeks.map(w=>{
+      const cnt=qTalks.filter(t=>t.date>=w.s&&t.date<w.e);
+      const per=['茶颜','鸳央','墨柠'].map(b=>cnt.filter(t=>t.brand===b).length);
+      const st= today>=w.e ? (cnt.length?'':'') : (today>=w.s?'当前周':'未到');
+      const stHtml= st==='当前周' ? '<span class="tag warn">进行中</span>' : st==='未到' ? '<span class="tag grey">未到</span>' : (cnt.length?'<span class="tag ok">已结束</span>':'<span class="tag grey">0 张</span>');
+      return `<tr><td><b>${w.label}</b></td><td>${w.s} ~ ${w.e}</td><td>${per[0]}</td><td>${per[1]}</td><td>${per[2]}</td><td><b>${cnt.length}</b></td><td>${stHtml}</td></tr>`;
+    }).join('')+'</table>';
+  // 团队进度
+  const byT={};
+  qTalks.forEach(t=>{
+    const k=t.talker||'—';
+    byT[k]=byT[k]||{n:0, emps:{}, brands:{}, last:'', role:t.role};
+    byT[k].n++; byT[k].emps[t.empId]=1;
+    byT[k].brands[t.brand]=(byT[k].brands[t.brand]||0)+1;
+    if(t.date>(byT[k].last||'')) byT[k].last=t.date;
+  });
+  document.getElementById('trTeam').innerHTML=Object.keys(byT).length?
+    '<table><tr><th>沟通人</th><th>角色</th><th>品牌分布</th><th>卡数</th><th>覆盖店长</th><th>最近采集</th></tr>'+
+    Object.entries(byT).sort((a,b)=>b[1].n-a[1].n).map(([n,v])=>
+      `<tr><td><b>${esc(n)}</b></td><td>${v.role==='1号位'?'<span class="tag ok">1号位</span>':'<span class="tag blue">HRBP</span>'}</td>
+      <td>${['茶颜','鸳央','墨柠'].filter(b=>v.brands[b]).map(b=>brandTag(b)+' '+v.brands[b]).join('　')}</td>
+      <td>${v.n}</td><td>${Object.keys(v.emps).length}</td><td>${fmtD(v.last)}</td></tr>`).join('')+'</table>'
+    :'<p class="muted">本季度暂无采集记录</p>';
+  // 留任因子墙
+  const keep={};
+  qTalks.forEach(t=>{
+    if(!t.keep) return;
+    let k=null;
+    if(t.keepCat) k=t.keepCat;
+    else if(t.top&&t.top.length) k=t.top[0];
+    if(!k||!SUB[k]) k='unclassified';
+    (keep[k]=keep[k]||[]).push({name:t.name, brand:t.brand, date:t.date, text:t.keep});
+  });
+  const ranked=SUBS.map(s=>({s:s, quotes:keep[s.k]||[]}))
+    .concat([{s:{k:'unclassified',n:'未归类',short:'未归类'}, c:'#999', quotes:keep['unclassified']||[]}])
+    .filter(x=>x.quotes.length)
+    .sort((a,b)=>b.quotes.length-a.quotes.length);
+  const topN=ranked.slice(0,10);
+  document.getElementById('trKeep').innerHTML=topN.length?
+    `<p class="muted" style="margin-bottom:10px">共 ${ranked.reduce((a,x)=>a+x.quotes.length,0)} 条留任因子原话，聚类到 ${ranked.length} 个小项；以下为 Top10。完整对照见「季度产出」页。</p>`+
+    topN.map((x,i)=>{
+      const g=G_OF[x.s.k];
+      const c= g?GCOLOR[g]:'#999';
+      const votes=qTalks.filter(t=>(t.top||[]).includes(x.s.k)).length;
+      return `<div style="margin-bottom:10px;border:1px solid var(--line);border-radius:10px;padding:10px 14px">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px">
+        <span><b style="color:${c}">#${i+1}</b> <b>${esc(x.s.short)}</b> <span class="muted">${esc(x.s.n)}${g?' · '+esc(GNAME[g]):''}</span></span>
+        <span><span class="tag grey">原话 ${x.quotes.length} 条</span> <span class="tag grey">关注 ${votes} 票</span></span>
+      </div>
+      <details style="margin-top:6px"><summary style="cursor:pointer;font-size:12.5px;color:var(--teal)">展开原话</summary>
+        <div style="margin-top:6px">${x.quotes.map(q=>`<div style="font-size:12.5px;padding:4px 0;border-top:1px dashed var(--line)">「${esc(q.text)}」<span class="muted">—— ${esc(q.name)}（${esc(q.brand)} · ${fmtD(q.date)}）</span></div>`).join('')}</div>
+      </details></div>`;
+    }).join('')
+    :'<p class="muted">暂无留任因子原话。沟通卡中「只改善一件事，什么最能让你留下来？」的原话会按小项自动聚类到这里。</p>';
+  // 大店区覆盖
+  const areaMap={};
+  POOL.forEach(p=>{
+    const b=p.brand, k=p.bigArea||'—';
+    areaMap[b]=areaMap[b]||{};
+    areaMap[b][k]=areaMap[b][k]||{pool:{}, cov:{}};
+    areaMap[b][k].pool[p.empId]=1;
+  });
+  const empArea={};
+  POOL.forEach(p=>{ empArea[p.empId]=p.bigArea||'—'; });
+  qTalks.forEach(t=>{
+    const b=t.brand, k=empArea[t.empId];
+    if(areaMap[b]&&areaMap[b][k]) areaMap[b][k].cov[t.empId]=1;
+  });
+  let rows=[];
+  Object.keys(areaMap).forEach(b=>{
+    Object.entries(areaMap[b]).forEach(([k,v])=>{
+      const poolN=Object.keys(v.pool).length, covN=Object.keys(v.cov).length;
+      rows.push({b:b, k:k, poolN:poolN, covN:covN, pct:covN/poolN*100});
+    });
+  });
+  rows.sort((a,b)=>(a.covN-b.covN)||(a.pct-b.pct)||(b.poolN-a.poolN));
+  document.getElementById('trArea').innerHTML='<table><tr><th>品牌</th><th>大店区</th><th>底池店长</th><th>已沟通</th><th>覆盖率</th><th>状态</th></tr>'+
+    rows.map(r=>{
+      const st=r.covN===0?'<span class="tag bad">盲区</span>':r.pct<30?'<span class="tag warn">待加密</span>':'<span class="tag ok">正常</span>';
+      return `<tr><td>${brandTag(r.b)}</td><td>${esc(r.k)}</td><td>${r.poolN}</td><td><b>${r.covN}</b></td><td>${r.pct.toFixed(0)}%</td><td>${st}</td></tr>`;
+    }).join('')+'</table>';
 }
 
 /* ============ 沟通登记 ============ */
@@ -710,7 +831,22 @@ function renderReport(){
       ${keepList.length?`<li><b>店长留任因子原话（节选）</b>：${keepList.map(t=>`${esc(t.name)}「${esc(t.keep)}」`).join('；')}</li>`:''}
     </ul></div>`;
   }).join('');
-  box.innerHTML=parts+`<p class="muted">以上三段即各品牌 1 号位的季度「单独产出内容」，可分别复制进汇报；配合四象限图（20 小项散点）与 CSV 明细即为完整季度 EVP 沟通报告。</p>`;
+  // 留任因子 × 离职真因对照（来自离职台账 id=40 的 reason 字段）
+  const cross=['茶颜','鸳央','墨柠'].map(b=>{
+    const rs=RESIGN.filter(r=>r.brand===b&&(r.reason||'').trim());
+    if(!rs.length) return '';
+    const cnt={};
+    rs.forEach(r=>{ const k=r.reason.trim(); cnt[k]=(cnt[k]||0)+1; });
+    const top=Object.entries(cnt).sort((a,b2)=>b2[1]-a[1]).slice(0,5);
+    const keepTop=SUBS.map(s=>({s:s, n:(TALKS.filter(t=>(t.date||'')>=q.start&&t.brand===b&&t.keep&&((t.keepCat===s.k)||(!t.keepCat&&(t.top||[])[0]===s.k)))).length}))
+      .filter(x=>x.n>0).sort((a,b2)=>b2.n-a.n).slice(0,3);
+    return `<div class="card"><h3>${brandTag(b)} 留任因子 × 离职真因对照</h3>
+      <table><tr><th style="width:50%">在职店长留任因素 Top3（EVP 沟通）</th><th style="width:50%">离职真因 Top5（离职台账，n=${rs.length}）</th></tr>
+      <tr><td>${keepTop.length?keepTop.map(x=>`${SHORT[x.s.k]}（${x.n} 条）`).join('、'):'<span class="muted">暂无留任因子</span>'}</td>
+      <td>${top.map(([k2,n])=>`${esc(k2)}（${n} 人次）`).join('、')}</td></tr></table>
+      <p class="muted" style="margin-top:6px">两边对照看：留的人靠什么、走的人为什么走，结论才立体。这也是 HRBP「两头都摸」的实证。</p></div>`;
+  }).join('');
+  box.innerHTML=cross+parts+`<p class="muted">以上三段即各品牌 1 号位的季度「单独产出内容」，可分别复制进汇报；配合四象限图（20 小项散点）、留任因子墙与 CSV 明细即为完整季度 EVP 沟通报告。</p>`;
 }
 function copySummary(){
   const q=thisQuarter();

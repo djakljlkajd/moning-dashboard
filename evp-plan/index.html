@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EVP 店长沟通 · Q4 落地实施方案</title>
+<style>
+:root{
+  --teal:#0f6e56; --teal-light:#e1f5ee; --teal-dark:#085041;
+  --brand:#c8331f; --brand-dark:#a52818;
+  --ink:#2b2b2b; --sub:#777; --line:#e8e2de; --bg:#faf8f6;
+  --ok:#2e8b57; --warn:#d97706; --bad:#d21f1f; --blue:#2563eb;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);font-size:14px;line-height:1.75}
+header{background:linear-gradient(135deg,#0f6e56,#085041);color:#fff;padding:26px 32px}
+header h1{font-size:22px;letter-spacing:1px}
+header .meta{margin-top:8px;font-size:13px;opacity:.88}
+.wrap{max-width:1080px;margin:0 auto;padding:26px 28px 60px}
+h2{font-size:17px;color:var(--teal-dark);margin:34px 0 12px;padding-left:12px;border-left:4px solid var(--teal)}
+h3{font-size:14.5px;color:var(--brand-dark);margin:18px 0 8px}
+p{margin-bottom:10px}
+.card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin-bottom:16px}
+.note{background:#eef7f1;border:1px solid #bfe3d2;color:#085041;border-radius:10px;padding:12px 18px;font-size:13.5px;margin-bottom:18px}
+.warn-box{background:#fdf5ec;border:1px solid #f0d9b5;color:#8a5a12;border-radius:10px;padding:12px 18px;font-size:13.5px;margin:14px 0}
+table{width:100%;border-collapse:collapse;font-size:13px;background:#fff}
+th,td{border:1px solid var(--line);padding:8px 11px;text-align:left;vertical-align:top}
+th{background:var(--teal-light);color:var(--brand-dark);white-space:nowrap}
+.tag{display:inline-block;padding:1px 9px;border-radius:9px;font-size:12px;white-space:nowrap}
+.tag.ty{background:#fde8e8;color:#c8331f}.tag.yy{background:#e8f0fe;color:#2563eb}.tag.mn{background:#e9f7ee;color:#2e8b57}
+.tag.ok{background:#e9f7ee;color:var(--ok)}.tag.warn{background:#fef3e2;color:var(--warn)}.tag.grey{background:#f0eeec;color:var(--sub)}
+.gantt{background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px 20px;overflow:auto}
+.gantt table{font-size:12.5px}
+.gantt td.wk{white-space:nowrap;font-weight:600}
+.gantt .cell{height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:11.5px;color:#fff;white-space:nowrap}
+.g-phase1{background:#0f6e56}.g-phase2{background:#2563eb}.g-check{background:#d97706}.g-phase3{background:#c8331f}
+.flow{display:flex;flex-wrap:wrap;gap:10px;align-items:stretch;margin:14px 0}
+.flow .step{flex:1;min-width:170px;background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px 14px;position:relative}
+.flow .step b{color:var(--teal-dark);display:block;margin-bottom:4px;font-size:13.5px}
+.flow .step span{font-size:12.5px;color:var(--sub)}
+.flow .arrow{align-self:center;color:var(--sub);font-size:18px}
+ul.tight{margin:6px 0 10px 20px}
+ul.tight li{margin-bottom:5px}
+.num-badge{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:var(--teal);color:#fff;font-size:12px;font-weight:700;margin-right:8px;flex-shrink:0}
+.item-row{display:flex;align-items:flex-start;margin-bottom:10px}
+.muted{color:var(--sub);font-size:12.5px}
+footer{margin-top:40px;padding-top:16px;border-top:1px solid var(--line);font-size:12px;color:var(--sub)}
+</style>
+</head>
+<body>
+<header>
+  <h1>EVP 店长沟通 · Q4 落地实施方案</h1>
+  <div class="meta">时间盒 11/10 – 12/31（7 周）｜双轨采集：品牌 1 号位走店 + HRBP 专员巡店｜核心产出：各品牌《店长留任关键因素报告》</div>
+</header>
+<div class="wrap">
+
+<div class="note">一句话目标：离职率短期降不下来，Q4 前期的价值锚点是<b>赶在离职想法出现之前，摸清各品牌店长「愿意继续做下去的关键因素」，用店长原话沉淀成实证报告</b>——打分提供量级，原话提供证据，报告直接支撑 1 号位与杨师的季度汇报。</div>
+
+<h2>一、背景与目标</h2>
+<div class="card">
+  <p><b>承接目标</b>：上司 Q4 OKR KR2「店长端口 HRBPL 深度绑定」。三个品牌合计 <b>459 位店长、429 家门店</b>（茶颜 337 人/316 店 · 墨柠 89 人/81 店 · 鸳央 33 人/32 店）。</p>
+  <p><b>为什么先摸留任因素</b>：店长月度离职红线（墨柠 0.8 / 茶颜 3 / 鸳央 0.4）是长期经营结果，7 周内无法用管理动作直接压降。但「店长为什么愿意留下」是可以立刻摸清、立刻沉淀、立刻汇报的。摸清了留任因素，运营端的资源投放才有靶子，离职率的改善是它的滞后结果。</p>
+  <p><b>不设走店家数硬指标</b>：原「1 号位 25 家/季」在剩余 7 周内不现实，本季调整为<b>覆盖节奏推进、质量优先</b>——每张卡必须是真实沟通沉淀（20 小项打分 + Top2 关注 + 留任因子原话），宁少勿水。</p>
+</div>
+
+<h2>二、采集机制：双轨绑定巡店</h2>
+<div class="flow">
+  <div class="step"><b>① 1 号位走店</b><span>朱芳/李当/胡芬 按品牌自由走店，巡店过程中顺带 10 分钟沟通</span></div>
+  <div class="arrow">＋</div>
+  <div class="step"><b>② HRBP 专员巡店</b><span>按大店区认领片区，巡店即采集，覆盖 1 号位走不到的门店</span></div>
+  <div class="arrow">→</div>
+  <div class="step"><b>③ 沟通卡登记</b><span>EVP 看板填卡：20 小项满意度（1~5）+ Top2 关注小项 + 留任因子原话 + 风险标记</span></div>
+  <div class="arrow">→</div>
+  <div class="step"><b>④ 云端实时同步</b><span>全员看板可见，风险店长一键转离职看板跟进</span></div>
+</div>
+<div class="card">
+  <h3>每张沟通卡的三层信息（防「只打分」）</h3>
+  <div class="item-row"><span class="num-badge">1</span><div><b>量——20 小项满意度</b>：按 5 大项分组打分，形成品牌级满意度基线</div></div>
+  <div class="item-row"><span class="num-badge">2</span><div><b>向——Top2 关注小项</b>：店长自己认为「留下来」最重要的两项，这是店长视角而非 HR 视角</div></div>
+  <div class="item-row"><span class="num-badge">3</span><div><b>证——留任因子原话</b>：固定提问「只改善一件事，什么最能让你留下来？」记原话、归类到小项。<span class="tag ok">原话是报告的证据链，必填</span></div></div>
+  <p class="muted" style="margin-top:8px">填卡培训 10 分钟即可上手：手机打开看板 → 搜索店长 → 点星打分 → 选 Top2 → 抄原话 → 保存，全程约 5 分钟。</p>
+</div>
+
+<h2>三、分工：按底池绑定片区</h2>
+<div class="card">
+<table>
+  <tr><th>品牌</th><th>底池</th><th>区域结构</th><th>HRBP 分工</th><th>1 号位</th></tr>
+  <tr>
+    <td><span class="tag mn">墨柠</span></td><td>89 人 / 81 店</td>
+    <td>4 区域：周丹 24 · 张良东 23 · 李曦 23 · 徐乾 19</td>
+    <td>周丽、杨梦琳 各认领 1 个主力区域，戴嘉伟认领 1 区域 + 全品牌兜底统筹（具体认领结果 W1 对齐会确认）</td>
+    <td>李当</td>
+  </tr>
+  <tr>
+    <td><span class="tag ty">茶颜</span></td><td>337 人 / 316 店</td>
+    <td>10 区域（30~44 人/区）</td>
+    <td>HRBP 专员名单确认后按区域认领（名单确认后更新本页）</td>
+    <td>朱芳</td>
+  </tr>
+  <tr>
+    <td><span class="tag yy">鸳央</span></td><td>33 人 / 32 店</td>
+    <td>1 区域（张娇）7 大店区</td>
+    <td>HRBP 专员名单确认后认领（体量小，1 人可全覆盖）</td>
+    <td>胡芬</td>
+  </tr>
+</table>
+<p class="muted" style="margin-top:8px">认领口径：HRBP 只需对「自己片区内的店长都聊过」负责；看板「落地追踪」页按大店区自动显示已覆盖/底池数，盲区一目了然。</p>
+</div>
+
+<h2>四、7 周排期</h2>
+<div class="gantt">
+<table>
+  <tr><th>周次</th><th>日期</th><th style="width:52%">阶段与动作</th><th>检查点</th></tr>
+  <tr><td class="wk">W1</td><td>11/10 – 11/16</td>
+    <td><div class="cell g-phase1" style="width:100%">启动：方案对齐（1 号位×3 + HRBP 专员）→ 填卡培训 10 分钟 → 看板落地追踪页上线</div></td>
+    <td>全员会用填卡</td></tr>
+  <tr><td class="wk">W2</td><td>11/17 – 11/23</td>
+    <td><div class="cell g-phase2" style="width:100%">采集期：HRBP 专员每人每周 3~5 家 · 1 号位每周 2~3 家</div></td>
+    <td>周度钉钉进度</td></tr>
+  <tr><td class="wk">W3</td><td>11/24 – 11/30</td>
+    <td><div class="cell g-phase2" style="width:100%">采集期（同上节奏）</div></td>
+    <td><b style="color:#d97706">中期检查 11/30：三品牌累计 ≥100 张</b></td></tr>
+  <tr><td class="wk">W4</td><td>12/01 – 12/07</td>
+    <td><div class="cell g-phase2" style="width:100%">采集期；样本不足的片区加密巡店</div></td>
+    <td>周度钉钉进度</td></tr>
+  <tr><td class="wk">W5</td><td>12/08 – 12/14</td>
+    <td><div class="cell g-phase2" style="width:100%">采集期；补盲区（看板大店区覆盖表找 0 覆盖片区）</div></td>
+    <td>周度钉钉进度</td></tr>
+  <tr><td class="wk">W6</td><td>12/15 – 12/21</td>
+    <td><div class="cell g-phase2" style="width:100%">采集收尾 + 风险店长逐个过一遍（转离职看板闭环）</div></td>
+    <td>样本达标确认</td></tr>
+  <tr><td class="wk">W7</td><td>12/22 – 12/31</td>
+    <td><div class="cell g-phase3" style="width:100%">产出期：三品牌《店长留任关键因素报告》+ 季度 EVP 汇报</div></td>
+    <td>报告交付</td></tr>
+</table>
+</div>
+<div class="warn-box">中期检查（11/30）口径：三品牌累计有效沟通卡 ≥100 张（约覆盖 22% 底池）。未达标不追责，但需在 W4 起加密节奏；单品牌样本低于下限（墨柠 30 / 茶颜 50 / 鸳央 15）时，优先保小品牌达标——小品牌样本占比高，画像更快成形，可以先交出鸳央的完整报告作为样板。</div>
+
+<h2>五、核心产出：各品牌《店长留任关键因素报告》</h2>
+<div class="card">
+  <p>这是 HRBP 在这项工作中的<b>岗位价值交付物</b>——不是「我们打了多少分」，而是「我们把店长愿意留下来的原因摸清楚了，且有原话作证」。</p>
+  <h3>报告结构（每品牌一份，看板「季度产出」页自动生成底稿）</h3>
+  <ul class="tight">
+    <li><b>覆盖</b>：样本卡数、覆盖店长数与占比、1 号位/HRBP 双轨占比</li>
+    <li><b>留任因素 Top5~8</b>：按小项聚类的关注票数排序，每条配 3~5 条店长原话佐证</li>
+    <li><b>风险小项</b>：留任缺口最高 3 项（重要但不满意），即运营资源优先投放的靶子</li>
+    <li><b>留任因子 × 离职真因对照</b>：与离职看板台账的真因字段交叉——在职的人为什么留、离开的人为什么走，两张清单对照着看，结论立刻立体</li>
+    <li><b>给运营的 3 条建议</b>：从数据直接推出来的、可落地的小切口动作</li>
+  </ul>
+  <h3>为什么这个产出站得住</h3>
+  <ul class="tight">
+    <li>证据链：每条因素背后是真实店长原话，不是 HR 的主观判断</li>
+    <li>双向验证：留任面（EVP 卡）+ 离职面（离职台账真因）两头都摸了</li>
+    <li>可复用：直接进 1 号位季度汇报、杨师的人才经营汇报，也是明年招聘雇主品牌素材</li>
+  </ul>
+</div>
+
+<h2>六、协作与跟进机制</h2>
+<div class="card">
+  <ul class="tight">
+    <li><b>实时看板</b>：EVP 看板（evp/）全员实时同步，进度、留任因子墙、盲区覆盖随时可查；新增「落地追踪」页专门服务本方案</li>
+    <li><b>周度钉钉推送</b>：每周五推送采集进度（各品牌卡数、覆盖率、风险标记数）</li>
+    <li><b>风险闭环</b>：沟通卡中标记的离职风险信号，直接联动离职看板进入大店长→BP 沟通链路</li>
+    <li><b>方案迭代</b>：茶颜/鸳央 HRBP 专员名单确认后，本页分工表更新；排期按实际推进滚动调整</li>
+  </ul>
+</div>
+
+<footer>EVP 店长沟通看板 · Q4 落地实施方案（生成于 2026-11-10）｜采集入口：<a href="../evp/" style="color:var(--teal)">evp 看板 →</a>｜离职联动：<a href="../lizhi/" style="color:var(--teal)">离职看板 →</a></footer>
+</div>
+</body>
+</html>

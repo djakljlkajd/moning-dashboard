@@ -6,7 +6,7 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>古德墨柠 10月离职数据看板</title>
+    <title>古德墨柠 离职数据看板</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -458,6 +458,7 @@
 <!-- ===== 全局筛选栏 ===== -->
 <div class="global-filter-bar">
     <label>🔍 数据筛选：</label>
+    <select class="filter-select" id="global-month" onchange="onMonthChange()"></select>
     <select class="filter-select" id="global-dadianchang" onchange="onGlobalFilterChange()">
         <option value="all">大店区：全部</option>
     </select>
@@ -467,20 +468,20 @@
 
 <!-- ===== 第一排：核心KPI ===== -->
 <div class="section-header" style="display:flex;align-items:center;justify-content:space-between;">
-    <span>【第一排】核心指标总览 - 古德墨柠 10月离职情况</span>
+    <span id="hdr-sec1">【第一排】核心指标总览 - 古德墨柠 10月离职情况</span>
     <button class="action-btn" style="background:#1565c0;color:#fff;padding:6px 16px;font-size:13px;" onclick="openPreTurnoverEditModal()">+ 新增预离职人员</button>
 </div>
 <div class="cards-row" id="cards-row"></div>
 
 <!-- ===== 第二排：趋势图表 ===== -->
-<div class="section-header">【第二排】离职率趋势分析 - 古德墨柠 5-10月</div>
+<div class="section-header" id="hdr-sec2">【第二排】离职率趋势分析 - 古德墨柠 5-10月</div>
 <div class="chart-row">
     <div class="chart-box">
-        <div class="chart-title">📈 古德墨柠 月度主动离职率趋势 (5-10月)</div>
+        <div class="chart-title" id="chart-title-monthly">📈 古德墨柠 月度主动离职率趋势 (5-10月)</div>
         <div class="chart-canvas-wrap"><canvas id="chart-monthly"></canvas></div>
     </div>
     <div class="chart-box">
-        <div class="chart-title">📊 各月离职人数对比 (5-10月)</div>
+        <div class="chart-title" id="chart-title-monthly-count">📊 各月离职人数对比 (5-10月)</div>
         <div class="chart-canvas-wrap"><canvas id="chart-monthly-count"></canvas></div>
     </div>
 </div>
@@ -676,8 +677,8 @@
 
 </div><!-- end container -->
 
-<script src="data.js?v=20261028b"></script>
-    <script src="roster.js?v=20261028b"></script>
+<script src="data.js?v=20261112a"></script>
+    <script src="roster.js?v=20261112a"></script>
 <script>
 // ===== 全局错误捕获（显示在页面顶部红色条，方便用户看到 JS 错误） =====
 window.addEventListener('error',function(e){
@@ -986,10 +987,55 @@ document.getElementById('hdr-date').textContent = '数据截止: ' + D.meta.asOf
 
 // ===== 全局筛选状态 =====
 let globalDadianchang = 'all';
+// 当前选中月份（YYYY-MM），默认当前月
+let globalMonth = (function(){ var d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'); })();
+
+function monthLabel(ym){ var p=(ym||'').split('-'); return (parseInt(p[1],10)||1)+'月'; }
+
+// 归一化任意日期文本 → YYYY-MM（兼容 2026-10-07 / 2026/10/31 / 2026年10月31日 / 10月31日 / 10/31）
+function normYm(s){
+    var d=parseResignDate(s);
+    return d ? (d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')) : null;
+}
+
+// 记录归属月份：优先 month 字段，其次从离职日期推断，都没有则跟随当前选中月份
+function empMonth(e){
+    if(e.month) return e.month;
+    var ym=normYm(e.resignDate);
+    if(ym) return ym;
+    return globalMonth;
+}
+
+function getPreTurnoverByMonth(){ return (preTurnoverList||[]).filter(function(e){ return empMonth(e)===globalMonth; }); }
+
+function monthOptions(){
+    var set={};
+    Object.keys((D.overview&&D.overview.beginByMonth)||{}).forEach(function(k){ set[k]=1; });
+    (onlineResignList||[]).concat(preTurnoverList||[]).forEach(function(e){ set[empMonth(e)]=1; });
+    set[globalMonth]=1;
+    return Object.keys(set).sort();
+}
+
+function updateMonthOptions(){
+    var sel=document.getElementById('global-month');
+    if(!sel)return;
+    sel.innerHTML='';
+    monthOptions().forEach(function(ym){ sel.add(new Option('月份：'+monthLabel(ym), ym)); });
+    sel.value=globalMonth;
+    if(sel.value!==globalMonth){ sel.value=monthOptions().slice(-1)[0]; }
+}
+
+function onMonthChange(){
+    globalMonth=document.getElementById('global-month').value;
+    refreshAll();
+}
 
 // 获取筛选后的员工列表
 function getFilteredEmployees() {
     let list = D.employees.concat(onlineResignList||[]);
+    if (globalMonth) {
+        list = list.filter(e => empMonth(e) === globalMonth);
+    }
     if (globalDadianchang !== 'all') {
         list = list.filter(e => e.dadianchang === globalDadianchang);
     }
@@ -998,12 +1044,14 @@ function getFilteredEmployees() {
 
 // 获取筛选后的期初/期末人数
 function getFilteredBeginEnd() {
+    const byMonth = (D.overview && D.overview.beginByMonth) || {};
+    const beginAll = byMonth[globalMonth] || D.overview.beginCount;
     if (globalDadianchang !== 'all') {
         const dd = D.dadianchang.find(x => x.name === globalDadianchang);
         if (dd) return { begin: dd.beginCount, end: dd.endCount };
         return { begin: 0, end: 0 };
     }
-    return { begin: D.overview.beginCount, end: D.overview.endCount };
+    return { begin: beginAll, end: beginAll - getFilteredEmployees().length };
 }
 
 // 计算筛选后的聚合指标
@@ -1085,17 +1133,30 @@ function computeMonthlyTrend(){
         var labels=mt.labels.slice();
         var rates=(mt.brands['古德墨柠']||[]).slice();
         var counts=(mt.resignCounts||[]).slice();
-        // 静态历史只到上月；当月数据按云端明细实时聚合追加，保证趋势图始终最新
+        // 按月份归一聚合云端明细
+        var buckets={};
+        (onlineResignList||[]).forEach(function(e){
+            var ym=normYm(e.resignDate)||e.month;
+            if(!ym) return;
+            buckets[ym]=(buckets[ym]||0)+1;
+        });
+        // 从静态历史下一个月起，补齐到当前月（含中间月份），逐月用该月期初人数算离职率
+        var byMonth=(D.overview&&D.overview.beginByMonth)||{};
         var today=new Date();
-        var curLabel=(today.getMonth()+1)+'月';
-        var curKey=today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0');
-        if(labels.indexOf(curLabel)<0){
-            var curCount=buckets[curKey]||0;
-            var bc=(D.overview&&D.overview.beginCount)||0;
-            var avg=bc?(bc+(bc-curCount))/2:0;
-            labels.push(curLabel);
-            rates.push(avg>0?+(curCount/avg).toFixed(4):0);
-            counts.push(curCount);
+        var lastLabel=labels[labels.length-1]||'0月';
+        var y=today.getFullYear(), startM=parseInt(lastLabel,10)+1;
+        if(startM>12){startM=1;y++;}
+        var cur=new Date(today.getFullYear(),today.getMonth(),1);
+        var s=new Date(y,startM-1,1);
+        while(s<=cur){
+            var ym=s.getFullYear()+'-'+String(s.getMonth()+1).padStart(2,'0');
+            var cnt=buckets[ym]||0;
+            var bc=byMonth[ym]||D.overview.beginCount||0;
+            var avg=bc?(bc+(bc-cnt))/2:0;
+            labels.push((s.getMonth()+1)+'月');
+            counts.push(cnt);
+            rates.push(avg>0?+(cnt/avg).toFixed(4):0);
+            s.setMonth(s.getMonth()+1);
         }
         return {labels:labels, brands:{'古德墨柠':rates}, resignCounts:counts, _isPercentage:true};
     }
@@ -1114,6 +1175,7 @@ function computeMonthlyTrend(){
 // ===== 全局筛选器初始化 =====
 function initGlobalFilters() {
     updateDadianchangOptions();
+    updateMonthOptions();
 }
 
 function updateDadianchangOptions() {
@@ -1131,15 +1193,18 @@ function resetGlobalFilter() {
     globalDadianchang = 'all';
     document.getElementById('global-dadianchang').value = 'all';
     updateDadianchangOptions();
+    globalMonth = (function(){ var d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'); })();
+    updateMonthOptions();
     refreshAll();
 }
 
 function updateFilterInfo() {
     const info = document.getElementById('filter-info');
+    const m = '当前月份：' + monthLabel(globalMonth);
     if (globalDadianchang !== 'all') {
-        info.textContent = '当前范围：' + globalDadianchang + ' 大店区';
+        info.textContent = m + ' | 范围：' + globalDadianchang + ' 大店区';
     } else {
-        info.textContent = '当前范围：古德墨柠全量';
+        info.textContent = m + ' | 范围：古德墨柠全量';
     }
 }
 
@@ -1147,6 +1212,8 @@ function updateFilterInfo() {
 let chartMonthly = null, chartMonthlyCount = null, chartZhiJi = null, chartGongLing = null, chartReason = null, chartDadianchang = null, chartDcFocus = null;
 
 function refreshAll() {
+    updateMonthOptions();
+    updateDynamicHeaders();
     updateFilterInfo();
     renderCards();
     renderTables();
@@ -1157,17 +1224,37 @@ function refreshAll() {
     renderMonthlyCountChart();
 }
 
+// 按选中月份动态更新标题
+function updateDynamicHeaders() {
+    const m = monthLabel(globalMonth);
+    document.title = '古德墨柠 ' + m + '离职数据看板';
+    const t = document.getElementById('hdr-title');
+    if (t) t.textContent = '● 古德墨柠 ' + m + '离职数据看板';
+    const s1 = document.getElementById('hdr-sec1');
+    if (s1) s1.textContent = '【第一排】核心指标总览 - 古德墨柠 ' + m + '离职情况';
+    const range = (D.monthlyTrend && D.monthlyTrend.labels && D.monthlyTrend.labels.length)
+        ? D.monthlyTrend.labels[0] + '-' + m : m;
+    const s2 = document.getElementById('hdr-sec2');
+    if (s2) s2.textContent = '【第二排】离职率趋势分析 - 古德墨柠 ' + range;
+    const c1 = document.getElementById('chart-title-monthly');
+    if (c1) c1.textContent = '📈 古德墨柠 月度主动离职率趋势 (' + range + ')';
+    const c2 = document.getElementById('chart-title-monthly-count');
+    if (c2) c2.textContent = '📊 各月离职人数对比 (' + range + ')';
+}
+
 // ===== KPI 卡片 =====
 function renderCards() {
     const stats = getFilteredStats();
     const isOnTarget = stats.resignRate <= 0.05;
+    const mL = monthLabel(globalMonth);
+    const preMonthCount = getPreTurnoverByMonth().length;
     const cards = [
-        { label: '期初全职人数', sub: '(10月1日)', value: stats.begin, unit: '人', cls: '' },
-        { label: '期末全职人数', sub: '(10月15日)', value: stats.end, unit: '人', cls: '' },
-        { label: '主动离职人数', sub: '(10月)', value: stats.resignCount, unit: '人', cls: 'danger clickable', valColor: 'red',
+        { label: '期初全职人数', sub: '(' + mL + '1日)', value: stats.begin, unit: '人', cls: '' },
+        { label: '期末全职人数', sub: '(' + mL + '实时)', value: stats.end, unit: '人', cls: '' },
+        { label: '主动离职人数', sub: '(' + mL + ')', value: stats.resignCount, unit: '人', cls: 'danger clickable', valColor: 'red',
           detailBtn: '<span class="card-detail-btn" onclick="event.stopPropagation();openAllResignModal()">▶ 详情</span>',
           onclick: 'openAllResignModal()' },
-        { label: '预离职人员填写', sub: '实时补充名单', value: preTurnoverList.length, unit: '人', cls: 'info clickable', valColor: 'blue',
+        { label: '预离职人员填写', sub: '实时补充名单', value: preMonthCount, unit: '人', cls: 'info clickable', valColor: 'blue',
           detailBtn: '<span class="card-detail-btn blue" onclick="event.stopPropagation();openPreTurnoverModal()">▶ 填写</span>',
           onclick: 'openPreTurnoverModal()' },
         { label: '主动离职率', sub: '目标 ≤ 5%', value: pct(stats.resignRate), unit: '', cls: isOnTarget ? 'success' : 'highlight', valColor: isOnTarget ? 'green' : 'red',
@@ -2151,6 +2238,7 @@ async function autoTransferPreTurnover(){
         emp._isOnline=true;
         emp._transferredFromPre=true;
         emp.transferredAt=new Date().toISOString();
+        emp.month=emp.month||normYm(emp.resignDate)||globalMonth;
         onlineResignList.push(emp);
     }
     const transferredIds=new Set(toTransfer.map(p=>p.empId));
@@ -2369,15 +2457,16 @@ function refreshTurnoverDisplays(){
 // ===== 预离职人员弹窗 =====
 function openPreTurnoverModal(){
     currentModalMode='pre';
-    const title='预离职人员填写 - 共'+preTurnoverList.length+'人';
+    const monthList=getPreTurnoverByMonth();
+    const title='预离职人员填写 ('+monthLabel(globalMonth)+') - 共'+monthList.length+'人';
     document.getElementById('modal-title').textContent=title;
     const body=document.getElementById('modal-body');
     const toolbar='<div style="padding:12px 20px;"><button class="action-btn" style="background:#1565c0;color:#fff;" onclick="openPreTurnoverEditModal()">+ 新增预离职人员</button></div>';
-    if(preTurnoverList.length===0){
-        body.innerHTML=toolbar+'<div class="modal-empty">暂无预离职人员，请点击上方「新增」按钮添加</div>';
+    if(monthList.length===0){
+        body.innerHTML=toolbar+'<div class="modal-empty">'+monthLabel(globalMonth)+'暂无预离职人员，请点击上方「新增」按钮添加</div>';
     }else{
         const cols=['序号','大店长','姓名','职位','门店','入职日期','预计离职日期','工龄','原因标签','离职原因','操作'];
-        body.innerHTML=toolbar+'<div class="modal-table-wrap"><table><thead><tr>'+cols.map(h=>'<th>'+h+'</th>').join('')+'</tr></thead><tbody>'+preTurnoverList.map((e,i)=>
+        body.innerHTML=toolbar+'<div class="modal-table-wrap"><table><thead><tr>'+cols.map(h=>'<th>'+h+'</th>').join('')+'</tr></thead><tbody>'+monthList.map((e,i)=>
             '<tr>'+
             '<td>'+(i+1)+'</td>'+
             '<td>'+escapeHtml(e.dadianchang||'')+'</td>'+
@@ -2498,6 +2587,7 @@ function confirmPreTurnoverEdit(){
         gongLingQuJian:document.getElementById('pre-edit-gongling').value.trim(),
         reasonTag:document.getElementById('pre-edit-reason-tag').value.trim(),
         reason1:document.getElementById('pre-edit-reason1').value.trim(),
+        month:normYm(document.getElementById('pre-edit-resign-date').value.trim())||globalMonth,
         updated_at:new Date().toISOString()
     };
     if(editModalMode==='resign'){

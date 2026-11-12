@@ -620,7 +620,7 @@
                     <div class="edit-modal-label">大店长 <span style="color:#c62828;">*</span></div>
                     <select class="edit-modal-input" id="pre-edit-dadianchang" style="margin-bottom:0;">
                         <option value="">请选择大店长</option>
-                        <option value="何海云">何海云</option><option value="刘旺林">刘旺林</option><option value="周思凡">周思凡</option><option value="廖灿">廖灿</option><option value="徐宇辉">徐宇辉</option><option value="旷瑶">旷瑶</option><option value="易彪">易彪</option><option value="李奔">李奔</option><option value="王润怡">王润怡</option><option value="杜强">杜强</option><option value="童璐">童璐</option><option value="赵思洁">赵思洁</option><option value="邵宝生">邵宝生</option><option value="钟天祥">钟天祥</option>
+                        <option value="何海云">何海云</option><option value="刘旺林">刘旺林</option><option value="周思凡">周思凡</option><option value="廖灿">廖灿</option><option value="徐宇辉">徐宇辉</option><option value="旷瑶">旷瑶</option><option value="易彪">易彪</option><option value="李奔">李奔</option><option value="杜强">杜强</option><option value="童璐">童璐</option><option value="赵思洁">赵思洁</option><option value="邵宝生">邵宝生</option><option value="钟天祥">钟天祥</option>
                     </select>
                 </div>
                 <div>
@@ -677,8 +677,8 @@
 
 </div><!-- end container -->
 
-<script src="data.js?v=20261112b"></script>
-    <script src="roster.js?v=20261112b"></script>
+<script src="data.js?v=20261112c"></script>
+    <script src="roster.js?v=20261112c"></script>
 <script>
 // ===== 全局错误捕获（显示在页面顶部红色条，方便用户看到 JS 错误） =====
 window.addEventListener('error',function(e){
@@ -1103,7 +1103,7 @@ function getFilteredStats() {
 // ===== 动态汇总每个大店长的真实离职数（合并 D.dadianchang 静态期初/期末 + onlineResignList 动态明细）=====
 function computeDcStats(){
     return (D.dadianchang||[]).map(function(dc){
-        var live=(onlineResignList||[]).filter(function(e){return e.dadianchang===dc.name && !e.isPre;});
+        var live=(onlineResignList||[]).filter(function(e){return e.dadianchang===dc.name && !e.isPre && (!globalMonth||empMonth(e)===globalMonth);});
         var staticCnt=dc.resignCount||0;
         var liveCnt=live.length;
         var totalCnt=staticCnt+liveCnt;

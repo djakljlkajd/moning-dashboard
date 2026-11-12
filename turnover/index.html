@@ -677,8 +677,8 @@
 
 </div><!-- end container -->
 
-<script src="data.js?v=20261112c"></script>
-    <script src="roster.js?v=20261112c"></script>
+<script src="data.js?v=20261112d"></script>
+    <script src="roster.js?v=20261112d"></script>
 <script>
 // ===== 全局错误捕获（显示在页面顶部红色条，方便用户看到 JS 错误） =====
 window.addEventListener('error',function(e){
@@ -1028,6 +1028,17 @@ function updateMonthOptions(){
 function onMonthChange(){
     globalMonth=document.getElementById('global-month').value;
     refreshAll();
+}
+
+// 启动时自动定位：若当前月还没有任何离职/预离职记录，自动切到最近一个有数据的月份
+function autoPickMonth(){
+    var has={};
+    (onlineResignList||[]).concat(preTurnoverList||[]).forEach(function(e){ has[empMonth(e)]=1; });
+    var withData=Object.keys(has).sort();
+    if(withData.length && withData.indexOf(globalMonth)<0){
+        globalMonth=withData[withData.length-1];
+        updateMonthOptions();
+    }
 }
 
 // 获取筛选后的员工列表
@@ -1897,7 +1908,7 @@ function exportAllLocalStorage(){
 async function loadTurnoverData(){
     restoreTurnoverFromLocal();
     try{
-        const res=await fetch(SUPA_URL+'/rest/v1/'+SUPA_TABLE+'?select=id,data&order=id.asc',{
+        const res=await fetch(SUPA_URL+'/rest/v1/'+SUPA_TABLE+'?select=id,data&id=in.(3,5)&order=id.asc',{
             headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY}
         });
         if(!res.ok)throw new Error('supabase '+res.status);
@@ -1952,7 +1963,7 @@ async function createTurnoverRow(){
 async function loadPreTurnoverData(){
     restorePreTurnoverFromLocal();
     try{
-        const res=await fetch(SUPA_URL+'/rest/v1/'+SUPA_TABLE+'?select=id,data&order=id.asc',{
+        const res=await fetch(SUPA_URL+'/rest/v1/'+SUPA_TABLE+'?select=id,data&id=in.(3,5)&order=id.asc',{
             headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY}
         });
         if(!res.ok)throw new Error('supabase '+res.status);
@@ -2011,7 +2022,7 @@ async function loadOnlineResignData(retry){
     refreshAll();  // 任何分支都要刷新，包括 local 兜底
     updateSaveStatus('online','loading','云端拉取中...('+(retry+1)+'/3)');
     try{
-        const res=await fetch(SUPA_URL+'/rest/v1/'+SUPA_TABLE+'?select=id,data&order=id.asc',{
+        const res=await fetch(SUPA_URL+'/rest/v1/'+SUPA_TABLE+'?select=id,data&id=in.(3,5)&order=id.asc',{
             headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY}
         });
         if(!res.ok)throw new Error('Supabase HTTP '+res.status);
@@ -2060,7 +2071,7 @@ async function forceLoadFromCloud(){
     console.log('forceLoadFromCloud called');
     updateSaveStatus('online','loading','🔄 强制从云端拉取...');
     try{
-        const res=await fetch(SUPA_URL+'/rest/v1/'+SUPA_TABLE+'?select=id,data',{
+        const res=await fetch(SUPA_URL+'/rest/v1/'+SUPA_TABLE+'?select=id,data&id=in.(3,5)',{
             headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY,'Cache-Control':'no-cache'}
         });
         console.log('forceLoadFromCloud fetch status:',res.status);
@@ -2667,6 +2678,7 @@ try{loadTurnoverData();}catch(e){console.error('loadTurnoverData failed',e);}
 loadPreTurnoverData().catch(e=>{console.error('loadPreTurnoverData failed',e);}).then(()=>{
     return loadOnlineResignData().catch(e=>{console.error('loadOnlineResignData failed',e);});
 }).then(()=>{
+    try{autoPickMonth();refreshAll();}catch(e){console.error('autoPickMonth failed',e);}
     try{loadRosterData();}catch(e){console.error('loadRosterData failed',e);}
     try{autoTransferPreTurnover();}catch(e){console.error('autoTransferPreTurnover failed',e);}
     autoTransferTimer=setInterval(()=>{try{autoTransferPreTurnover();}catch(e){}},600000);

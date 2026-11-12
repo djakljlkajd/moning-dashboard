@@ -44468,6 +44468,7 @@ function App() {
   const [toast, setToast] = (0, import_react5.useState)(null);
   const [storeFilter, setStoreFilter] = (0, import_react5.useState)("all");
   const [mineOnly, setMineOnly] = (0, import_react5.useState)(false);
+  const [bpReportId, setBpReportId] = (0, import_react5.useState)(null);
   const [storeQuery, setStoreQuery] = (0, import_react5.useState)("");
   const [issueFilter, setIssueFilter] = (0, import_react5.useState)("all");
   const [issueQuery, setIssueQuery] = (0, import_react5.useState)("");
@@ -45172,7 +45173,7 @@ function App() {
         /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card-header", children: [
           /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { children: [
             /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-title", children: "BP 巡店达标进度" }),
-            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-subtitle", children: "默认每月 15 家 · 指定人员每季度 25 家 · 复访不重复计数" })
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-subtitle", children: "默认每月 15 家 · 指定人员每季度 25 家 · 复访不重复计数 · 点击 HRBP 姓名查看该伙伴的巡店报告与问题闭环明细" })
           ] }),
           /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("span", { className: "badge badge-green", children: [
             bpEmployees.filter((bp) => progressOf(visits, bp).completed).length,
@@ -45194,9 +45195,10 @@ function App() {
             const item2 = progressOf(visits, bp);
             const open = issues.filter((issue) => issue.assigneeId === bp.id && issue.status !== "closed").length;
             return /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("tr", { children: [
-              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("td", { children: /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "table-person", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("td", { children: /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "table-person", style: { cursor: "pointer" }, title: "点击查看巡店报告明细", onClick: () => setBpReportId(bpReportId === bp.id ? null : bp.id), children: [
                 /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: "avatar", children: bp.name.slice(-2) }),
-                /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("strong", { children: bp.name })
+                /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("strong", { style: { textDecoration: bpReportId === bp.id ? "underline" : "none" }, children: bp.name }),
+                bpReportId === bp.id && /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(ChevronRight, { size: 14, color: "var(--green-700)" })
               ] }) }),
               /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("td", { children: bp.brands[0] }),
               /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("td", { children: /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "table-progress", children: [
@@ -45230,6 +45232,60 @@ function App() {
           }) })
         ] }) })
       ] }),
+      bpReportId && (() => {
+        const bp = employeeList.find((item2) => item2.id === bpReportId);
+        if (!bp) return null;
+        const bpVisits = visits.filter((visit) => visit.bpId === bp.id && visit.status === "submitted" && !visit.voided).sort((a, b) => b.visitedAt.localeCompare(a.visitedAt));
+        const bpIssues = issues.filter((issue) => issue.reporterId === bp.id || issue.visitId && bpVisits.some((visit) => visit.id === issue.visitId));
+        return /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card-header", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { children: [
+              /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card-title", children: [
+                bp.name,
+                " · 巡店报告明细"
+              ] }),
+              /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card-subtitle", children: [
+                "已提交且未作废的巡店 ",
+                bpVisits.length,
+                " 条 · 关联问题 ",
+                bpIssues.length,
+                " 个（点击问题可进详情跟进）"
+              ] })
+            ] }),
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("button", { className: "icon-button", onClick: () => setBpReportId(null), children: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(X, { size: 16 }) })
+          ] }),
+          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "table-wrap", children: /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("table", { children: [
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("thead", { children: /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("tr", { children: [
+              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "巡店日期" }),
+              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "门店" }),
+              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "巡店根因" }),
+              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "关联问题闭环" })
+            ] }) }),
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("tbody", { children: bpVisits.length ? bpVisits.map((visit) => {
+              const store = stores.find((item2) => item2.id === visit.storeId);
+              const visitIssues = issues.filter((issue) => issue.visitId === visit.id);
+              return /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("tr", { children: [
+                /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("td", { children: formatDate(visit.visitedAt) }),
+                /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("td", { children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "table-title", children: store?.name ?? "—" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "table-sub", children: store?.brand ?? "" })
+                ] }),
+                /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("td", { style: { maxWidth: 260 }, children: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: "table-sub", children: visit.summary ?? "—" }) }),
+                /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("td", { children: visitIssues.length ? /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { style: { display: "flex", flexWrap: "wrap", gap: 6 }, children: visitIssues.map((issue) => /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("button", { className: "chip", style: { fontSize: 11 }, onClick: () => setIssueDetailId(issue.id), children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: `badge ${issue.status === "closed" ? "badge-green" : issue.status === "completed" ? "badge-amber" : "badge-orange"}`, style: { marginRight: 4 }, children: ISSUE_STATUS_LABELS[issue.status] }),
+                  issue.title.slice(0, 14)
+                ] }, issue.id)) }) : /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: "form-hint", children: "无关联问题" }) })
+              ] }, visit.id);
+            }) : /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("tr", { children: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("td", { colSpan: 4, children: /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "empty-state", style: { padding: 20 }, children: [
+              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("h3", { children: "暂无已提交的巡店记录" }),
+              /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("p", { children: [
+                bp.name,
+                " 本账号下还没有已提交且未作废的巡店报告"
+              ] })
+            ] }) }) }) })
+          ] }) })
+        ] });
+      })(),
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "insight-grid", children: [
         /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card", children: [
           /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-header", children: /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { children: [

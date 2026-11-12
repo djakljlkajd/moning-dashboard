@@ -434,7 +434,7 @@
 <div class="description-bar">
     <div class="description-bar-title">📋 看板说明</div>
     <div class="description-list">
-        <div class="description-item">1、<strong>统计周期：</strong>10月1日 - 10月15日</div>
+        <div class="description-item">1、<strong>统计周期：</strong><span id="desc-period">11月1日 - 30日</span></div>
         <div class="description-item">2、<strong>数据范围：</strong>古德墨柠品牌全职人员，含14位大店长管辖门店</div>
         <div class="description-item">3、<strong>离职类型：</strong>目标主动离职率 ≤ 5%</div>
         <div class="description-item">4、<strong>筛选联动：</strong>顶部「大店区」筛选可联动第一、二、三排数据，点击红色/蓝色卡片可查看对应人员明细</div>
@@ -677,8 +677,8 @@
 
 </div><!-- end container -->
 
-<script src="data.js?v=20261112a"></script>
-    <script src="roster.js?v=20261112a"></script>
+<script src="data.js?v=20261112b"></script>
+    <script src="roster.js?v=20261112b"></script>
 <script>
 // ===== 全局错误捕获（显示在页面顶部红色条，方便用户看到 JS 错误） =====
 window.addEventListener('error',function(e){
@@ -1240,6 +1240,13 @@ function updateDynamicHeaders() {
     if (c1) c1.textContent = '📈 古德墨柠 月度主动离职率趋势 (' + range + ')';
     const c2 = document.getElementById('chart-title-monthly-count');
     if (c2) c2.textContent = '📊 各月离职人数对比 (' + range + ')';
+    // 统计周期：所选月份1日 - 该月最后一天
+    const dp = document.getElementById('desc-period');
+    if (dp) {
+        const ym = globalMonth.split('-');
+        const days = new Date(parseInt(ym[0],10), parseInt(ym[1],10), 0).getDate();
+        dp.textContent = m + '1日 - ' + days + '日';
+    }
 }
 
 // ===== KPI 卡片 =====

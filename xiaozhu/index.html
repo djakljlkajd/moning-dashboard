@@ -360,8 +360,9 @@ select.cell-input{padding:4px 6px;}
   <!-- ================= 宣发记录 ================= -->
   <div class="panel" id="panel-promo">
     <div class="description-bar">
-      <div class="description-bar-title">门店宣发回传与记录</div>
+      <div class="description-bar-title">门店宣发回传与记录 <span style="display:inline-block;margin-left:8px;padding:2px 10px;border-radius:12px;background:#e74c3c;color:#fff;font-size:12px;font-weight:700;vertical-align:middle">已截止 · 停止填写</span></div>
       <div class="description-list">
+        <div class="description-item" style="color:#c0392b"><strong>宣发活动已于 11月13日 18:00 截止</strong>，宣发记录与门店回填已锁定，现有数据仅可查看与导出，不再接受新增/修改</div>
         <div class="description-item"><strong>每店发布 1 篇小红书，11月7日18点前完成</strong>，可多发，以单篇最高加权点赞参与排名；发布率目标 100%</div>
         <div class="description-item">必带话题 <strong>#茶颜青柠乳茶 #古德墨柠青柠乳茶节</strong>，文案出现「青柠乳茶」「墨柠节」关键词，带齐率 100%</div>
         <div class="description-item">发布后 <strong>24h 内</strong>回填：笔记链接、发布账号、内容形式、点赞/评论/收藏；加权点赞与排名自动计算</div>
@@ -388,12 +389,12 @@ select.cell-input{padding:4px 6px;}
     <div class="section-header">大店长执行力 PK 榜<span class="sub">按所辖门店加权点赞合计排序，TOP3 兑现 +3 / +2 / +1</span></div>
     <div class="table-wrap"><table id="prRankTable"></table></div>
 
-    <div class="section-header">宣发记录流水<span class="sub">在线新增登记：每日喜报、上扬案例、节前推广、案例沉淀</span></div>
+    <div class="section-header">宣发记录流水<span class="sub">宣发已截止（11.13 18:00），停止新增登记，现有记录仅可查看与导出</span></div>
     <div class="filter-bar" style="border-top:none">
       <label>类型：</label>
       <select id="pmType" onchange="renderPromo()"><option value="all">全部</option></select>
       <div class="spacer"></div>
-      <button class="btn" onclick="openPromoModal()">＋ 新增宣发记录</button>
+      <button class="btn" onclick="openPromoModal()" id="promoAddBtn">＋ 新增宣发记录</button>
       <button class="btn btn-ghost" onclick="exportPromoCsv()">导出 CSV</button>
     </div>
     <div class="table-wrap"><table id="pmTable"></table></div>
@@ -1036,6 +1037,8 @@ function exportMechCsv(){
 }
 
 /* ============ 宣发记录 · 门店回传 ============ */
+/* 宣发活动已于 11.13 18:00 截止：宣发记录与门店回填停止填写，仅保留查看与导出；如需修正存量数据，将此值改为 false 临时解锁 */
+const PROMO_CLOSED=true;
 let PR_ROWS=[];
 function renderPromoStores(){
   const mgr=document.getElementById('prMgr').value;
@@ -1060,13 +1063,13 @@ function renderPromoStores(){
       <td>${esc(x.mgr)}</td>
       <td><span class="store-link" onclick="openStoreModal('${esc(x.store)}')">${esc(shortStore(x.store))}</span></td>
       <td>${esc(x.bp)}</td>
-      <td style="text-align:center"><input type="checkbox" id="prDone_${i}" ${st.done?'checked':''} onchange="quickSavePromo(${i})" style="width:16px;height:16px;accent-color:#e8562a;cursor:pointer"></td>
-      <td style="text-align:center"><select class="cell-input" id="prForm_${i}" onchange="quickSavePromo(${i})" style="width:74px">
+      <td style="text-align:center"><input type="checkbox" id="prDone_${i}" ${st.done?'checked':''} ${PROMO_CLOSED?'disabled':''} onchange="quickSavePromo(${i})" style="width:16px;height:16px;accent-color:#e8562a;cursor:pointer"></td>
+      <td style="text-align:center"><select class="cell-input" id="prForm_${i}" onchange="quickSavePromo(${i})" style="width:74px" ${PROMO_CLOSED?'disabled':''}>
         <option value=""${st.form===''?' selected':''}>—</option>
         <option value="视频"${st.form==='视频'?' selected':''}>视频</option>
         <option value="图文"${st.form==='图文'?' selected':''}>图文</option></select></td>
-      <td style="text-align:center"><input type="checkbox" id="prTopic_${i}" ${st.topic?'checked':''} onchange="quickSavePromo(${i})" style="width:16px;height:16px;accent-color:#e8562a;cursor:pointer"></td>
-      <td class="num"><input type="number" class="cell-input num" id="prLikes_${i}" value="${st.likes===''?'':esc(st.likes)}" min="0" step="1" placeholder="0" style="width:78px" onchange="quickSavePromo(${i})"></td>
+      <td style="text-align:center"><input type="checkbox" id="prTopic_${i}" ${st.topic?'checked':''} ${PROMO_CLOSED?'disabled':''} onchange="quickSavePromo(${i})" style="width:16px;height:16px;accent-color:#e8562a;cursor:pointer"></td>
+      <td class="num"><input type="number" class="cell-input num" id="prLikes_${i}" value="${st.likes===''?'':esc(st.likes)}" min="0" step="1" placeholder="0" style="width:78px" onchange="quickSavePromo(${i})" ${PROMO_CLOSED?'disabled':''}></td>
       <td class="num"><strong>${w==null?'<span class="cell-zero">-</span>':w}</strong></td>
       <td class="num">${rk[x.store]?('<span class="'+(rk[x.store]===1?'rank-1':(rk[x.store]===2?'rank-2':(rk[x.store]===3?'rank-3':'')))+'">'+rk[x.store]+'</span>'):'<span class="cell-zero">-</span>'}</td>
       <td style="white-space:nowrap"><button class="mini-btn" onclick="openStoreModal('${esc(x.store)}')">回填详情</button></td>
@@ -1088,6 +1091,7 @@ function renderPromoStores(){
      </div>`;
 }
 function quickSavePromo(i){
+  if(PROMO_CLOSED){ alert('宣发活动已截止（11.13 18:00），门店宣发数据已锁定，停止填写'); return; }
   const x=PR_ROWS[i]; if(!x) return;
   const cur=stOf(x.store);
   const v={
@@ -1175,6 +1179,7 @@ function previewWeighted(){
 }
 function closeStoreModal(){ document.getElementById('storeMask').classList.remove('show'); STORE_EDIT=null; }
 function submitStoreModal(){
+  if(PROMO_CLOSED){ alert('宣发活动已截止（11.13 18:00），门店宣发数据已锁定，停止填写'); return; }
   if(!STORE_EDIT) return;
   const g=id=>document.getElementById(id).value.trim();
   const v={
@@ -1246,10 +1251,14 @@ function renderPromo(){
   });
   h+='</tbody>';
   document.getElementById('pmTable').innerHTML=h;
-  document.getElementById('pmFoot').innerHTML=`共 ${rows.length} 条宣发记录，覆盖 ${types.length} 类素材。节中每日 17:00 前更新点赞进度播报，无断更。`;
+  document.getElementById('pmFoot').innerHTML=`共 ${rows.length} 条宣发记录，覆盖 ${types.length} 类素材。宣发已于 11月13日 18:00 截止，本表已锁定，仅可查看与导出。`;
 }
-function openPromoModal(){ document.getElementById('promoMask').classList.add('show'); }
+function openPromoModal(){
+  if(PROMO_CLOSED){ alert('宣发活动已截止（11.13 18:00），宣发记录已停止新增'); return; }
+  document.getElementById('promoMask').classList.add('show');
+}
 function submitPromo(){
+  if(PROMO_CLOSED){ alert('宣发活动已截止（11.13 18:00），宣发记录已停止新增'); return; }
   const g=id=>document.getElementById(id).value.trim();
   const row=[g('pmDate'),g('pmRegion'),g('pmStore')||'-',g('pmKind'),g('pmForm'),g('pmTopic'),g('pmTime'),g('pmExec'),g('pmData'),g('pmOwner'),g('pmNote')];
   if(!row[0]||!row[5]){ alert('请至少填写日期与素材主题'); return; }
@@ -1720,6 +1729,12 @@ function fillDaySelect(id){
   });
   renderOverview();
   switchTab('overview');
+  if(PROMO_CLOSED){
+    const b=document.getElementById('promoAddBtn');
+    if(b){ b.textContent='宣发已截止 · 停止新增'; b.classList.add('btn-ghost'); }
+    const sb=document.getElementById('storeSubmit');
+    if(sb){ sb.textContent='已截止 · 停止填写'; sb.disabled=true; sb.style.opacity=.5; }
+  }
   document.getElementById('promoMask').addEventListener('click',function(e){ if(e.target===this) this.classList.remove('show'); });
   document.getElementById('calMask').addEventListener('click',function(e){ if(e.target===this) closeCalModal(); });
   document.getElementById('auMask').addEventListener('click',function(e){ if(e.target===this) closeAuditModal(); });

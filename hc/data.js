@@ -22,7 +22,7 @@ window.DASHBOARD_DATA = {
     {
       "label": "花名册在职合计",
       "sub": "(G列/人)",
-      "value": 391,
+      "value": 387,
       "red": false,
       "highlight": false
     },

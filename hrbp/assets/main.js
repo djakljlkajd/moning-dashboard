@@ -15013,7 +15013,8 @@ var XIANGZHAN_BP_MAP = {
 };
 var FULL_ACCESS_NAMES = ["杨师", "戴嘉伟", "李当", "胡芬", "朱芳"];
 var EXTRA_ROOT_CAUSES = [
-  { key: "xiangzhanNoReward", label: "未获得巷战激励" }
+  { key: "xiangzhanNoReward", label: "未获得巷战激励" },
+  { key: "otherReason", label: "其他" }
 ];
 var RISK_PHASE_BY_LEVEL = {
   极高风险: "本月",
@@ -43442,6 +43443,7 @@ function NewVisitModal({ employee, stores, visits, preselectedStoreId, modeLabel
   const [storeId, setStoreId] = (0, import_react5.useState)(preselectedStoreId ?? "");
   const [visitDate, setVisitDate] = (0, import_react5.useState)(today());
   const [rootCauses, setRootCauses] = (0, import_react5.useState)([]);
+  const [otherReason, setOtherReason] = (0, import_react5.useState)("");
   const [summary, setSummary] = (0, import_react5.useState)("");
   const [note, setNote] = (0, import_react5.useState)("");
   const [checks, setChecks] = (0, import_react5.useState)(() => Object.fromEntries(ISSUE_CATEGORY_DICTIONARY.map((item2) => [item2.key, emptyCheck()])));
@@ -43464,7 +43466,8 @@ function NewVisitModal({ employee, stores, visits, preselectedStoreId, modeLabel
   const targetRule = visitTargetFor(employee.name);
   const periodKeyOf = (date) => targetRule.period === "month" ? getMonthKey(date) : getQuarterKey(date);
   const isRevisit = Boolean(visitDate) && visits.some((visit) => visit.bpId === employee.id && visit.storeId === storeId && visit.status === "submitted" && !visit.voided && periodKeyOf(visit.visitedAt) === periodKeyOf(visitDate));
-  const canNext = Boolean(selectedStore && visitDate && rootCauses.length);
+  const otherPicked = rootCauses.includes("otherReason");
+  const canNext = Boolean(selectedStore && visitDate && rootCauses.length && (!otherPicked || otherReason.trim()));
   const checkList = ISSUE_CATEGORY_DICTIONARY.map((item2) => ({ ...item2, check: checks[item2.key] ?? emptyCheck() }));
   const checksValid = checkList.every((item2) => item2.check.status !== "pending" && (item2.check.status === "ok" || Boolean(item2.check.reason.trim())));
   const issueChecks = checkList.filter((item2) => item2.check.status === "issue");
@@ -43474,7 +43477,7 @@ function NewVisitModal({ employee, stores, visits, preselectedStoreId, modeLabel
   const submit = () => {
     if (!selectedStore || !checksValid) return;
     const id = crypto.randomUUID();
-    const causeLabels = [...RISK_RULES, ...EXTRA_ROOT_CAUSES].filter((rule) => rootCauses.includes(rule.key)).map((rule) => rule.label);
+    const causeLabels = [...RISK_RULES, ...EXTRA_ROOT_CAUSES].filter((rule) => rootCauses.includes(rule.key)).map((rule) => rule.key === "otherReason" ? `其他：${otherReason.trim()}` : rule.label);
     const visit = {
       id,
       storeId: selectedStore.id,
@@ -43639,10 +43642,13 @@ function NewVisitModal({ employee, stores, visits, preselectedStoreId, modeLabel
               /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: "required", children: "*" })
             ] }),
             /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "form-hint", style: { marginBottom: 8 }, children: "为什么会选择巡这家门店？基于选店标准十项勾选判断依据（可多选）" }),
-            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { style: { display: "flex", flexWrap: "wrap", gap: 8 }, children: [...RISK_RULES, ...EXTRA_ROOT_CAUSES].map((rule) => {
-              const active = rootCauses.includes(rule.key);
-              return /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("button", { type: "button", className: `button button-sm ${active ? "button-primary" : "button-secondary"}`, onClick: () => setRootCauses((current) => active ? current.filter((key) => key !== rule.key) : [...current, rule.key]), children: rule.label }, rule.key);
-            }) })
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { style: { display: "flex", flexWrap: "wrap", gap: 8 }, children: [
+              [...RISK_RULES, ...EXTRA_ROOT_CAUSES].map((rule) => {
+                const active = rootCauses.includes(rule.key);
+                return /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("button", { type: "button", className: `button button-sm ${active ? "button-primary" : "button-secondary"}`, onClick: () => setRootCauses((current) => active ? current.filter((key) => key !== rule.key) : [...current, rule.key]), children: rule.label }, rule.key);
+              }),
+              rootCauses.includes("otherReason") && /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("input", { className: "input", style: { flex: "1 1 240px", minWidth: 240 }, value: otherReason, onChange: (e) => setOtherReason(e.target.value), placeholder: "请填写具体原因（必填）", autoFocus: true })
+            ] })
           ] }),
           /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "form-group full", children: [
             /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("label", { className: "form-label", children: [

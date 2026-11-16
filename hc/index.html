@@ -834,12 +834,12 @@
 
 </div><!-- end container -->
 
-<script src="data.js?v=20261109a"></script>
-<script src="stores.js?v=20261109a"></script>
-<script src="details.js?v=20261109a"></script>
-<script src="staff_lookup.js?v=20261109a"></script>
-<script src="store_base.js?v=20261109a"></script>
-<script src="roster.js?v=20261109a"></script>
+<script src="data.js?v=20261116a"></script>
+<script src="stores.js?v=20261116a"></script>
+<script src="details.js?v=20261116a"></script>
+<script src="staff_lookup.js?v=20261116a"></script>
+<script src="store_base.js?v=20261116a"></script>
+<script src="roster.js?v=20261116a"></script>
 <script>
 const D = window.DASHBOARD_DATA;
 let specialLeaveExtra = [];
@@ -1357,13 +1357,21 @@ function getStoreHcGradeRow(storeName) {
 // 花名册在职合计卡片值
 // 2026-10-21 起：权威数据源改为桌面「1021人员信息.xlsx」（window.ROSTER_DATA，391 人）
 //   按当前大店长筛选时统计该大店长名下人数；全部维度 = 391
+// 2026-11-16：人工校准为 387 人（底表 391，11 月离职 4 人尚未同步进底表）
 // 若 roster.js 未加载则回落到旧逻辑（门店底表架构人数之和 + ROSTER_ADJUST）
-var ROSTER_ADJUST = -17;   // 回落用：底表架构合计 408 - 17 = 391
+var ROSTER_HEADCOUNT_OVERRIDE = 387;   // 非 null 时覆盖"全部"维度的总人数
+var ROSTER_ADJUST = -21;   // 回落用：底表架构合计 408 - 21 = 387
 function getAETotal() {
     var roster = window.ROSTER_DATA;
     if (roster && roster.length) {
-        if (currentDimension === 'all') return roster.length;
+        if (currentDimension === 'all') {
+            return (ROSTER_HEADCOUNT_OVERRIDE !== null && ROSTER_HEADCOUNT_OVERRIDE !== undefined)
+                ? ROSTER_HEADCOUNT_OVERRIDE : roster.length;
+        }
         return roster.filter(function(r) { return r.大店长 === currentDimension; }).length;
+    }
+    if (currentDimension === 'all' && ROSTER_HEADCOUNT_OVERRIDE !== null && ROSTER_HEADCOUNT_OVERRIDE !== undefined) {
+        return ROSTER_HEADCOUNT_OVERRIDE;
     }
     var total = 0;
     Object.keys(window.STORE_BASE || {}).forEach(function(store) {

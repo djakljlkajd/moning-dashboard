@@ -15012,6 +15012,8 @@ var XIANGZHAN_BP_MAP = {
   肖湘: "曾令财"
 };
 var FULL_ACCESS_NAMES = ["杨师", "戴嘉伟", "李当", "胡芬", "朱芳"];
+var MANAGER_TRACK_NAMES = ["朱芳", "李当", "胡芬"];
+var MANAGER_TRACK_VISIBLE_TO = ["杨师", "戴嘉伟", ...MANAGER_TRACK_NAMES];
 var EXTRA_ROOT_CAUSES = [
   { key: "xiangzhanNoReward", label: "未获得巷战激励" },
   { key: "otherReason", label: "其他" }
@@ -45112,6 +45114,8 @@ function App() {
   const closedIssues = issues.filter((issue) => issue.status === "closed");
   const totalUnique = bpEmployees.reduce((sum, bp) => sum + progressOf(visits, bp).uniqueVisitCount, 0);
   const totalTarget = bpEmployees.reduce((sum, bp) => sum + visitTargetFor(bp.name).target, 0);
+  const showManagerTrack = MANAGER_TRACK_VISIBLE_TO.includes(employee.name);
+  const trackEmployees = showManagerTrack ? employeeList.filter((item2) => MANAGER_TRACK_NAMES.includes(item2.name)) : [];
   const coveredStores = new Set(validVisits.map((visit) => visit.storeId)).size;
   const exportDashboard = () => {
     const rows = [["HRBP", "品牌", "达标口径", "去重巡店数", "目标", "剩余缺口", "未闭环问题"], ...bpEmployees.map((bp) => {
@@ -45178,8 +45182,11 @@ function App() {
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card", children: [
         /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card-header", children: [
           /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { children: [
-            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-title", children: "BP 巡店达标进度" }),
-            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-subtitle", children: "默认每月 15 家 · 指定人员每季度 25 家 · 复访不重复计数 · 点击 HRBP 姓名查看该伙伴的巡店报告与问题闭环明细" })
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-title", children: "BP 与品牌经理走店进度" }),
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card-subtitle", children: [
+              "默认每月 15 家 · 指定人员每季度 25 家 · 复访不重复计数 · 点击姓名查看该伙伴的巡店报告与问题闭环明细",
+              showManagerTrack ? " · 朱芳/李当/胡芬 的走店行仅你可见" : ""
+            ] })
           ] }),
           /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("span", { className: "badge badge-green", children: [
             bpEmployees.filter((bp) => progressOf(visits, bp).completed).length,
@@ -45196,7 +45203,7 @@ function App() {
             /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "未闭环" }),
             /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "状态" })
           ] }) }),
-          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("tbody", { children: bpEmployees.map((bp) => {
+          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("tbody", { children: [...bpEmployees, ...trackEmployees].map((bp) => {
             const rule = visitTargetFor(bp.name);
             const item2 = progressOf(visits, bp);
             const open = issues.filter((issue) => issue.assigneeId === bp.id && issue.status !== "closed").length;

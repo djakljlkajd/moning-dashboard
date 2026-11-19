@@ -677,8 +677,8 @@
 
 </div><!-- end container -->
 
-<script src="data.js?v=20261112d"></script>
-    <script src="roster.js?v=20261112d"></script>
+<script src="data.js?v=20261119a"></script>
+    <script src="roster.js?v=20261119a"></script>
 <script>
 // ===== 全局错误捕获（显示在页面顶部红色条，方便用户看到 JS 错误） =====
 window.addEventListener('error',function(e){
@@ -1984,6 +1984,7 @@ async function loadPreTurnoverData(){
             }else{
                 preTurnoverList=cloud;
             }
+            lastCloudSnapshot.pre_turnover=JSON.stringify(cloud);
             backupPreTurnoverToLocal();
             refreshPreTurnoverDisplays();
         }else{
@@ -2045,6 +2046,7 @@ async function loadOnlineResignData(retry){
             }else{
                 updateSaveStatus('online','ok','云端本地均为空');
             }
+            lastCloudSnapshot.online_resigns=JSON.stringify(onlineResignList);
             backupOnlineResignToLocal();
             refreshAll();
         }else{
@@ -2139,6 +2141,74 @@ async function createOnlineResignRow(){
     console.error('createOnlineResignRow failed: no available id 5-30');
 }
 
+// ===== 多人协作防覆盖：删除墓碑 + 写前合并云端新增 + 60秒轮询 =====
+let lastCloudSnapshot={pre_turnover:null,online_resigns:null};
+let pendingLocalWrite=false;
+const TOMB_PRE='preDeletedIds', TOMB_ONLINE='onlineDeletedIds';
+
+function addTombstone(key,ids){
+    try{
+        const arr=JSON.parse(localStorage.getItem(key)||'[]');
+        (Array.isArray(ids)?ids:[ids]).forEach(function(i){
+            const s=String(i); if(arr.indexOf(s)<0)arr.push(s);
+        });
+        localStorage.setItem(key,JSON.stringify(arr.slice(-300)));
+    }catch(e){}
+}
+function clearTombstone(key,id){
+    try{
+        const arr=JSON.parse(localStorage.getItem(key)||'[]');
+        localStorage.setItem(key,JSON.stringify(arr.filter(function(x){return x!==String(id);})));
+    }catch(e){}
+}
+// 保存前读取云端，把「别人新增、我这边没有、且不是我主动删的」记录并进来，避免旧页面整表覆盖
+async function mergeCloudOnly(rowId,key,list){
+    if(!rowId)return list;
+    try{
+        const res=await fetch(SUPA_URL+'/rest/v1/'+SUPA_TABLE+'?id=eq.'+rowId+'&select=data',{
+            headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY}
+        });
+        if(!res.ok)return list;
+        const arr=await res.json();
+        const d=((arr[0]||{}).data)||{};
+        const cloud=d[key]||[];
+        lastCloudSnapshot[key]=JSON.stringify(cloud);
+        const tombKey=(key==='pre_turnover')?TOMB_PRE:TOMB_ONLINE;
+        const tombs=new Set(JSON.parse(localStorage.getItem(tombKey)||'[]'));
+        const ids=new Set(list.map(function(e){return String(e.empId);}));
+        const merged=list.slice();
+        cloud.forEach(function(e){
+            const id=String(e.empId);
+            if(!ids.has(id)&&!tombs.has(id)){merged.push(e);ids.add(id);}
+        });
+        return merged;
+    }catch(e){return list;}
+}
+// 轮询：云端有别人更新且本地没有待写入的改动时，自动刷新显示
+async function pollCloudUpdates(){
+    if(preTurnoverWriteLock||onlineResignWriteLock||pendingLocalWrite)return;
+    try{
+        const res=await fetch(SUPA_URL+'/rest/v1/'+SUPA_TABLE+'?select=id,data&id=in.(3,5)&order=id.asc',{
+            headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY}
+        });
+        if(!res.ok)return;
+        const rows=await res.json();
+        let changed=false;
+        (rows||[]).forEach(function(r){
+            const d=r.data||{}; const t=d._type;
+            if(t!=='pre_turnover'&&t!=='online_resigns')return;
+            const snap=JSON.stringify(d[t]||[]);
+            if(lastCloudSnapshot[t]!==null&&lastCloudSnapshot[t]!==snap){
+                if(t==='pre_turnover'){preTurnoverList=d[t]||[];backupPreTurnoverToLocal();}
+                else{onlineResignList=d[t]||[];backupOnlineResignToLocal();}
+                changed=true;
+            }
+            lastCloudSnapshot[t]=snap;
+        });
+        if(changed){refreshAll();console.log('poll: 云端有更新，已自动刷新');}
+    }catch(e){}
+}
+
 async function syncOnlineResignData(opts){
     opts = opts || {};
     if(onlineResignWriteLock)return;
@@ -2152,6 +2222,8 @@ async function syncOnlineResignData(opts){
     }
     onlineResignWriteLock=true;
     try{
+        // 写前合并：防止旧页面整表覆盖掉别人刚新增的记录
+        onlineResignList=await mergeCloudOnly(onlineResignRowId,'online_resigns',onlineResignList);
         backupOnlineResignToLocal();
         let res=null, lastErr='';
         for(let attempt=1;attempt<=3;attempt++){
@@ -2176,6 +2248,7 @@ async function syncOnlineResignData(opts){
             updateSaveStatus('online','error','云端失败·本地'+onlineResignList.length+'条 '+(lastErr||'unknown'));
             console.error('syncOnlineResignData failed after 3 retries', lastErr);
         }else{
+            lastCloudSnapshot.online_resigns=JSON.stringify(onlineResignList);
             updateSaveStatus('online','ok','云端已同步·'+onlineResignList.length+'条');
             // 同步成功后立即 verify：从云端拉一次确认是否一致
             try{
@@ -2196,6 +2269,7 @@ async function syncOnlineResignData(opts){
         updateSaveStatus('online','error','云端失败·仅本地');
     }
     onlineResignWriteLock=false;
+    pendingLocalWrite=false;
 }
 // 强制立即全量同步（不防抖、不锁），用于用户点击"立即保存"按钮
 async function forceSyncOnlineResignData(){
@@ -2207,6 +2281,7 @@ async function forceSyncOnlineResignData(){
     updateSaveStatus('online','ok','已强制同步');
 }
 function scheduleOnlineResignSync(){
+    pendingLocalWrite=true;
     if(onlineResignSyncTimer)clearTimeout(onlineResignSyncTimer);
     // 缩短防抖：300ms 而非 800ms，减少用户关页面时丢数据的窗口
     onlineResignSyncTimer=setTimeout(()=>{syncOnlineResignData();},300);
@@ -2260,6 +2335,7 @@ async function autoTransferPreTurnover(){
         onlineResignList.push(emp);
     }
     const transferredIds=new Set(toTransfer.map(p=>p.empId));
+    addTombstone(TOMB_PRE,Array.from(transferredIds));
     preTurnoverList=preTurnoverList.filter(p=>!transferredIds.has(p.empId));
     schedulePreTurnoverSync();
     scheduleOnlineResignSync();
@@ -2275,6 +2351,8 @@ async function syncPreTurnoverData(){
     if(preTurnoverWriteLock||!preTurnoverRowId)return;
     preTurnoverWriteLock=true;
     try{
+        // 写前合并：防止旧页面整表覆盖掉别人刚新增的记录
+        preTurnoverList=await mergeCloudOnly(preTurnoverRowId,'pre_turnover',preTurnoverList);
         backupPreTurnoverToLocal();
         const res=await fetch(SUPA_URL+'/rest/v1/'+SUPA_TABLE+'?id=eq.'+preTurnoverRowId,{
             method:'PATCH',
@@ -2292,6 +2370,7 @@ async function syncPreTurnoverData(){
             console.error('syncPreTurnoverData failed',res.status,txt);
             updateSaveStatus('pre','error','云端失败·仅本地 ('+res.status+')');
         }else{
+            lastCloudSnapshot.pre_turnover=JSON.stringify(preTurnoverList);
             updateSaveStatus('pre','ok','云端已同步');
         }
     }catch(e){
@@ -2299,8 +2378,10 @@ async function syncPreTurnoverData(){
         updateSaveStatus('pre','error','云端失败·仅本地');
     }
     preTurnoverWriteLock=false;
+    pendingLocalWrite=false;
 }
 function schedulePreTurnoverSync(){
+    pendingLocalWrite=true;
     if(preTurnoverSyncTimer)clearTimeout(preTurnoverSyncTimer);
     preTurnoverSyncTimer=setTimeout(()=>{syncPreTurnoverData();},800);
 }
@@ -2611,6 +2692,7 @@ function confirmPreTurnoverEdit(){
     if(editModalMode==='resign'){
         record._isOnline=true;
         if(isNew){
+            clearTombstone(TOMB_ONLINE,empId);
             onlineResignList.push(record);
         }else{
             const idx=onlineResignList.findIndex(p=>p.empId===currentEditPreId);
@@ -2623,6 +2705,7 @@ function confirmPreTurnoverEdit(){
     }else{
         record._isPre=true;
         if(isNew){
+            clearTombstone(TOMB_PRE,empId);
             preTurnoverList.push(record);
         }else{
             const idx=preTurnoverList.findIndex(p=>p.empId===currentEditPreId);
@@ -2637,6 +2720,7 @@ function confirmPreTurnoverEdit(){
 
 function deletePreTurnover(empId){
     if(!confirm('确定删除该预离职人员吗？'))return;
+    addTombstone(TOMB_PRE,empId);
     preTurnoverList=preTurnoverList.filter(p=>p.empId!==empId);
     schedulePreTurnoverSync();
     renderCards();
@@ -2645,6 +2729,7 @@ function deletePreTurnover(empId){
 
 function deleteOnlineResign(empId){
     if(!confirm('确定删除该离职人员记录吗？'))return;
+    addTombstone(TOMB_ONLINE,empId);
     onlineResignList=onlineResignList.filter(p=>p.empId!==empId);
     scheduleOnlineResignSync();
     refreshAll();
@@ -2682,6 +2767,8 @@ loadPreTurnoverData().catch(e=>{console.error('loadPreTurnoverData failed',e);})
     try{loadRosterData();}catch(e){console.error('loadRosterData failed',e);}
     try{autoTransferPreTurnover();}catch(e){console.error('autoTransferPreTurnover failed',e);}
     autoTransferTimer=setInterval(()=>{try{autoTransferPreTurnover();}catch(e){}},600000);
+    // 每60秒拉取云端更新：别人录入后无需手动刷新即可看到
+    setInterval(()=>{try{pollCloudUpdates();}catch(e){}},60000);
     // ===== URL参数快捷入口 =====
     const params=new URLSearchParams(window.location.search);
     if(params.get('preTurnoverAdd')==='1'){

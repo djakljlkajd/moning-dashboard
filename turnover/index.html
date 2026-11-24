@@ -677,8 +677,8 @@
 
 </div><!-- end container -->
 
-<script src="data.js?v=20261119b"></script>
-    <script src="roster.js?v=20261119b"></script>
+<script src="data.js?v=20261124a"></script>
+    <script src="roster.js?v=20261124a"></script>
 <script>
 // ===== 全局错误捕获（显示在页面顶部红色条，方便用户看到 JS 错误） =====
 window.addEventListener('error',function(e){
@@ -2663,17 +2663,21 @@ function confirmPreTurnoverEdit(){
     const isNew=!currentEditPreId;
     let empId=isNew?(editModalMode==='resign'?('resign_'+Date.now()):('pre_'+Date.now())):currentEditPreId;
     if(isNew && empIdInput){
-        if(editModalMode==='resign'){
-            if(onlineResignList.some(p=>p.empId===empIdInput)){
-                alert('该工号/ID已存在，请更换');return;
-            }
-        }else{
-            if(preTurnoverList.some(p=>p.empId===empIdInput)){
-                alert('该工号/ID已存在，请更换');return;
-            }
+        const dup = editModalMode==='resign'
+            ? onlineResignList.find(p=>p.empId===empIdInput)
+            : preTurnoverList.find(p=>p.empId===empIdInput);
+        if(dup){
+            const dupMonth=dup.month?('（'+dup.month.replace('-','年')+'月）'):'';
+            const dupDate=dup.resignDate?('，'+(editModalMode==='resign'?'离职日期':'预计离职')+dup.resignDate):'';
+            alert('该工号已存在：'+(dup.name||'')+' '+dupMonth+dupDate+'。\n请切换到对应月份查看/编辑该记录；如需录入到当前月份，请先在原月份删除该条。');
+            return;
         }
         empId=empIdInput;
     }
+    // 月份归属：新增=当前所选月份；编辑=保留原记录月份（不随日期变动）
+    const oldRec=isNew?null:(editModalMode==='resign'
+        ? onlineResignList.find(p=>p.empId===currentEditPreId)
+        : preTurnoverList.find(p=>p.empId===currentEditPreId));
     const record={
         empId:empId,
         name:name,
@@ -2686,7 +2690,7 @@ function confirmPreTurnoverEdit(){
         gongLingQuJian:document.getElementById('pre-edit-gongling').value.trim(),
         reasonTag:document.getElementById('pre-edit-reason-tag').value.trim(),
         reason1:document.getElementById('pre-edit-reason1').value.trim(),
-        month:normYm(document.getElementById('pre-edit-resign-date').value.trim())||globalMonth,
+        month:(oldRec&&oldRec.month)||globalMonth,
         updated_at:new Date().toISOString()
     };
     if(editModalMode==='resign'){

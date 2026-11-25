@@ -14577,1622 +14577,6 @@ var import_client3 = __toESM(require_client(), 1);
 // src/App.tsx
 var import_react5 = __toESM(require_react(), 1);
 
-// node_modules/lucide-react/dist/esm/createLucideIcon.js
-var import_react2 = __toESM(require_react());
-
-// node_modules/lucide-react/dist/esm/shared/src/utils.js
-var toKebabCase = (string) => string.replace(/([a-z0-9])([A-Z])/g, "$1-$2").toLowerCase();
-var mergeClasses = (...classes) => classes.filter((className, index, array) => {
-  return Boolean(className) && className.trim() !== "" && array.indexOf(className) === index;
-}).join(" ").trim();
-
-// node_modules/lucide-react/dist/esm/Icon.js
-var import_react = __toESM(require_react());
-
-// node_modules/lucide-react/dist/esm/defaultAttributes.js
-var defaultAttributes = {
-  xmlns: "http://www.w3.org/2000/svg",
-  width: 24,
-  height: 24,
-  viewBox: "0 0 24 24",
-  fill: "none",
-  stroke: "currentColor",
-  strokeWidth: 2,
-  strokeLinecap: "round",
-  strokeLinejoin: "round"
-};
-
-// node_modules/lucide-react/dist/esm/Icon.js
-var Icon = (0, import_react.forwardRef)(
-  ({
-    color = "currentColor",
-    size = 24,
-    strokeWidth = 2,
-    absoluteStrokeWidth,
-    className = "",
-    children,
-    iconNode,
-    ...rest2
-  }, ref) => {
-    return (0, import_react.createElement)(
-      "svg",
-      {
-        ref,
-        ...defaultAttributes,
-        width: size,
-        height: size,
-        stroke: color,
-        strokeWidth: absoluteStrokeWidth ? Number(strokeWidth) * 24 / Number(size) : strokeWidth,
-        className: mergeClasses("lucide", className),
-        ...rest2
-      },
-      [
-        ...iconNode.map(([tag, attrs]) => (0, import_react.createElement)(tag, attrs)),
-        ...Array.isArray(children) ? children : [children]
-      ]
-    );
-  }
-);
-
-// node_modules/lucide-react/dist/esm/createLucideIcon.js
-var createLucideIcon = (iconName, iconNode) => {
-  const Component = (0, import_react2.forwardRef)(
-    ({ className, ...props }, ref) => (0, import_react2.createElement)(Icon, {
-      ref,
-      iconNode,
-      className: mergeClasses(`lucide-${toKebabCase(iconName)}`, className),
-      ...props
-    })
-  );
-  Component.displayName = `${iconName}`;
-  return Component;
-};
-
-// node_modules/lucide-react/dist/esm/icons/arrow-left.js
-var ArrowLeft = createLucideIcon("ArrowLeft", [
-  ["path", { d: "m12 19-7-7 7-7", key: "1l729n" }],
-  ["path", { d: "M19 12H5", key: "x3x0zl" }]
-]);
-
-// node_modules/lucide-react/dist/esm/icons/arrow-right.js
-var ArrowRight = createLucideIcon("ArrowRight", [
-  ["path", { d: "M5 12h14", key: "1ays0h" }],
-  ["path", { d: "m12 5 7 7-7 7", key: "xquz4c" }]
-]);
-
-// node_modules/lucide-react/dist/esm/icons/book-open.js
-var BookOpen = createLucideIcon("BookOpen", [
-  ["path", { d: "M12 7v14", key: "1akyts" }],
-  [
-    "path",
-    {
-      d: "M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z",
-      key: "ruj8y"
-    }
-  ]
-]);
-
-// node_modules/lucide-react/dist/esm/icons/calendar-days.js
-var CalendarDays = createLucideIcon("CalendarDays", [
-  ["path", { d: "M8 2v4", key: "1cmpym" }],
-  ["path", { d: "M16 2v4", key: "4m81vk" }],
-  ["rect", { width: "18", height: "18", x: "3", y: "4", rx: "2", key: "1hopcy" }],
-  ["path", { d: "M3 10h18", key: "8toen8" }],
-  ["path", { d: "M8 14h.01", key: "6423bh" }],
-  ["path", { d: "M12 14h.01", key: "1etili" }],
-  ["path", { d: "M16 14h.01", key: "1gbofw" }],
-  ["path", { d: "M8 18h.01", key: "lrp35t" }],
-  ["path", { d: "M12 18h.01", key: "mhygvu" }],
-  ["path", { d: "M16 18h.01", key: "kzsmim" }]
-]);
-
-// node_modules/lucide-react/dist/esm/icons/chart-column.js
-var ChartColumn = createLucideIcon("ChartColumn", [
-  ["path", { d: "M3 3v16a2 2 0 0 0 2 2h16", key: "c24i48" }],
-  ["path", { d: "M18 17V9", key: "2bz60n" }],
-  ["path", { d: "M13 17V5", key: "1frdt8" }],
-  ["path", { d: "M8 17v-3", key: "17ska0" }]
-]);
-
-// node_modules/lucide-react/dist/esm/icons/check.js
-var Check = createLucideIcon("Check", [["path", { d: "M20 6 9 17l-5-5", key: "1gmf2c" }]]);
-
-// node_modules/lucide-react/dist/esm/icons/chevron-right.js
-var ChevronRight = createLucideIcon("ChevronRight", [
-  ["path", { d: "m9 18 6-6-6-6", key: "mthhwq" }]
-]);
-
-// node_modules/lucide-react/dist/esm/icons/circle-alert.js
-var CircleAlert = createLucideIcon("CircleAlert", [
-  ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
-  ["line", { x1: "12", x2: "12", y1: "8", y2: "12", key: "1pkeuh" }],
-  ["line", { x1: "12", x2: "12.01", y1: "16", y2: "16", key: "4dfq90" }]
-]);
-
-// node_modules/lucide-react/dist/esm/icons/circle-check.js
-var CircleCheck = createLucideIcon("CircleCheck", [
-  ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
-  ["path", { d: "m9 12 2 2 4-4", key: "dzmm74" }]
-]);
-
-// node_modules/lucide-react/dist/esm/icons/circle-help.js
-var CircleHelp = createLucideIcon("CircleHelp", [
-  ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
-  ["path", { d: "M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3", key: "1u773s" }],
-  ["path", { d: "M12 17h.01", key: "p32p05" }]
-]);
-
-// node_modules/lucide-react/dist/esm/icons/circle.js
-var Circle = createLucideIcon("Circle", [
-  ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }]
-]);
-
-// node_modules/lucide-react/dist/esm/icons/clipboard-check.js
-var ClipboardCheck = createLucideIcon("ClipboardCheck", [
-  ["rect", { width: "8", height: "4", x: "8", y: "2", rx: "1", ry: "1", key: "tgr4d6" }],
-  [
-    "path",
-    {
-      d: "M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2",
-      key: "116196"
-    }
-  ],
-  ["path", { d: "m9 14 2 2 4-4", key: "df797q" }]
-]);
-
-// node_modules/lucide-react/dist/esm/icons/clock-3.js
-var Clock3 = createLucideIcon("Clock3", [
-  ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
-  ["polyline", { points: "12 6 12 12 16.5 12", key: "1aq6pp" }]
-]);
-
-// node_modules/lucide-react/dist/esm/icons/download.js
-var Download = createLucideIcon("Download", [
-  ["path", { d: "M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4", key: "ih7n3h" }],
-  ["polyline", { points: "7 10 12 15 17 10", key: "2ggqvy" }],
-  ["line", { x1: "12", x2: "12", y1: "15", y2: "3", key: "1vk2je" }]
-]);
-
-// node_modules/lucide-react/dist/esm/icons/eye.js
-var Eye = createLucideIcon("Eye", [
-  [
-    "path",
-    {
-      d: "M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0",
-      key: "1nclc0"
-    }
-  ],
-  ["circle", { cx: "12", cy: "12", r: "3", key: "1v7zrd" }]
-]);
-
-// node_modules/lucide-react/dist/esm/icons/file-check-2.js
-var FileCheck2 = createLucideIcon("FileCheck2", [
-  ["path", { d: "M4 22h14a2 2 0 0 0 2-2V7l-5-5H6a2 2 0 0 0-2 2v4", key: "1pf5j1" }],
-  ["path", { d: "M14 2v4a2 2 0 0 0 2 2h4", key: "tnqrlb" }],
-  ["path", { d: "m3 15 2 2 4-4", key: "1lhrkk" }]
-]);
-
-// node_modules/lucide-react/dist/esm/icons/file-spreadsheet.js
-var FileSpreadsheet = createLucideIcon("FileSpreadsheet", [
-  ["path", { d: "M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z", key: "1rqfz7" }],
-  ["path", { d: "M14 2v4a2 2 0 0 0 2 2h4", key: "tnqrlb" }],
-  ["path", { d: "M8 13h2", key: "yr2amv" }],
-  ["path", { d: "M14 13h2", key: "un5t4a" }],
-  ["path", { d: "M8 17h2", key: "2yhykz" }],
-  ["path", { d: "M14 17h2", key: "10kma7" }]
-]);
-
-// node_modules/lucide-react/dist/esm/icons/flag.js
-var Flag = createLucideIcon("Flag", [
-  ["path", { d: "M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z", key: "i9b6wo" }],
-  ["line", { x1: "4", x2: "4", y1: "22", y2: "15", key: "1cm3nv" }]
-]);
-
-// node_modules/lucide-react/dist/esm/icons/house.js
-var House = createLucideIcon("House", [
-  ["path", { d: "M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8", key: "5wwlr5" }],
-  [
-    "path",
-    {
-      d: "M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z",
-      key: "1d0kgt"
-    }
-  ]
-]);
-
-// node_modules/lucide-react/dist/esm/icons/info.js
-var Info = createLucideIcon("Info", [
-  ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
-  ["path", { d: "M12 16v-4", key: "1dtifu" }],
-  ["path", { d: "M12 8h.01", key: "e9boi3" }]
-]);
-
-// node_modules/lucide-react/dist/esm/icons/key-round.js
-var KeyRound = createLucideIcon("KeyRound", [
-  [
-    "path",
-    {
-      d: "M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z",
-      key: "1s6t7t"
-    }
-  ],
-  ["circle", { cx: "16.5", cy: "7.5", r: ".5", fill: "currentColor", key: "w0ekpg" }]
-]);
-
-// node_modules/lucide-react/dist/esm/icons/layout-dashboard.js
-var LayoutDashboard = createLucideIcon("LayoutDashboard", [
-  ["rect", { width: "7", height: "9", x: "3", y: "3", rx: "1", key: "10lvy0" }],
-  ["rect", { width: "7", height: "5", x: "14", y: "3", rx: "1", key: "16une8" }],
-  ["rect", { width: "7", height: "9", x: "14", y: "12", rx: "1", key: "1hutg5" }],
-  ["rect", { width: "7", height: "5", x: "3", y: "16", rx: "1", key: "ldoo1y" }]
-]);
-
-// node_modules/lucide-react/dist/esm/icons/list-checks.js
-var ListChecks = createLucideIcon("ListChecks", [
-  ["path", { d: "m3 17 2 2 4-4", key: "1jhpwq" }],
-  ["path", { d: "m3 7 2 2 4-4", key: "1obspn" }],
-  ["path", { d: "M13 6h8", key: "15sg57" }],
-  ["path", { d: "M13 12h8", key: "h98zly" }],
-  ["path", { d: "M13 18h8", key: "oe0vm4" }]
-]);
-
-// node_modules/lucide-react/dist/esm/icons/map-pin.js
-var MapPin = createLucideIcon("MapPin", [
-  [
-    "path",
-    {
-      d: "M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0",
-      key: "1r0f0z"
-    }
-  ],
-  ["circle", { cx: "12", cy: "10", r: "3", key: "ilqhr7" }]
-]);
-
-// node_modules/lucide-react/dist/esm/icons/menu.js
-var Menu = createLucideIcon("Menu", [
-  ["line", { x1: "4", x2: "20", y1: "12", y2: "12", key: "1e0a9i" }],
-  ["line", { x1: "4", x2: "20", y1: "6", y2: "6", key: "1owob3" }],
-  ["line", { x1: "4", x2: "20", y1: "18", y2: "18", key: "yk5zj1" }]
-]);
-
-// node_modules/lucide-react/dist/esm/icons/plus.js
-var Plus = createLucideIcon("Plus", [
-  ["path", { d: "M5 12h14", key: "1ays0h" }],
-  ["path", { d: "M12 5v14", key: "s699le" }]
-]);
-
-// node_modules/lucide-react/dist/esm/icons/refresh-cw.js
-var RefreshCw = createLucideIcon("RefreshCw", [
-  ["path", { d: "M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8", key: "v9h5vc" }],
-  ["path", { d: "M21 3v5h-5", key: "1q7to0" }],
-  ["path", { d: "M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16", key: "3uifl3" }],
-  ["path", { d: "M8 16H3v5", key: "1cv678" }]
-]);
-
-// node_modules/lucide-react/dist/esm/icons/search.js
-var Search = createLucideIcon("Search", [
-  ["circle", { cx: "11", cy: "11", r: "8", key: "4ej97u" }],
-  ["path", { d: "m21 21-4.3-4.3", key: "1qie3q" }]
-]);
-
-// node_modules/lucide-react/dist/esm/icons/shield-check.js
-var ShieldCheck = createLucideIcon("ShieldCheck", [
-  [
-    "path",
-    {
-      d: "M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z",
-      key: "oel41y"
-    }
-  ],
-  ["path", { d: "m9 12 2 2 4-4", key: "dzmm74" }]
-]);
-
-// node_modules/lucide-react/dist/esm/icons/sparkles.js
-var Sparkles = createLucideIcon("Sparkles", [
-  [
-    "path",
-    {
-      d: "M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z",
-      key: "4pj2yx"
-    }
-  ],
-  ["path", { d: "M20 3v4", key: "1olli1" }],
-  ["path", { d: "M22 5h-4", key: "1gvqau" }],
-  ["path", { d: "M4 17v2", key: "vumght" }],
-  ["path", { d: "M5 18H3", key: "zchphs" }]
-]);
-
-// node_modules/lucide-react/dist/esm/icons/store.js
-var Store = createLucideIcon("Store", [
-  ["path", { d: "m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7", key: "ztvudi" }],
-  ["path", { d: "M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8", key: "1b2hhj" }],
-  ["path", { d: "M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4", key: "2ebpfo" }],
-  ["path", { d: "M2 7h20", key: "1fcdvo" }],
-  [
-    "path",
-    {
-      d: "M22 7v3a2 2 0 0 1-2 2a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 16 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 12 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 8 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 4 12a2 2 0 0 1-2-2V7",
-      key: "6c3vgh"
-    }
-  ]
-]);
-
-// node_modules/lucide-react/dist/esm/icons/target.js
-var Target = createLucideIcon("Target", [
-  ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
-  ["circle", { cx: "12", cy: "12", r: "6", key: "1vlfrh" }],
-  ["circle", { cx: "12", cy: "12", r: "2", key: "1c9p78" }]
-]);
-
-// node_modules/lucide-react/dist/esm/icons/trash-2.js
-var Trash2 = createLucideIcon("Trash2", [
-  ["path", { d: "M3 6h18", key: "d0wm0j" }],
-  ["path", { d: "M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6", key: "4alrt4" }],
-  ["path", { d: "M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2", key: "v07s0e" }],
-  ["line", { x1: "10", x2: "10", y1: "11", y2: "17", key: "1uufr5" }],
-  ["line", { x1: "14", x2: "14", y1: "11", y2: "17", key: "xtxkd" }]
-]);
-
-// node_modules/lucide-react/dist/esm/icons/triangle-alert.js
-var TriangleAlert = createLucideIcon("TriangleAlert", [
-  [
-    "path",
-    {
-      d: "m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3",
-      key: "wmoenq"
-    }
-  ],
-  ["path", { d: "M12 9v4", key: "juzpu7" }],
-  ["path", { d: "M12 17h.01", key: "p32p05" }]
-]);
-
-// node_modules/lucide-react/dist/esm/icons/upload.js
-var Upload = createLucideIcon("Upload", [
-  ["path", { d: "M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4", key: "ih7n3h" }],
-  ["polyline", { points: "17 8 12 3 7 8", key: "t8dd8p" }],
-  ["line", { x1: "12", x2: "12", y1: "3", y2: "15", key: "widbto" }]
-]);
-
-// node_modules/lucide-react/dist/esm/icons/user-round.js
-var UserRound = createLucideIcon("UserRound", [
-  ["circle", { cx: "12", cy: "8", r: "5", key: "1hypcn" }],
-  ["path", { d: "M20 21a8 8 0 0 0-16 0", key: "rfgkzh" }]
-]);
-
-// node_modules/lucide-react/dist/esm/icons/users-round.js
-var UsersRound = createLucideIcon("UsersRound", [
-  ["path", { d: "M18 21a8 8 0 0 0-16 0", key: "3ypg7q" }],
-  ["circle", { cx: "10", cy: "8", r: "5", key: "o932ke" }],
-  ["path", { d: "M22 20c0-3.37-2-6.5-4-8a5 5 0 0 0-.45-8.3", key: "10s06x" }]
-]);
-
-// node_modules/lucide-react/dist/esm/icons/x.js
-var X = createLucideIcon("X", [
-  ["path", { d: "M18 6 6 18", key: "1bl5f8" }],
-  ["path", { d: "m6 6 12 12", key: "d8bk6v" }]
-]);
-
-// src/features/types.ts
-var BRANDS = ["茶颜悦色", "古德墨柠", "鸳央咖啡"];
-
-// src/config/business-rules.ts
-function today() {
-  const d = /* @__PURE__ */ new Date();
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-}
-function addDays(days2) {
-  const d = /* @__PURE__ */ new Date();
-  d.setDate(d.getDate() + days2);
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-}
-var CURRENT_QUARTER = "2026-Q4";
-var DEFAULT_EMPLOYEE_ID = "DEMO009";
-var QUARTERLY_VISIT_TARGET = 25;
-var RISK_RULES = [
-  { key: "architectureLabor", label: "架构变动", description: "最近完整月有店长或核心伙伴离职、新入职" },
-  { key: "abcAllC", label: "ABC风险排名", description: "近3个月ABC评级排名：C越多、月份越近排名越靠前，点击查看明细" },
-  { key: "qcBelow80", label: "QC风险排名", description: "近3个月QC评分排名，不合格越多、月份越近排名越靠前，点击查看明细" },
-  { key: "salesBelow100", label: "业绩连续3月不好", description: "最近3个完整月业绩达成率均低于100%" },
-  { key: "hoursOver220", label: "工时超220H", description: "最近完整月月人均工时大于220小时" },
-  { key: "hoursUnder167", label: "工时低167H", description: "最近完整月月人均工时小于167小时" },
-  { key: "attendanceOver8Days", label: "连续出勤>8天人数", description: "最近完整月有员工连续出勤大于8天（国庆高峰10/1-10/7不计入）" },
-  { key: "lowTemperature", label: "低温门店", description: "最近完整月标记为低温门店" },
-  { key: "treeHoleComplaints", label: "树洞投诉预警", description: "最近完整月树洞投诉不少于2条" },
-  { key: "noReward", label: "两大奖励预警", description: "最近完整月两大奖励达标为否" }
-];
-var MONTHLY_VISIT_TARGET = 15;
-var QUARTERLY_TARGET_NAMES = ["戴嘉伟", "唐漂", "程洁暇"];
-function visitTargetFor(employeeName) {
-  return QUARTERLY_TARGET_NAMES.includes(employeeName) ? { period: "quarter", target: QUARTERLY_VISIT_TARGET, periodLabel: "季度" } : { period: "month", target: MONTHLY_VISIT_TARGET, periodLabel: "月" };
-}
-var XIANGZHAN_BP_MAP = {
-  从浩: "赵芬",
-  瞿兆邦: "邵晓宇",
-  陈坤: "刘林",
-  肖湘: "曾令财"
-};
-var FULL_ACCESS_NAMES = ["杨师", "戴嘉伟", "李当", "胡芬", "朱芳"];
-var MANAGER_TRACK_NAMES = ["朱芳", "李当", "胡芬"];
-var MANAGER_TRACK_VISIBLE_TO = ["杨师", "戴嘉伟", ...MANAGER_TRACK_NAMES];
-var EXTRA_ROOT_CAUSES = [
-  { key: "xiangzhanNoReward", label: "未获得巷战激励" },
-  { key: "otherReason", label: "其他" }
-];
-var RISK_PHASE_BY_LEVEL = {
-  极高风险: "本月",
-  高风险: "次月",
-  中风险: "季度内",
-  低风险: "常规",
-  数据待补充: "本月"
-};
-function getRiskLevel(knownScore, missingCount = 0) {
-  if (missingCount > 0) return "数据待补充";
-  if (knownScore >= 6) return "极高风险";
-  if (knownScore >= 4) return "高风险";
-  if (knownScore >= 2) return "中风险";
-  return "低风险";
-}
-function getRiskPhase(level) {
-  return RISK_PHASE_BY_LEVEL[level];
-}
-
-// src/data/demo-data.ts
-var demoEmployees = [
-  { id: "DEMO001", workNo: "DEMO001", name: "赵芬", role: "bp", brands: ["茶颜悦色"] },
-  { id: "DEMO002", workNo: "DEMO002", name: "邵晓宇", role: "bp", brands: ["茶颜悦色"] },
-  { id: "DEMO003", workNo: "DEMO003", name: "刘林", role: "bp", brands: ["茶颜悦色"] },
-  { id: "DEMO004", workNo: "DEMO004", name: "曾令财", role: "bp", brands: ["茶颜悦色"] },
-  { id: "DEMO005", workNo: "DEMO005", name: "唐漂", role: "bp", brands: ["茶颜悦色"] },
-  { id: "DEMO006", workNo: "DEMO006", name: "谢永林", role: "bp", brands: ["鸳央咖啡"] },
-  { id: "DEMO007", workNo: "DEMO007", name: "周丽", role: "bp", brands: ["古德墨柠"] },
-  { id: "DEMO008", workNo: "DEMO008", name: "杨梦琳", role: "bp", brands: ["古德墨柠"] },
-  { id: "DEMO009", workNo: "DEMO009", name: "戴嘉伟", role: "bp", brands: ["古德墨柠"] },
-  { id: "DEMO010", workNo: "DEMO010", name: "朱芳", role: "manager", brands: ["茶颜悦色"] },
-  { id: "DEMO011", workNo: "DEMO011", name: "胡芬", role: "manager", brands: ["鸳央咖啡"] },
-  { id: "DEMO012", workNo: "DEMO012", name: "李当", role: "manager", brands: ["古德墨柠"] },
-  { id: "DEMO013", workNo: "DEMO013", name: "杨师", role: "director", brands: [...BRANDS] }
-];
-var demoCurrentEmployee = demoEmployees.find((employee) => employee.id === DEFAULT_EMPLOYEE_ID);
-var demoVisits = [];
-var demoIssues = [];
-var demoIssueEvents = [];
-
-// src/config/dictionaries.ts
-var ISSUE_STATUS_LABELS = {
-  open: "待处理",
-  in_progress: "处理中",
-  completed: "待复核",
-  closed: "已闭环"
-};
-var ISSUE_SEVERITY_LABELS = {
-  low: "低",
-  medium: "中",
-  high: "高"
-};
-var ISSUE_CATEGORY_DICTIONARY = [
-  { key: "people", label: "人员状态", examples: ["高峰人手不足", "新员工带教缺失"] },
-  { key: "teamwork", label: "协作氛围", examples: ["跨班次协作不畅", "信息不同步"] },
-  { key: "service", label: "客户体验", examples: ["出杯等待过长", "服务话术未执行"] },
-  { key: "operation", label: "项目执行", examples: ["盘点差异", "陈列未按标准"] },
-  { key: "development", label: "人才发展", examples: ["带教计划缺失", "晋升训练待跟进"] },
-  { key: "other", label: "其他", examples: ["设备设施", "流程不合理"] }
-];
-var ROLE_LABELS = {
-  bp: "BP",
-  manager: "品牌经理",
-  director: "总负责人",
-  dataAdmin: "数据管理员"
-};
-
-// src/features/date-utils.ts
-var DATE_ONLY_RE = /^(\d{4})-(\d{2})-(\d{2})/;
-var MONTH_RE = /^(\d{4})-(\d{2})$/;
-function toDateOnly(value) {
-  if (typeof value === "string") {
-    const match = value.match(DATE_ONLY_RE);
-    if (!match) throw new Error(`无效日期：${value}`);
-    return `${match[1]}-${match[2]}-${match[3]}`;
-  }
-  const year = value.getFullYear();
-  const month = String(value.getMonth() + 1).padStart(2, "0");
-  const day = String(value.getDate()).padStart(2, "0");
-  return `${year}-${month}-${day}`;
-}
-function isValidMonth(month) {
-  const match = month.match(MONTH_RE);
-  if (!match) return false;
-  const value = Number(match[2]);
-  return value >= 1 && value <= 12;
-}
-function shiftMonth(month, offset) {
-  if (!isValidMonth(month)) throw new Error(`无效月份：${month}`);
-  const [year, monthNumber] = month.split("-").map(Number);
-  const index = year * 12 + monthNumber - 1 + offset;
-  const nextYear = Math.floor(index / 12);
-  const nextMonth = (index % 12 + 12) % 12 + 1;
-  return `${String(nextYear).padStart(4, "0")}-${String(nextMonth).padStart(2, "0")}`;
-}
-function getRecentCompleteMonths(reference, count = 3) {
-  if (!Number.isInteger(count) || count < 1) throw new Error("月份数量必须为正整数");
-  const currentMonth = toDateOnly(reference).slice(0, 7);
-  return Array.from({ length: count }, (_, index) => shiftMonth(currentMonth, index - count));
-}
-function getMonthKey(date) {
-  return toDateOnly(date).slice(0, 7);
-}
-function getQuarterKey(date) {
-  const value = toDateOnly(date);
-  const year = Number(value.slice(0, 4));
-  const month = Number(value.slice(5, 7));
-  return `${year}-Q${Math.floor((month - 1) / 3) + 1}`;
-}
-function isValidQuarter(quarter) {
-  return /^\d{4}-Q[1-4]$/.test(quarter);
-}
-function daysBetween(from, to) {
-  const fromValue = toDateOnly(from);
-  const toValue = toDateOnly(to);
-  const fromTime = Date.parse(`${fromValue}T00:00:00Z`);
-  const toTime = Date.parse(`${toValue}T00:00:00Z`);
-  return Math.floor((toTime - fromTime) / 864e5);
-}
-
-// src/features/quarterly-progress.ts
-function isCountableVisit(visit) {
-  return visit.status === "submitted" && visit.voided !== true;
-}
-function calculateQuarterlyProgress(visits, bpId, quarter, target = QUARTERLY_VISIT_TARGET) {
-  if (!isValidQuarter(quarter)) throw new Error(`无效季度：${quarter}`);
-  if (!Number.isFinite(target) || target < 0) throw new Error("巡店目标不能为负数");
-  const storeIds = Array.from(new Set(
-    visits.filter((visit) => visit.bpId === bpId && isCountableVisit(visit) && getQuarterKey(visit.visitedAt) === quarter).map((visit) => visit.storeId)
-  )).sort();
-  const uniqueVisitCount = storeIds.length;
-  const cappedProgress = target === 0 ? 100 : Math.min(100, Math.round(uniqueVisitCount / target * 100));
-  return {
-    bpId,
-    quarter,
-    storeIds,
-    uniqueVisitCount,
-    target,
-    gap: Math.max(0, target - uniqueVisitCount),
-    progress: cappedProgress,
-    cappedProgress,
-    completed: uniqueVisitCount >= target
-  };
-}
-function calculateMonthlyProgress(visits, bpId, month, target = 15) {
-  if (!isValidMonth(month)) throw new Error(`无效月份：${month}`);
-  if (!Number.isFinite(target) || target < 0) throw new Error("巡店目标不能为负数");
-  const storeIds = Array.from(new Set(
-    visits.filter((visit) => visit.bpId === bpId && isCountableVisit(visit) && getMonthKey(visit.visitedAt) === month).map((visit) => visit.storeId)
-  )).sort();
-  const uniqueVisitCount = storeIds.length;
-  const cappedProgress = target === 0 ? 100 : Math.min(100, Math.round(uniqueVisitCount / target * 100));
-  return {
-    bpId,
-    quarter: month,
-    storeIds,
-    uniqueVisitCount,
-    target,
-    gap: Math.max(0, target - uniqueVisitCount),
-    progress: cappedProgress,
-    cappedProgress,
-    completed: uniqueVisitCount >= target
-  };
-}
-
-// src/features/risk/calculate-risk.ts
-function item(key, status, abnormalReason, normalReason, missingReason) {
-  const rule = RISK_RULES.find((candidate) => candidate.key === key);
-  return {
-    key,
-    label: rule?.label ?? key,
-    status,
-    score: status === "abnormal" ? 1 : 0,
-    reason: status === "abnormal" ? abnormalReason : status === "normal" ? normalReason : missingReason
-  };
-}
-function calculateRisk(storeId, metrics, asOfDate = /* @__PURE__ */ new Date()) {
-  const months2 = getRecentCompleteMonths(asOfDate);
-  const latestMonth = months2[months2.length - 1];
-  const storeMetrics = metrics.filter((metric) => metric.storeId === storeId);
-  const recent = months2.map((month) => storeMetrics.find((metric) => metric.month === month));
-  const latest = recent[recent.length - 1];
-  function acrossMonths(key, field, isAbnormal, abnormalReason, normalReason) {
-    const missingMonths = months2.filter((_, index) => recent[index]?.[field] === void 0 || recent[index]?.[field] === null);
-    if (missingMonths.length) {
-      return item(key, "missing", abnormalReason, normalReason, `${missingMonths.join("、")}缺少${RISK_RULES.find((rule) => rule.key === key)?.label}所需数据`);
-    }
-    const values = recent.map((metric) => metric?.[field]);
-    return item(key, isAbnormal(values) ? "abnormal" : "normal", abnormalReason, normalReason, "");
-  }
-  function latestOnly(key, field, isAbnormal, abnormalReason, normalReason) {
-    const value = latest?.[field];
-    if (value === void 0 || value === null) {
-      return item(key, "missing", abnormalReason, normalReason, `${latestMonth}缺少${RISK_RULES.find((rule) => rule.key === key)?.label}数据`);
-    }
-    return item(key, isAbnormal(value) ? "abnormal" : "normal", abnormalReason, normalReason, "");
-  }
-  const hoursItem = (key) => {
-    const label = key === "hoursOver220" ? "月人均工时>220H" : "月人均工时<167H";
-    const value = latest?.workHours;
-    if (value === void 0 || value === null) return item(key, "missing", label, "月人均工时在正常区间", `${latestMonth}缺少工时数据`);
-    const abnormal = key === "hoursOver220" ? value > 220 : value < 167;
-    return item(key, abnormal ? "abnormal" : "normal", `${latestMonth}月人均工时${value}H，触发${label}`, `${latestMonth}月人均工时${value}H，未触发该规则`, "");
-  };
-  const items = [
-    latestOnly("architectureLabor", "architectureLabor", Boolean, "最近完整月有店长或核心伙伴离职、新入职", "最近完整月无架构变动"),
-    acrossMonths("abcAllC", "abcGrade", (values) => values.every((value) => value === "C"), "最近3个完整月ABC评级均为C", "最近3个完整月ABC评级并非均为C"),
-    acrossMonths("qcBelow80", "qcScore", (values) => values.every((value) => Number(value) < 80), "最近3个完整月QC均低于80", "最近3个完整月QC并非均低于80"),
-    acrossMonths("salesBelow100", "salesAchievementRate", (values) => values.every((value) => Number(value) < 100), "最近3个完整月业绩达成率均低于100%", "最近3个完整月业绩达成率并非均低于100%"),
-    hoursItem("hoursOver220"),
-    hoursItem("hoursUnder167"),
-    latestOnly("attendanceOver8Days", "attendanceOver8Days", (value) => Number(value) >= 1, "最近完整月有员工连续出勤大于8天", "最近完整月无连续出勤超8天人员"),
-    latestOnly("lowTemperature", "lowTemperature", Boolean, "最近完整月标记为低温门店", "最近完整月非低温门店"),
-    latestOnly("treeHoleComplaints", "treeHoleComplaints", (value) => Number(value) >= 2, "最近完整月树洞投诉不少于2条", "最近完整月树洞投诉少于2条"),
-    latestOnly("noReward", "hasReward", (value) => value === false, "最近完整月两大奖励达标为否", "最近完整月两大奖励达标")
-  ];
-  const knownScore = items.reduce((sum, result2) => sum + result2.score, 0);
-  const missingCount = items.filter((result2) => result2.status === "missing").length;
-  const riskLevel = getRiskLevel(knownScore, missingCount);
-  return {
-    storeId,
-    asOfDate: toDateOnly(asOfDate),
-    months: months2,
-    items,
-    knownScore,
-    missingCount,
-    riskLevel,
-    phase: getRiskPhase(riskLevel)
-  };
-}
-
-// src/config/cloud-config.json
-var cloud_config_default = {
-  _comment: "开通云服务后由 workbuddy_cloud_service 返回的 publicConfig 填入此处；全部留空表示未启用，看板自动保持本机演示模式，不会假装有云端保存。",
-  endpoint: "",
-  oauthRelayBaseUrl: "",
-  publishableKey: ""
-};
-
-// src/features/cloud/bridge.ts
-function getCloudConfig() {
-  const endpoint = cloud_config_default.endpoint.trim();
-  const publishableKey = cloud_config_default.publishableKey.trim();
-  if (!endpoint || !publishableKey) return null;
-  return { endpoint, publishableKey, oauthRelayBaseUrl: cloud_config_default.oauthRelayBaseUrl.trim() };
-}
-function isCloudEnabled() {
-  return getCloudConfig() !== null;
-}
-var SDK_SPECIFIER = "@tencent-ai/workbuddy-cloud-sdk";
-var clientPromise = null;
-async function getClient() {
-  const cloudConfig = getCloudConfig();
-  if (!cloudConfig) return null;
-  if (!clientPromise) {
-    clientPromise = (async () => {
-      try {
-        const factory = await import(
-          /* @vite-ignore */
-          SDK_SPECIFIER
-        );
-        const create = factory.createWorkBuddyCloud;
-        if (typeof create !== "function") return null;
-        return create(cloudConfig);
-      } catch {
-        return null;
-      }
-    })();
-  }
-  return clientPromise;
-}
-function unwrapRow(envelope) {
-  if (envelope.error) throw envelope.error instanceof Error ? envelope.error : new Error(String(envelope.error));
-  return Array.isArray(envelope.data) ? envelope.data : [];
-}
-function mapEmployee(row) {
-  return { id: row.id, workNo: row.work_no, name: row.name, role: row.role, brands: row.brands };
-}
-function mapStore(row) {
-  return {
-    id: row.id,
-    code: row.code,
-    name: row.name,
-    brand: row.brand,
-    region: row.region ?? void 0,
-    district: row.district ?? void 0,
-    districtManager: row.district_manager ?? void 0,
-    areaManager: row.area_manager ?? void 0,
-    managerName: row.manager_name ?? void 0,
-    managerPosition: row.manager_position ?? void 0,
-    managerIsStoreManager: row.manager_is_store_manager ?? void 0,
-    active: row.active
-  };
-}
-function mapVisit(row) {
-  return {
-    id: row.id,
-    storeId: row.store_id,
-    bpId: row.bp_id,
-    visitedAt: row.visited_at,
-    status: row.status,
-    submittedAt: row.submitted_at ?? void 0,
-    voided: row.voided ?? void 0,
-    summary: row.summary ?? void 0
-  };
-}
-function mapIssue(row) {
-  return {
-    id: row.id,
-    visitId: row.visit_id ?? void 0,
-    storeId: row.store_id,
-    brand: row.brand,
-    title: row.title,
-    description: row.description ?? void 0,
-    dimension: row.dimension ?? void 0,
-    category: row.category ?? "other",
-    severity: row.severity,
-    status: row.status,
-    reporterId: row.reporter_id,
-    assigneeId: row.assignee_id,
-    responsibleName: row.responsible_name ?? void 0,
-    createdAt: row.created_at,
-    dueDate: row.due_date,
-    closedAt: row.closed_at ?? void 0,
-    latestFollowup: row.latest_followup ?? void 0
-  };
-}
-function mapIssueEvent(row) {
-  return {
-    id: `EV-${row.id}`,
-    issueId: row.issue_id,
-    actorId: row.actor_id,
-    action: row.action,
-    fromStatus: row.from_status ?? void 0,
-    toStatus: row.to_status ?? void 0,
-    comment: row.comment ?? void 0,
-    createdAt: row.created_at
-  };
-}
-function selectAll(builder) {
-  return builder.then(unwrapRow);
-}
-var cloudBridge = {
-  enabled: isCloudEnabled(),
-  /** 微信授权登录（Web 网站登录，含快捷确认与扫码两种交互）。 */
-  async signInWithWechat() {
-    const client = await getClient();
-    if (!client) return null;
-    const started = await client.auth.signInWithOAuth({ provider: "wechat", redirectTo: location.origin });
-    return started.error || !started.data ? null : String(started.data.url);
-  },
-  /** 应用入口：先处理 OAuth 回调（必须在路由守卫之前），再恢复会话。 */
-  async restoreAuth() {
-    const client = await getClient();
-    if (!client) return null;
-    const url = new URL(location.href);
-    if (url.searchParams.has("code") || url.searchParams.has("error")) {
-      const provider = url.searchParams.get("provider");
-      const handler = provider === "workbuddy" ? client.auth.handleWorkBuddyCallback : client.auth.handleWechatWebCallback;
-      if (typeof handler !== "function") throw new Error("当前 SDK 不支持该登录方式，请刷新后重试");
-      const result2 = await handler.call(client.auth);
-      if (result2 && !result2.error && result2.data) {
-        for (const key of ["code", "state", "provider"]) url.searchParams.delete(key);
-        history.replaceState(null, "", `${url.pathname}${url.search}${url.hash}`);
-      } else if (result2?.error) {
-        throw result2.error instanceof Error ? result2.error : new Error(String(result2.error));
-      }
-    }
-    const session = await client.auth.getSession();
-    if (session.error || !session.data) return null;
-    return this.bootstrap();
-  },
-  /** 读取看板所需全部数据（受保护的行业务数据，必须已登录）。 */
-  async bootstrap() {
-    const client = await getClient();
-    if (!client) return null;
-    const [employees, stores, visits, issues, events] = await Promise.all([
-      // 只取已授权的公开列，避免读取绑定标识
-      selectAll(client.database.from("hr_employees").select("id, work_no, name, role, brands")),
-      selectAll(client.database.from("hr_stores").select("*")),
-      selectAll(client.database.from("hr_visits").select("*")),
-      selectAll(client.database.from("hr_issues").select("*")),
-      selectAll(client.database.from("hr_issue_events").select("*"))
-    ]);
-    return {
-      employees: employees.map(mapEmployee),
-      stores: stores.map(mapStore),
-      visits: visits.map(mapVisit),
-      issues: issues.map(mapIssue),
-      events: events.map(mapIssueEvent)
-    };
-  },
-  /** 当前登录账号是否已绑定 HR 成员身份（由数据库按 auth.uid() 判定，前端不传身份）。 */
-  async currentEmployee() {
-    const client = await getClient();
-    if (!client) return null;
-    const rows = unwrapRow(await client.database.rpc("app_current_employee"));
-    return rows[0] ? mapEmployee(rows[0]) : null;
-  },
-  /** 首次登录绑定工号：由数据库 SECURITY DEFINER 函数校验，前端不做信任判断。 */
-  async bindWorkNo(workNo, name) {
-    const client = await getClient();
-    if (!client) return null;
-    const result2 = await client.database.rpc("app_bind_employee", { p_work_no: workNo, p_name: name });
-    const rows = unwrapRow(result2);
-    return rows[0] ? mapEmployee(rows[0]) : null;
-  },
-  /** 保存一次巡店及其问题、时间线事件（单次调用，失败不静默）。 */
-  async saveVisit(visit, issues, events) {
-    const client = await getClient();
-    if (!client) return false;
-    const inserted = await client.database.from("hr_visits").insert({
-      id: visit.id,
-      bp_id: visit.bpId,
-      store_id: visit.storeId,
-      visited_at: visit.visitedAt,
-      status: visit.status,
-      submitted_at: visit.submittedAt,
-      voided: visit.voided ?? false,
-      summary: visit.summary ?? null
-    }).select();
-    if (inserted.error || !inserted.data || inserted.data.length === 0) throw new Error("巡店记录未写入，请检查登录状态");
-    if (issues.length) {
-      const rows = issues.map((issue) => ({
-        id: issue.id,
-        visit_id: issue.visitId ?? null,
-        store_id: issue.storeId,
-        brand: issue.brand,
-        title: issue.title,
-        description: issue.description ?? null,
-        dimension: issue.dimension ?? null,
-        category: issue.category,
-        severity: issue.severity,
-        status: issue.status,
-        reporter_id: issue.reporterId,
-        assignee_id: issue.assigneeId,
-        responsible_name: issue.responsibleName ?? null,
-        created_at: issue.createdAt,
-        due_date: issue.dueDate,
-        closed_at: issue.closedAt ?? null
-      }));
-      const created = await client.database.from("hr_issues").insert(rows).select();
-      if (created.error) throw created.error instanceof Error ? created.error : new Error(String(created.error));
-    }
-    if (events.length) {
-      const rows = events.map((event) => ({
-        issue_id: event.issueId,
-        actor_id: event.actorId,
-        action: event.action,
-        from_status: event.fromStatus ?? null,
-        to_status: event.toStatus ?? null,
-        comment: event.comment ?? null
-      }));
-      const created = await client.database.from("hr_issue_events").insert(rows).select();
-      if (created.error) throw created.error instanceof Error ? created.error : new Error(String(created.error));
-    }
-    return true;
-  },
-  /** 更新问题状态并追加时间线事件。 */
-  async updateIssue(issue, event) {
-    const client = await getClient();
-    if (!client) return false;
-    const updated = await client.database.from("hr_issues").update({
-      status: issue.status,
-      closed_at: issue.closedAt ?? null,
-      latest_followup: issue.latestFollowup ?? null
-    }).eq("id", issue.id).select();
-    if (updated.error) throw updated.error instanceof Error ? updated.error : new Error(String(updated.error));
-    const created = await client.database.from("hr_issue_events").insert({
-      issue_id: event.issueId,
-      actor_id: event.actorId,
-      action: event.action,
-      from_status: event.fromStatus ?? null,
-      to_status: event.toStatus ?? null,
-      comment: event.comment ?? null
-    }).select();
-    if (created.error) throw created.error instanceof Error ? created.error : new Error(String(created.error));
-    return true;
-  },
-  /** 删除问题及其全部时间线事件（测试数据清理用，先删事件再删问题）。 */
-  async deleteIssue(issueId) {
-    const client = await getClient();
-    if (!client) return false;
-    await client.database.from("hr_issue_events").delete().eq("issue_id", issueId);
-    await client.database.from("hr_issues").delete().eq("id", issueId);
-    return true;
-  },
-  async signOut() {
-    const client = await getClient();
-    if (client) await client.auth.signOut();
-  }
-};
-
-// src/features/cloud/CloudAuthGate.tsx
-var import_react3 = __toESM(require_react(), 1);
-var import_jsx_runtime = __toESM(require_jsx_runtime(), 1);
-function CloudAuthGate({ onBound, error }) {
-  const [workNo, setWorkNo] = (0, import_react3.useState)("");
-  const [name, setName] = (0, import_react3.useState)("");
-  const [busy, setBusy] = (0, import_react3.useState)(false);
-  const [message, setMessage] = (0, import_react3.useState)(null);
-  const login = async () => {
-    setBusy(true);
-    setMessage(null);
-    try {
-      const url = await cloudBridge.signInWithWechat();
-      if (url) location.assign(url);
-      else setMessage("微信登录未能发起，请稍后重试");
-    } catch (caught) {
-      setMessage(caught instanceof Error ? caught.message : "微信登录失败");
-    } finally {
-      setBusy(false);
-    }
-  };
-  const bind = async () => {
-    if (!workNo.trim() || !name.trim()) {
-      setMessage("请填写工号和姓名");
-      return;
-    }
-    setBusy(true);
-    setMessage(null);
-    try {
-      const employee = await cloudBridge.bindWorkNo(workNo.trim(), name.trim());
-      if (employee) onBound(employee);
-      else setMessage("工号与姓名不匹配，或该工号已被绑定");
-    } catch (caught) {
-      setMessage(caught instanceof Error ? caught.message : "绑定失败");
-    } finally {
-      setBusy(false);
-    }
-  };
-  return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "modal-backdrop", style: { zIndex: 80 }, children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "modal", style: { maxWidth: 460 }, children: [
-    /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "modal-header", children: [
-      /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [
-        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "eyebrow", children: "CLOUD AUTH" }),
-        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("h2", { style: { margin: 0 }, children: "登录并绑定工号" })
-      ] }),
-      /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ShieldCheck, { size: 20 })
-    ] }),
-    /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "modal-body", children: [
-      /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "inline-notice", children: [
-        /* @__PURE__ */ (0, import_jsx_runtime.jsx)(KeyRound, { size: 16 }),
-        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "看板数据需登录后查看。请用微信授权登录，首次登录后输入工号和姓名完成绑定，之后自动识别身份。" })
-      ] }),
-      /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { className: "button button-primary", style: { width: "100%", marginTop: 16 }, disabled: busy, onClick: login, children: "使用微信登录" }),
-      /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "form-group", style: { marginTop: 18 }, children: [
-        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("label", { className: "form-label", children: "工号" }),
-        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", { className: "input", value: workNo, onChange: (e) => setWorkNo(e.target.value), placeholder: "如已登录且未绑定，请填写工号" })
-      ] }),
-      /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "form-group", style: { marginTop: 12 }, children: [
-        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("label", { className: "form-label", children: "姓名" }),
-        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", { className: "input", value: name, onChange: (e) => setName(e.target.value), placeholder: "与人员底稿一致的姓名" })
-      ] }),
-      /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { className: "button button-secondary", style: { width: "100%", marginTop: 14 }, disabled: busy, onClick: bind, children: "绑定工号" }),
-      (message || error) && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "inline-notice", style: { marginTop: 14 }, children: message ?? error })
-    ] })
-  ] }) });
-}
-
-// src/config/supabase-config.json
-var supabase_config_default = {
-  url: "https://tclfmnfvlrlxquiojjya.supabase.co",
-  publishableKey: "sb_publishable_6sa-Pz6dX0BSlTJX3gNiRA_CbtZkf_b"
-};
-
-// src/features/supabase/client.ts
-var SESSION_KEY = "hrbp-supabase-session";
-var enabled = Boolean(supabase_config_default.url && supabase_config_default.publishableKey);
-function readSession() {
-  try {
-    const raw = localStorage.getItem(SESSION_KEY);
-    if (!raw) return null;
-    const session = JSON.parse(raw);
-    return session.access_token && session.refresh_token ? session : null;
-  } catch {
-    return null;
-  }
-}
-function writeSession(session) {
-  if (session) localStorage.setItem(SESSION_KEY, JSON.stringify(session));
-  else localStorage.removeItem(SESSION_KEY);
-}
-async function fetchWithTimeout(url, init, timeoutMs = 15e3) {
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), timeoutMs);
-  try {
-    return await fetch(url, { ...init, signal: controller.signal });
-  } catch (caught) {
-    if (caught instanceof DOMException && caught.name === "AbortError") {
-      throw new Error("数据库连接超时：Supabase 项目可能已暂停，请联系管理员在控制台恢复（Restore）");
-    }
-    throw new Error("数据库连接失败：请检查网络后重试");
-  } finally {
-    clearTimeout(timer);
-  }
-}
-async function authRequest(path, body) {
-  const response = await fetchWithTimeout(`${supabase_config_default.url}/auth/v1${path}`, {
-    method: "POST",
-    headers: { apikey: supabase_config_default.publishableKey, "Content-Type": "application/json" },
-    body: JSON.stringify(body)
-  });
-  const payload = await response.json().catch(() => ({}));
-  if (!response.ok) {
-    const message = payload.msg ?? payload.error_description ?? payload.message ?? `认证失败（${response.status}）`;
-    if (response.status === 422) throw new Error("匿名登录尚未开启：请在 Supabase → Authentication → Sign In / Providers 打开 Anonymous sign-ins");
-    throw new Error(message);
-  }
-  return payload;
-}
-function toSession(payload) {
-  return {
-    access_token: String(payload.access_token),
-    refresh_token: String(payload.refresh_token),
-    expires_at: Math.floor(Date.now() / 1e3) + Number(payload.expires_in ?? 3600) - 60
-  };
-}
-async function ensureSession() {
-  const current = readSession();
-  if (current && current.expires_at > Date.now() / 1e3) return current;
-  if (current) {
-    const refreshed = await authRequest("/token?grant_type=refresh_token", { refresh_token: current.refresh_token });
-    const session2 = toSession(refreshed);
-    writeSession(session2);
-    return session2;
-  }
-  const created = await authRequest("/signup", {});
-  const session = toSession(created);
-  writeSession(session);
-  return session;
-}
-async function rest(path, init = {}) {
-  const session = await ensureSession();
-  const response = await fetchWithTimeout(`${supabase_config_default.url}/rest/v1${path}`, {
-    ...init,
-    headers: {
-      apikey: supabase_config_default.publishableKey,
-      Authorization: `Bearer ${session.access_token}`,
-      "Content-Type": "application/json",
-      ...init.headers ?? {}
-    }
-  });
-  if (response.status === 204) return [];
-  const payload = await response.json().catch(() => null);
-  if (!response.ok) {
-    const code = payload?.code ?? "";
-    if (code === "PGRST205") throw new Error("数据表还没创建：请先在 Supabase SQL Editor 执行 schema.sql 和 seed.sql");
-    throw new Error(payload?.message ?? `请求失败（${response.status}）`);
-  }
-  return payload;
-}
-async function restAll(path, pageSize = 1e3) {
-  const out = [];
-  for (let from = 0; ; from += pageSize) {
-    const chunk = await rest(path, { headers: { "Range-Unit": "items", Range: `${from}-${from + pageSize - 1}` } });
-    out.push(...chunk);
-    if (chunk.length < pageSize) return out;
-  }
-}
-function toRows(payload) {
-  if (!payload) return [];
-  return Array.isArray(payload) ? payload : [payload];
-}
-var supabaseBridge = {
-  enabled,
-  async currentEmployee() {
-    if (!enabled) return null;
-    const payload = await rest("/rpc/app_current_employee", { method: "POST", body: "{}" });
-    const row = toRows(payload)[0];
-    return row && row.id ? mapEmployee(row) : null;
-  },
-  async restoreAuth() {
-    if (!enabled) return null;
-    const bound = await this.currentEmployee();
-    if (!bound) return null;
-    return this.bootstrap();
-  },
-  async bootstrap() {
-    const [employees, stores, visits, issues, events, metrics] = await Promise.all([
-      restAll("/hr_employees?select=id,work_no,name,role,brands"),
-      restAll("/hr_stores?select=*"),
-      restAll("/hr_visits?select=*"),
-      restAll("/hr_issues?select=*"),
-      restAll("/hr_issue_events?select=*"),
-      restAll("/hr_store_metrics_monthly?select=*")
-    ]);
-    return {
-      employees: employees.map(mapEmployee),
-      stores: stores.map(mapStore),
-      visits: visits.map(mapVisit),
-      issues: issues.map(mapIssue),
-      events: events.map(mapIssueEvent),
-      metrics: metrics.map((row) => ({
-        storeId: row.store_id,
-        month: row.month,
-        architectureLabor: row.architecture_labor ?? void 0,
-        abcGrade: row.abc_grade ?? void 0,
-        qcScore: row.qc_score ?? void 0,
-        salesAchievementRate: row.sales_achievement_rate ?? void 0,
-        workHours: row.work_hours ?? void 0,
-        attendanceOver8Days: row.attendance_over_8_days ?? void 0,
-        lowTemperature: row.low_temperature ?? void 0,
-        treeHoleComplaints: row.tree_hole_complaints ?? void 0,
-        hasReward: row.has_reward ?? void 0
-      }))
-    };
-  },
-  async bindWorkNo(workNo, name) {
-    if (!enabled) return null;
-    const payload = await rest("/rpc/app_bind_employee", {
-      method: "POST",
-      body: JSON.stringify({ p_work_no: workNo, p_name: name })
-    });
-    const row = toRows(payload)[0];
-    return row && row.id ? mapEmployee(row) : null;
-  },
-  async loadPersonnel() {
-    const rows = await restAll("/hr_personnel?select=*&order=id.asc");
-    return rows.map((row) => ({
-      id: row.id,
-      workNo: row.work_no,
-      name: row.name,
-      employmentType: row.employment_type,
-      hireDate: row.hire_date ?? "",
-      brand: row.brand,
-      region: row.region ?? "",
-      district: row.district ?? "",
-      storeName: row.store_name ?? "",
-      position: row.position ?? "",
-      sourceFile: row.source_file ?? "",
-      dataFlags: row.data_flags ?? []
-    }));
-  },
-  /** 读取最新一期墨柠周报的门店预警；未导入过周报时返回 null。 */
-  async loadWeeklyWarnings(brand = "古德墨柠") {
-    const reports = await rest(
-      `/hr_report_uploads?brand=eq.${encodeURIComponent(brand)}&order=created_at.desc&limit=1`
-    );
-    const report = reports[0];
-    if (!report) return null;
-    const rows = await rest(
-      `/hr_store_weekly_flags?report_id=eq.${report.id}&select=store_code,payload`
-    );
-    return {
-      reportId: report.id,
-      reportDate: report.report_date,
-      rangeLabel: report.range_label,
-      warnings: rows.map((row) => row.payload)
-    };
-  },
-  /** 读取最新一期门店打标明细（茶颜「门店筛选逻辑打标」）；未导入过返回 []。 */
-  async loadTagDetails() {
-    const months2 = await rest("/hr_store_tag_detail?select=report_month&order=report_month.desc&limit=1");
-    const latest = months2[0]?.report_month;
-    if (!latest) return [];
-    const rows = await restAll(`/hr_store_tag_detail?report_month=eq.${latest}&select=*`);
-    return rows.map((row) => ({
-      id: row.id,
-      reportMonth: row.report_month,
-      brand: row.brand,
-      storeCode: row.store_code,
-      storeName: row.store_name ?? "",
-      regionManager: row.region_manager ?? "",
-      districtManager: row.district_manager ?? "",
-      areaManager: row.area_manager ?? "",
-      abcM1: row.abc_m1 ?? void 0,
-      abcM2: row.abc_m2 ?? void 0,
-      abcM3: row.abc_m3 ?? void 0,
-      qcM1: row.qc_m1 ?? void 0,
-      qcM2: row.qc_m2 ?? void 0,
-      qcM3: row.qc_m3 ?? void 0,
-      achieveM1: row.achieve_m1 ?? void 0,
-      achieveM2: row.achieve_m2 ?? void 0,
-      achieveM3: row.achieve_m3 ?? void 0,
-      treeholeCount: row.treehole_count ?? void 0,
-      awardOk: row.award_ok ?? void 0,
-      hoursAvg: row.hours_avg ?? void 0,
-      hoursOver220: row.hours_over_220 ?? void 0,
-      hoursUnder167: row.hours_under_167 ?? void 0,
-      attendanceOver8Days: row.attendance_over_8_days ?? void 0,
-      archChange: row.arch_change ?? void 0,
-      scoreTotal: row.score_total ?? void 0,
-      riskLevel: row.risk_level ?? void 0,
-      anomalyFlags: row.anomaly_flags ?? void 0,
-      highTemp: row.high_temp ?? void 0
-    }));
-  },
-  /** 未获得巷战激励门店（整表） */
-  async loadXiangzhanStores() {
-    const rows = await restAll("/hr_xiangzhan_stores?select=*&order=region_manager.asc");
-    return rows.map((row) => ({
-      storeCode: row.store_code,
-      storeName: row.store_name ?? "",
-      regionManager: row.region_manager ?? "",
-      districtManager: row.district_manager ?? "",
-      areaManager: row.area_manager ?? "",
-      status: row.status ?? "",
-      openDate: row.open_date ?? "",
-      city: row.city ?? ""
-    }));
-  },
-  async saveVisit(visit, issues, events) {
-    await rest("/hr_visits", {
-      method: "POST",
-      headers: { Prefer: "return=minimal" },
-      body: JSON.stringify({
-        id: visit.id,
-        bp_id: visit.bpId,
-        store_id: visit.storeId,
-        visited_at: visit.visitedAt,
-        status: visit.status,
-        submitted_at: visit.submittedAt,
-        voided: visit.voided ?? false,
-        summary: visit.summary ?? null
-      })
-    });
-    if (issues.length) {
-      await rest("/hr_issues", {
-        method: "POST",
-        headers: { Prefer: "return=minimal" },
-        body: JSON.stringify(issues.map((issue) => ({
-          id: issue.id,
-          visit_id: issue.visitId ?? null,
-          store_id: issue.storeId,
-          brand: issue.brand,
-          title: issue.title,
-          description: issue.description ?? null,
-          dimension: issue.dimension ?? null,
-          category: issue.category,
-          severity: issue.severity,
-          status: issue.status,
-          reporter_id: issue.reporterId,
-          assignee_id: issue.assigneeId,
-          responsible_name: issue.responsibleName ?? null,
-          created_at: issue.createdAt,
-          due_date: issue.dueDate,
-          closed_at: issue.closedAt ?? null
-        })))
-      });
-    }
-    if (events.length) {
-      await rest("/hr_issue_events", {
-        method: "POST",
-        headers: { Prefer: "return=minimal" },
-        body: JSON.stringify(events.map((event) => ({
-          issue_id: event.issueId,
-          actor_id: event.actorId,
-          action: event.action,
-          from_status: event.fromStatus ?? null,
-          to_status: event.toStatus ?? null,
-          comment: event.comment ?? null
-        })))
-      });
-    }
-    return true;
-  },
-  async updateIssue(issue, event) {
-    await rest(`/hr_issues?id=eq.${encodeURIComponent(issue.id)}`, {
-      method: "PATCH",
-      headers: { Prefer: "return=minimal" },
-      body: JSON.stringify({
-        status: issue.status,
-        closed_at: issue.closedAt ?? null,
-        latest_followup: issue.latestFollowup ?? null,
-        // BP 未关闭前可编辑的字段（变更会同步写入时间线）
-        description: issue.description ?? null,
-        severity: issue.severity,
-        due_date: issue.dueDate,
-        responsible_name: issue.responsibleName ?? null
-      })
-    });
-    await rest("/hr_issue_events", {
-      method: "POST",
-      headers: { Prefer: "return=minimal" },
-      body: JSON.stringify({
-        issue_id: event.issueId,
-        actor_id: event.actorId,
-        action: event.action,
-        from_status: event.fromStatus ?? null,
-        to_status: event.toStatus ?? null,
-        comment: event.comment ?? null
-      })
-    });
-    return true;
-  },
-  /** 删除问题及其全部时间线事件（测试数据清理用，先删事件再删问题）。 */
-  async deleteIssue(issueId) {
-    await rest(`/hr_issue_events?issue_id=eq.${encodeURIComponent(issueId)}`, { method: "DELETE", headers: { Prefer: "return=minimal" } });
-    await rest(`/hr_issues?id=eq.${encodeURIComponent(issueId)}`, { method: "DELETE", headers: { Prefer: "return=minimal" } });
-    return true;
-  },
-  async signOut() {
-    writeSession(null);
-  },
-  /** 逐步自检：会话 → 身份 → 各表读取，返回可直接展示的逐行结果。 */
-  async diagnose() {
-    if (!enabled) return "未配置 Supabase";
-    const lines = [];
-    const errText = (caught) => caught instanceof Error ? caught.message : String(caught);
-    try {
-      const session = await ensureSession();
-      lines.push(`会话：已建立（token 前8位 ${session.access_token.slice(0, 8)}）`);
-    } catch (caught) {
-      return `会话建立失败：${errText(caught)}`;
-    }
-    const checks = [
-      ["绑定身份", "/rpc/app_current_employee", "POST"],
-      ["成员表", "/hr_employees?select=id,work_no,name,role,brands", "GET"],
-      ["门店表", "/hr_stores?select=*", "GET"],
-      ["巡店表", "/hr_visits?select=*", "GET"],
-      ["问题表", "/hr_issues?select=*", "GET"],
-      ["指标表", "/hr_store_metrics_monthly?select=*", "GET"],
-      ["人员表", "/hr_personnel?select=id", "GET"]
-    ];
-    for (const [label, path, method] of checks) {
-      try {
-        const payload = await rest(path, { method, ...method === "POST" ? { body: "{}" } : {} });
-        const summary = Array.isArray(payload) ? `${payload.length} 行` : payload && typeof payload === "object" ? `对象 ${JSON.stringify(payload).slice(0, 80)}` : String(payload);
-        lines.push(`${label}：${summary}`);
-      } catch (caught) {
-        lines.push(`${label}：${errText(caught)}`);
-      }
-    }
-    return lines.join("\n");
-  }
-};
-
-// src/features/supabase/SupabaseAuthGate.tsx
-var import_react4 = __toESM(require_react(), 1);
-var import_jsx_runtime2 = __toESM(require_jsx_runtime(), 1);
-function SupabaseAuthGate({ onBound, error }) {
-  const [workNo, setWorkNo] = (0, import_react4.useState)("");
-  const [name, setName] = (0, import_react4.useState)("");
-  const [busy, setBusy] = (0, import_react4.useState)(false);
-  const [message, setMessage] = (0, import_react4.useState)(null);
-  const bind = async () => {
-    if (!workNo.trim() || !name.trim()) {
-      setMessage("请填写工号和姓名");
-      return;
-    }
-    setBusy(true);
-    setMessage(null);
-    try {
-      const employee = await supabaseBridge.bindWorkNo(workNo.trim(), name.trim());
-      if (employee) onBound(employee);
-      else setMessage("工号与姓名不匹配，或该工号已被其他设备绑定");
-    } catch (caught) {
-      setMessage(caught instanceof Error ? caught.message : "绑定失败，请稍后重试");
-    } finally {
-      setBusy(false);
-    }
-  };
-  return /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("div", { className: "modal-backdrop", style: { zIndex: 80 }, children: /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "modal", style: { maxWidth: 460 }, children: [
-    /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "modal-header", children: [
-      /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { children: [
-        /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("div", { className: "eyebrow", children: "TEAM SIGN IN" }),
-        /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("h2", { style: { margin: 0 }, children: "工号绑定" })
-      ] }),
-      /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(ShieldCheck, { size: 20 })
-    ] }),
-    /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "modal-body", children: [
-      /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "inline-notice", children: [
-        /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(KeyRound, { size: 16 }),
-        /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { children: "看板数据需绑定身份后查看。输入你的人员底稿工号和姓名即可，系统会自动创建会话，这台设备之后免登录。" })
-      ] }),
-      /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "form-group", style: { marginTop: 16 }, children: [
-        /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("label", { className: "form-label", children: "工号" }),
-        /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("input", { className: "input", value: workNo, onChange: (e) => setWorkNo(e.target.value), placeholder: "例如：DEMO009", autoComplete: "off" })
-      ] }),
-      /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "form-group", style: { marginTop: 12 }, children: [
-        /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("label", { className: "form-label", children: "姓名" }),
-        /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("input", { className: "input", value: name, onChange: (e) => setName(e.target.value), placeholder: "与人员底稿一致的姓名" })
-      ] }),
-      /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { className: "button button-primary", style: { width: "100%", marginTop: 16 }, disabled: busy, onClick: bind, children: busy ? "正在绑定…" : "绑定并进入看板" }),
-      (message || error) && /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("div", { className: "inline-notice", style: { marginTop: 14 }, children: message ?? error })
-    ] })
-  ] }) });
-}
-
-// scripts/daily/warning-core.mjs
-var MONING_BP_SCOPE = {
-  周丽: ["钟天祥", "周思凡", "童璐", "何海云", "旷瑶", "易彪"],
-  杨梦琳: ["邵宝生", "杜强", "廖灿", "李奔", "徐宇辉", "赵思洁", "刘旺林", "王润仪"]
-};
-var MONING_FULL_ACCESS = ["戴嘉伟", "李当", "杨师"];
-function moningScopeDistricts(employeeName) {
-  if (MONING_FULL_ACCESS.includes(employeeName)) return null;
-  const leaders = MONING_BP_SCOPE[employeeName];
-  if (!leaders) return [];
-  return leaders.map((name) => `${name}大店区`);
-}
-function warningSortScore(warning) {
-  if (!warning) return 0;
-  const levelScore = warning.level === "high" ? 2e3 : warning.level === "mid" ? 1e3 : 0;
-  return levelScore + warning.redRatio * 100 - (warning.salesAchieveRate ?? 1) * 10;
-}
-
-// src/features/issues/overdue.ts
-function isIssueOverdue(issue, now = /* @__PURE__ */ new Date()) {
-  if (issue.status === "closed") return false;
-  return toDateOnly(now) > toDateOnly(issue.dueDate);
-}
-function getOverdueDays(issue, now = /* @__PURE__ */ new Date()) {
-  if (!isIssueOverdue(issue, now)) return 0;
-  const from = Date.parse(`${toDateOnly(issue.dueDate)}T00:00:00Z`);
-  const to = Date.parse(`${toDateOnly(now)}T00:00:00Z`);
-  return Math.floor((to - from) / 864e5);
-}
-
-// src/features/recommendation.ts
-var PHASE_ORDER = { 本月: 0, 次月: 1, 季度内: 2, 常规: 3 };
-function compareNumberDesc(a, b) {
-  return b - a;
-}
-function recommendStores(options) {
-  const asOfDate = toDateOnly(options.asOfDate ?? /* @__PURE__ */ new Date());
-  const quarter = getQuarterKey(asOfDate);
-  const riskByStore = new Map(options.riskSnapshots.map((risk) => [risk.storeId, risk]));
-  const stores = options.stores.filter((store) => store.active && (!options.brands || options.brands.includes(store.brand)) && (!options.districts || options.districts.includes(store.district ?? "")));
-  const countableVisits = options.visits.filter((visit) => visit.status === "submitted" && !visit.voided);
-  const recommendations = stores.map((store) => {
-    const storeVisits = countableVisits.filter((visit) => visit.storeId === store.id && (!options.bpId || visit.bpId === options.bpId));
-    const quarterVisits = storeVisits.filter((visit) => getQuarterKey(visit.visitedAt) === quarter);
-    const sortedVisits = [...storeVisits].sort((a, b) => b.visitedAt.localeCompare(a.visitedAt));
-    const lastVisitAt = sortedVisits[0]?.visitedAt ?? null;
-    const daysSinceLastVisit = lastVisitAt ? daysBetween(lastVisitAt, asOfDate) : null;
-    const storeIssues = options.issues.filter((issue) => issue.storeId === store.id);
-    const overdueIssueCount = storeIssues.filter((issue) => isIssueOverdue(issue, asOfDate)).length;
-    const highSeverityIssueCount = storeIssues.filter((issue) => issue.status !== "closed" && issue.severity === "high").length;
-    const unvisited = quarterVisits.length === 0;
-    const risk = riskByStore.get(store.id) ?? null;
-    const phase = risk?.phase ?? "本月";
-    const warning = options.warningsByCode?.get(store.code) ?? null;
-    const reasons = [];
-    if (!warning) {
-      if (!risk || risk.missingCount > 0) reasons.push(`风险数据待补充（${risk?.missingCount ?? 9}项缺失），需优先核查`);
-      else if (risk.knownScore >= 4) reasons.push(`${risk.riskLevel}，十项规则命中${risk.knownScore}项，安排在${phase}巡店`);
-      else reasons.push(`${risk.riskLevel}，建议按${phase}节奏巡店`);
-    }
-    if (unvisited) reasons.push(`${quarter}尚未提交有效巡店`);
-    if (overdueIssueCount > 0) reasons.push(`存在${overdueIssueCount}个已逾期问题`);
-    if (highSeverityIssueCount > 0) reasons.push(`存在${highSeverityIssueCount}个未关闭高严重问题`);
-    if (daysSinceLastVisit !== null) reasons.push(daysSinceLastVisit === 0 ? "今天已有巡店记录" : `距上次巡店已${daysSinceLastVisit}天`);
-    if (reasons.length < 2) reasons.push(unvisited ? "需建立本季度现场巡店记录" : "本季度已有有效巡店，可持续跟踪");
-    return {
-      store,
-      risk,
-      reasons: Array.from(new Set(reasons)).slice(0, 3),
-      unvisited,
-      overdueIssueCount,
-      highSeverityIssueCount,
-      lastVisitAt,
-      daysSinceLastVisit,
-      warning
-    };
-  });
-  recommendations.sort((a, b) => {
-    const warningDifference = warningSortScore(b.warning) - warningSortScore(a.warning);
-    if (warningDifference) return warningDifference;
-    const phaseDifference = PHASE_ORDER[a.risk?.phase ?? "本月"] - PHASE_ORDER[b.risk?.phase ?? "本月"];
-    return phaseDifference || Number(b.unvisited) - Number(a.unvisited) || compareNumberDesc(a.overdueIssueCount, b.overdueIssueCount) || compareNumberDesc(a.highSeverityIssueCount, b.highSeverityIssueCount) || (b.daysSinceLastVisit ?? Number.MAX_SAFE_INTEGER) - (a.daysSinceLastVisit ?? Number.MAX_SAFE_INTEGER) || a.store.code.localeCompare(b.store.code);
-  });
-  return options.limit === void 0 ? recommendations : recommendations.slice(0, Math.max(0, options.limit));
-}
-
-// src/features/issues/workflow.ts
-var ACTION_NEXT_STATUS = {
-  open: { start: "in_progress", close: "closed" },
-  in_progress: { complete: "completed", close: "closed" },
-  completed: { review: "closed", reopen: "in_progress", close: "closed" },
-  closed: { reopen: "in_progress" }
-};
-function canPerformIssueAction(issue, actor, action) {
-  if (!ACTION_NEXT_STATUS[issue.status]?.[action]) return false;
-  if (actor.role === "director") return true;
-  if (actor.role === "bp") {
-    return issue.assigneeId === actor.id && (["start", "complete", "close"].includes(action) || action === "reopen" && issue.status === "completed");
-  }
-  if (actor.role === "manager") {
-    return actor.brands.includes(issue.brand) && (action === "review" && issue.status === "completed" || action === "reopen" && ["completed", "closed"].includes(issue.status));
-  }
-  return false;
-}
-function getAvailableIssueActions(issue, actor) {
-  const actions = ["start", "complete", "review", "reopen", "close"];
-  return actions.filter((action) => canPerformIssueAction(issue, actor, action));
-}
-function getNextIssueStatus(issue, action) {
-  return ACTION_NEXT_STATUS[issue.status]?.[action];
-}
-function createIssueEvent(issue, actorId, action, options = {}) {
-  const createdAt = options.createdAt ?? (/* @__PURE__ */ new Date()).toISOString();
-  const toStatus = action === "create" ? "open" : action === "comment" ? issue.status : getNextIssueStatus(issue, action);
-  return {
-    id: options.id ?? `${issue.id}-${action}-${createdAt}`,
-    issueId: issue.id,
-    actorId,
-    action,
-    fromStatus: action === "create" ? void 0 : issue.status,
-    toStatus,
-    comment: options.comment,
-    createdAt
-  };
-}
-function applyIssueAction(issue, actor, action, options = {}) {
-  if (!canPerformIssueAction(issue, actor, action)) throw new Error("当前身份无权执行该问题操作");
-  const nextStatus = getNextIssueStatus(issue, action);
-  if (!nextStatus) throw new Error("当前问题状态不支持该操作");
-  const createdAt = options.createdAt ?? (/* @__PURE__ */ new Date()).toISOString();
-  return {
-    issue: {
-      ...issue,
-      status: nextStatus,
-      closedAt: nextStatus === "closed" ? createdAt : action === "reopen" ? void 0 : issue.closedAt
-    },
-    event: createIssueEvent(issue, actor.id, action, { ...options, createdAt })
-  };
-}
-
-// src/features/tag-ranking.ts
-var TAG_DETAIL_LIMIT = 60;
-var MONTH_WEIGHTS = [3, 2, 1];
-function latestWeight(flags) {
-  for (let i = 0; i < MONTH_WEIGHTS.length; i += 1) {
-    if (flags[i]) return MONTH_WEIGHTS[i];
-  }
-  return 0;
-}
-function byStoreName(a, b) {
-  return a.storeName.localeCompare(b.storeName, "zh-Hans-CN");
-}
-function rankAbcRisk(details) {
-  return details.filter((d) => [d.abcM1, d.abcM2, d.abcM3].includes("C")).sort((a, b) => {
-    const grades = (d) => [d.abcM1, d.abcM2, d.abcM3];
-    const cCount = (d) => grades(d).filter((g) => g === "C").length;
-    const latestC = (d) => latestWeight(grades(d).map((g) => g === "C"));
-    const hasA = (d) => grades(d).includes("A");
-    return cCount(b) - cCount(a) || latestC(b) - latestC(a) || Number(hasA(a)) - Number(hasA(b)) || byStoreName(a, b);
-  }).slice(0, TAG_DETAIL_LIMIT);
-}
-function rankQcRisk(details) {
-  const failed = (g) => g === "不合格";
-  return details.filter((d) => [d.qcM1, d.qcM2, d.qcM3].some(failed)).sort((a, b) => {
-    const grades = (d) => [d.qcM1, d.qcM2, d.qcM3];
-    const failCount = (d) => grades(d).filter(failed).length;
-    const latestFail = (d) => latestWeight(grades(d).map(failed));
-    return failCount(b) - failCount(a) || latestFail(b) - latestFail(a) || byStoreName(a, b);
-  }).slice(0, TAG_DETAIL_LIMIT);
-}
-function salesBelowCount(d) {
-  return [d.achieveM1, d.achieveM2, d.achieveM3].filter((v) => v !== void 0 && v !== null && v < 80).length;
-}
-function rankSalesRisk(details) {
-  return details.filter((d) => salesBelowCount(d) > 0).sort(
-    (a, b) => salesBelowCount(b) - salesBelowCount(a) || (a.achieveM1 ?? Infinity) - (b.achieveM1 ?? Infinity) || byStoreName(a, b)
-  ).slice(0, TAG_DETAIL_LIMIT);
-}
-function rankTreehole(details) {
-  return [...details].sort((a, b) => (b.treeholeCount ?? 0) - (a.treeholeCount ?? 0) || byStoreName(a, b)).slice(0, TAG_DETAIL_LIMIT);
-}
-function rankAwardRisk(details) {
-  return details.filter((d) => d.awardOk === false).sort((a, b) => byStoreName(a, b)).slice(0, TAG_DETAIL_LIMIT);
-}
-function rankHoursOver220(details) {
-  return details.filter((d) => (d.hoursOver220 ?? 0) > 0).sort((a, b) => (b.hoursOver220 ?? 0) - (a.hoursOver220 ?? 0) || (b.hoursAvg ?? 0) - (a.hoursAvg ?? 0) || byStoreName(a, b)).slice(0, TAG_DETAIL_LIMIT);
-}
-function rankHoursUnder167(details) {
-  return details.filter((d) => (d.hoursUnder167 ?? 0) > 0).sort((a, b) => (b.hoursUnder167 ?? 0) - (a.hoursUnder167 ?? 0) || (a.hoursAvg ?? Infinity) - (b.hoursAvg ?? Infinity) || byStoreName(a, b)).slice(0, TAG_DETAIL_LIMIT);
-}
-function rankAttendanceOver8(details) {
-  return details.filter((d) => (d.attendanceOver8Days ?? 0) > 0).sort((a, b) => (b.attendanceOver8Days ?? 0) - (a.attendanceOver8Days ?? 0) || byStoreName(a, b)).slice(0, TAG_DETAIL_LIMIT);
-}
-function rankByRiskLevel(details, level) {
-  return details.filter((d) => d.riskLevel === level).sort((a, b) => (b.scoreTotal ?? 0) - (a.scoreTotal ?? 0) || byStoreName(a, b)).slice(0, TAG_DETAIL_LIMIT);
-}
-
 // node_modules/xlsx/xlsx.mjs
 var XLSX = {};
 XLSX.version = "0.18.5";
@@ -16382,6 +14766,12 @@ var s2a = function s2a2(s) {
     return x.charCodeAt(0) & 255;
   });
 };
+function s2ab(s) {
+  if (typeof ArrayBuffer === "undefined") return s2a(s);
+  var buf = new ArrayBuffer(s.length), view = new Uint8Array(buf);
+  for (var i = 0; i != s.length; ++i) view[i] = s.charCodeAt(i) & 255;
+  return buf;
+}
 function a2s(data) {
   if (Array.isArray(data)) return data.map(function(c) {
     return String.fromCharCode(c);
@@ -16389,6 +14779,10 @@ function a2s(data) {
   var o = [];
   for (var i = 0; i < data.length; ++i) o[i] = String.fromCharCode(data[i]);
   return o.join("");
+}
+function a2u(data) {
+  if (typeof Uint8Array === "undefined") throw new Error("Unsupported");
+  return new Uint8Array(data);
 }
 function ab2a(data) {
   if (typeof ArrayBuffer == "undefined") throw new Error("Unsupported");
@@ -17808,6 +16202,10 @@ function SSF_load(fmt, idx) {
   table_fmt[idx] = fmt;
   return idx;
 }
+function SSF_load_table(tbl) {
+  for (var i = 0; i != 392; ++i)
+    if (tbl[i] !== void 0) SSF_load(tbl[i], i);
+}
 function make_ssf() {
   table_fmt = SSF_init_table();
 }
@@ -18485,7 +16883,7 @@ var CFB = /* @__PURE__ */ (function _CFB() {
     rebuild_cfb(cfb);
     switch (_opts.fileType) {
       case "zip":
-        return write_zip(cfb, _opts);
+        return write_zip2(cfb, _opts);
     }
     var L = (function(cfb2) {
       var mini_size = 0, fat_size = 0;
@@ -19239,7 +17637,7 @@ var CFB = /* @__PURE__ */ (function _CFB() {
     if (_usz != usz) warn_or_throw(wrn, "Bad uncompressed size: " + usz + " != " + _usz);
     cfb_add(o, name, data, { unsafe: true, mt: date });
   }
-  function write_zip(cfb, options) {
+  function write_zip2(cfb, options) {
     var _opts = options || {};
     var out = [], cdirs = [];
     var o = new_buf(1);
@@ -19588,6 +17986,68 @@ var CFB = /* @__PURE__ */ (function _CFB() {
   return exports;
 })();
 var _fs = void 0;
+function blobify(data) {
+  if (typeof data === "string") return s2ab(data);
+  if (Array.isArray(data)) return a2u(data);
+  return data;
+}
+function write_dl(fname, payload, enc) {
+  if (typeof _fs !== "undefined" && _fs.writeFileSync) return enc ? _fs.writeFileSync(fname, payload, enc) : _fs.writeFileSync(fname, payload);
+  if (typeof Deno !== "undefined") {
+    if (enc && typeof payload == "string") switch (enc) {
+      case "utf8":
+        payload = new TextEncoder(enc).encode(payload);
+        break;
+      case "binary":
+        payload = s2ab(payload);
+        break;
+      /* TODO: binary equivalent */
+      default:
+        throw new Error("Unsupported encoding " + enc);
+    }
+    return Deno.writeFileSync(fname, payload);
+  }
+  var data = enc == "utf8" ? utf8write(payload) : payload;
+  if (typeof IE_SaveFile !== "undefined") return IE_SaveFile(data, fname);
+  if (typeof Blob !== "undefined") {
+    var blob = new Blob([blobify(data)], { type: "application/octet-stream" });
+    if (typeof navigator !== "undefined" && navigator.msSaveBlob) return navigator.msSaveBlob(blob, fname);
+    if (typeof saveAs !== "undefined") return saveAs(blob, fname);
+    if (typeof URL !== "undefined" && typeof document !== "undefined" && document.createElement && URL.createObjectURL) {
+      var url = URL.createObjectURL(blob);
+      if (typeof chrome === "object" && typeof (chrome.downloads || {}).download == "function") {
+        if (URL.revokeObjectURL && typeof setTimeout !== "undefined") setTimeout(function() {
+          URL.revokeObjectURL(url);
+        }, 6e4);
+        return chrome.downloads.download({ url, filename: fname, saveAs: true });
+      }
+      var a = document.createElement("a");
+      if (a.download != null) {
+        a.download = fname;
+        a.href = url;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        if (URL.revokeObjectURL && typeof setTimeout !== "undefined") setTimeout(function() {
+          URL.revokeObjectURL(url);
+        }, 6e4);
+        return url;
+      }
+    }
+  }
+  if (typeof $ !== "undefined" && typeof File !== "undefined" && typeof Folder !== "undefined") try {
+    var out = File(fname);
+    out.open("w");
+    out.encoding = "binary";
+    if (Array.isArray(payload)) payload = a2s(payload);
+    out.write(payload);
+    out.close();
+    return payload;
+  } catch (e) {
+    if (!e.message || !e.message.match(/onstruct/)) throw e;
+  }
+  throw new Error("cannot save file " + fname);
+}
 function read_binary(path) {
   if (typeof _fs !== "undefined") return _fs.readFileSync(path);
   if (typeof Deno !== "undefined") return Deno.readFileSync(path);
@@ -19608,9 +18068,27 @@ function keys(o) {
   for (var i = 0; i < ks.length; ++i) if (Object.prototype.hasOwnProperty.call(o, ks[i])) o2.push(ks[i]);
   return o2;
 }
+function evert_key(obj, key) {
+  var o = [], K = keys(obj);
+  for (var i = 0; i !== K.length; ++i) if (o[obj[K[i]][key]] == null) o[obj[K[i]][key]] = K[i];
+  return o;
+}
 function evert(obj) {
   var o = [], K = keys(obj);
   for (var i = 0; i !== K.length; ++i) o[obj[K[i]]] = K[i];
+  return o;
+}
+function evert_num(obj) {
+  var o = [], K = keys(obj);
+  for (var i = 0; i !== K.length; ++i) o[obj[K[i]]] = parseInt(K[i], 10);
+  return o;
+}
+function evert_arr(obj) {
+  var o = [], K = keys(obj);
+  for (var i = 0; i !== K.length; ++i) {
+    if (o[obj[K[i]]] == null) o[obj[K[i]]] = [];
+    o[obj[K[i]]].push(K[i]);
+  }
   return o;
 }
 var basedate = /* @__PURE__ */ new Date(1899, 11, 30, 0, 0, 0);
@@ -19871,6 +18349,9 @@ function zip_add_file(zip, path, content) {
     CFB.utils.cfb_add(zip, path, content);
   } else zip.file(path, content);
 }
+function zip_new() {
+  return CFB.utils.cfb_new();
+}
 function zip_read(d, o) {
   switch (o.type) {
     case "base64":
@@ -19955,6 +18436,18 @@ var unescapexml = /* @__PURE__ */ (function() {
   };
 })();
 var decregex = /[&<>'"]/g;
+var charegex = /[\u0000-\u0008\u000b-\u001f]/g;
+function escapexml(text2) {
+  var s = text2 + "";
+  return s.replace(decregex, function(y) {
+    return rencoding[y];
+  }).replace(charegex, function(s2) {
+    return "_x" + ("000" + s2.charCodeAt(0).toString(16)).slice(-4) + "_";
+  });
+}
+function escapexmltag(text2) {
+  return escapexml(text2).replace(/ /g, "_x0020_");
+}
 var htmlcharegex = /[\u0000-\u001f]/g;
 function escapehtml(text2) {
   var s = text2 + "";
@@ -19962,6 +18455,14 @@ function escapehtml(text2) {
     return rencoding[y];
   }).replace(/\n/g, "<br/>").replace(htmlcharegex, function(s2) {
     return "&#x" + ("000" + s2.charCodeAt(0).toString(16)).slice(-4) + ";";
+  });
+}
+function escapexlml(text2) {
+  var s = text2 + "";
+  return s.replace(decregex, function(y) {
+    return rencoding[y];
+  }).replace(htmlcharegex, function(s2) {
+    return "&#x" + s2.charCodeAt(0).toString(16).toUpperCase() + ";";
   });
 }
 var xlml_fixstr = /* @__PURE__ */ (function() {
@@ -19973,6 +18474,9 @@ var xlml_fixstr = /* @__PURE__ */ (function() {
     return str.replace(entregex, entrepl);
   };
 })();
+function xlml_unfixstr(str) {
+  return str.replace(/(\r\n|[\r\n])/g, "&#10;");
+}
 function parsexmlbool(value) {
   switch (value) {
     case 1:
@@ -20126,6 +18630,9 @@ function parseVector(data, opts) {
   return res;
 }
 var wtregex = /(^\s|\s$|\n)/;
+function writetag(f, g) {
+  return "<" + f + (g.match(wtregex) ? ' xml:space="preserve"' : "") + ">" + g + "</" + f + ">";
+}
 function wxt_helper(h) {
   return keys(h).map(function(k) {
     return " " + k + '="' + h[k] + '"';
@@ -20133,6 +18640,28 @@ function wxt_helper(h) {
 }
 function writextag(f, g, h) {
   return "<" + f + (h != null ? wxt_helper(h) : "") + (g != null ? (g.match(wtregex) ? ' xml:space="preserve"' : "") + ">" + g + "</" + f : "/") + ">";
+}
+function write_w3cdtf(d, t) {
+  try {
+    return d.toISOString().replace(/\.\d*/, "");
+  } catch (e) {
+    if (t) throw e;
+  }
+  return "";
+}
+function write_vt(s, xlsx) {
+  switch (typeof s) {
+    case "string":
+      var o = writextag("vt:lpwstr", escapexml(s));
+      if (xlsx) o = o.replace(/&quot;/g, "_x0022_");
+      return o;
+    case "number":
+      return writextag((s | 0) == s ? "vt:i4" : "vt:r8", escapexml(String(s)));
+    case "boolean":
+      return writextag("vt:bool", s ? "true" : "false");
+  }
+  if (s instanceof Date) return writextag("vt:filetime", write_w3cdtf(s));
+  throw new Error("Unable to serialize " + s);
 }
 function xlml_normalize(d) {
   if (has_buf && /*::typeof Buffer !== "undefined" && d != null && d instanceof Buffer &&*/
@@ -20165,6 +18694,15 @@ var XMLNS_main = [
   "http://schemas.microsoft.com/office/excel/2006/main",
   "http://schemas.microsoft.com/office/excel/2006/2"
 ];
+var XLMLNS = {
+  "o": "urn:schemas-microsoft-com:office:office",
+  "x": "urn:schemas-microsoft-com:office:excel",
+  "ss": "urn:schemas-microsoft-com:office:spreadsheet",
+  "dt": "uuid:C2F41010-65B3-11d1-A29F-00AA00C14882",
+  "mv": "http://macVmlSchemaUri",
+  "v": "urn:schemas-microsoft-com:vml",
+  "html": "http://www.w3.org/TR/REC-html40"
+};
 function read_double_le(b, idx) {
   var s = 1 - 2 * (b[idx + 7] >>> 7);
   var e = ((b[idx + 7] & 127) << 4) + (b[idx + 6] >>> 4 & 15);
@@ -20648,6 +19186,34 @@ function buf_array() {
   };
   return { next, push, end, _bufs: bufs };
 }
+function write_record(ba, type, payload, length) {
+  var t = +type, l;
+  if (isNaN(t)) return;
+  if (!length) length = XLSBRecordEnum[t].p || (payload || []).length || 0;
+  l = 1 + (t >= 128 ? 1 : 0) + 1;
+  if (length >= 128) ++l;
+  if (length >= 16384) ++l;
+  if (length >= 2097152) ++l;
+  var o = ba.next(l);
+  if (t <= 127) o.write_shift(1, t);
+  else {
+    o.write_shift(1, (t & 127) + 128);
+    o.write_shift(1, t >> 7);
+  }
+  for (var i = 0; i != 4; ++i) {
+    if (length >= 128) {
+      o.write_shift(1, (length & 127) + 128);
+      length >>= 7;
+    } else {
+      o.write_shift(1, length);
+      break;
+    }
+  }
+  if (
+    /*:: length != null &&*/
+    length > 0 && is_buf(payload)
+  ) ba.push(payload);
+}
 function shift_cell_xls(cell, tgt, opts) {
   var out = dup(cell);
   if (tgt.s) {
@@ -20896,12 +19462,33 @@ function aoa_to_sheet(data, opts) {
 function parse_Int32LE(data) {
   return data.read_shift(4, "i");
 }
+function write_UInt32LE(x, o) {
+  if (!o) o = new_buf(4);
+  o.write_shift(4, x);
+  return o;
+}
 function parse_XLWideString(data) {
   var cchCharacters = data.read_shift(4);
   return cchCharacters === 0 ? "" : data.read_shift(cchCharacters, "dbcs");
 }
+function write_XLWideString(data, o) {
+  var _null = false;
+  if (o == null) {
+    _null = true;
+    o = new_buf(4 + 2 * data.length);
+  }
+  o.write_shift(4, data.length);
+  if (data.length > 0) o.write_shift(0, data, "dbcs");
+  return _null ? o.slice(0, o.l) : o;
+}
 function parse_StrRun(data) {
   return { ich: data.read_shift(2), ifnt: data.read_shift(2) };
+}
+function write_StrRun(run, o) {
+  if (!o) o = new_buf(4);
+  o.write_shift(2, run.ich || 0);
+  o.write_shift(2, run.ifnt || 0);
+  return o;
 }
 function parse_RichStr(data, length) {
   var start = data.l;
@@ -20917,7 +19504,29 @@ function parse_RichStr(data, length) {
   data.l = start + length;
   return z;
 }
+function write_RichStr(str, o) {
+  var _null = false;
+  if (o == null) {
+    _null = true;
+    o = new_buf(15 + 4 * str.t.length);
+  }
+  o.write_shift(1, 0);
+  write_XLWideString(str.t, o);
+  return _null ? o.slice(0, o.l) : o;
+}
 var parse_BrtCommentText = parse_RichStr;
+function write_BrtCommentText(str, o) {
+  var _null = false;
+  if (o == null) {
+    _null = true;
+    o = new_buf(23 + 4 * str.t.length);
+  }
+  o.write_shift(1, 1);
+  write_XLWideString(str.t, o);
+  o.write_shift(4, 1);
+  write_StrRun({ ich: 0, ifnt: 0 }, o);
+  return _null ? o.slice(0, o.l) : o;
+}
 function parse_XLSBCell(data) {
   var col = data.read_shift(4);
   var iStyleRef = data.read_shift(2);
@@ -20925,25 +19534,62 @@ function parse_XLSBCell(data) {
   data.l++;
   return { c: col, iStyleRef };
 }
+function write_XLSBCell(cell, o) {
+  if (o == null) o = new_buf(8);
+  o.write_shift(-4, cell.c);
+  o.write_shift(3, cell.iStyleRef || cell.s);
+  o.write_shift(1, 0);
+  return o;
+}
 function parse_XLSBShortCell(data) {
   var iStyleRef = data.read_shift(2);
   iStyleRef += data.read_shift(1) << 16;
   data.l++;
   return { c: -1, iStyleRef };
 }
+function write_XLSBShortCell(cell, o) {
+  if (o == null) o = new_buf(4);
+  o.write_shift(3, cell.iStyleRef || cell.s);
+  o.write_shift(1, 0);
+  return o;
+}
 var parse_XLSBCodeName = parse_XLWideString;
+var write_XLSBCodeName = write_XLWideString;
 function parse_XLNullableWideString(data) {
   var cchCharacters = data.read_shift(4);
   return cchCharacters === 0 || cchCharacters === 4294967295 ? "" : data.read_shift(cchCharacters, "dbcs");
 }
+function write_XLNullableWideString(data, o) {
+  var _null = false;
+  if (o == null) {
+    _null = true;
+    o = new_buf(127);
+  }
+  o.write_shift(4, data.length > 0 ? data.length : 4294967295);
+  if (data.length > 0) o.write_shift(0, data, "dbcs");
+  return _null ? o.slice(0, o.l) : o;
+}
 var parse_XLNameWideString = parse_XLWideString;
 var parse_RelID = parse_XLNullableWideString;
+var write_RelID = write_XLNullableWideString;
 function parse_RkNumber(data) {
   var b = data.slice(data.l, data.l + 4);
   var fX100 = b[0] & 1, fInt = b[0] & 2;
   data.l += 4;
   var RK = fInt === 0 ? __double([0, 0, 0, 0, b[0] & 252, b[1], b[2], b[3]], 0) : __readInt32LE(b, 0) >> 2;
   return fX100 ? RK / 100 : RK;
+}
+function write_RkNumber(data, o) {
+  if (o == null) o = new_buf(4);
+  var fX100 = 0, fInt = 0, d100 = data * 100;
+  if (data == (data | 0) && data >= -(1 << 29) && data < 1 << 29) {
+    fInt = 1;
+  } else if (d100 == (d100 | 0) && d100 >= -(1 << 29) && d100 < 1 << 29) {
+    fInt = 1;
+    fX100 = 1;
+  }
+  if (fInt) o.write_shift(-4, ((fX100 ? d100 : data) << 2) + (fX100 + 2));
+  else throw new Error("unsupported RkNumber " + data);
 }
 function parse_RfX(data) {
   var cell = { s: {}, e: {} };
@@ -20953,10 +19599,22 @@ function parse_RfX(data) {
   cell.e.c = data.read_shift(4);
   return cell;
 }
+function write_RfX(r, o) {
+  if (!o) o = new_buf(16);
+  o.write_shift(4, r.s.r);
+  o.write_shift(4, r.e.r);
+  o.write_shift(4, r.s.c);
+  o.write_shift(4, r.e.c);
+  return o;
+}
 var parse_UncheckedRfX = parse_RfX;
+var write_UncheckedRfX = write_RfX;
 function parse_Xnum(data) {
   if (data.length - data.l < 8) throw "XLS Xnum Buffer underflow";
   return data.read_shift(8, "f");
+}
+function write_Xnum(data, o) {
+  return (o || new_buf(8)).write_shift(8, data, "f");
 }
 function parse_BrtColor(data) {
   var out = {};
@@ -20987,6 +19645,41 @@ function parse_BrtColor(data) {
   if (nTS != 0) out.tint = nTS > 0 ? nTS / 32767 : nTS / 32768;
   return out;
 }
+function write_BrtColor(color, o) {
+  if (!o) o = new_buf(8);
+  if (!color || color.auto) {
+    o.write_shift(4, 0);
+    o.write_shift(4, 0);
+    return o;
+  }
+  if (color.index != null) {
+    o.write_shift(1, 2);
+    o.write_shift(1, color.index);
+  } else if (color.theme != null) {
+    o.write_shift(1, 6);
+    o.write_shift(1, color.theme);
+  } else {
+    o.write_shift(1, 5);
+    o.write_shift(1, 0);
+  }
+  var nTS = color.tint || 0;
+  if (nTS > 0) nTS *= 32767;
+  else if (nTS < 0) nTS *= 32768;
+  o.write_shift(2, nTS);
+  if (!color.rgb || color.theme != null) {
+    o.write_shift(2, 0);
+    o.write_shift(1, 0);
+    o.write_shift(1, 0);
+  } else {
+    var rgb = color.rgb || "FFFFFF";
+    if (typeof rgb == "number") rgb = ("000000" + rgb.toString(16)).slice(-6);
+    o.write_shift(1, parseInt(rgb.slice(0, 2), 16));
+    o.write_shift(1, parseInt(rgb.slice(2, 4), 16));
+    o.write_shift(1, parseInt(rgb.slice(4, 6), 16));
+    o.write_shift(1, 255);
+  }
+  return o;
+}
 function parse_FontFlags(data) {
   var d = data.read_shift(1);
   data.l++;
@@ -21001,6 +19694,13 @@ function parse_FontFlags(data) {
     fExtend: d & 128
   };
   return out;
+}
+function write_FontFlags(font, o) {
+  if (!o) o = new_buf(2);
+  var grbit = (font.italic ? 2 : 0) | (font.strike ? 8 : 0) | (font.outline ? 16 : 0) | (font.shadow ? 32 : 0) | (font.condense ? 64 : 0) | (font.extend ? 128 : 0);
+  o.write_shift(1, grbit);
+  o.write_shift(1, 0);
+  return o;
 }
 function parse_ClipboardFormatOrString(o, w) {
   var ClipFmt = { 2: "BITMAP", 3: "METAFILEPICT", 8: "DIB", 14: "ENHMETAFILE" };
@@ -21604,6 +20304,55 @@ var ct2type = {
   "image/png": "TODO",
   "sheet": "js"
 };
+var CT_LIST = {
+  workbooks: {
+    xlsx: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml",
+    xlsm: "application/vnd.ms-excel.sheet.macroEnabled.main+xml",
+    xlsb: "application/vnd.ms-excel.sheet.binary.macroEnabled.main",
+    xlam: "application/vnd.ms-excel.addin.macroEnabled.main+xml",
+    xltx: "application/vnd.openxmlformats-officedocument.spreadsheetml.template.main+xml"
+  },
+  strs: {
+    /* Shared Strings */
+    xlsx: "application/vnd.openxmlformats-officedocument.spreadsheetml.sharedStrings+xml",
+    xlsb: "application/vnd.ms-excel.sharedStrings"
+  },
+  comments: {
+    /* Comments */
+    xlsx: "application/vnd.openxmlformats-officedocument.spreadsheetml.comments+xml",
+    xlsb: "application/vnd.ms-excel.comments"
+  },
+  sheets: {
+    /* Worksheet */
+    xlsx: "application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml",
+    xlsb: "application/vnd.ms-excel.worksheet"
+  },
+  charts: {
+    /* Chartsheet */
+    xlsx: "application/vnd.openxmlformats-officedocument.spreadsheetml.chartsheet+xml",
+    xlsb: "application/vnd.ms-excel.chartsheet"
+  },
+  dialogs: {
+    /* Dialogsheet */
+    xlsx: "application/vnd.openxmlformats-officedocument.spreadsheetml.dialogsheet+xml",
+    xlsb: "application/vnd.ms-excel.dialogsheet"
+  },
+  macros: {
+    /* Macrosheet (Excel 4.0 Macros) */
+    xlsx: "application/vnd.ms-excel.macrosheet+xml",
+    xlsb: "application/vnd.ms-excel.macrosheet"
+  },
+  metadata: {
+    /* Metadata (Stock/Geography and Dynamic Array) */
+    xlsx: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheetMetadata+xml",
+    xlsb: "application/vnd.ms-excel.sheetMetadata"
+  },
+  styles: {
+    /* Styles */
+    xlsx: "application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml",
+    xlsb: "application/vnd.ms-excel.styles"
+  }
+};
 function new_ct() {
   return {
     workbooks: [],
@@ -21657,6 +20406,78 @@ function parse_ct(data) {
   ct.defaults = ctext;
   delete ct.calcchains;
   return ct;
+}
+function write_ct(ct, opts) {
+  var type2ct = evert_arr(ct2type);
+  var o = [], v;
+  o[o.length] = XML_HEADER;
+  o[o.length] = writextag("Types", null, {
+    "xmlns": XMLNS.CT,
+    "xmlns:xsd": XMLNS.xsd,
+    "xmlns:xsi": XMLNS.xsi
+  });
+  o = o.concat([
+    ["xml", "application/xml"],
+    ["bin", "application/vnd.ms-excel.sheet.binary.macroEnabled.main"],
+    ["vml", "application/vnd.openxmlformats-officedocument.vmlDrawing"],
+    ["data", "application/vnd.openxmlformats-officedocument.model+data"],
+    /* from test files */
+    ["bmp", "image/bmp"],
+    ["png", "image/png"],
+    ["gif", "image/gif"],
+    ["emf", "image/x-emf"],
+    ["wmf", "image/x-wmf"],
+    ["jpg", "image/jpeg"],
+    ["jpeg", "image/jpeg"],
+    ["tif", "image/tiff"],
+    ["tiff", "image/tiff"],
+    ["pdf", "application/pdf"],
+    ["rels", "application/vnd.openxmlformats-package.relationships+xml"]
+  ].map(function(x) {
+    return writextag("Default", null, { "Extension": x[0], "ContentType": x[1] });
+  }));
+  var f1 = function(w) {
+    if (ct[w] && ct[w].length > 0) {
+      v = ct[w][0];
+      o[o.length] = writextag("Override", null, {
+        "PartName": (v[0] == "/" ? "" : "/") + v,
+        "ContentType": CT_LIST[w][opts.bookType] || CT_LIST[w]["xlsx"]
+      });
+    }
+  };
+  var f2 = function(w) {
+    (ct[w] || []).forEach(function(v2) {
+      o[o.length] = writextag("Override", null, {
+        "PartName": (v2[0] == "/" ? "" : "/") + v2,
+        "ContentType": CT_LIST[w][opts.bookType] || CT_LIST[w]["xlsx"]
+      });
+    });
+  };
+  var f3 = function(t) {
+    (ct[t] || []).forEach(function(v2) {
+      o[o.length] = writextag("Override", null, {
+        "PartName": (v2[0] == "/" ? "" : "/") + v2,
+        "ContentType": type2ct[t][0]
+      });
+    });
+  };
+  f1("workbooks");
+  f2("sheets");
+  f2("charts");
+  f3("themes");
+  ["strs", "styles"].forEach(f1);
+  ["coreprops", "extprops", "custprops"].forEach(f3);
+  f3("vba");
+  f3("comments");
+  f3("threadedcomments");
+  f3("drawings");
+  f2("metadata");
+  f3("people");
+  if (o.length > 2) {
+    o[o.length] = "</Types>";
+    o[1] = o[1].replace("/>", ">");
+  }
+  return o.join("");
 }
 var RELS = {
   WB: "http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument",
@@ -21718,6 +20539,37 @@ function parse_rels(data, currentFilePath) {
   rels["!id"] = hash;
   return rels;
 }
+function write_rels(rels) {
+  var o = [XML_HEADER, writextag("Relationships", null, {
+    //'xmlns:ns0': XMLNS.RELS,
+    "xmlns": XMLNS.RELS
+  })];
+  keys(rels["!id"]).forEach(function(rid) {
+    o[o.length] = writextag("Relationship", null, rels["!id"][rid]);
+  });
+  if (o.length > 2) {
+    o[o.length] = "</Relationships>";
+    o[1] = o[1].replace("/>", ">");
+  }
+  return o.join("");
+}
+function add_rels(rels, rId, f, type, relobj, targetmode) {
+  if (!relobj) relobj = {};
+  if (!rels["!id"]) rels["!id"] = {};
+  if (!rels["!idx"]) rels["!idx"] = 1;
+  if (rId < 0) for (rId = rels["!idx"]; rels["!id"]["rId" + rId]; ++rId) {
+  }
+  rels["!idx"] = rId + 1;
+  relobj.Id = "rId" + rId;
+  relobj.Type = type;
+  relobj.Target = f;
+  if (targetmode) relobj.TargetMode = targetmode;
+  else if ([RELS.HLINK, RELS.XPATH, RELS.XMISS].indexOf(relobj.Type) > -1) relobj.TargetMode = "External";
+  if (rels["!id"][relobj.Id]) throw new Error("Cannot rewrite rId " + rId);
+  rels["!id"][relobj.Id] = relobj;
+  rels[("/" + relobj.Target).replace("//", "/")] = relobj;
+  return rId;
+}
 var CT_ODS = "application/vnd.oasis.opendocument.spreadsheet";
 function parse_manifest(d, opts) {
   var str = xlml_normalize(d);
@@ -21742,6 +20594,42 @@ function parse_manifest(d, opts) {
     default:
       if (opts && opts.WTF) throw Rn;
   }
+}
+function write_manifest(manifest) {
+  var o = [XML_HEADER];
+  o.push('<manifest:manifest xmlns:manifest="urn:oasis:names:tc:opendocument:xmlns:manifest:1.0" manifest:version="1.2">\n');
+  o.push('  <manifest:file-entry manifest:full-path="/" manifest:version="1.2" manifest:media-type="application/vnd.oasis.opendocument.spreadsheet"/>\n');
+  for (var i = 0; i < manifest.length; ++i) o.push('  <manifest:file-entry manifest:full-path="' + manifest[i][0] + '" manifest:media-type="' + manifest[i][1] + '"/>\n');
+  o.push("</manifest:manifest>");
+  return o.join("");
+}
+function write_rdf_type(file, res, tag) {
+  return [
+    '  <rdf:Description rdf:about="' + file + '">\n',
+    '    <rdf:type rdf:resource="http://docs.oasis-open.org/ns/office/1.2/meta/' + (tag || "odf") + "#" + res + '"/>\n',
+    "  </rdf:Description>\n"
+  ].join("");
+}
+function write_rdf_has(base, file) {
+  return [
+    '  <rdf:Description rdf:about="' + base + '">\n',
+    '    <ns0:hasPart xmlns:ns0="http://docs.oasis-open.org/ns/office/1.2/meta/pkg#" rdf:resource="' + file + '"/>\n',
+    "  </rdf:Description>\n"
+  ].join("");
+}
+function write_rdf(rdf) {
+  var o = [XML_HEADER];
+  o.push('<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">\n');
+  for (var i = 0; i != rdf.length; ++i) {
+    o.push(write_rdf_type(rdf[i][0], rdf[i][1]));
+    o.push(write_rdf_has("", rdf[i][0]));
+  }
+  o.push(write_rdf_type("", "Document", "pkg"));
+  o.push("</rdf:RDF>");
+  return o.join("");
+}
+function write_meta_ods() {
+  return '<office:document-meta xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0" xmlns:meta="urn:oasis:names:tc:opendocument:xmlns:meta:1.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xlink="http://www.w3.org/1999/xlink" office:version="1.2"><office:meta><meta:generator>SheetJS ' + XLSX.version + "</meta:generator></office:meta></office:document-meta>";
 }
 var CORE_PROPS = [
   ["cp:category", "Category"],
@@ -21779,6 +20667,41 @@ function parse_core_props(data) {
   }
   return p;
 }
+function cp_doit(f, g, h, o, p) {
+  if (p[f] != null || g == null || g === "") return;
+  p[f] = g;
+  g = escapexml(g);
+  o[o.length] = h ? writextag(f, g, h) : writetag(f, g);
+}
+function write_core_props(cp, _opts) {
+  var opts = _opts || {};
+  var o = [XML_HEADER, writextag("cp:coreProperties", null, {
+    //'xmlns': XMLNS.CORE_PROPS,
+    "xmlns:cp": XMLNS.CORE_PROPS,
+    "xmlns:dc": XMLNS.dc,
+    "xmlns:dcterms": XMLNS.dcterms,
+    "xmlns:dcmitype": XMLNS.dcmitype,
+    "xmlns:xsi": XMLNS.xsi
+  })], p = {};
+  if (!cp && !opts.Props) return o.join("");
+  if (cp) {
+    if (cp.CreatedDate != null) cp_doit("dcterms:created", typeof cp.CreatedDate === "string" ? cp.CreatedDate : write_w3cdtf(cp.CreatedDate, opts.WTF), { "xsi:type": "dcterms:W3CDTF" }, o, p);
+    if (cp.ModifiedDate != null) cp_doit("dcterms:modified", typeof cp.ModifiedDate === "string" ? cp.ModifiedDate : write_w3cdtf(cp.ModifiedDate, opts.WTF), { "xsi:type": "dcterms:W3CDTF" }, o, p);
+  }
+  for (var i = 0; i != CORE_PROPS.length; ++i) {
+    var f = CORE_PROPS[i];
+    var v = opts.Props && opts.Props[f[1]] != null ? opts.Props[f[1]] : cp ? cp[f[1]] : null;
+    if (v === true) v = "1";
+    else if (v === false) v = "0";
+    else if (typeof v == "number") v = String(v);
+    if (v != null) cp_doit(f[0], v, null, o, p);
+  }
+  if (o.length > 2) {
+    o[o.length] = "</cp:coreProperties>";
+    o[1] = o[1].replace("/>", ">");
+  }
+  return o.join("");
+}
 var EXT_PROPS = [
   ["Application", "Application", "string"],
   ["AppVersion", "AppVersion", "string"],
@@ -21791,6 +20714,14 @@ var EXT_PROPS = [
   ["ScaleCrop", "ScaleCrop", "bool"],
   ["HeadingPairs", "HeadingPairs", "raw"],
   ["TitlesOfParts", "TitlesOfParts", "raw"]
+];
+var PseudoPropsPairs = [
+  "Worksheets",
+  "SheetNames",
+  "NamedRanges",
+  "DefinedNames",
+  "Chartsheets",
+  "ChartNames"
 ];
 function load_props_pairs(HP, TOP, props, opts) {
   var v = [];
@@ -21862,6 +20793,38 @@ function parse_ext_props(data, p, opts) {
   if (q.HeadingPairs && q.TitlesOfParts) load_props_pairs(q.HeadingPairs, q.TitlesOfParts, p, opts);
   return p;
 }
+function write_ext_props(cp) {
+  var o = [], W = writextag;
+  if (!cp) cp = {};
+  cp.Application = "SheetJS";
+  o[o.length] = XML_HEADER;
+  o[o.length] = writextag("Properties", null, {
+    "xmlns": XMLNS.EXT_PROPS,
+    "xmlns:vt": XMLNS.vt
+  });
+  EXT_PROPS.forEach(function(f) {
+    if (cp[f[1]] === void 0) return;
+    var v;
+    switch (f[2]) {
+      case "string":
+        v = escapexml(String(cp[f[1]]));
+        break;
+      case "bool":
+        v = cp[f[1]] ? "true" : "false";
+        break;
+    }
+    if (v !== void 0) o[o.length] = W(f[0], v);
+  });
+  o[o.length] = W("HeadingPairs", W("vt:vector", W("vt:variant", "<vt:lpstr>Worksheets</vt:lpstr>") + W("vt:variant", W("vt:i4", String(cp.Worksheets))), { size: 2, baseType: "variant" }));
+  o[o.length] = W("TitlesOfParts", W("vt:vector", cp.SheetNames.map(function(s) {
+    return "<vt:lpstr>" + escapexml(s) + "</vt:lpstr>";
+  }).join(""), { size: cp.Worksheets, baseType: "lpstr" }));
+  if (o.length > 2) {
+    o[o.length] = "</Properties>";
+    o[1] = o[1].replace("/>", ">");
+  }
+  return o.join("");
+}
 var custregex = /<[^>]+>[^<]*/g;
 function parse_cust_props(data, opts) {
   var p = {}, name = "";
@@ -21923,6 +20886,27 @@ function parse_cust_props(data, opts) {
   }
   return p;
 }
+function write_cust_props(cp) {
+  var o = [XML_HEADER, writextag("Properties", null, {
+    "xmlns": XMLNS.CUST_PROPS,
+    "xmlns:vt": XMLNS.vt
+  })];
+  if (!cp) return o.join("");
+  var pid = 1;
+  keys(cp).forEach(function custprop(k) {
+    ++pid;
+    o[o.length] = writextag("property", write_vt(cp[k], true), {
+      "fmtid": "{D5CDD505-2E9C-101B-9397-08002B2CF9AE}",
+      "pid": pid,
+      "name": escapexml(k)
+    });
+  });
+  if (o.length > 2) {
+    o[o.length] = "</Properties>";
+    o[1] = o[1].replace("/>", ">");
+  }
+  return o.join("");
+}
 var XLMLDocPropsMap = {
   Title: "Title",
   Subject: "Subject",
@@ -21963,9 +20947,86 @@ function xlml_set_prop(Props, tag, val) {
   tag = evert_XLMLDPM[tag] || tag;
   Props[tag] = val;
 }
+function xlml_write_docprops(Props, opts) {
+  var o = [];
+  keys(XLMLDocPropsMap).map(function(m) {
+    for (var i = 0; i < CORE_PROPS.length; ++i) if (CORE_PROPS[i][1] == m) return CORE_PROPS[i];
+    for (i = 0; i < EXT_PROPS.length; ++i) if (EXT_PROPS[i][1] == m) return EXT_PROPS[i];
+    throw m;
+  }).forEach(function(p) {
+    if (Props[p[1]] == null) return;
+    var m = opts && opts.Props && opts.Props[p[1]] != null ? opts.Props[p[1]] : Props[p[1]];
+    switch (p[2]) {
+      case "date":
+        m = new Date(m).toISOString().replace(/\.\d*Z/, "Z");
+        break;
+    }
+    if (typeof m == "number") m = String(m);
+    else if (m === true || m === false) {
+      m = m ? "1" : "0";
+    } else if (m instanceof Date) m = new Date(m).toISOString().replace(/\.\d*Z/, "");
+    o.push(writetag(XLMLDocPropsMap[p[1]] || p[1], m));
+  });
+  return writextag("DocumentProperties", o.join(""), { xmlns: XLMLNS.o });
+}
+function xlml_write_custprops(Props, Custprops) {
+  var BLACKLIST = ["Worksheets", "SheetNames"];
+  var T = "CustomDocumentProperties";
+  var o = [];
+  if (Props) keys(Props).forEach(function(k) {
+    if (!Object.prototype.hasOwnProperty.call(Props, k)) return;
+    for (var i = 0; i < CORE_PROPS.length; ++i) if (k == CORE_PROPS[i][1]) return;
+    for (i = 0; i < EXT_PROPS.length; ++i) if (k == EXT_PROPS[i][1]) return;
+    for (i = 0; i < BLACKLIST.length; ++i) if (k == BLACKLIST[i]) return;
+    var m = Props[k];
+    var t = "string";
+    if (typeof m == "number") {
+      t = "float";
+      m = String(m);
+    } else if (m === true || m === false) {
+      t = "boolean";
+      m = m ? "1" : "0";
+    } else m = String(m);
+    o.push(writextag(escapexmltag(k), m, { "dt:dt": t }));
+  });
+  if (Custprops) keys(Custprops).forEach(function(k) {
+    if (!Object.prototype.hasOwnProperty.call(Custprops, k)) return;
+    if (Props && Object.prototype.hasOwnProperty.call(Props, k)) return;
+    var m = Custprops[k];
+    var t = "string";
+    if (typeof m == "number") {
+      t = "float";
+      m = String(m);
+    } else if (m === true || m === false) {
+      t = "boolean";
+      m = m ? "1" : "0";
+    } else if (m instanceof Date) {
+      t = "dateTime.tz";
+      m = m.toISOString();
+    } else m = String(m);
+    o.push(writextag(escapexmltag(k), m, { "dt:dt": t }));
+  });
+  return "<" + T + ' xmlns="' + XLMLNS.o + '">' + o.join("") + "</" + T + ">";
+}
 function parse_FILETIME(blob) {
   var dwLowDateTime = blob.read_shift(4), dwHighDateTime = blob.read_shift(4);
   return new Date((dwHighDateTime / 1e7 * Math.pow(2, 32) + dwLowDateTime / 1e7 - 11644473600) * 1e3).toISOString().replace(/\.000/, "");
+}
+function write_FILETIME(time) {
+  var date = typeof time == "string" ? new Date(Date.parse(time)) : time;
+  var t = date.getTime() / 1e3 + 11644473600;
+  var l = t % Math.pow(2, 32), h = (t - l) / Math.pow(2, 32);
+  l *= 1e7;
+  h *= 1e7;
+  var w = l / Math.pow(2, 32) | 0;
+  if (w > 0) {
+    l = l % Math.pow(2, 32);
+    h += w;
+  }
+  var o = new_buf(8);
+  o.write_shift(4, l);
+  o.write_shift(4, h);
+  return o;
 }
 function parse_lpstr(blob, type, pad) {
   var start = blob.l;
@@ -22088,6 +21149,35 @@ function parse_TypedPropertyValue(blob, type, _opts) {
     default:
       throw new Error("TypedPropertyValue unrecognized type " + type + " " + t);
   }
+}
+function write_TypedPropertyValue(type, value) {
+  var o = new_buf(4), p = new_buf(4);
+  o.write_shift(4, type == 80 ? 31 : type);
+  switch (type) {
+    case 3:
+      p.write_shift(-4, value);
+      break;
+    case 5:
+      p = new_buf(8);
+      p.write_shift(8, value, "f");
+      break;
+    case 11:
+      p.write_shift(4, value ? 1 : 0);
+      break;
+    case 64:
+      p = write_FILETIME(value);
+      break;
+    case 31:
+    case 80:
+      p = new_buf(4 + 2 * (value.length + 1) + (value.length % 2 ? 0 : 2));
+      p.write_shift(4, value.length + 1);
+      p.write_shift(0, value, "dbcs");
+      while (p.l != p.length) p.write_shift(1, 0);
+      break;
+    default:
+      throw new Error("TypedPropertyValue unrecognized type " + type + " " + value);
+  }
+  return bconcat([o, p]);
 }
 function parse_PropertySet(blob, PIDSI) {
   var start_addr = blob.l;
@@ -22231,6 +21321,86 @@ function parse_PropertySet(blob, PIDSI) {
   blob.l = start_addr + size;
   return PropH;
 }
+var XLSPSSkip = ["CodePage", "Thumbnail", "_PID_LINKBASE", "_PID_HLINKS", "SystemIdentifier", "FMTID"];
+function guess_property_type(val) {
+  switch (typeof val) {
+    case "boolean":
+      return 11;
+    case "number":
+      return (val | 0) == val ? 3 : 5;
+    case "string":
+      return 31;
+    case "object":
+      if (val instanceof Date) return 64;
+      break;
+  }
+  return -1;
+}
+function write_PropertySet(entries, RE, PIDSI) {
+  var hdr = new_buf(8), piao = [], prop = [];
+  var sz = 8, i = 0;
+  var pr = new_buf(8), pio = new_buf(8);
+  pr.write_shift(4, 2);
+  pr.write_shift(4, 1200);
+  pio.write_shift(4, 1);
+  prop.push(pr);
+  piao.push(pio);
+  sz += 8 + pr.length;
+  if (!RE) {
+    pio = new_buf(8);
+    pio.write_shift(4, 0);
+    piao.unshift(pio);
+    var bufs = [new_buf(4)];
+    bufs[0].write_shift(4, entries.length);
+    for (i = 0; i < entries.length; ++i) {
+      var value = entries[i][0];
+      pr = new_buf(4 + 4 + 2 * (value.length + 1) + (value.length % 2 ? 0 : 2));
+      pr.write_shift(4, i + 2);
+      pr.write_shift(4, value.length + 1);
+      pr.write_shift(0, value, "dbcs");
+      while (pr.l != pr.length) pr.write_shift(1, 0);
+      bufs.push(pr);
+    }
+    pr = bconcat(bufs);
+    prop.unshift(pr);
+    sz += 8 + pr.length;
+  }
+  for (i = 0; i < entries.length; ++i) {
+    if (RE && !RE[entries[i][0]]) continue;
+    if (XLSPSSkip.indexOf(entries[i][0]) > -1 || PseudoPropsPairs.indexOf(entries[i][0]) > -1) continue;
+    if (entries[i][1] == null) continue;
+    var val = entries[i][1], idx = 0;
+    if (RE) {
+      idx = +RE[entries[i][0]];
+      var pinfo = PIDSI[idx];
+      if (pinfo.p == "version" && typeof val == "string") {
+        var arr = val.split(".");
+        val = (+arr[0] << 16) + (+arr[1] || 0);
+      }
+      pr = write_TypedPropertyValue(pinfo.t, val);
+    } else {
+      var T = guess_property_type(val);
+      if (T == -1) {
+        T = 31;
+        val = String(val);
+      }
+      pr = write_TypedPropertyValue(T, val);
+    }
+    prop.push(pr);
+    pio = new_buf(8);
+    pio.write_shift(4, !RE ? 2 + i : idx);
+    piao.push(pio);
+    sz += 8 + pr.length;
+  }
+  var w = 8 * (prop.length + 1);
+  for (i = 0; i < prop.length; ++i) {
+    piao[i].write_shift(4, w);
+    w += prop[i].length;
+  }
+  hdr.write_shift(4, sz);
+  hdr.write_shift(4, prop.length);
+  return bconcat([hdr].concat(piao).concat(prop));
+}
 function parse_PropertySetStream(file, PIDSI, clsid) {
   var blob = file.content;
   if (!blob) return {};
@@ -22266,9 +21436,34 @@ function parse_PropertySetStream(file, PIDSI, clsid) {
   rval.FMTID = [FMTID0, FMTID1];
   return rval;
 }
+function write_PropertySetStream(entries, clsid, RE, PIDSI, entries2, clsid2) {
+  var hdr = new_buf(entries2 ? 68 : 48);
+  var bufs = [hdr];
+  hdr.write_shift(2, 65534);
+  hdr.write_shift(2, 0);
+  hdr.write_shift(4, 842412599);
+  hdr.write_shift(16, CFB.utils.consts.HEADER_CLSID, "hex");
+  hdr.write_shift(4, entries2 ? 2 : 1);
+  hdr.write_shift(16, clsid, "hex");
+  hdr.write_shift(4, entries2 ? 68 : 48);
+  var ps0 = write_PropertySet(entries, RE, PIDSI);
+  bufs.push(ps0);
+  if (entries2) {
+    var ps1 = write_PropertySet(entries2, null, null);
+    hdr.write_shift(16, clsid2, "hex");
+    hdr.write_shift(4, 68 + ps0.length);
+    bufs.push(ps1);
+  }
+  return bconcat(bufs);
+}
 function parsenoop2(blob, length) {
   blob.read_shift(length);
   return null;
+}
+function writezeroes(n, o) {
+  if (!o) o = new_buf(n);
+  for (var j = 0; j < n; ++j) o.write_shift(1, 0);
+  return o;
 }
 function parslurp(blob, length, cb) {
   var arr = [], target = blob.l + length;
@@ -22279,8 +21474,18 @@ function parslurp(blob, length, cb) {
 function parsebool(blob, length) {
   return blob.read_shift(length) === 1;
 }
+function writebool(v, o) {
+  if (!o) o = new_buf(2);
+  o.write_shift(2, +!!v);
+  return o;
+}
 function parseuint16(blob) {
   return blob.read_shift(2, "u");
+}
+function writeuint16(v, o) {
+  if (!o) o = new_buf(2);
+  o.write_shift(2, v);
+  return o;
 }
 function parseuint16a(blob, length) {
   return parslurp(blob, length, parseuint16);
@@ -22288,6 +21493,12 @@ function parseuint16a(blob, length) {
 function parse_Bes(blob) {
   var v = blob.read_shift(1), t = blob.read_shift(1);
   return t === 1 ? v : v === 1;
+}
+function write_Bes(v, t, o) {
+  if (!o) o = new_buf(2);
+  o.write_shift(1, t == "e" ? +v : +!!v);
+  o.write_shift(1, t == "e" ? 1 : 0);
+  return o;
 }
 function parse_ShortXLUnicodeString(blob, length, opts) {
   var cch = blob.read_shift(opts && opts.biff >= 12 ? 2 : 1);
@@ -22329,6 +21540,17 @@ function parse_XLUnicodeRichExtendedString(blob) {
   current_codepage = cp;
   return z;
 }
+function write_XLUnicodeRichExtendedString(xlstr) {
+  var str = xlstr.t || "", nfmts = 1;
+  var hdr = new_buf(3 + (nfmts > 1 ? 2 : 0));
+  hdr.write_shift(2, str.length);
+  hdr.write_shift(1, (nfmts > 1 ? 8 : 0) | 1);
+  if (nfmts > 1) hdr.write_shift(2, nfmts);
+  var otext = new_buf(2 * str.length);
+  otext.write_shift(2 * str.length, str, "utf16le");
+  var out = [hdr, otext];
+  return bconcat(out);
+}
 function parse_XLUnicodeStringNoCch(blob, cch, opts) {
   var retval;
   if (opts) {
@@ -22359,6 +21581,13 @@ function parse_XLUnicodeString2(blob, length, opts) {
     return "";
   }
   return blob.read_shift(cch, opts.biff <= 4 || !blob.lens ? "cpstr" : "sbcs-cont");
+}
+function write_XLUnicodeString(str, opts, o) {
+  if (!o) o = new_buf(3 + 2 * str.length);
+  o.write_shift(2, str.length);
+  o.write_shift(1, 1);
+  o.write_shift(31, str, "utf16le");
+  return o;
 }
 function parse_ControlInfo(blob) {
   var flags = blob.read_shift(1);
@@ -22410,6 +21639,13 @@ function parse_HyperlinkString(blob) {
   var o = len > 0 ? blob.read_shift(len, "utf16le").replace(chr0, "") : "";
   return o;
 }
+function write_HyperlinkString(str, o) {
+  if (!o) o = new_buf(6 + str.length * 2);
+  o.write_shift(4, 1 + str.length);
+  for (var i = 0; i < str.length; ++i) o.write_shift(2, str.charCodeAt(i));
+  o.write_shift(2, 0);
+  return o;
+}
 function parse_Hyperlink(blob, length) {
   var end = blob.l + length;
   var sVer = blob.read_shift(4);
@@ -22438,6 +21674,50 @@ function parse_Hyperlink(blob, length) {
   if (displayName) out.Tooltip = displayName;
   return out;
 }
+function write_Hyperlink(hl) {
+  var out = new_buf(512), i = 0;
+  var Target2 = hl.Target;
+  if (Target2.slice(0, 7) == "file://") Target2 = Target2.slice(7);
+  var hashidx = Target2.indexOf("#");
+  var F = hashidx > -1 ? 31 : 23;
+  switch (Target2.charAt(0)) {
+    case "#":
+      F = 28;
+      break;
+    case ".":
+      F &= ~2;
+      break;
+  }
+  out.write_shift(4, 2);
+  out.write_shift(4, F);
+  var data = [8, 6815827, 6619237, 4849780, 83];
+  for (i = 0; i < data.length; ++i) out.write_shift(4, data[i]);
+  if (F == 28) {
+    Target2 = Target2.slice(1);
+    write_HyperlinkString(Target2, out);
+  } else if (F & 2) {
+    data = "e0 c9 ea 79 f9 ba ce 11 8c 82 00 aa 00 4b a9 0b".split(" ");
+    for (i = 0; i < data.length; ++i) out.write_shift(1, parseInt(data[i], 16));
+    var Pretarget = hashidx > -1 ? Target2.slice(0, hashidx) : Target2;
+    out.write_shift(4, 2 * (Pretarget.length + 1));
+    for (i = 0; i < Pretarget.length; ++i) out.write_shift(2, Pretarget.charCodeAt(i));
+    out.write_shift(2, 0);
+    if (F & 8) write_HyperlinkString(hashidx > -1 ? Target2.slice(hashidx + 1) : "", out);
+  } else {
+    data = "03 03 00 00 00 00 00 00 c0 00 00 00 00 00 00 46".split(" ");
+    for (i = 0; i < data.length; ++i) out.write_shift(1, parseInt(data[i], 16));
+    var P = 0;
+    while (Target2.slice(P * 3, P * 3 + 3) == "../" || Target2.slice(P * 3, P * 3 + 3) == "..\\") ++P;
+    out.write_shift(2, P);
+    out.write_shift(4, Target2.length - 3 * P + 1);
+    for (i = 0; i < Target2.length - 3 * P; ++i) out.write_shift(1, Target2.charCodeAt(i + 3 * P) & 255);
+    out.write_shift(1, 0);
+    out.write_shift(2, 65535);
+    out.write_shift(2, 57005);
+    for (i = 0; i < 6; ++i) out.write_shift(4, 0);
+  }
+  return out.slice(0, out.l);
+}
 function parse_LongRGBA(blob) {
   var r = blob.read_shift(1), g = blob.read_shift(1), b = blob.read_shift(1), a = blob.read_shift(1);
   return [r, g, b, a];
@@ -22452,6 +21732,13 @@ function parse_XLSCell(blob) {
   var col = blob.read_shift(2);
   var ixfe = blob.read_shift(2);
   return { r: rw, c: col, ixfe };
+}
+function write_XLSCell(R, C, ixfe, o) {
+  if (!o) o = new_buf(6);
+  o.write_shift(2, R);
+  o.write_shift(2, C);
+  o.write_shift(2, ixfe || 0);
+  return o;
 }
 function parse_frtHeader(blob) {
   var rt = blob.read_shift(2);
@@ -22489,6 +21776,14 @@ function parse_Ref8U(blob) {
   var colFirst = blob.read_shift(2);
   var colLast = blob.read_shift(2);
   return { s: { c: colFirst, r: rwFirst }, e: { c: colLast, r: rwLast } };
+}
+function write_Ref8U(r, o) {
+  if (!o) o = new_buf(8);
+  o.write_shift(2, r.s.r);
+  o.write_shift(2, r.e.r);
+  o.write_shift(2, r.s.c);
+  o.write_shift(2, r.e.c);
+  return o;
 }
 function parse_RefU(blob) {
   var rwFirst = blob.read_shift(2);
@@ -22626,6 +21921,45 @@ function parse_BOF(blob, length) {
   blob.read_shift(length);
   return o;
 }
+function write_BOF(wb, t, o) {
+  var h = 1536, w = 16;
+  switch (o.bookType) {
+    case "biff8":
+      break;
+    case "biff5":
+      h = 1280;
+      w = 8;
+      break;
+    case "biff4":
+      h = 4;
+      w = 6;
+      break;
+    case "biff3":
+      h = 3;
+      w = 6;
+      break;
+    case "biff2":
+      h = 2;
+      w = 4;
+      break;
+    case "xla":
+      break;
+    default:
+      throw new Error("unsupported BIFF version");
+  }
+  var out = new_buf(w);
+  out.write_shift(2, h);
+  out.write_shift(2, t);
+  if (w > 4) out.write_shift(2, 29282);
+  if (w > 6) out.write_shift(2, 1997);
+  if (w > 8) {
+    out.write_shift(2, 49161);
+    out.write_shift(2, 1);
+    out.write_shift(2, 1798);
+    out.write_shift(2, 0);
+  }
+  return out;
+}
 function parse_InterfaceHdr(blob, length) {
   if (length === 0) return 1200;
   if (blob.read_shift(2) !== 1200) {
@@ -22641,6 +21975,16 @@ function parse_WriteAccess(blob, length, opts) {
   var UserName = parse_XLUnicodeString2(blob, 0, opts);
   blob.read_shift(length + l - blob.l);
   return UserName;
+}
+function write_WriteAccess(s, opts) {
+  var b8 = !opts || opts.biff == 8;
+  var o = new_buf(b8 ? 112 : 54);
+  o.write_shift(opts.biff == 8 ? 2 : 1, 7);
+  if (b8) o.write_shift(1, 0);
+  o.write_shift(4, 859007059);
+  o.write_shift(4, 5458548 | (b8 ? 0 : 536870912));
+  while (o.l < o.length) o.write_shift(1, b8 ? 0 : 32);
+  return o;
 }
 function parse_WsBool(blob, length, opts) {
   var flags = opts && opts.biff == 8 || length == 2 ? blob.read_shift(2) : (blob.l += length, 0);
@@ -22668,6 +22012,19 @@ function parse_BoundSheet8(blob, length, opts) {
   if (name.length === 0) name = "Sheet1";
   return { pos, hs: hidden, dt, name };
 }
+function write_BoundSheet8(data, opts) {
+  var w = !opts || opts.biff >= 8 ? 2 : 1;
+  var o = new_buf(8 + w * data.name.length);
+  o.write_shift(4, data.pos);
+  o.write_shift(1, data.hs || 0);
+  o.write_shift(1, data.dt);
+  o.write_shift(1, data.name.length);
+  if (opts.biff >= 8) o.write_shift(1, 1);
+  o.write_shift(w * data.name.length, data.name, opts.biff < 8 ? "sbcs" : "utf16le");
+  var out = o.slice(0, o.l);
+  out.l = o.l;
+  return out;
+}
 function parse_SST(blob, length) {
   var end = blob.l + length;
   var cnt = blob.read_shift(4);
@@ -22679,6 +22036,18 @@ function parse_SST(blob, length) {
   strs2.Count = cnt;
   strs2.Unique = ucnt;
   return strs2;
+}
+function write_SST(sst, opts) {
+  var header = new_buf(8);
+  header.write_shift(4, sst.Count);
+  header.write_shift(4, sst.Unique);
+  var strs2 = [];
+  for (var j = 0; j < sst.length; ++j) strs2[j] = write_XLUnicodeRichExtendedString(sst[j], opts);
+  var o = bconcat([header].concat(strs2));
+  o.parts = [header.length].concat(strs2.map(function(str) {
+    return str.length;
+  }));
+  return o;
 }
 function parse_ExtSST(blob, length) {
   var extsst = {};
@@ -22737,10 +22106,33 @@ function parse_Window1(blob) {
     TabRatio: wTabRatio
   };
 }
+function write_Window1() {
+  var o = new_buf(18);
+  o.write_shift(2, 0);
+  o.write_shift(2, 0);
+  o.write_shift(2, 29280);
+  o.write_shift(2, 17600);
+  o.write_shift(2, 56);
+  o.write_shift(2, 0);
+  o.write_shift(2, 0);
+  o.write_shift(2, 1);
+  o.write_shift(2, 500);
+  return o;
+}
 function parse_Window2(blob, length, opts) {
   if (opts && opts.biff >= 2 && opts.biff < 5) return {};
   var f = blob.read_shift(2);
   return { RTL: f & 64 };
+}
+function write_Window2(view) {
+  var o = new_buf(18), f = 1718;
+  if (view && view.RTL) f |= 64;
+  o.write_shift(2, f);
+  o.write_shift(4, 0);
+  o.write_shift(4, 64);
+  o.write_shift(4, 0);
+  o.write_shift(4, 0);
+  return o;
 }
 function parse_Pane() {
 }
@@ -22763,10 +22155,30 @@ function parse_Font(blob, length, opts) {
   o.name = parse_ShortXLUnicodeString(blob, 0, opts);
   return o;
 }
+function write_Font(data, opts) {
+  var name = data.name || "Arial";
+  var b5 = opts && opts.biff == 5, w = b5 ? 15 + name.length : 16 + 2 * name.length;
+  var o = new_buf(w);
+  o.write_shift(2, (data.sz || 12) * 20);
+  o.write_shift(4, 0);
+  o.write_shift(2, 400);
+  o.write_shift(4, 0);
+  o.write_shift(2, 0);
+  o.write_shift(1, name.length);
+  if (!b5) o.write_shift(1, 1);
+  o.write_shift((b5 ? 1 : 2) * name.length, name, b5 ? "sbcs" : "utf16le");
+  return o;
+}
 function parse_LabelSst(blob) {
   var cell = parse_XLSCell(blob);
   cell.isst = blob.read_shift(4);
   return cell;
+}
+function write_LabelSst(R, C, v, os) {
+  var o = new_buf(10);
+  write_XLSCell(R, C, os, o);
+  o.write_shift(4, v);
+  return o;
 }
 function parse_Label(blob, length, opts) {
   if (opts.biffguess && opts.biff == 2) opts.biff = 5;
@@ -22777,10 +22189,30 @@ function parse_Label(blob, length, opts) {
   cell.val = str;
   return cell;
 }
+function write_Label(R, C, v, os, opts) {
+  var b8 = !opts || opts.biff == 8;
+  var o = new_buf(6 + 2 + +b8 + (1 + b8) * v.length);
+  write_XLSCell(R, C, os, o);
+  o.write_shift(2, v.length);
+  if (b8) o.write_shift(1, 1);
+  o.write_shift((1 + b8) * v.length, v, b8 ? "utf16le" : "sbcs");
+  return o;
+}
 function parse_Format(blob, length, opts) {
   var numFmtId = blob.read_shift(2);
   var fmtstr = parse_XLUnicodeString2(blob, 0, opts);
   return [numFmtId, fmtstr];
+}
+function write_Format(i, f, opts, o) {
+  var b5 = opts && opts.biff == 5;
+  if (!o) o = new_buf(b5 ? 3 + f.length : 5 + 2 * f.length);
+  o.write_shift(2, i);
+  o.write_shift(b5 ? 1 : 2, f.length);
+  if (!b5) o.write_shift(1, 1);
+  o.write_shift((b5 ? 1 : 2) * f.length, f, b5 ? "sbcs" : "utf16le");
+  var out = o.length > o.l ? o.slice(0, o.l) : o;
+  if (out.l == null) out.l = out.length;
+  return out;
 }
 var parse_BIFF2Format = parse_XLUnicodeString2;
 function parse_Dimensions(blob, length, opts) {
@@ -22790,6 +22222,16 @@ function parse_Dimensions(blob, length, opts) {
   var c = blob.read_shift(2), C = blob.read_shift(2);
   blob.l = end;
   return { s: { r, c }, e: { r: R, c: C } };
+}
+function write_Dimensions(range, opts) {
+  var w = opts.biff == 8 || !opts.biff ? 4 : 2;
+  var o = new_buf(2 * w + 6);
+  o.write_shift(w, range.s.r);
+  o.write_shift(w, range.e.r + 1);
+  o.write_shift(2, range.s.c);
+  o.write_shift(2, range.e.c + 1);
+  o.write_shift(2, 0);
+  return o;
 }
 function parse_RK(blob) {
   var rw = blob.read_shift(2), col = blob.read_shift(2);
@@ -22862,6 +22304,25 @@ function parse_XF(blob, length, opts) {
   o.data = parse_CellStyleXF(blob, length, o.fStyle, opts);
   return o;
 }
+function write_XF(data, ixfeP, opts, o) {
+  var b5 = opts && opts.biff == 5;
+  if (!o) o = new_buf(b5 ? 16 : 20);
+  o.write_shift(2, 0);
+  if (data.style) {
+    o.write_shift(2, data.numFmtId || 0);
+    o.write_shift(2, 65524);
+  } else {
+    o.write_shift(2, data.numFmtId || 0);
+    o.write_shift(2, ixfeP << 4);
+  }
+  var f = 0;
+  if (data.numFmtId > 0 && b5) f |= 1024;
+  o.write_shift(4, f);
+  o.write_shift(4, 0);
+  if (!b5) o.write_shift(4, 0);
+  o.write_shift(2, 0);
+  return o;
+}
 function parse_Guts(blob) {
   blob.l += 4;
   var out = [blob.read_shift(2), blob.read_shift(2)];
@@ -22869,6 +22330,13 @@ function parse_Guts(blob) {
   if (out[1] !== 0) out[1]--;
   if (out[0] > 7 || out[1] > 7) throw new Error("Bad Gutters: " + out.join("|"));
   return out;
+}
+function write_Guts(guts) {
+  var o = new_buf(8);
+  o.write_shift(4, 0);
+  o.write_shift(2, guts[0] ? guts[0] + 1 : 0);
+  o.write_shift(2, guts[1] ? guts[1] + 1 : 0);
+  return o;
 }
 function parse_BoolErr(blob, length, opts) {
   var cell = parse_XLSCell(blob, 6);
@@ -22878,12 +22346,24 @@ function parse_BoolErr(blob, length, opts) {
   cell.t = val === true || val === false ? "b" : "e";
   return cell;
 }
+function write_BoolErr(R, C, v, os, opts, t) {
+  var o = new_buf(8);
+  write_XLSCell(R, C, os, o);
+  write_Bes(v, t, o);
+  return o;
+}
 function parse_Number(blob, length, opts) {
   if (opts.biffguess && opts.biff == 2) opts.biff = 5;
   var cell = parse_XLSCell(blob, 6);
   var xnum = parse_Xnum(blob, 8);
   cell.val = xnum;
   return cell;
+}
+function write_Number(R, C, v, os) {
+  var o = new_buf(14);
+  write_XLSCell(R, C, os, o);
+  write_Xnum(v, o);
+  return o;
 }
 var parse_XLHeaderFooter = parse_OptXLUnicodeString;
 function parse_SupBook(blob, length, opts) {
@@ -23027,6 +22507,12 @@ function parse_MergeCells(blob, length) {
   while (cmcs--) merges.push(parse_Ref8U(blob, length));
   return merges;
 }
+function write_MergeCells(merges) {
+  var o = new_buf(2 + merges.length * 8);
+  o.write_shift(2, merges.length);
+  for (var i = 0; i < merges.length; ++i) write_Ref8U(merges[i], o);
+  return o;
+}
 function parse_Obj(blob, length, opts) {
   if (opts && opts.biff < 8) return parse_BIFF5Obj(blob, length, opts);
   var cmo = parse_FtCmo(blob, 22);
@@ -23106,6 +22592,17 @@ function parse_HLink(blob, length) {
   var hlink = parse_Hyperlink(blob, length - 24);
   return [ref, hlink];
 }
+function write_HLink(hl) {
+  var O = new_buf(24);
+  var ref = decode_cell(hl[0]);
+  O.write_shift(2, ref.r);
+  O.write_shift(2, ref.r);
+  O.write_shift(2, ref.c);
+  O.write_shift(2, ref.c);
+  var clsid = "d0 c9 ea 79 f9 ba ce 11 8c 82 00 aa 00 4b a9 0b".split(" ");
+  for (var i = 0; i < 16; ++i) O.write_shift(1, parseInt(clsid[i], 16));
+  return bconcat([O, write_Hyperlink(hl[1])]);
+}
 function parse_HLinkTooltip(blob, length) {
   blob.read_shift(2);
   var ref = parse_Ref8U(blob, 8);
@@ -23113,12 +22610,31 @@ function parse_HLinkTooltip(blob, length) {
   wzTooltip = wzTooltip.replace(chr0, "");
   return [ref, wzTooltip];
 }
+function write_HLinkTooltip(hl) {
+  var TT = hl[1].Tooltip;
+  var O = new_buf(10 + 2 * (TT.length + 1));
+  O.write_shift(2, 2048);
+  var ref = decode_cell(hl[0]);
+  O.write_shift(2, ref.r);
+  O.write_shift(2, ref.r);
+  O.write_shift(2, ref.c);
+  O.write_shift(2, ref.c);
+  for (var i = 0; i < TT.length; ++i) O.write_shift(2, TT.charCodeAt(i));
+  O.write_shift(2, 0);
+  return O;
+}
 function parse_Country(blob) {
   var o = [0, 0], d;
   d = blob.read_shift(2);
   o[0] = CountryEnum[d] || d;
   d = blob.read_shift(2);
   o[1] = CountryEnum[d] || d;
+  return o;
+}
+function write_Country(o) {
+  if (!o) o = new_buf(4);
+  o.write_shift(2, 1);
+  o.write_shift(2, 1);
   return o;
 }
 function parse_ClrtClient(blob) {
@@ -23153,6 +22669,20 @@ function parse_ColInfo(blob, length, opts) {
   if (opts.biff >= 5 || !opts.biff) o.level = flags >> 8 & 7;
   return o;
 }
+function write_ColInfo(col, idx) {
+  var o = new_buf(12);
+  o.write_shift(2, idx);
+  o.write_shift(2, idx);
+  o.write_shift(2, col.width * 256);
+  o.write_shift(2, 0);
+  var f = 0;
+  if (col.hidden) f |= 1;
+  o.write_shift(1, f);
+  f = col.level || 0;
+  o.write_shift(1, f);
+  o.write_shift(2, 0);
+  return o;
+}
 function parse_Setup(blob, length) {
   var o = {};
   if (length < 32) return o;
@@ -23172,6 +22702,11 @@ function parse_ShtProps(blob, length, opts) {
   blob.l += 3;
   if (d & 16) def.area = true;
   return def;
+}
+function write_RRTabId(n) {
+  var out = new_buf(2 * n);
+  for (var i = 0; i < n; ++i) out.write_shift(2, i + 1);
+  return out;
 }
 var parse_Blank = parse_XLSCell;
 var parse_Scl = parseuint16a;
@@ -23201,6 +22736,12 @@ function parse_BIFF2NUM(blob) {
   cell.val = num;
   return cell;
 }
+function write_BIFF2NUM(r, c, val) {
+  var out = new_buf(15);
+  write_BIFF2Cell(out, r, c);
+  out.write_shift(8, val, "f");
+  return out;
+}
 function parse_BIFF2INT(blob) {
   var cell = parse_XLSCell(blob, 6);
   ++blob.l;
@@ -23208,6 +22749,12 @@ function parse_BIFF2INT(blob) {
   cell.t = "n";
   cell.val = num;
   return cell;
+}
+function write_BIFF2INT(r, c, val) {
+  var out = new_buf(9);
+  write_BIFF2Cell(out, r, c);
+  out.write_shift(2, val);
+  return out;
 }
 function parse_BIFF2STRING(blob) {
   var cch = blob.read_shift(1);
@@ -26030,6 +25577,35 @@ function parse_sst_xml(data, opts) {
   }
   return s;
 }
+var straywsregex = /^\s|\s$|[\t\n\r]/;
+function write_sst_xml(sst, opts) {
+  if (!opts.bookSST) return "";
+  var o = [XML_HEADER];
+  o[o.length] = writextag("sst", null, {
+    xmlns: XMLNS_main[0],
+    count: sst.Count,
+    uniqueCount: sst.Unique
+  });
+  for (var i = 0; i != sst.length; ++i) {
+    if (sst[i] == null) continue;
+    var s = sst[i];
+    var sitag = "<si>";
+    if (s.r) sitag += s.r;
+    else {
+      sitag += "<t";
+      if (!s.t) s.t = "";
+      if (s.t.match(straywsregex)) sitag += ' xml:space="preserve"';
+      sitag += ">" + escapexml(s.t) + "</t>";
+    }
+    sitag += "</si>";
+    o[o.length] = sitag;
+  }
+  if (o.length > 2) {
+    o[o.length] = "</sst>";
+    o[1] = o[1].replace("/>", ">");
+  }
+  return o.join("");
+}
 function parse_BrtBeginSst(data) {
   return [data.read_shift(4), data.read_shift(4)];
 }
@@ -26060,6 +25636,24 @@ function parse_sst_bin(data, opts) {
     }
   });
   return s;
+}
+function write_BrtBeginSst(sst, o) {
+  if (!o) o = new_buf(8);
+  o.write_shift(4, sst.Count);
+  o.write_shift(4, sst.Unique);
+  return o;
+}
+var write_BrtSSTItem = write_RichStr;
+function write_sst_bin(sst) {
+  var ba = buf_array();
+  write_record(ba, 159, write_BrtBeginSst(sst));
+  for (var i = 0; i < sst.length; ++i) write_record(ba, 19, write_BrtSSTItem(sst[i]));
+  write_record(
+    ba,
+    160
+    /* BrtEndSst */
+  );
+  return ba.end();
 }
 function _JS2ANSI(str) {
   if (typeof $cptable !== "undefined") return $cptable.utils.encode(current_ansi, str);
@@ -27010,6 +26604,21 @@ function parse_numFmts(t, styles, opts) {
     }
   }
 }
+function write_numFmts(NF) {
+  var o = ["<numFmts>"];
+  [[5, 8], [23, 26], [41, 44], [
+    /*63*/
+    50,
+    /*66],[164,*/
+    392
+  ]].forEach(function(r) {
+    for (var i = r[0]; i <= r[1]; ++i) if (NF[i] != null) o[o.length] = writextag("numFmt", null, { numFmtId: i, formatCode: escapexml(NF[i]) });
+  });
+  if (o.length === 1) return "";
+  o[o.length] = "</numFmts>";
+  o[0] = writextag("numFmts", null, { count: o.length - 2 }).replace("/>", ">");
+  return o.join("");
+}
 var cellXF_uint = ["numFmtId", "fillId", "fontId", "borderId", "xfId"];
 var cellXF_bool = ["applyAlignment", "applyBorder", "applyFill", "applyFont", "applyNumberFormat", "applyProtection", "pivotButton", "quotePrefix"];
 function parse_cellXfs(t, styles, opts) {
@@ -27087,6 +26696,17 @@ function parse_cellXfs(t, styles, opts) {
     }
   });
 }
+function write_cellXfs(cellXfs) {
+  var o = [];
+  o[o.length] = writextag("cellXfs", null);
+  cellXfs.forEach(function(c) {
+    o[o.length] = writextag("xf", null, c);
+  });
+  o[o.length] = "</cellXfs>";
+  if (o.length === 2) return "";
+  o[0] = writextag("cellXfs", null, { count: o.length - 2 }).replace("/>", ">");
+  return o.join("");
+}
 var parse_sty_xml = /* @__PURE__ */ (function make_pstyx() {
   var numFmtRegex = /<(?:\w+:)?numFmts([^>]*)>[\S\s]*?<\/(?:\w+:)?numFmts>/;
   var cellXfRegex = /<(?:\w+:)?cellXfs([^>]*)>[\S\s]*?<\/(?:\w+:)?cellXfs>/;
@@ -27106,10 +26726,38 @@ var parse_sty_xml = /* @__PURE__ */ (function make_pstyx() {
     return styles;
   };
 })();
+function write_sty_xml(wb, opts) {
+  var o = [XML_HEADER, writextag("styleSheet", null, {
+    "xmlns": XMLNS_main[0],
+    "xmlns:vt": XMLNS.vt
+  })], w;
+  if (wb.SSF && (w = write_numFmts(wb.SSF)) != null) o[o.length] = w;
+  o[o.length] = '<fonts count="1"><font><sz val="12"/><color theme="1"/><name val="Calibri"/><family val="2"/><scheme val="minor"/></font></fonts>';
+  o[o.length] = '<fills count="2"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill></fills>';
+  o[o.length] = '<borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders>';
+  o[o.length] = '<cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>';
+  if (w = write_cellXfs(opts.cellXfs)) o[o.length] = w;
+  o[o.length] = '<cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles>';
+  o[o.length] = '<dxfs count="0"/>';
+  o[o.length] = '<tableStyles count="0" defaultTableStyle="TableStyleMedium9" defaultPivotStyle="PivotStyleMedium4"/>';
+  if (o.length > 2) {
+    o[o.length] = "</styleSheet>";
+    o[1] = o[1].replace("/>", ">");
+  }
+  return o.join("");
+}
 function parse_BrtFmt(data, length) {
   var numFmtId = data.read_shift(2);
   var stFmtCode = parse_XLWideString(data, length - 2);
   return [numFmtId, stFmtCode];
+}
+function write_BrtFmt(i, f, o) {
+  if (!o) o = new_buf(6 + 4 * f.length);
+  o.write_shift(2, i);
+  write_XLWideString(f, o);
+  var out = o.length > o.l ? o.slice(0, o.l) : o;
+  if (o.l == null) o.l = o.length;
+  return out;
 }
 function parse_BrtFont(data, length, opts) {
   var out = {};
@@ -27152,7 +26800,67 @@ function parse_BrtFont(data, length, opts) {
   out.name = parse_XLWideString(data, length - 21);
   return out;
 }
+function write_BrtFont(font, o) {
+  if (!o) o = new_buf(25 + 4 * 32);
+  o.write_shift(2, font.sz * 20);
+  write_FontFlags(font, o);
+  o.write_shift(2, font.bold ? 700 : 400);
+  var sss = 0;
+  if (font.vertAlign == "superscript") sss = 1;
+  else if (font.vertAlign == "subscript") sss = 2;
+  o.write_shift(2, sss);
+  o.write_shift(1, font.underline || 0);
+  o.write_shift(1, font.family || 0);
+  o.write_shift(1, font.charset || 0);
+  o.write_shift(1, 0);
+  write_BrtColor(font.color, o);
+  var scheme = 0;
+  if (font.scheme == "major") scheme = 1;
+  if (font.scheme == "minor") scheme = 2;
+  o.write_shift(1, scheme);
+  write_XLWideString(font.name, o);
+  return o.length > o.l ? o.slice(0, o.l) : o;
+}
+var XLSBFillPTNames = [
+  "none",
+  "solid",
+  "mediumGray",
+  "darkGray",
+  "lightGray",
+  "darkHorizontal",
+  "darkVertical",
+  "darkDown",
+  "darkUp",
+  "darkGrid",
+  "darkTrellis",
+  "lightHorizontal",
+  "lightVertical",
+  "lightDown",
+  "lightUp",
+  "lightGrid",
+  "lightTrellis",
+  "gray125",
+  "gray0625"
+];
+var rev_XLSBFillPTNames;
 var parse_BrtFill = parsenoop;
+function write_BrtFill(fill2, o) {
+  if (!o) o = new_buf(4 * 3 + 8 * 7 + 16 * 1);
+  if (!rev_XLSBFillPTNames) rev_XLSBFillPTNames = evert(XLSBFillPTNames);
+  var fls = rev_XLSBFillPTNames[fill2.patternType];
+  if (fls == null) fls = 40;
+  o.write_shift(4, fls);
+  var j = 0;
+  if (fls != 40) {
+    write_BrtColor({ auto: 1 }, o);
+    write_BrtColor({ auto: 1 }, o);
+    for (; j < 12; ++j) o.write_shift(4, 0);
+  } else {
+    for (; j < 4; ++j) o.write_shift(4, 0);
+    for (; j < 12; ++j) o.write_shift(4, 0);
+  }
+  return o.length > o.l ? o.slice(0, o.l) : o;
+}
 function parse_BrtXF(data, length) {
   var tgt = data.l + length;
   var ixfeParent = data.read_shift(2);
@@ -27160,7 +26868,57 @@ function parse_BrtXF(data, length) {
   data.l = tgt;
   return { ixfe: ixfeParent, numFmtId: ifmt };
 }
+function write_BrtXF(data, ixfeP, o) {
+  if (!o) o = new_buf(16);
+  o.write_shift(2, ixfeP || 0);
+  o.write_shift(2, data.numFmtId || 0);
+  o.write_shift(2, 0);
+  o.write_shift(2, 0);
+  o.write_shift(2, 0);
+  o.write_shift(1, 0);
+  o.write_shift(1, 0);
+  var flow = 0;
+  o.write_shift(1, flow);
+  o.write_shift(1, 0);
+  o.write_shift(1, 0);
+  o.write_shift(1, 0);
+  return o;
+}
+function write_Blxf(data, o) {
+  if (!o) o = new_buf(10);
+  o.write_shift(1, 0);
+  o.write_shift(1, 0);
+  o.write_shift(4, 0);
+  o.write_shift(4, 0);
+  return o;
+}
 var parse_BrtBorder = parsenoop;
+function write_BrtBorder(border, o) {
+  if (!o) o = new_buf(51);
+  o.write_shift(1, 0);
+  write_Blxf(null, o);
+  write_Blxf(null, o);
+  write_Blxf(null, o);
+  write_Blxf(null, o);
+  write_Blxf(null, o);
+  return o.length > o.l ? o.slice(0, o.l) : o;
+}
+function write_BrtStyle(style, o) {
+  if (!o) o = new_buf(12 + 4 * 10);
+  o.write_shift(4, style.xfId);
+  o.write_shift(2, 1);
+  o.write_shift(1, +style.builtinId);
+  o.write_shift(1, 0);
+  write_XLNullableWideString(style.name || "", o);
+  return o.length > o.l ? o.slice(0, o.l) : o;
+}
+function write_BrtBeginTableStyles(cnt, defTableStyle, defPivotStyle) {
+  var o = new_buf(4 + 256 * 2 * 4);
+  o.write_shift(4, cnt);
+  write_XLNullableWideString(defTableStyle, o);
+  write_XLNullableWideString(defPivotStyle, o);
+  return o.length > o.l ? o.slice(0, o.l) : o;
+}
 function parse_sty_bin(data, themes, opts) {
   var styles = {};
   styles.NumberFmt = [];
@@ -27233,6 +26991,158 @@ function parse_sty_bin(data, themes, opts) {
     }
   });
   return styles;
+}
+function write_FMTS_bin(ba, NF) {
+  if (!NF) return;
+  var cnt = 0;
+  [[5, 8], [23, 26], [41, 44], [
+    /*63*/
+    50,
+    /*66],[164,*/
+    392
+  ]].forEach(function(r) {
+    for (var i = r[0]; i <= r[1]; ++i) if (NF[i] != null) ++cnt;
+  });
+  if (cnt == 0) return;
+  write_record(ba, 615, write_UInt32LE(cnt));
+  [[5, 8], [23, 26], [41, 44], [
+    /*63*/
+    50,
+    /*66],[164,*/
+    392
+  ]].forEach(function(r) {
+    for (var i = r[0]; i <= r[1]; ++i) if (NF[i] != null) write_record(ba, 44, write_BrtFmt(i, NF[i]));
+  });
+  write_record(
+    ba,
+    616
+    /* BrtEndFmts */
+  );
+}
+function write_FONTS_bin(ba) {
+  var cnt = 1;
+  if (cnt == 0) return;
+  write_record(ba, 611, write_UInt32LE(cnt));
+  write_record(ba, 43, write_BrtFont({
+    sz: 12,
+    color: { theme: 1 },
+    name: "Calibri",
+    family: 2,
+    scheme: "minor"
+  }));
+  write_record(
+    ba,
+    612
+    /* BrtEndFonts */
+  );
+}
+function write_FILLS_bin(ba) {
+  var cnt = 2;
+  if (cnt == 0) return;
+  write_record(ba, 603, write_UInt32LE(cnt));
+  write_record(ba, 45, write_BrtFill({ patternType: "none" }));
+  write_record(ba, 45, write_BrtFill({ patternType: "gray125" }));
+  write_record(
+    ba,
+    604
+    /* BrtEndFills */
+  );
+}
+function write_BORDERS_bin(ba) {
+  var cnt = 1;
+  if (cnt == 0) return;
+  write_record(ba, 613, write_UInt32LE(cnt));
+  write_record(ba, 46, write_BrtBorder({}));
+  write_record(
+    ba,
+    614
+    /* BrtEndBorders */
+  );
+}
+function write_CELLSTYLEXFS_bin(ba) {
+  var cnt = 1;
+  write_record(ba, 626, write_UInt32LE(cnt));
+  write_record(ba, 47, write_BrtXF({
+    numFmtId: 0,
+    fontId: 0,
+    fillId: 0,
+    borderId: 0
+  }, 65535));
+  write_record(
+    ba,
+    627
+    /* BrtEndCellStyleXFs */
+  );
+}
+function write_CELLXFS_bin(ba, data) {
+  write_record(ba, 617, write_UInt32LE(data.length));
+  data.forEach(function(c) {
+    write_record(ba, 47, write_BrtXF(c, 0));
+  });
+  write_record(
+    ba,
+    618
+    /* BrtEndCellXFs */
+  );
+}
+function write_STYLES_bin(ba) {
+  var cnt = 1;
+  write_record(ba, 619, write_UInt32LE(cnt));
+  write_record(ba, 48, write_BrtStyle({
+    xfId: 0,
+    builtinId: 0,
+    name: "Normal"
+  }));
+  write_record(
+    ba,
+    620
+    /* BrtEndStyles */
+  );
+}
+function write_DXFS_bin(ba) {
+  var cnt = 0;
+  write_record(ba, 505, write_UInt32LE(cnt));
+  write_record(
+    ba,
+    506
+    /* BrtEndDXFs */
+  );
+}
+function write_TABLESTYLES_bin(ba) {
+  var cnt = 0;
+  write_record(ba, 508, write_BrtBeginTableStyles(cnt, "TableStyleMedium9", "PivotStyleMedium4"));
+  write_record(
+    ba,
+    509
+    /* BrtEndTableStyles */
+  );
+}
+function write_COLORPALETTE_bin() {
+  return;
+}
+function write_sty_bin(wb, opts) {
+  var ba = buf_array();
+  write_record(
+    ba,
+    278
+    /* BrtBeginStyleSheet */
+  );
+  write_FMTS_bin(ba, wb.SSF);
+  write_FONTS_bin(ba, wb);
+  write_FILLS_bin(ba, wb);
+  write_BORDERS_bin(ba, wb);
+  write_CELLSTYLEXFS_bin(ba, wb);
+  write_CELLXFS_bin(ba, opts.cellXfs);
+  write_STYLES_bin(ba, wb);
+  write_DXFS_bin(ba, wb);
+  write_TABLESTYLES_bin(ba, wb);
+  write_COLORPALETTE_bin(ba, wb);
+  write_record(
+    ba,
+    279
+    /* BrtEndStyleSheet */
+  );
+  return ba.end();
 }
 var XLSXThemeClrScheme = [
   "</a:lt1>",
@@ -27648,6 +27558,13 @@ function parse_BrtMdtinfo(data, length) {
     name: parse_XLWideString(data, length - 8)
   };
 }
+function write_BrtMdtinfo(data) {
+  var o = new_buf(12 + 2 * data.name.length);
+  o.write_shift(4, data.flags);
+  o.write_shift(4, data.version);
+  write_XLWideString(data.name, o);
+  return o.slice(0, o.l);
+}
 function parse_BrtMdb(data) {
   var out = [];
   var cnt = data.read_shift(4);
@@ -27655,9 +27572,30 @@ function parse_BrtMdb(data) {
     out.push([data.read_shift(4), data.read_shift(4)]);
   return out;
 }
+function write_BrtMdb(mdb) {
+  var o = new_buf(4 + 8 * mdb.length);
+  o.write_shift(4, mdb.length);
+  for (var i = 0; i < mdb.length; ++i) {
+    o.write_shift(4, mdb[i][0]);
+    o.write_shift(4, mdb[i][1]);
+  }
+  return o;
+}
+function write_BrtBeginEsfmd(cnt, name) {
+  var o = new_buf(8 + 2 * name.length);
+  o.write_shift(4, cnt);
+  write_XLWideString(name, o);
+  return o.slice(0, o.l);
+}
 function parse_BrtBeginEsmdb(data) {
   data.l += 4;
   return data.read_shift(4) != 0;
+}
+function write_BrtBeginEsmdb(cnt, cm) {
+  var o = new_buf(8);
+  o.write_shift(4, cnt);
+  o.write_shift(4, cm ? 1 : 0);
+  return o;
 }
 function parse_xlmeta_bin(data, name, _opts) {
   var out = { Types: [], Cell: [], Value: [] };
@@ -27699,6 +27637,30 @@ function parse_xlmeta_bin(data, name, _opts) {
     }
   });
   return out;
+}
+function write_xlmeta_bin() {
+  var ba = buf_array();
+  write_record(ba, 332);
+  write_record(ba, 334, write_UInt32LE(1));
+  write_record(ba, 335, write_BrtMdtinfo({
+    name: "XLDAPR",
+    version: 12e4,
+    flags: 3496657072
+  }));
+  write_record(ba, 336);
+  write_record(ba, 339, write_BrtBeginEsfmd(1, "XLDAPR"));
+  write_record(ba, 52);
+  write_record(ba, 35, write_UInt32LE(514));
+  write_record(ba, 4096, write_UInt32LE(0));
+  write_record(ba, 4097, writeuint16(1));
+  write_record(ba, 36);
+  write_record(ba, 53);
+  write_record(ba, 340);
+  write_record(ba, 337, write_BrtBeginEsmdb(1, true));
+  write_record(ba, 51, write_BrtMdb([[1, 0]]));
+  write_record(ba, 338);
+  write_record(ba, 333);
+  return ba.end();
 }
 function parse_xlmeta_xml(data, name, opts) {
   var out = { Types: [], Cell: [], Value: [] };
@@ -27779,6 +27741,11 @@ function parse_xlmeta_xml(data, name, opts) {
     return x;
   });
   return out;
+}
+function write_xlmeta_xml() {
+  var o = [XML_HEADER];
+  o.push('<metadata xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:xlrd="http://schemas.microsoft.com/office/spreadsheetml/2017/richdata" xmlns:xda="http://schemas.microsoft.com/office/spreadsheetml/2017/dynamicarray">\n  <metadataTypes count="1">\n    <metadataType name="XLDAPR" minSupportedVersion="120000" copy="1" pasteAll="1" pasteValues="1" merge="1" splitFirst="1" rowColShift="1" clearFormats="1" clearComments="1" assign="1" coerce="1" cellMeta="1"/>\n  </metadataTypes>\n  <futureMetadata name="XLDAPR" count="1">\n    <bk>\n      <extLst>\n        <ext uri="{bdbb8cdc-fa1e-496e-a857-3c3f30c029c3}">\n          <xda:dynamicArrayProperties fDynamic="1" fCollapsed="0"/>\n        </ext>\n      </extLst>\n    </bk>\n  </futureMetadata>\n  <cellMetadata count="1">\n    <bk>\n      <rc t="1" v="0"/>\n    </bk>\n  </cellMetadata>\n</metadata>');
+  return o.join("");
 }
 function parse_cc_xml(data) {
   var d = [];
@@ -27900,6 +27867,58 @@ function parse_drawing(data, rels) {
   var id = (data.match(/<c:chart [^>]*r:id="([^"]*)"/) || ["", ""])[1];
   return rels["!id"][id].Target;
 }
+var _shapeid = 1024;
+function write_comments_vml(rId, comments) {
+  var csize = [21600, 21600];
+  var bbox = ["m0,0l0", csize[1], csize[0], csize[1], csize[0], "0xe"].join(",");
+  var o = [
+    writextag("xml", null, { "xmlns:v": XLMLNS.v, "xmlns:o": XLMLNS.o, "xmlns:x": XLMLNS.x, "xmlns:mv": XLMLNS.mv }).replace(/\/>/, ">"),
+    writextag("o:shapelayout", writextag("o:idmap", null, { "v:ext": "edit", "data": rId }), { "v:ext": "edit" }),
+    writextag("v:shapetype", [
+      writextag("v:stroke", null, { joinstyle: "miter" }),
+      writextag("v:path", null, { gradientshapeok: "t", "o:connecttype": "rect" })
+    ].join(""), { id: "_x0000_t202", "o:spt": 202, coordsize: csize.join(","), path: bbox })
+  ];
+  while (_shapeid < rId * 1e3) _shapeid += 1e3;
+  comments.forEach(function(x) {
+    var c = decode_cell(x[0]);
+    var fillopts = (
+      /*::(*/
+      { "color2": "#BEFF82", "type": "gradient" }
+    );
+    if (fillopts.type == "gradient") fillopts.angle = "-180";
+    var fillparm = fillopts.type == "gradient" ? writextag("o:fill", null, { type: "gradientUnscaled", "v:ext": "view" }) : null;
+    var fillxml = writextag("v:fill", fillparm, fillopts);
+    var shadata = { on: "t", "obscured": "t" };
+    ++_shapeid;
+    o = o.concat([
+      "<v:shape" + wxt_helper({
+        id: "_x0000_s" + _shapeid,
+        type: "#_x0000_t202",
+        style: "position:absolute; margin-left:80pt;margin-top:5pt;width:104pt;height:64pt;z-index:10" + (x[1].hidden ? ";visibility:hidden" : ""),
+        fillcolor: "#ECFAD4",
+        strokecolor: "#edeaa1"
+      }) + ">",
+      fillxml,
+      writextag("v:shadow", null, shadata),
+      writextag("v:path", null, { "o:connecttype": "none" }),
+      '<v:textbox><div style="text-align:left"></div></v:textbox>',
+      '<x:ClientData ObjectType="Note">',
+      "<x:MoveWithCells/>",
+      "<x:SizeWithCells/>",
+      /* Part 4 19.4.2.3 Anchor (Anchor) */
+      writetag("x:Anchor", [c.c + 1, 0, c.r + 1, 0, c.c + 3, 20, c.r + 5, 20].join(",")),
+      writetag("x:AutoFill", "False"),
+      writetag("x:Row", String(c.r)),
+      writetag("x:Column", String(c.c)),
+      x[1].hidden ? "" : "<x:Visible/>",
+      "</x:ClientData>",
+      "</v:shape>"
+    ]);
+  });
+  o.push("</xml>");
+  return o.join("");
+}
 function sheet_insert_comments(sheet, comments, threaded, people) {
   var dense = Array.isArray(sheet);
   var cell;
@@ -27966,6 +27985,52 @@ function parse_comments_xml(data, opts) {
   });
   return commentList;
 }
+function write_comments_xml(data) {
+  var o = [XML_HEADER, writextag("comments", null, { "xmlns": XMLNS_main[0] })];
+  var iauthor = [];
+  o.push("<authors>");
+  data.forEach(function(x) {
+    x[1].forEach(function(w) {
+      var a = escapexml(w.a);
+      if (iauthor.indexOf(a) == -1) {
+        iauthor.push(a);
+        o.push("<author>" + a + "</author>");
+      }
+      if (w.T && w.ID && iauthor.indexOf("tc=" + w.ID) == -1) {
+        iauthor.push("tc=" + w.ID);
+        o.push("<author>tc=" + w.ID + "</author>");
+      }
+    });
+  });
+  if (iauthor.length == 0) {
+    iauthor.push("SheetJ5");
+    o.push("<author>SheetJ5</author>");
+  }
+  o.push("</authors>");
+  o.push("<commentList>");
+  data.forEach(function(d) {
+    var lastauthor = 0, ts = [];
+    if (d[1][0] && d[1][0].T && d[1][0].ID) lastauthor = iauthor.indexOf("tc=" + d[1][0].ID);
+    else d[1].forEach(function(c) {
+      if (c.a) lastauthor = iauthor.indexOf(escapexml(c.a));
+      ts.push(c.t || "");
+    });
+    o.push('<comment ref="' + d[0] + '" authorId="' + lastauthor + '"><text>');
+    if (ts.length <= 1) o.push(writetag("t", escapexml(ts[0] || "")));
+    else {
+      var t = "Comment:\n    " + ts[0] + "\n";
+      for (var i = 1; i < ts.length; ++i) t += "Reply:\n    " + ts[i] + "\n";
+      o.push(writetag("t", escapexml(t)));
+    }
+    o.push("</text></comment>");
+  });
+  o.push("</commentList>");
+  if (o.length > 2) {
+    o[o.length] = "</comments>";
+    o[1] = o[1].replace("/>", ">");
+  }
+  return o.join("");
+}
 function parse_tcmnt_xml(data, opts) {
   var out = [];
   var pass = false, comment = {}, tidx = 0;
@@ -28022,6 +28087,30 @@ function parse_tcmnt_xml(data, opts) {
   });
   return out;
 }
+function write_tcmnt_xml(comments, people, opts) {
+  var o = [XML_HEADER, writextag("ThreadedComments", null, { "xmlns": XMLNS.TCMNT }).replace(/[\/]>/, ">")];
+  comments.forEach(function(carr) {
+    var rootid = "";
+    (carr[1] || []).forEach(function(c, idx) {
+      if (!c.T) {
+        delete c.ID;
+        return;
+      }
+      if (c.a && people.indexOf(c.a) == -1) people.push(c.a);
+      var tcopts = {
+        ref: carr[0],
+        id: "{54EE7951-7262-4200-6969-" + ("000000000000" + opts.tcid++).slice(-12) + "}"
+      };
+      if (idx == 0) rootid = tcopts.id;
+      else tcopts.parentId = rootid;
+      c.ID = tcopts.id;
+      if (c.a) tcopts.personId = "{54EE7950-7262-4200-6969-" + ("000000000000" + people.indexOf(c.a)).slice(-12) + "}";
+      o.push(writextag("threadedComment", writetag("text", c.t || ""), tcopts));
+    });
+  });
+  o.push("</ThreadedComments>");
+  return o.join("");
+}
 function parse_people_xml(data, opts) {
   var out = [];
   var pass = false;
@@ -28061,6 +28150,22 @@ function parse_people_xml(data, opts) {
   });
   return out;
 }
+function write_people_xml(people) {
+  var o = [XML_HEADER, writextag("personList", null, {
+    "xmlns": XMLNS.TCMNT,
+    "xmlns:x": XMLNS_main[0]
+  }).replace(/[\/]>/, ">")];
+  people.forEach(function(person, idx) {
+    o.push(writextag("person", null, {
+      displayName: person,
+      id: "{54EE7950-7262-4200-6969-" + ("000000000000" + idx).slice(-12) + "}",
+      userId: person,
+      providerId: "None"
+    }));
+  });
+  o.push("</personList>");
+  return o.join("");
+}
 function parse_BrtBeginComment(data) {
   var out = {};
   out.iauthor = data.read_shift(4);
@@ -28070,7 +28175,20 @@ function parse_BrtBeginComment(data) {
   data.l += 16;
   return out;
 }
+function write_BrtBeginComment(data, o) {
+  if (o == null) o = new_buf(36);
+  o.write_shift(4, data[1].iauthor);
+  write_UncheckedRfX(data[0], o);
+  o.write_shift(4, 0);
+  o.write_shift(4, 0);
+  o.write_shift(4, 0);
+  o.write_shift(4, 0);
+  return o;
+}
 var parse_BrtCommentAuthor = parse_XLWideString;
+function write_BrtCommentAuthor(data) {
+  return write_XLWideString(data.slice(0, 54));
+}
 function parse_comments_bin(data, opts) {
   var out = [];
   var authors = [];
@@ -28116,6 +28234,62 @@ function parse_comments_bin(data, opts) {
   });
   return out;
 }
+function write_comments_bin(data) {
+  var ba = buf_array();
+  var iauthor = [];
+  write_record(
+    ba,
+    628
+    /* BrtBeginComments */
+  );
+  write_record(
+    ba,
+    630
+    /* BrtBeginCommentAuthors */
+  );
+  data.forEach(function(comment) {
+    comment[1].forEach(function(c) {
+      if (iauthor.indexOf(c.a) > -1) return;
+      iauthor.push(c.a.slice(0, 54));
+      write_record(ba, 632, write_BrtCommentAuthor(c.a));
+    });
+  });
+  write_record(
+    ba,
+    631
+    /* BrtEndCommentAuthors */
+  );
+  write_record(
+    ba,
+    633
+    /* BrtBeginCommentList */
+  );
+  data.forEach(function(comment) {
+    comment[1].forEach(function(c) {
+      c.iauthor = iauthor.indexOf(c.a);
+      var range = { s: decode_cell(comment[0]), e: decode_cell(comment[0]) };
+      write_record(ba, 635, write_BrtBeginComment([range, c]));
+      if (c.t && c.t.length > 0) write_record(ba, 637, write_BrtCommentText(c));
+      write_record(
+        ba,
+        636
+        /* BrtEndComment */
+      );
+      delete c.iauthor;
+    });
+  });
+  write_record(
+    ba,
+    634
+    /* BrtEndCommentList */
+  );
+  write_record(
+    ba,
+    629
+    /* BrtEndComments */
+  );
+  return ba.end();
+}
 var CT_VBA = "application/vnd.ms-office.vbaProject";
 function make_vba_xls(cfb) {
   var newcfb = CFB.utils.cfb_new({ root: "R" });
@@ -28127,6 +28301,16 @@ function make_vba_xls(cfb) {
   });
   return CFB.write(newcfb);
 }
+function fill_vba_xls(cfb, vba) {
+  vba.FullPaths.forEach(function(p, i) {
+    if (i == 0)
+      return;
+    var newpath = p.replace(/[^\/]*[\/]/, "/_VBA_PROJECT_CUR/");
+    if (newpath.slice(-1) !== "/")
+      CFB.utils.cfb_add(cfb, newpath, vba.FileIndex[i].content);
+  });
+}
+var VBAFMTS = ["xlsb", "xlsm", "xlam", "biff8", "xla"];
 function parse_ds_bin() {
   return { "!type": "dialog" };
 }
@@ -29422,6 +29606,18 @@ function parse_FormulaValue(blob) {
   }
   return [];
 }
+function write_FormulaValue(value) {
+  if (value == null) {
+    var o = new_buf(8);
+    o.write_shift(1, 3);
+    o.write_shift(1, 0);
+    o.write_shift(2, 0);
+    o.write_shift(2, 0);
+    o.write_shift(2, 65535);
+    return o;
+  } else if (typeof value == "number") return write_Xnum(value);
+  return write_Xnum(0);
+}
 function parse_Formula(blob, length, opts) {
   var end = blob.l + length;
   var cell = parse_XLSCell(blob, 6);
@@ -29436,6 +29632,18 @@ function parse_Formula(blob, length, opts) {
   }
   var cbf = parse_XLSCellParsedFormula(blob, end - blob.l, opts);
   return { cell, val: val[0], formula: cbf, shared: flags >> 3 & 1, tt: val[1] };
+}
+function write_Formula(cell, R, C, opts, os) {
+  var o1 = write_XLSCell(R, C, os);
+  var o2 = write_FormulaValue(cell.v);
+  var o3 = new_buf(6);
+  var flags = 1 | 32;
+  o3.write_shift(2, flags);
+  o3.write_shift(4, 0);
+  var bf = new_buf(cell.bf.length);
+  for (var i = 0; i < cell.bf.length; ++i) bf[i] = cell.bf[i];
+  var out = bconcat([o1, o2, o3, bf]);
+  return out;
 }
 function parse_XLSBParsedFormula(data, length, opts) {
   var cce = data.read_shift(4);
@@ -30594,13 +30802,70 @@ function ods_to_csf_formula(f) {
   f = f.replace(/\[.(#[A-Z]*[?!])\]/g, "$1");
   return f.replace(/[;~]/g, ",").replace(/\|/g, ";");
 }
+function csf_to_ods_formula(f) {
+  var o = "of:=" + f.replace(crefregex, "$1[.$2$3$4$5]").replace(/\]:\[/g, ":");
+  return o.replace(/;/g, "|").replace(/,/g, ";");
+}
 function ods_to_csf_3D(r) {
   var a = r.split(":");
   var s = a[0].split(".")[0];
   return [s, a[0].split(".")[1] + (a.length > 1 ? ":" + (a[1].split(".")[1] || a[1].split(".")[0]) : "")];
 }
+function csf_to_ods_3D(r) {
+  return r.replace(/\./, "!");
+}
 var strs = {};
 var _ssfopts = {};
+var browser_has_Map = typeof Map !== "undefined";
+function get_sst_id(sst, str, rev) {
+  var i = 0, len = sst.length;
+  if (rev) {
+    if (browser_has_Map ? rev.has(str) : Object.prototype.hasOwnProperty.call(rev, str)) {
+      var revarr = browser_has_Map ? rev.get(str) : rev[str];
+      for (; i < revarr.length; ++i) {
+        if (sst[revarr[i]].t === str) {
+          sst.Count++;
+          return revarr[i];
+        }
+      }
+    }
+  } else for (; i < len; ++i) {
+    if (sst[i].t === str) {
+      sst.Count++;
+      return i;
+    }
+  }
+  sst[len] = { t: str };
+  sst.Count++;
+  sst.Unique++;
+  if (rev) {
+    if (browser_has_Map) {
+      if (!rev.has(str)) rev.set(str, []);
+      rev.get(str).push(len);
+    } else {
+      if (!Object.prototype.hasOwnProperty.call(rev, str)) rev[str] = [];
+      rev[str].push(len);
+    }
+  }
+  return len;
+}
+function col_obj_w(C, col) {
+  var p = { min: C + 1, max: C + 1 };
+  var wch = -1;
+  if (col.MDW) MDW = col.MDW;
+  if (col.width != null) p.customWidth = 1;
+  else if (col.wpx != null) wch = px2char(col.wpx);
+  else if (col.wch != null) wch = col.wch;
+  if (wch > -1) {
+    p.width = char2width(wch);
+    p.customWidth = 1;
+  } else if (col.width != null) p.width = col.width;
+  if (col.hidden) p.hidden = true;
+  if (col.level != null) {
+    p.outlineLevel = p.level = col.level;
+  }
+  return p;
+}
 function default_margins(margins, mode) {
   if (!margins) return;
   var defs = [0.7, 0.7, 0.75, 0.75, 0.3, 0.3];
@@ -30611,6 +30876,28 @@ function default_margins(margins, mode) {
   if (margins.bottom == null) margins.bottom = defs[3];
   if (margins.header == null) margins.header = defs[4];
   if (margins.footer == null) margins.footer = defs[5];
+}
+function get_cell_style(styles, cell, opts) {
+  var z = opts.revssf[cell.z != null ? cell.z : "General"];
+  var i = 60, len = styles.length;
+  if (z == null && opts.ssf) {
+    for (; i < 392; ++i) if (opts.ssf[i] == null) {
+      SSF_load(cell.z, i);
+      opts.ssf[i] = cell.z;
+      opts.revssf[cell.z] = z = i;
+      break;
+    }
+  }
+  for (i = 0; i != len; ++i) if (styles[i].numFmtId === z) return i;
+  styles[len] = {
+    numFmtId: z,
+    fontId: 0,
+    fillId: 0,
+    borderId: 0,
+    xfId: 0,
+    applyNumberFormat: 1
+  };
+  return len;
 }
 function safe_format(p, fmtid, fillid, opts, themes, styles) {
   try {
@@ -30651,6 +30938,12 @@ function safe_format(p, fmtid, fillid, opts, themes, styles) {
     }
   } catch (e) {
     if (opts.WTF && styles.Fills) throw e;
+  }
+}
+function check_ws(ws, sname, i) {
+  if (ws && ws["!ref"]) {
+    var range = safe_decode_range(ws["!ref"]);
+    if (range.e.c < range.s.c || range.e.r < range.s.r) throw new Error("Bad range (" + i + "): " + ws["!ref"]);
   }
 }
 function parse_ws_xml_dim(ws, s) {
@@ -30722,6 +31015,12 @@ function parse_ws_xml(data, opts, idx, rels, wb, themes, styles) {
   if (merges.length > 0) s["!merges"] = merges;
   return s;
 }
+function write_ws_xml_merges(merges) {
+  if (merges.length === 0) return "";
+  var o = '<mergeCells count="' + merges.length + '">';
+  for (var i = 0; i != merges.length; ++i) o += '<mergeCell ref="' + encode_range(merges[i]) + '"/>';
+  return o + "</mergeCells>";
+}
 function parse_ws_xml_sheetpr(sheetPr, s, wb, idx) {
   var data = parsexmltag(sheetPr);
   if (!wb.Sheets[idx]) wb.Sheets[idx] = {};
@@ -30729,6 +31028,52 @@ function parse_ws_xml_sheetpr(sheetPr, s, wb, idx) {
 }
 function parse_ws_xml_sheetpr2(sheetPr, body, s, wb, idx) {
   parse_ws_xml_sheetpr(sheetPr.slice(0, sheetPr.indexOf(">")), s, wb, idx);
+}
+function write_ws_xml_sheetpr(ws, wb, idx, opts, o) {
+  var needed = false;
+  var props = {}, payload = null;
+  if (opts.bookType !== "xlsx" && wb.vbaraw) {
+    var cname = wb.SheetNames[idx];
+    try {
+      if (wb.Workbook) cname = wb.Workbook.Sheets[idx].CodeName || cname;
+    } catch (e) {
+    }
+    needed = true;
+    props.codeName = utf8write(escapexml(cname));
+  }
+  if (ws && ws["!outline"]) {
+    var outlineprops = { summaryBelow: 1, summaryRight: 1 };
+    if (ws["!outline"].above) outlineprops.summaryBelow = 0;
+    if (ws["!outline"].left) outlineprops.summaryRight = 0;
+    payload = (payload || "") + writextag("outlinePr", null, outlineprops);
+  }
+  if (!needed && !payload) return;
+  o[o.length] = writextag("sheetPr", payload, props);
+}
+var sheetprot_deffalse = ["objects", "scenarios", "selectLockedCells", "selectUnlockedCells"];
+var sheetprot_deftrue = [
+  "formatColumns",
+  "formatRows",
+  "formatCells",
+  "insertColumns",
+  "insertRows",
+  "insertHyperlinks",
+  "deleteColumns",
+  "deleteRows",
+  "sort",
+  "autoFilter",
+  "pivotTables"
+];
+function write_ws_xml_protection(sp) {
+  var o = { sheet: 1 };
+  sheetprot_deffalse.forEach(function(n) {
+    if (sp[n] != null && sp[n]) o[n] = "1";
+  });
+  sheetprot_deftrue.forEach(function(n) {
+    if (sp[n] != null && !sp[n]) o[n] = "0";
+  });
+  if (sp.password) o.password = crypto_CreatePasswordVerifier_Method1(sp.password).toString(16).toUpperCase();
+  return writextag("sheetProtection", null, o);
 }
 function parse_ws_xml_hlinks(s, data, rels) {
   var dense = Array.isArray(s);
@@ -30769,6 +31114,10 @@ function parse_ws_xml_margins(margin) {
   });
   return o;
 }
+function write_ws_xml_margins(margin) {
+  default_margins(margin);
+  return writextag("pageMargins", null, margin);
+}
 function parse_ws_xml_cols(columns, cols) {
   var seencol = false;
   for (var coli = 0; coli != cols.length; ++coli) {
@@ -30787,9 +31136,38 @@ function parse_ws_xml_cols(columns, cols) {
     while (colm <= colM) columns[colm++] = dup(coll);
   }
 }
+function write_ws_xml_cols(ws, cols) {
+  var o = ["<cols>"], col;
+  for (var i = 0; i != cols.length; ++i) {
+    if (!(col = cols[i])) continue;
+    o[o.length] = writextag("col", null, col_obj_w(i, col));
+  }
+  o[o.length] = "</cols>";
+  return o.join("");
+}
 function parse_ws_xml_autofilter(data) {
   var o = { ref: (data.match(/ref="([^"]*)"/) || [])[1] };
   return o;
+}
+function write_ws_xml_autofilter(data, ws, wb, idx) {
+  var ref = typeof data.ref == "string" ? data.ref : encode_range(data.ref);
+  if (!wb.Workbook) wb.Workbook = { Sheets: [] };
+  if (!wb.Workbook.Names) wb.Workbook.Names = [];
+  var names = wb.Workbook.Names;
+  var range = decode_range(ref);
+  if (range.s.r == range.e.r) {
+    range.e.r = decode_range(ws["!ref"]).e.r;
+    ref = encode_range(range);
+  }
+  for (var i = 0; i < names.length; ++i) {
+    var name = names[i];
+    if (name.Name != "_xlnm._FilterDatabase") continue;
+    if (name.Sheet != idx) continue;
+    name.Ref = "'" + wb.SheetNames[idx] + "'!" + ref;
+    break;
+  }
+  if (i == names.length) names.push({ Name: "_xlnm._FilterDatabase", Sheet: idx, Ref: "'" + wb.SheetNames[idx] + "'!" + ref });
+  return writextag("autoFilter", null, { ref });
 }
 var sviewregex = /<(?:\w:)?sheetView(?:[^>a-z][^>]*)?\/?>/;
 function parse_ws_xml_sheetviews(data, wb) {
@@ -30800,6 +31178,82 @@ function parse_ws_xml_sheetviews(data, wb) {
     if (+tag.zoomScale) wb.Views[i].zoom = +tag.zoomScale;
     if (parsexmlbool(tag.rightToLeft)) wb.Views[i].RTL = true;
   });
+}
+function write_ws_xml_sheetviews(ws, opts, idx, wb) {
+  var sview = { workbookViewId: "0" };
+  if ((((wb || {}).Workbook || {}).Views || [])[0]) sview.rightToLeft = wb.Workbook.Views[0].RTL ? "1" : "0";
+  return writextag("sheetViews", writextag("sheetView", null, sview), {});
+}
+function write_ws_xml_cell(cell, ref, ws, opts) {
+  if (cell.c) ws["!comments"].push([ref, cell.c]);
+  if (cell.v === void 0 && typeof cell.f !== "string" || cell.t === "z" && !cell.f) return "";
+  var vv = "";
+  var oldt = cell.t, oldv = cell.v;
+  if (cell.t !== "z") switch (cell.t) {
+    case "b":
+      vv = cell.v ? "1" : "0";
+      break;
+    case "n":
+      vv = "" + cell.v;
+      break;
+    case "e":
+      vv = BErr[cell.v];
+      break;
+    case "d":
+      if (opts && opts.cellDates) vv = parseDate(cell.v, -1).toISOString();
+      else {
+        cell = dup(cell);
+        cell.t = "n";
+        vv = "" + (cell.v = datenum(parseDate(cell.v)));
+      }
+      if (typeof cell.z === "undefined") cell.z = table_fmt[14];
+      break;
+    default:
+      vv = cell.v;
+      break;
+  }
+  var v = writetag("v", escapexml(vv)), o = { r: ref };
+  var os = get_cell_style(opts.cellXfs, cell, opts);
+  if (os !== 0) o.s = os;
+  switch (cell.t) {
+    case "n":
+      break;
+    case "d":
+      o.t = "d";
+      break;
+    case "b":
+      o.t = "b";
+      break;
+    case "e":
+      o.t = "e";
+      break;
+    case "z":
+      break;
+    default:
+      if (cell.v == null) {
+        delete cell.t;
+        break;
+      }
+      if (cell.v.length > 32767) throw new Error("Text length must not exceed 32767 characters");
+      if (opts && opts.bookSST) {
+        v = writetag("v", "" + get_sst_id(opts.Strings, cell.v, opts.revStrings));
+        o.t = "s";
+        break;
+      }
+      o.t = "str";
+      break;
+  }
+  if (cell.t != oldt) {
+    cell.t = oldt;
+    cell.v = oldv;
+  }
+  if (typeof cell.f == "string" && cell.f) {
+    var ff = cell.F && cell.F.slice(0, ref.length) == ref ? { t: "array", ref: cell.F } : null;
+    v = writextag("f", escapexml(cell.f), ff) + (cell.v != null ? v : "");
+  }
+  if (cell.l) ws["!links"].push([ref, cell.l]);
+  if (cell.D) o.cm = 1;
+  return writextag("c", v, o);
 }
 var parse_ws_xml_data = /* @__PURE__ */ (function() {
   var cellregex = /<(?:\w+:)?c[ \/>]/, rowregex = /<\/(?:\w+:)?row>/;
@@ -31032,6 +31486,138 @@ var parse_ws_xml_data = /* @__PURE__ */ (function() {
     if (rows.length > 0) s["!rows"] = rows;
   };
 })();
+function write_ws_xml_data(ws, opts, idx, wb) {
+  var o = [], r = [], range = safe_decode_range(ws["!ref"]), cell = "", ref, rr = "", cols = [], R = 0, C = 0, rows = ws["!rows"];
+  var dense = Array.isArray(ws);
+  var params = { r: rr }, row, height = -1;
+  for (C = range.s.c; C <= range.e.c; ++C) cols[C] = encode_col(C);
+  for (R = range.s.r; R <= range.e.r; ++R) {
+    r = [];
+    rr = encode_row(R);
+    for (C = range.s.c; C <= range.e.c; ++C) {
+      ref = cols[C] + rr;
+      var _cell = dense ? (ws[R] || [])[C] : ws[ref];
+      if (_cell === void 0) continue;
+      if ((cell = write_ws_xml_cell(_cell, ref, ws, opts, idx, wb)) != null) r.push(cell);
+    }
+    if (r.length > 0 || rows && rows[R]) {
+      params = { r: rr };
+      if (rows && rows[R]) {
+        row = rows[R];
+        if (row.hidden) params.hidden = 1;
+        height = -1;
+        if (row.hpx) height = px2pt(row.hpx);
+        else if (row.hpt) height = row.hpt;
+        if (height > -1) {
+          params.ht = height;
+          params.customHeight = 1;
+        }
+        if (row.level) {
+          params.outlineLevel = row.level;
+        }
+      }
+      o[o.length] = writextag("row", r.join(""), params);
+    }
+  }
+  if (rows) for (; R < rows.length; ++R) {
+    if (rows && rows[R]) {
+      params = { r: R + 1 };
+      row = rows[R];
+      if (row.hidden) params.hidden = 1;
+      height = -1;
+      if (row.hpx) height = px2pt(row.hpx);
+      else if (row.hpt) height = row.hpt;
+      if (height > -1) {
+        params.ht = height;
+        params.customHeight = 1;
+      }
+      if (row.level) {
+        params.outlineLevel = row.level;
+      }
+      o[o.length] = writextag("row", "", params);
+    }
+  }
+  return o.join("");
+}
+function write_ws_xml(idx, opts, wb, rels) {
+  var o = [XML_HEADER, writextag("worksheet", null, {
+    "xmlns": XMLNS_main[0],
+    "xmlns:r": XMLNS.r
+  })];
+  var s = wb.SheetNames[idx], sidx = 0, rdata = "";
+  var ws = wb.Sheets[s];
+  if (ws == null) ws = {};
+  var ref = ws["!ref"] || "A1";
+  var range = safe_decode_range(ref);
+  if (range.e.c > 16383 || range.e.r > 1048575) {
+    if (opts.WTF) throw new Error("Range " + ref + " exceeds format limit A1:XFD1048576");
+    range.e.c = Math.min(range.e.c, 16383);
+    range.e.r = Math.min(range.e.c, 1048575);
+    ref = encode_range(range);
+  }
+  if (!rels) rels = {};
+  ws["!comments"] = [];
+  var _drawing = [];
+  write_ws_xml_sheetpr(ws, wb, idx, opts, o);
+  o[o.length] = writextag("dimension", null, { "ref": ref });
+  o[o.length] = write_ws_xml_sheetviews(ws, opts, idx, wb);
+  if (opts.sheetFormat) o[o.length] = writextag("sheetFormatPr", null, {
+    defaultRowHeight: opts.sheetFormat.defaultRowHeight || "16",
+    baseColWidth: opts.sheetFormat.baseColWidth || "10",
+    outlineLevelRow: opts.sheetFormat.outlineLevelRow || "7"
+  });
+  if (ws["!cols"] != null && ws["!cols"].length > 0) o[o.length] = write_ws_xml_cols(ws, ws["!cols"]);
+  o[sidx = o.length] = "<sheetData/>";
+  ws["!links"] = [];
+  if (ws["!ref"] != null) {
+    rdata = write_ws_xml_data(ws, opts, idx, wb, rels);
+    if (rdata.length > 0) o[o.length] = rdata;
+  }
+  if (o.length > sidx + 1) {
+    o[o.length] = "</sheetData>";
+    o[sidx] = o[sidx].replace("/>", ">");
+  }
+  if (ws["!protect"]) o[o.length] = write_ws_xml_protection(ws["!protect"]);
+  if (ws["!autofilter"] != null) o[o.length] = write_ws_xml_autofilter(ws["!autofilter"], ws, wb, idx);
+  if (ws["!merges"] != null && ws["!merges"].length > 0) o[o.length] = write_ws_xml_merges(ws["!merges"]);
+  var relc = -1, rel, rId = -1;
+  if (
+    /*::(*/
+    ws["!links"].length > 0
+  ) {
+    o[o.length] = "<hyperlinks>";
+    ws["!links"].forEach(function(l) {
+      if (!l[1].Target) return;
+      rel = { "ref": l[0] };
+      if (l[1].Target.charAt(0) != "#") {
+        rId = add_rels(rels, -1, escapexml(l[1].Target).replace(/#.*$/, ""), RELS.HLINK);
+        rel["r:id"] = "rId" + rId;
+      }
+      if ((relc = l[1].Target.indexOf("#")) > -1) rel.location = escapexml(l[1].Target.slice(relc + 1));
+      if (l[1].Tooltip) rel.tooltip = escapexml(l[1].Tooltip);
+      o[o.length] = writextag("hyperlink", null, rel);
+    });
+    o[o.length] = "</hyperlinks>";
+  }
+  delete ws["!links"];
+  if (ws["!margins"] != null) o[o.length] = write_ws_xml_margins(ws["!margins"]);
+  if (!opts || opts.ignoreEC || opts.ignoreEC == void 0) o[o.length] = writetag("ignoredErrors", writextag("ignoredError", null, { numberStoredAsText: 1, sqref: ref }));
+  if (_drawing.length > 0) {
+    rId = add_rels(rels, -1, "../drawings/drawing" + (idx + 1) + ".xml", RELS.DRAW);
+    o[o.length] = writextag("drawing", null, { "r:id": "rId" + rId });
+    ws["!drawing"] = _drawing;
+  }
+  if (ws["!comments"].length > 0) {
+    rId = add_rels(rels, -1, "../drawings/vmlDrawing" + (idx + 1) + ".vml", RELS.VML);
+    o[o.length] = writextag("legacyDrawing", null, { "r:id": "rId" + rId });
+    ws["!legacy"] = rId;
+  }
+  if (o.length > 1) {
+    o[o.length] = "</worksheet>";
+    o[1] = o[1].replace("/>", ">");
+  }
+  return o.join("");
+}
 function parse_BrtRowHdr(data, length) {
   var z = {};
   var tgt = data.l + length;
@@ -31046,7 +31632,53 @@ function parse_BrtRowHdr(data, length) {
   if (flags & 32) z.hpt = miyRw / 20;
   return z;
 }
+function write_BrtRowHdr(R, range, ws) {
+  var o = new_buf(17 + 8 * 16);
+  var row = (ws["!rows"] || [])[R] || {};
+  o.write_shift(4, R);
+  o.write_shift(4, 0);
+  var miyRw = 320;
+  if (row.hpx) miyRw = px2pt(row.hpx) * 20;
+  else if (row.hpt) miyRw = row.hpt * 20;
+  o.write_shift(2, miyRw);
+  o.write_shift(1, 0);
+  var flags = 0;
+  if (row.level) flags |= row.level;
+  if (row.hidden) flags |= 16;
+  if (row.hpx || row.hpt) flags |= 32;
+  o.write_shift(1, flags);
+  o.write_shift(1, 0);
+  var ncolspan = 0, lcs = o.l;
+  o.l += 4;
+  var caddr = { r: R, c: 0 };
+  for (var i = 0; i < 16; ++i) {
+    if (range.s.c > i + 1 << 10 || range.e.c < i << 10) continue;
+    var first = -1, last = -1;
+    for (var j = i << 10; j < i + 1 << 10; ++j) {
+      caddr.c = j;
+      var cell = Array.isArray(ws) ? (ws[caddr.r] || [])[caddr.c] : ws[encode_cell(caddr)];
+      if (cell) {
+        if (first < 0) first = j;
+        last = j;
+      }
+    }
+    if (first < 0) continue;
+    ++ncolspan;
+    o.write_shift(4, first);
+    o.write_shift(4, last);
+  }
+  var l = o.l;
+  o.l = lcs;
+  o.write_shift(4, ncolspan);
+  o.l = l;
+  return o.length > o.l ? o.slice(0, o.l) : o;
+}
+function write_row_header(ba, ws, range, R) {
+  var o = write_BrtRowHdr(R, range, ws);
+  if (o.length > 17 || (ws["!rows"] || [])[R]) write_record(ba, 0, o);
+}
 var parse_BrtWsDim = parse_UncheckedRfX;
+var write_BrtWsDim = write_UncheckedRfX;
 function parse_BrtWsFmtInfo() {
 }
 function parse_BrtWsProp(data, length) {
@@ -31059,63 +31691,148 @@ function parse_BrtWsProp(data, length) {
   z.name = parse_XLSBCodeName(data, length - 19);
   return z;
 }
+function write_BrtWsProp(str, outl, o) {
+  if (o == null) o = new_buf(84 + 4 * str.length);
+  var f = 192;
+  if (outl) {
+    if (outl.above) f &= ~64;
+    if (outl.left) f &= ~128;
+  }
+  o.write_shift(1, f);
+  for (var i = 1; i < 3; ++i) o.write_shift(1, 0);
+  write_BrtColor({ auto: 1 }, o);
+  o.write_shift(-4, -1);
+  o.write_shift(-4, -1);
+  write_XLSBCodeName(str, o);
+  return o.slice(0, o.l);
+}
 function parse_BrtCellBlank(data) {
   var cell = parse_XLSBCell(data);
   return [cell];
 }
+function write_BrtCellBlank(cell, ncell, o) {
+  if (o == null) o = new_buf(8);
+  return write_XLSBCell(ncell, o);
+}
 function parse_BrtShortBlank(data) {
   var cell = parse_XLSBShortCell(data);
   return [cell];
+}
+function write_BrtShortBlank(cell, ncell, o) {
+  if (o == null) o = new_buf(4);
+  return write_XLSBShortCell(ncell, o);
 }
 function parse_BrtCellBool(data) {
   var cell = parse_XLSBCell(data);
   var fBool = data.read_shift(1);
   return [cell, fBool, "b"];
 }
+function write_BrtCellBool(cell, ncell, o) {
+  if (o == null) o = new_buf(9);
+  write_XLSBCell(ncell, o);
+  o.write_shift(1, cell.v ? 1 : 0);
+  return o;
+}
 function parse_BrtShortBool(data) {
   var cell = parse_XLSBShortCell(data);
   var fBool = data.read_shift(1);
   return [cell, fBool, "b"];
+}
+function write_BrtShortBool(cell, ncell, o) {
+  if (o == null) o = new_buf(5);
+  write_XLSBShortCell(ncell, o);
+  o.write_shift(1, cell.v ? 1 : 0);
+  return o;
 }
 function parse_BrtCellError(data) {
   var cell = parse_XLSBCell(data);
   var bError = data.read_shift(1);
   return [cell, bError, "e"];
 }
+function write_BrtCellError(cell, ncell, o) {
+  if (o == null) o = new_buf(9);
+  write_XLSBCell(ncell, o);
+  o.write_shift(1, cell.v);
+  return o;
+}
 function parse_BrtShortError(data) {
   var cell = parse_XLSBShortCell(data);
   var bError = data.read_shift(1);
   return [cell, bError, "e"];
+}
+function write_BrtShortError(cell, ncell, o) {
+  if (o == null) o = new_buf(8);
+  write_XLSBShortCell(ncell, o);
+  o.write_shift(1, cell.v);
+  o.write_shift(2, 0);
+  o.write_shift(1, 0);
+  return o;
 }
 function parse_BrtCellIsst(data) {
   var cell = parse_XLSBCell(data);
   var isst = data.read_shift(4);
   return [cell, isst, "s"];
 }
+function write_BrtCellIsst(cell, ncell, o) {
+  if (o == null) o = new_buf(12);
+  write_XLSBCell(ncell, o);
+  o.write_shift(4, ncell.v);
+  return o;
+}
 function parse_BrtShortIsst(data) {
   var cell = parse_XLSBShortCell(data);
   var isst = data.read_shift(4);
   return [cell, isst, "s"];
+}
+function write_BrtShortIsst(cell, ncell, o) {
+  if (o == null) o = new_buf(8);
+  write_XLSBShortCell(ncell, o);
+  o.write_shift(4, ncell.v);
+  return o;
 }
 function parse_BrtCellReal(data) {
   var cell = parse_XLSBCell(data);
   var value = parse_Xnum(data);
   return [cell, value, "n"];
 }
+function write_BrtCellReal(cell, ncell, o) {
+  if (o == null) o = new_buf(16);
+  write_XLSBCell(ncell, o);
+  write_Xnum(cell.v, o);
+  return o;
+}
 function parse_BrtShortReal(data) {
   var cell = parse_XLSBShortCell(data);
   var value = parse_Xnum(data);
   return [cell, value, "n"];
+}
+function write_BrtShortReal(cell, ncell, o) {
+  if (o == null) o = new_buf(12);
+  write_XLSBShortCell(ncell, o);
+  write_Xnum(cell.v, o);
+  return o;
 }
 function parse_BrtCellRk(data) {
   var cell = parse_XLSBCell(data);
   var value = parse_RkNumber(data);
   return [cell, value, "n"];
 }
+function write_BrtCellRk(cell, ncell, o) {
+  if (o == null) o = new_buf(12);
+  write_XLSBCell(ncell, o);
+  write_RkNumber(cell.v, o);
+  return o;
+}
 function parse_BrtShortRk(data) {
   var cell = parse_XLSBShortCell(data);
   var value = parse_RkNumber(data);
   return [cell, value, "n"];
+}
+function write_BrtShortRk(cell, ncell, o) {
+  if (o == null) o = new_buf(8);
+  write_XLSBShortCell(ncell, o);
+  write_RkNumber(cell.v, o);
+  return o;
 }
 function parse_BrtCellRString(data) {
   var cell = parse_XLSBCell(data);
@@ -31127,10 +31844,22 @@ function parse_BrtCellSt(data) {
   var value = parse_XLWideString(data);
   return [cell, value, "str"];
 }
+function write_BrtCellSt(cell, ncell, o) {
+  if (o == null) o = new_buf(12 + 4 * cell.v.length);
+  write_XLSBCell(ncell, o);
+  write_XLWideString(cell.v, o);
+  return o.length > o.l ? o.slice(0, o.l) : o;
+}
 function parse_BrtShortSt(data) {
   var cell = parse_XLSBShortCell(data);
   var value = parse_XLWideString(data);
   return [cell, value, "str"];
+}
+function write_BrtShortSt(cell, ncell, o) {
+  if (o == null) o = new_buf(8 + 4 * cell.v.length);
+  write_XLSBShortCell(ncell, o);
+  write_XLWideString(cell.v, o);
+  return o.length > o.l ? o.slice(0, o.l) : o;
 }
 function parse_BrtFmlaBool(data, length, opts) {
   var end = data.l + length;
@@ -31185,6 +31914,12 @@ function parse_BrtFmlaString(data, length, opts) {
   return o;
 }
 var parse_BrtMergeCell = parse_UncheckedRfX;
+var write_BrtMergeCell = write_UncheckedRfX;
+function write_BrtBeginMergeCells(cnt, o) {
+  if (o == null) o = new_buf(4);
+  o.write_shift(4, cnt);
+  return o;
+}
 function parse_BrtHLink(data, length) {
   var end = data.l + length;
   var rfx = parse_UncheckedRfX(data, 16);
@@ -31196,6 +31931,17 @@ function parse_BrtHLink(data, length) {
   var o = { rfx, relId, loc, display };
   if (tooltip) o.Tooltip = tooltip;
   return o;
+}
+function write_BrtHLink(l, rId) {
+  var o = new_buf(50 + 4 * (l[1].Target.length + (l[1].Tooltip || "").length));
+  write_UncheckedRfX({ s: decode_cell(l[0]), e: decode_cell(l[0]) }, o);
+  write_RelID("rId" + rId, o);
+  var locidx = l[1].Target.indexOf("#");
+  var loc = locidx == -1 ? "" : l[1].Target.slice(locidx + 1);
+  write_XLWideString(loc || "", o);
+  write_XLWideString(l[1].Tooltip || "", o);
+  write_XLWideString("", o);
+  return o.slice(0, o.l);
 }
 function parse_BrtPane() {
 }
@@ -31222,6 +31968,24 @@ function parse_BrtShrFmla(data, length, opts) {
   } else data.l = end;
   return o;
 }
+function write_BrtColInfo(C, col, o) {
+  if (o == null) o = new_buf(18);
+  var p = col_obj_w(C, col);
+  o.write_shift(-4, C);
+  o.write_shift(-4, C);
+  o.write_shift(4, (p.width || 10) * 256);
+  o.write_shift(
+    4,
+    0
+    /*ixfe*/
+  );
+  var flags = 0;
+  if (col.hidden) flags |= 1;
+  if (typeof p.width == "number") flags |= 2;
+  if (col.level) flags |= col.level << 8;
+  o.write_shift(2, flags);
+  return o;
+}
 var BrtMarginKeys = ["left", "right", "top", "bottom", "header", "footer"];
 function parse_BrtMargins(data) {
   var margins = {};
@@ -31230,10 +31994,84 @@ function parse_BrtMargins(data) {
   });
   return margins;
 }
+function write_BrtMargins(margins, o) {
+  if (o == null) o = new_buf(6 * 8);
+  default_margins(margins);
+  BrtMarginKeys.forEach(function(k) {
+    write_Xnum(margins[k], o);
+  });
+  return o;
+}
 function parse_BrtBeginWsView(data) {
   var f = data.read_shift(2);
   data.l += 28;
   return { RTL: f & 32 };
+}
+function write_BrtBeginWsView(ws, Workbook, o) {
+  if (o == null) o = new_buf(30);
+  var f = 924;
+  if ((((Workbook || {}).Views || [])[0] || {}).RTL) f |= 32;
+  o.write_shift(2, f);
+  o.write_shift(4, 0);
+  o.write_shift(4, 0);
+  o.write_shift(4, 0);
+  o.write_shift(1, 0);
+  o.write_shift(1, 0);
+  o.write_shift(2, 0);
+  o.write_shift(2, 100);
+  o.write_shift(2, 0);
+  o.write_shift(2, 0);
+  o.write_shift(2, 0);
+  o.write_shift(4, 0);
+  return o;
+}
+function write_BrtCellIgnoreEC(ref) {
+  var o = new_buf(24);
+  o.write_shift(4, 4);
+  o.write_shift(4, 1);
+  write_UncheckedRfX(ref, o);
+  return o;
+}
+function write_BrtSheetProtection(sp, o) {
+  if (o == null) o = new_buf(16 * 4 + 2);
+  o.write_shift(2, sp.password ? crypto_CreatePasswordVerifier_Method1(sp.password) : 0);
+  o.write_shift(4, 1);
+  [
+    ["objects", false],
+    // fObjects
+    ["scenarios", false],
+    // fScenarios
+    ["formatCells", true],
+    // fFormatCells
+    ["formatColumns", true],
+    // fFormatColumns
+    ["formatRows", true],
+    // fFormatRows
+    ["insertColumns", true],
+    // fInsertColumns
+    ["insertRows", true],
+    // fInsertRows
+    ["insertHyperlinks", true],
+    // fInsertHyperlinks
+    ["deleteColumns", true],
+    // fDeleteColumns
+    ["deleteRows", true],
+    // fDeleteRows
+    ["selectLockedCells", false],
+    // fSelLockedCells
+    ["sort", true],
+    // fSort
+    ["autoFilter", true],
+    // fAutoFilter
+    ["pivotTables", true],
+    // fPivotTables
+    ["selectUnlockedCells", false]
+    // fSelUnlockedCells
+  ].forEach(function(n) {
+    if (n[1]) o.write_shift(4, sp[n[0]] != null && !sp[n[0]] ? 1 : 0);
+    else o.write_shift(4, sp[n[0]] != null && sp[n[0]] ? 0 : 1);
+  });
+  return o;
 }
 function parse_BrtDVal() {
 }
@@ -31619,6 +32457,253 @@ function parse_ws_bin(data, _opts, idx, rels, wb, themes, styles) {
   if (rowinfo.length > 0) s["!rows"] = rowinfo;
   return s;
 }
+function write_ws_bin_cell(ba, cell, R, C, opts, ws, last_seen) {
+  if (cell.v === void 0) return false;
+  var vv = "";
+  switch (cell.t) {
+    case "b":
+      vv = cell.v ? "1" : "0";
+      break;
+    case "d":
+      cell = dup(cell);
+      cell.z = cell.z || table_fmt[14];
+      cell.v = datenum(parseDate(cell.v));
+      cell.t = "n";
+      break;
+    /* falls through */
+    case "n":
+    case "e":
+      vv = "" + cell.v;
+      break;
+    default:
+      vv = cell.v;
+      break;
+  }
+  var o = { r: R, c: C };
+  o.s = get_cell_style(opts.cellXfs, cell, opts);
+  if (cell.l) ws["!links"].push([encode_cell(o), cell.l]);
+  if (cell.c) ws["!comments"].push([encode_cell(o), cell.c]);
+  switch (cell.t) {
+    case "s":
+    case "str":
+      if (opts.bookSST) {
+        vv = get_sst_id(opts.Strings, cell.v, opts.revStrings);
+        o.t = "s";
+        o.v = vv;
+        if (last_seen) write_record(ba, 18, write_BrtShortIsst(cell, o));
+        else write_record(ba, 7, write_BrtCellIsst(cell, o));
+      } else {
+        o.t = "str";
+        if (last_seen) write_record(ba, 17, write_BrtShortSt(cell, o));
+        else write_record(ba, 6, write_BrtCellSt(cell, o));
+      }
+      return true;
+    case "n":
+      if (cell.v == (cell.v | 0) && cell.v > -1e3 && cell.v < 1e3) {
+        if (last_seen) write_record(ba, 13, write_BrtShortRk(cell, o));
+        else write_record(ba, 2, write_BrtCellRk(cell, o));
+      } else {
+        if (last_seen) write_record(ba, 16, write_BrtShortReal(cell, o));
+        else write_record(ba, 5, write_BrtCellReal(cell, o));
+      }
+      return true;
+    case "b":
+      o.t = "b";
+      if (last_seen) write_record(ba, 15, write_BrtShortBool(cell, o));
+      else write_record(ba, 4, write_BrtCellBool(cell, o));
+      return true;
+    case "e":
+      o.t = "e";
+      if (last_seen) write_record(ba, 14, write_BrtShortError(cell, o));
+      else write_record(ba, 3, write_BrtCellError(cell, o));
+      return true;
+  }
+  if (last_seen) write_record(ba, 12, write_BrtShortBlank(cell, o));
+  else write_record(ba, 1, write_BrtCellBlank(cell, o));
+  return true;
+}
+function write_CELLTABLE(ba, ws, idx, opts) {
+  var range = safe_decode_range(ws["!ref"] || "A1"), ref, rr = "", cols = [];
+  write_record(
+    ba,
+    145
+    /* BrtBeginSheetData */
+  );
+  var dense = Array.isArray(ws);
+  var cap = range.e.r;
+  if (ws["!rows"]) cap = Math.max(range.e.r, ws["!rows"].length - 1);
+  for (var R = range.s.r; R <= cap; ++R) {
+    rr = encode_row(R);
+    write_row_header(ba, ws, range, R);
+    var last_seen = false;
+    if (R <= range.e.r) for (var C = range.s.c; C <= range.e.c; ++C) {
+      if (R === range.s.r) cols[C] = encode_col(C);
+      ref = cols[C] + rr;
+      var cell = dense ? (ws[R] || [])[C] : ws[ref];
+      if (!cell) {
+        last_seen = false;
+        continue;
+      }
+      last_seen = write_ws_bin_cell(ba, cell, R, C, opts, ws, last_seen);
+    }
+  }
+  write_record(
+    ba,
+    146
+    /* BrtEndSheetData */
+  );
+}
+function write_MERGECELLS(ba, ws) {
+  if (!ws || !ws["!merges"]) return;
+  write_record(ba, 177, write_BrtBeginMergeCells(ws["!merges"].length));
+  ws["!merges"].forEach(function(m) {
+    write_record(ba, 176, write_BrtMergeCell(m));
+  });
+  write_record(
+    ba,
+    178
+    /* BrtEndMergeCells */
+  );
+}
+function write_COLINFOS(ba, ws) {
+  if (!ws || !ws["!cols"]) return;
+  write_record(
+    ba,
+    390
+    /* BrtBeginColInfos */
+  );
+  ws["!cols"].forEach(function(m, i) {
+    if (m) write_record(ba, 60, write_BrtColInfo(i, m));
+  });
+  write_record(
+    ba,
+    391
+    /* BrtEndColInfos */
+  );
+}
+function write_IGNOREECS(ba, ws) {
+  if (!ws || !ws["!ref"]) return;
+  write_record(
+    ba,
+    648
+    /* BrtBeginCellIgnoreECs */
+  );
+  write_record(ba, 649, write_BrtCellIgnoreEC(safe_decode_range(ws["!ref"])));
+  write_record(
+    ba,
+    650
+    /* BrtEndCellIgnoreECs */
+  );
+}
+function write_HLINKS(ba, ws, rels) {
+  ws["!links"].forEach(function(l) {
+    if (!l[1].Target) return;
+    var rId = add_rels(rels, -1, l[1].Target.replace(/#.*$/, ""), RELS.HLINK);
+    write_record(ba, 494, write_BrtHLink(l, rId));
+  });
+  delete ws["!links"];
+}
+function write_LEGACYDRAWING(ba, ws, idx, rels) {
+  if (ws["!comments"].length > 0) {
+    var rId = add_rels(rels, -1, "../drawings/vmlDrawing" + (idx + 1) + ".vml", RELS.VML);
+    write_record(ba, 551, write_RelID("rId" + rId));
+    ws["!legacy"] = rId;
+  }
+}
+function write_AUTOFILTER(ba, ws, wb, idx) {
+  if (!ws["!autofilter"]) return;
+  var data = ws["!autofilter"];
+  var ref = typeof data.ref === "string" ? data.ref : encode_range(data.ref);
+  if (!wb.Workbook) wb.Workbook = { Sheets: [] };
+  if (!wb.Workbook.Names) wb.Workbook.Names = [];
+  var names = wb.Workbook.Names;
+  var range = decode_range(ref);
+  if (range.s.r == range.e.r) {
+    range.e.r = decode_range(ws["!ref"]).e.r;
+    ref = encode_range(range);
+  }
+  for (var i = 0; i < names.length; ++i) {
+    var name = names[i];
+    if (name.Name != "_xlnm._FilterDatabase") continue;
+    if (name.Sheet != idx) continue;
+    name.Ref = "'" + wb.SheetNames[idx] + "'!" + ref;
+    break;
+  }
+  if (i == names.length) names.push({ Name: "_xlnm._FilterDatabase", Sheet: idx, Ref: "'" + wb.SheetNames[idx] + "'!" + ref });
+  write_record(ba, 161, write_UncheckedRfX(safe_decode_range(ref)));
+  write_record(
+    ba,
+    162
+    /* BrtEndAFilter */
+  );
+}
+function write_WSVIEWS2(ba, ws, Workbook) {
+  write_record(
+    ba,
+    133
+    /* BrtBeginWsViews */
+  );
+  {
+    write_record(ba, 137, write_BrtBeginWsView(ws, Workbook));
+    write_record(
+      ba,
+      138
+      /* BrtEndWsView */
+    );
+  }
+  write_record(
+    ba,
+    134
+    /* BrtEndWsViews */
+  );
+}
+function write_WSFMTINFO() {
+}
+function write_SHEETPROTECT(ba, ws) {
+  if (!ws["!protect"]) return;
+  write_record(ba, 535, write_BrtSheetProtection(ws["!protect"]));
+}
+function write_ws_bin(idx, opts, wb, rels) {
+  var ba = buf_array();
+  var s = wb.SheetNames[idx], ws = wb.Sheets[s] || {};
+  var c = s;
+  try {
+    if (wb && wb.Workbook) c = wb.Workbook.Sheets[idx].CodeName || c;
+  } catch (e) {
+  }
+  var r = safe_decode_range(ws["!ref"] || "A1");
+  if (r.e.c > 16383 || r.e.r > 1048575) {
+    if (opts.WTF) throw new Error("Range " + (ws["!ref"] || "A1") + " exceeds format limit A1:XFD1048576");
+    r.e.c = Math.min(r.e.c, 16383);
+    r.e.r = Math.min(r.e.c, 1048575);
+  }
+  ws["!links"] = [];
+  ws["!comments"] = [];
+  write_record(
+    ba,
+    129
+    /* BrtBeginSheet */
+  );
+  if (wb.vbaraw || ws["!outline"]) write_record(ba, 147, write_BrtWsProp(c, ws["!outline"]));
+  write_record(ba, 148, write_BrtWsDim(r));
+  write_WSVIEWS2(ba, ws, wb.Workbook);
+  write_WSFMTINFO(ba, ws);
+  write_COLINFOS(ba, ws, idx, opts, wb);
+  write_CELLTABLE(ba, ws, idx, opts, wb);
+  write_SHEETPROTECT(ba, ws);
+  write_AUTOFILTER(ba, ws, wb, idx);
+  write_MERGECELLS(ba, ws);
+  write_HLINKS(ba, ws, rels);
+  if (ws["!margins"]) write_record(ba, 476, write_BrtMargins(ws["!margins"]));
+  if (!opts || opts.ignoreEC || opts.ignoreEC == void 0) write_IGNOREECS(ba, ws);
+  write_LEGACYDRAWING(ba, ws, idx, rels);
+  write_record(
+    ba,
+    130
+    /* BrtEndSheet */
+  );
+  return ba.end();
+}
 function parse_Cache(data) {
   var col = [];
   var num = data.match(/^<c:numCache>/);
@@ -31807,6 +32892,11 @@ function parse_wb_defaults(wb) {
   push_defaults_array(wb.Sheets, SheetDef);
   _ssfopts.date1904 = parsexmlbool(wb.WBProps.date1904);
 }
+function safe1904(wb) {
+  if (!wb.Workbook) return "false";
+  if (!wb.Workbook.WBProps) return "false";
+  return parsexmlbool(wb.Workbook.WBProps.date1904) ? "true" : "false";
+}
 var badchars = /* @__PURE__ */ "][*?/\\".split("");
 function check_ws_name(n, safe) {
   if (n.length > 31) {
@@ -31820,6 +32910,23 @@ function check_ws_name(n, safe) {
     _good = false;
   });
   return _good;
+}
+function check_wb_names(N, S, codes) {
+  N.forEach(function(n, i) {
+    check_ws_name(n);
+    for (var j = 0; j < i; ++j) if (n == N[j]) throw new Error("Duplicate Sheet Name: " + n);
+    if (codes) {
+      var cn = S && S[i] && S[i].CodeName || n;
+      if (cn.charCodeAt(0) == 95 && cn.length > 22) throw new Error("Bad Code Name: Worksheet" + cn);
+    }
+  });
+}
+function check_wb(wb) {
+  if (!wb || !wb.SheetNames || !wb.Sheets) throw new Error("Invalid Workbook");
+  if (!wb.SheetNames.length) throw new Error("Workbook is empty");
+  var Sheets = wb.Workbook && wb.Workbook.Sheets || [];
+  check_wb_names(wb.SheetNames, Sheets, !!wb.vbaraw);
+  for (var i = 0; i < wb.SheetNames.length; ++i) check_ws(wb.Sheets[wb.SheetNames[i]], wb.SheetNames[i], i);
 }
 var wbnsregex = /<\w+:workbook/;
 function parse_wb_xml(data, opts) {
@@ -32057,6 +33164,74 @@ function parse_wb_xml(data, opts) {
   parse_wb_defaults(wb);
   return wb;
 }
+function write_wb_xml(wb) {
+  var o = [XML_HEADER];
+  o[o.length] = writextag("workbook", null, {
+    "xmlns": XMLNS_main[0],
+    //'xmlns:mx': XMLNS.mx,
+    //'xmlns:s': XMLNS_main[0],
+    "xmlns:r": XMLNS.r
+  });
+  var write_names = wb.Workbook && (wb.Workbook.Names || []).length > 0;
+  var workbookPr = { codeName: "ThisWorkbook" };
+  if (wb.Workbook && wb.Workbook.WBProps) {
+    WBPropsDef.forEach(function(x) {
+      if (wb.Workbook.WBProps[x[0]] == null) return;
+      if (wb.Workbook.WBProps[x[0]] == x[1]) return;
+      workbookPr[x[0]] = wb.Workbook.WBProps[x[0]];
+    });
+    if (wb.Workbook.WBProps.CodeName) {
+      workbookPr.codeName = wb.Workbook.WBProps.CodeName;
+      delete workbookPr.CodeName;
+    }
+  }
+  o[o.length] = writextag("workbookPr", null, workbookPr);
+  var sheets = wb.Workbook && wb.Workbook.Sheets || [];
+  var i = 0;
+  if (sheets && sheets[0] && !!sheets[0].Hidden) {
+    o[o.length] = "<bookViews>";
+    for (i = 0; i != wb.SheetNames.length; ++i) {
+      if (!sheets[i]) break;
+      if (!sheets[i].Hidden) break;
+    }
+    if (i == wb.SheetNames.length) i = 0;
+    o[o.length] = '<workbookView firstSheet="' + i + '" activeTab="' + i + '"/>';
+    o[o.length] = "</bookViews>";
+  }
+  o[o.length] = "<sheets>";
+  for (i = 0; i != wb.SheetNames.length; ++i) {
+    var sht = { name: escapexml(wb.SheetNames[i].slice(0, 31)) };
+    sht.sheetId = "" + (i + 1);
+    sht["r:id"] = "rId" + (i + 1);
+    if (sheets[i]) switch (sheets[i].Hidden) {
+      case 1:
+        sht.state = "hidden";
+        break;
+      case 2:
+        sht.state = "veryHidden";
+        break;
+    }
+    o[o.length] = writextag("sheet", null, sht);
+  }
+  o[o.length] = "</sheets>";
+  if (write_names) {
+    o[o.length] = "<definedNames>";
+    if (wb.Workbook && wb.Workbook.Names) wb.Workbook.Names.forEach(function(n) {
+      var d = { name: n.Name };
+      if (n.Comment) d.comment = n.Comment;
+      if (n.Sheet != null) d.localSheetId = "" + n.Sheet;
+      if (n.Hidden) d.hidden = "1";
+      if (!n.Ref) return;
+      o[o.length] = writextag("definedName", escapexml(n.Ref), d);
+    });
+    o[o.length] = "</definedNames>";
+  }
+  if (o.length > 2) {
+    o[o.length] = "</workbook>";
+    o[1] = o[1].replace("/>", ">");
+  }
+  return o.join("");
+}
 function parse_BrtBundleSh(data, length) {
   var z = {};
   z.Hidden = data.read_shift(4);
@@ -32064,6 +33239,14 @@ function parse_BrtBundleSh(data, length) {
   z.strRelID = parse_RelID(data, length - 8);
   z.name = parse_XLWideString(data);
   return z;
+}
+function write_BrtBundleSh(data, o) {
+  if (!o) o = new_buf(127);
+  o.write_shift(4, data.Hidden);
+  o.write_shift(4, data.iTabID);
+  write_RelID(data.strRelID, o);
+  write_XLWideString(data.name.slice(0, 31), o);
+  return o.length > o.l ? o.slice(0, o.l) : o;
 }
 function parse_BrtWbProp(data, length) {
   var o = {};
@@ -32087,6 +33270,17 @@ function parse_BrtWbProp(data, length) {
   o.showPivotChartFilter = !!(flags & 32768);
   o.updateLinks = ["userSet", "never", "always"][flags >> 8 & 3];
   return o;
+}
+function write_BrtWbProp(data, o) {
+  if (!o) o = new_buf(72);
+  var flags = 0;
+  if (data) {
+    if (data.filterPrivacy) flags |= 8;
+  }
+  o.write_shift(4, flags);
+  o.write_shift(4, 0);
+  write_XLSBCodeName(data && data.CodeName || "ThisWorkbook", o);
+  return o.slice(0, o.l);
 }
 function parse_BrtFRTArchID$(data, length) {
   var o = {};
@@ -32248,6 +33442,84 @@ function parse_wb_bin(data, opts) {
   wb.supbooks = supbooks;
   return wb;
 }
+function write_BUNDLESHS(ba, wb) {
+  write_record(
+    ba,
+    143
+    /* BrtBeginBundleShs */
+  );
+  for (var idx = 0; idx != wb.SheetNames.length; ++idx) {
+    var viz = wb.Workbook && wb.Workbook.Sheets && wb.Workbook.Sheets[idx] && wb.Workbook.Sheets[idx].Hidden || 0;
+    var d = { Hidden: viz, iTabID: idx + 1, strRelID: "rId" + (idx + 1), name: wb.SheetNames[idx] };
+    write_record(ba, 156, write_BrtBundleSh(d));
+  }
+  write_record(
+    ba,
+    144
+    /* BrtEndBundleShs */
+  );
+}
+function write_BrtFileVersion(data, o) {
+  if (!o) o = new_buf(127);
+  for (var i = 0; i != 4; ++i) o.write_shift(4, 0);
+  write_XLWideString("SheetJS", o);
+  write_XLWideString(XLSX.version, o);
+  write_XLWideString(XLSX.version, o);
+  write_XLWideString("7262", o);
+  return o.length > o.l ? o.slice(0, o.l) : o;
+}
+function write_BrtBookView(idx, o) {
+  if (!o) o = new_buf(29);
+  o.write_shift(-4, 0);
+  o.write_shift(-4, 460);
+  o.write_shift(4, 28800);
+  o.write_shift(4, 17600);
+  o.write_shift(4, 500);
+  o.write_shift(4, idx);
+  o.write_shift(4, idx);
+  var flags = 120;
+  o.write_shift(1, flags);
+  return o.length > o.l ? o.slice(0, o.l) : o;
+}
+function write_BOOKVIEWS(ba, wb) {
+  if (!wb.Workbook || !wb.Workbook.Sheets) return;
+  var sheets = wb.Workbook.Sheets;
+  var i = 0, vistab = -1, hidden = -1;
+  for (; i < sheets.length; ++i) {
+    if (!sheets[i] || !sheets[i].Hidden && vistab == -1) vistab = i;
+    else if (sheets[i].Hidden == 1 && hidden == -1) hidden = i;
+  }
+  if (hidden > vistab) return;
+  write_record(
+    ba,
+    135
+    /* BrtBeginBookViews */
+  );
+  write_record(ba, 158, write_BrtBookView(vistab));
+  write_record(
+    ba,
+    136
+    /* BrtEndBookViews */
+  );
+}
+function write_wb_bin(wb, opts) {
+  var ba = buf_array();
+  write_record(
+    ba,
+    131
+    /* BrtBeginBook */
+  );
+  write_record(ba, 128, write_BrtFileVersion());
+  write_record(ba, 153, write_BrtWbProp(wb.Workbook && wb.Workbook.WBProps || null));
+  write_BOOKVIEWS(ba, wb, opts);
+  write_BUNDLESHS(ba, wb, opts);
+  write_record(
+    ba,
+    132
+    /* BrtEndBook */
+  );
+  return ba.end();
+}
 function parse_wb(data, name, opts) {
   if (name.slice(-4) === ".bin") return parse_wb_bin(data, opts);
   return parse_wb_xml(data, opts);
@@ -32294,6 +33566,24 @@ function parse_xlink(data, rel, name, opts) {
 function parse_xlmeta(data, name, opts) {
   if (name.slice(-4) === ".bin") return parse_xlmeta_bin(data, name, opts);
   return parse_xlmeta_xml(data, name, opts);
+}
+function write_wb(wb, name, opts) {
+  return (name.slice(-4) === ".bin" ? write_wb_bin : write_wb_xml)(wb, opts);
+}
+function write_ws(data, name, opts, wb, rels) {
+  return (name.slice(-4) === ".bin" ? write_ws_bin : write_ws_xml)(data, opts, wb, rels);
+}
+function write_sty(data, name, opts) {
+  return (name.slice(-4) === ".bin" ? write_sty_bin : write_sty_xml)(data, opts);
+}
+function write_sst(data, name, opts) {
+  return (name.slice(-4) === ".bin" ? write_sst_bin : write_sst_xml)(data, opts);
+}
+function write_cmnt(data, name, opts) {
+  return (name.slice(-4) === ".bin" ? write_comments_bin : write_comments_xml)(data, opts);
+}
+function write_xlmeta(name) {
+  return (name.slice(-4) === ".bin" ? write_xlmeta_bin : write_xlmeta_xml)();
 }
 var attregexg2 = /([\w:]+)=((?:")([^"]*)(?:")|(?:')([^']*)(?:'))/g;
 var attregex2 = /([\w:]+)=((?:")(?:[^"]*)(?:")|(?:')(?:[^']*)(?:'))/;
@@ -33575,6 +34865,253 @@ function parse_xlml(data, opts) {
       return parse_xlml_xml(a2s(data), opts);
   }
 }
+function write_props_xlml(wb, opts) {
+  var o = [];
+  if (wb.Props) o.push(xlml_write_docprops(wb.Props, opts));
+  if (wb.Custprops) o.push(xlml_write_custprops(wb.Props, wb.Custprops, opts));
+  return o.join("");
+}
+function write_wb_xlml() {
+  return "";
+}
+function write_sty_xlml(wb, opts) {
+  var styles = ['<Style ss:ID="Default" ss:Name="Normal"><NumberFormat/></Style>'];
+  opts.cellXfs.forEach(function(xf, id) {
+    var payload = [];
+    payload.push(writextag("NumberFormat", null, { "ss:Format": escapexml(table_fmt[xf.numFmtId]) }));
+    var o = (
+      /*::(*/
+      { "ss:ID": "s" + (21 + id) }
+    );
+    styles.push(writextag("Style", payload.join(""), o));
+  });
+  return writextag("Styles", styles.join(""));
+}
+function write_name_xlml(n) {
+  return writextag("NamedRange", null, { "ss:Name": n.Name, "ss:RefersTo": "=" + a1_to_rc(n.Ref, { r: 0, c: 0 }) });
+}
+function write_names_xlml(wb) {
+  if (!((wb || {}).Workbook || {}).Names) return "";
+  var names = wb.Workbook.Names;
+  var out = [];
+  for (var i = 0; i < names.length; ++i) {
+    var n = names[i];
+    if (n.Sheet != null) continue;
+    if (n.Name.match(/^_xlfn\./)) continue;
+    out.push(write_name_xlml(n));
+  }
+  return writextag("Names", out.join(""));
+}
+function write_ws_xlml_names(ws, opts, idx, wb) {
+  if (!ws) return "";
+  if (!((wb || {}).Workbook || {}).Names) return "";
+  var names = wb.Workbook.Names;
+  var out = [];
+  for (var i = 0; i < names.length; ++i) {
+    var n = names[i];
+    if (n.Sheet != idx) continue;
+    if (n.Name.match(/^_xlfn\./)) continue;
+    out.push(write_name_xlml(n));
+  }
+  return out.join("");
+}
+function write_ws_xlml_wsopts(ws, opts, idx, wb) {
+  if (!ws) return "";
+  var o = [];
+  if (ws["!margins"]) {
+    o.push("<PageSetup>");
+    if (ws["!margins"].header) o.push(writextag("Header", null, { "x:Margin": ws["!margins"].header }));
+    if (ws["!margins"].footer) o.push(writextag("Footer", null, { "x:Margin": ws["!margins"].footer }));
+    o.push(writextag("PageMargins", null, {
+      "x:Bottom": ws["!margins"].bottom || "0.75",
+      "x:Left": ws["!margins"].left || "0.7",
+      "x:Right": ws["!margins"].right || "0.7",
+      "x:Top": ws["!margins"].top || "0.75"
+    }));
+    o.push("</PageSetup>");
+  }
+  if (wb && wb.Workbook && wb.Workbook.Sheets && wb.Workbook.Sheets[idx]) {
+    if (wb.Workbook.Sheets[idx].Hidden) o.push(writextag("Visible", wb.Workbook.Sheets[idx].Hidden == 1 ? "SheetHidden" : "SheetVeryHidden", {}));
+    else {
+      for (var i = 0; i < idx; ++i) if (wb.Workbook.Sheets[i] && !wb.Workbook.Sheets[i].Hidden) break;
+      if (i == idx) o.push("<Selected/>");
+    }
+  }
+  if (((((wb || {}).Workbook || {}).Views || [])[0] || {}).RTL) o.push("<DisplayRightToLeft/>");
+  if (ws["!protect"]) {
+    o.push(writetag("ProtectContents", "True"));
+    if (ws["!protect"].objects) o.push(writetag("ProtectObjects", "True"));
+    if (ws["!protect"].scenarios) o.push(writetag("ProtectScenarios", "True"));
+    if (ws["!protect"].selectLockedCells != null && !ws["!protect"].selectLockedCells) o.push(writetag("EnableSelection", "NoSelection"));
+    else if (ws["!protect"].selectUnlockedCells != null && !ws["!protect"].selectUnlockedCells) o.push(writetag("EnableSelection", "UnlockedCells"));
+    [
+      ["formatCells", "AllowFormatCells"],
+      ["formatColumns", "AllowSizeCols"],
+      ["formatRows", "AllowSizeRows"],
+      ["insertColumns", "AllowInsertCols"],
+      ["insertRows", "AllowInsertRows"],
+      ["insertHyperlinks", "AllowInsertHyperlinks"],
+      ["deleteColumns", "AllowDeleteCols"],
+      ["deleteRows", "AllowDeleteRows"],
+      ["sort", "AllowSort"],
+      ["autoFilter", "AllowFilter"],
+      ["pivotTables", "AllowUsePivotTables"]
+    ].forEach(function(x) {
+      if (ws["!protect"][x[0]]) o.push("<" + x[1] + "/>");
+    });
+  }
+  if (o.length == 0) return "";
+  return writextag("WorksheetOptions", o.join(""), { xmlns: XLMLNS.x });
+}
+function write_ws_xlml_comment(comments) {
+  return comments.map(function(c) {
+    var t = xlml_unfixstr(c.t || "");
+    var d = writextag("ss:Data", t, { "xmlns": "http://www.w3.org/TR/REC-html40" });
+    return writextag("Comment", d, { "ss:Author": c.a });
+  }).join("");
+}
+function write_ws_xlml_cell(cell, ref, ws, opts, idx, wb, addr) {
+  if (!cell || cell.v == void 0 && cell.f == void 0) return "";
+  var attr = {};
+  if (cell.f) attr["ss:Formula"] = "=" + escapexml(a1_to_rc(cell.f, addr));
+  if (cell.F && cell.F.slice(0, ref.length) == ref) {
+    var end = decode_cell(cell.F.slice(ref.length + 1));
+    attr["ss:ArrayRange"] = "RC:R" + (end.r == addr.r ? "" : "[" + (end.r - addr.r) + "]") + "C" + (end.c == addr.c ? "" : "[" + (end.c - addr.c) + "]");
+  }
+  if (cell.l && cell.l.Target) {
+    attr["ss:HRef"] = escapexml(cell.l.Target);
+    if (cell.l.Tooltip) attr["x:HRefScreenTip"] = escapexml(cell.l.Tooltip);
+  }
+  if (ws["!merges"]) {
+    var marr = ws["!merges"];
+    for (var mi = 0; mi != marr.length; ++mi) {
+      if (marr[mi].s.c != addr.c || marr[mi].s.r != addr.r) continue;
+      if (marr[mi].e.c > marr[mi].s.c) attr["ss:MergeAcross"] = marr[mi].e.c - marr[mi].s.c;
+      if (marr[mi].e.r > marr[mi].s.r) attr["ss:MergeDown"] = marr[mi].e.r - marr[mi].s.r;
+    }
+  }
+  var t = "", p = "";
+  switch (cell.t) {
+    case "z":
+      if (!opts.sheetStubs) return "";
+      break;
+    case "n":
+      t = "Number";
+      p = String(cell.v);
+      break;
+    case "b":
+      t = "Boolean";
+      p = cell.v ? "1" : "0";
+      break;
+    case "e":
+      t = "Error";
+      p = BErr[cell.v];
+      break;
+    case "d":
+      t = "DateTime";
+      p = new Date(cell.v).toISOString();
+      if (cell.z == null) cell.z = cell.z || table_fmt[14];
+      break;
+    case "s":
+      t = "String";
+      p = escapexlml(cell.v || "");
+      break;
+  }
+  var os = get_cell_style(opts.cellXfs, cell, opts);
+  attr["ss:StyleID"] = "s" + (21 + os);
+  attr["ss:Index"] = addr.c + 1;
+  var _v = cell.v != null ? p : "";
+  var m = cell.t == "z" ? "" : '<Data ss:Type="' + t + '">' + _v + "</Data>";
+  if ((cell.c || []).length > 0) m += write_ws_xlml_comment(cell.c);
+  return writextag("Cell", m, attr);
+}
+function write_ws_xlml_row(R, row) {
+  var o = '<Row ss:Index="' + (R + 1) + '"';
+  if (row) {
+    if (row.hpt && !row.hpx) row.hpx = pt2px(row.hpt);
+    if (row.hpx) o += ' ss:AutoFitHeight="0" ss:Height="' + row.hpx + '"';
+    if (row.hidden) o += ' ss:Hidden="1"';
+  }
+  return o + ">";
+}
+function write_ws_xlml_table(ws, opts, idx, wb) {
+  if (!ws["!ref"]) return "";
+  var range = safe_decode_range(ws["!ref"]);
+  var marr = ws["!merges"] || [], mi = 0;
+  var o = [];
+  if (ws["!cols"]) ws["!cols"].forEach(function(n, i) {
+    process_col(n);
+    var w = !!n.width;
+    var p = col_obj_w(i, n);
+    var k = { "ss:Index": i + 1 };
+    if (w) k["ss:Width"] = width2px(p.width);
+    if (n.hidden) k["ss:Hidden"] = "1";
+    o.push(writextag("Column", null, k));
+  });
+  var dense = Array.isArray(ws);
+  for (var R = range.s.r; R <= range.e.r; ++R) {
+    var row = [write_ws_xlml_row(R, (ws["!rows"] || [])[R])];
+    for (var C = range.s.c; C <= range.e.c; ++C) {
+      var skip = false;
+      for (mi = 0; mi != marr.length; ++mi) {
+        if (marr[mi].s.c > C) continue;
+        if (marr[mi].s.r > R) continue;
+        if (marr[mi].e.c < C) continue;
+        if (marr[mi].e.r < R) continue;
+        if (marr[mi].s.c != C || marr[mi].s.r != R) skip = true;
+        break;
+      }
+      if (skip) continue;
+      var addr = { r: R, c: C };
+      var ref = encode_cell(addr), cell = dense ? (ws[R] || [])[C] : ws[ref];
+      row.push(write_ws_xlml_cell(cell, ref, ws, opts, idx, wb, addr));
+    }
+    row.push("</Row>");
+    if (row.length > 2) o.push(row.join(""));
+  }
+  return o.join("");
+}
+function write_ws_xlml(idx, opts, wb) {
+  var o = [];
+  var s = wb.SheetNames[idx];
+  var ws = wb.Sheets[s];
+  var t = ws ? write_ws_xlml_names(ws, opts, idx, wb) : "";
+  if (t.length > 0) o.push("<Names>" + t + "</Names>");
+  t = ws ? write_ws_xlml_table(ws, opts, idx, wb) : "";
+  if (t.length > 0) o.push("<Table>" + t + "</Table>");
+  o.push(write_ws_xlml_wsopts(ws, opts, idx, wb));
+  return o.join("");
+}
+function write_xlml(wb, opts) {
+  if (!opts) opts = {};
+  if (!wb.SSF) wb.SSF = dup(table_fmt);
+  if (wb.SSF) {
+    make_ssf();
+    SSF_load_table(wb.SSF);
+    opts.revssf = evert_num(wb.SSF);
+    opts.revssf[wb.SSF[65535]] = 0;
+    opts.ssf = wb.SSF;
+    opts.cellXfs = [];
+    get_cell_style(opts.cellXfs, {}, { revssf: { "General": 0 } });
+  }
+  var d = [];
+  d.push(write_props_xlml(wb, opts));
+  d.push(write_wb_xlml(wb, opts));
+  d.push("");
+  d.push("");
+  for (var i = 0; i < wb.SheetNames.length; ++i)
+    d.push(writextag("Worksheet", write_ws_xlml(i, opts, wb), { "ss:Name": escapexml(wb.SheetNames[i]) }));
+  d[2] = write_sty_xlml(wb, opts);
+  d[3] = write_names_xlml(wb, opts);
+  return XML_HEADER + writextag("Workbook", d.join(""), {
+    "xmlns": XLMLNS.ss,
+    "xmlns:o": XLMLNS.o,
+    "xmlns:x": XLMLNS.x,
+    "xmlns:ss": XLMLNS.ss,
+    "xmlns:dt": XLMLNS.dt,
+    "xmlns:html": XLMLNS.html
+  });
+}
 function parse_compobj(obj) {
   var v = {};
   var o = obj.content;
@@ -34375,6 +35912,28 @@ function parse_xls_props(cfb, props, o) {
     delete props.TitlesOfParts;
   }
 }
+function write_xls_props(wb, cfb) {
+  var DSEntries = [], SEntries = [], CEntries = [];
+  var i = 0, Keys;
+  var DocSummaryRE = evert_key(DocSummaryPIDDSI, "n");
+  var SummaryRE = evert_key(SummaryPIDSI, "n");
+  if (wb.Props) {
+    Keys = keys(wb.Props);
+    for (i = 0; i < Keys.length; ++i) (Object.prototype.hasOwnProperty.call(DocSummaryRE, Keys[i]) ? DSEntries : Object.prototype.hasOwnProperty.call(SummaryRE, Keys[i]) ? SEntries : CEntries).push([Keys[i], wb.Props[Keys[i]]]);
+  }
+  if (wb.Custprops) {
+    Keys = keys(wb.Custprops);
+    for (i = 0; i < Keys.length; ++i) if (!Object.prototype.hasOwnProperty.call(wb.Props || {}, Keys[i])) (Object.prototype.hasOwnProperty.call(DocSummaryRE, Keys[i]) ? DSEntries : Object.prototype.hasOwnProperty.call(SummaryRE, Keys[i]) ? SEntries : CEntries).push([Keys[i], wb.Custprops[Keys[i]]]);
+  }
+  var CEntries2 = [];
+  for (i = 0; i < CEntries.length; ++i) {
+    if (XLSPSSkip.indexOf(CEntries[i][0]) > -1 || PseudoPropsPairs.indexOf(CEntries[i][0]) > -1) continue;
+    if (CEntries[i][1] == null) continue;
+    CEntries2.push(CEntries[i]);
+  }
+  if (SEntries.length) CFB.utils.cfb_add(cfb, "/SummaryInformation", write_PropertySetStream(SEntries, PSCLSID.SI, SummaryRE, SummaryPIDSI));
+  if (DSEntries.length || CEntries2.length) CFB.utils.cfb_add(cfb, "/DocumentSummaryInformation", write_PropertySetStream(DSEntries, PSCLSID.DSI, DocSummaryRE, DocSummaryPIDDSI, CEntries2.length ? CEntries2 : null, PSCLSID.UDI));
+}
 function parse_xlscfb(cfb, options) {
   if (!options) options = {};
   fix_read_opts(options);
@@ -34425,6 +35984,33 @@ function parse_xlscfb(cfb, options) {
   WorkbookP.Props = WorkbookP.Custprops = props;
   if (options.bookFiles) WorkbookP.cfb = cfb;
   return WorkbookP;
+}
+function write_xlscfb(wb, opts) {
+  var o = opts || {};
+  var cfb = CFB.utils.cfb_new({ root: "R" });
+  var wbpath = "/Workbook";
+  switch (o.bookType || "xls") {
+    case "xls":
+      o.bookType = "biff8";
+    /* falls through */
+    case "xla":
+      if (!o.bookType) o.bookType = "xla";
+    /* falls through */
+    case "biff8":
+      wbpath = "/Workbook";
+      o.biff = 8;
+      break;
+    case "biff5":
+      wbpath = "/Book";
+      o.biff = 5;
+      break;
+    default:
+      throw new Error("invalid type " + o.bookType + " for XLS CFB");
+  }
+  CFB.utils.cfb_add(cfb, wbpath, write_biff_buf(wb, o));
+  if (o.biff == 8 && (wb.Props || wb.Custprops)) write_xls_props(wb, cfb);
+  if (o.biff == 8 && wb.vbaraw) fill_vba_xls(cfb, CFB.read(wb.vbaraw, { type: typeof wb.vbaraw == "string" ? "binary" : "buffer" }));
+  return cfb;
 }
 var XLSBRecordEnum = {
   /*::[*/
@@ -40397,6 +41983,402 @@ function write_biff_rec(ba, type, payload, length) {
     len > 0 && is_buf(payload)
   ) ba.push(payload);
 }
+function write_biff_continue(ba, type, payload, length) {
+  var len = length || (payload || []).length || 0;
+  if (len <= 8224) return write_biff_rec(ba, type, payload, len);
+  var t = type;
+  if (isNaN(t)) return;
+  var parts = payload.parts || [], sidx = 0;
+  var i = 0, w = 0;
+  while (w + (parts[sidx] || 8224) <= 8224) {
+    w += parts[sidx] || 8224;
+    sidx++;
+  }
+  var o = ba.next(4);
+  o.write_shift(2, t);
+  o.write_shift(2, w);
+  ba.push(payload.slice(i, i + w));
+  i += w;
+  while (i < len) {
+    o = ba.next(4);
+    o.write_shift(2, 60);
+    w = 0;
+    while (w + (parts[sidx] || 8224) <= 8224) {
+      w += parts[sidx] || 8224;
+      sidx++;
+    }
+    o.write_shift(2, w);
+    ba.push(payload.slice(i, i + w));
+    i += w;
+  }
+}
+function write_BIFF2Cell(out, r, c) {
+  if (!out) out = new_buf(7);
+  out.write_shift(2, r);
+  out.write_shift(2, c);
+  out.write_shift(2, 0);
+  out.write_shift(1, 0);
+  return out;
+}
+function write_BIFF2BERR(r, c, val, t) {
+  var out = new_buf(9);
+  write_BIFF2Cell(out, r, c);
+  write_Bes(val, t || "b", out);
+  return out;
+}
+function write_BIFF2LABEL(r, c, val) {
+  var out = new_buf(8 + 2 * val.length);
+  write_BIFF2Cell(out, r, c);
+  out.write_shift(1, val.length);
+  out.write_shift(val.length, val, "sbcs");
+  return out.l < out.length ? out.slice(0, out.l) : out;
+}
+function write_ws_biff2_cell(ba, cell, R, C) {
+  if (cell.v != null) switch (cell.t) {
+    case "d":
+    case "n":
+      var v = cell.t == "d" ? datenum(parseDate(cell.v)) : cell.v;
+      if (v == (v | 0) && v >= 0 && v < 65536)
+        write_biff_rec(ba, 2, write_BIFF2INT(R, C, v));
+      else
+        write_biff_rec(ba, 3, write_BIFF2NUM(R, C, v));
+      return;
+    case "b":
+    case "e":
+      write_biff_rec(ba, 5, write_BIFF2BERR(R, C, cell.v, cell.t));
+      return;
+    /* TODO: codepage, sst */
+    case "s":
+    case "str":
+      write_biff_rec(ba, 4, write_BIFF2LABEL(R, C, (cell.v || "").slice(0, 255)));
+      return;
+  }
+  write_biff_rec(ba, 1, write_BIFF2Cell(null, R, C));
+}
+function write_ws_biff2(ba, ws, idx, opts) {
+  var dense = Array.isArray(ws);
+  var range = safe_decode_range(ws["!ref"] || "A1"), ref, rr = "", cols = [];
+  if (range.e.c > 255 || range.e.r > 16383) {
+    if (opts.WTF) throw new Error("Range " + (ws["!ref"] || "A1") + " exceeds format limit A1:IV16384");
+    range.e.c = Math.min(range.e.c, 255);
+    range.e.r = Math.min(range.e.c, 16383);
+    ref = encode_range(range);
+  }
+  for (var R = range.s.r; R <= range.e.r; ++R) {
+    rr = encode_row(R);
+    for (var C = range.s.c; C <= range.e.c; ++C) {
+      if (R === range.s.r) cols[C] = encode_col(C);
+      ref = cols[C] + rr;
+      var cell = dense ? (ws[R] || [])[C] : ws[ref];
+      if (!cell) continue;
+      write_ws_biff2_cell(ba, cell, R, C, opts);
+    }
+  }
+}
+function write_biff2_buf(wb, opts) {
+  var o = opts || {};
+  if (DENSE != null && o.dense == null) o.dense = DENSE;
+  var ba = buf_array();
+  var idx = 0;
+  for (var i = 0; i < wb.SheetNames.length; ++i) if (wb.SheetNames[i] == o.sheet) idx = i;
+  if (idx == 0 && !!o.sheet && wb.SheetNames[0] != o.sheet) throw new Error("Sheet not found: " + o.sheet);
+  write_biff_rec(ba, o.biff == 4 ? 1033 : o.biff == 3 ? 521 : 9, write_BOF(wb, 16, o));
+  write_ws_biff2(ba, wb.Sheets[wb.SheetNames[idx]], idx, o, wb);
+  write_biff_rec(ba, 10);
+  return ba.end();
+}
+function write_FONTS_biff8(ba, data, opts) {
+  write_biff_rec(ba, 49, write_Font({
+    sz: 12,
+    color: { theme: 1 },
+    name: "Arial",
+    family: 2,
+    scheme: "minor"
+  }, opts));
+}
+function write_FMTS_biff8(ba, NF, opts) {
+  if (!NF) return;
+  [[5, 8], [23, 26], [41, 44], [
+    /*63*/
+    50,
+    /*66],[164,*/
+    392
+  ]].forEach(function(r) {
+    for (var i = r[0]; i <= r[1]; ++i) if (NF[i] != null) write_biff_rec(ba, 1054, write_Format(i, NF[i], opts));
+  });
+}
+function write_FEAT(ba, ws) {
+  var o = new_buf(19);
+  o.write_shift(4, 2151);
+  o.write_shift(4, 0);
+  o.write_shift(4, 0);
+  o.write_shift(2, 3);
+  o.write_shift(1, 1);
+  o.write_shift(4, 0);
+  write_biff_rec(ba, 2151, o);
+  o = new_buf(39);
+  o.write_shift(4, 2152);
+  o.write_shift(4, 0);
+  o.write_shift(4, 0);
+  o.write_shift(2, 3);
+  o.write_shift(1, 0);
+  o.write_shift(4, 0);
+  o.write_shift(2, 1);
+  o.write_shift(4, 4);
+  o.write_shift(2, 0);
+  write_Ref8U(safe_decode_range(ws["!ref"] || "A1"), o);
+  o.write_shift(4, 4);
+  write_biff_rec(ba, 2152, o);
+}
+function write_CELLXFS_biff8(ba, opts) {
+  for (var i = 0; i < 16; ++i) write_biff_rec(ba, 224, write_XF({ numFmtId: 0, style: true }, 0, opts));
+  opts.cellXfs.forEach(function(c) {
+    write_biff_rec(ba, 224, write_XF(c, 0, opts));
+  });
+}
+function write_ws_biff8_hlinks(ba, ws) {
+  for (var R = 0; R < ws["!links"].length; ++R) {
+    var HL = ws["!links"][R];
+    write_biff_rec(ba, 440, write_HLink(HL));
+    if (HL[1].Tooltip) write_biff_rec(ba, 2048, write_HLinkTooltip(HL));
+  }
+  delete ws["!links"];
+}
+function write_ws_cols_biff8(ba, cols) {
+  if (!cols) return;
+  var cnt = 0;
+  cols.forEach(function(col, idx) {
+    if (++cnt <= 256 && col) {
+      write_biff_rec(ba, 125, write_ColInfo(col_obj_w(idx, col), idx));
+    }
+  });
+}
+function write_ws_biff8_cell(ba, cell, R, C, opts) {
+  var os = 16 + get_cell_style(opts.cellXfs, cell, opts);
+  if (cell.v == null && !cell.bf) {
+    write_biff_rec(ba, 513, write_XLSCell(R, C, os));
+    return;
+  }
+  if (cell.bf) write_biff_rec(ba, 6, write_Formula(cell, R, C, opts, os));
+  else switch (cell.t) {
+    case "d":
+    case "n":
+      var v = cell.t == "d" ? datenum(parseDate(cell.v)) : cell.v;
+      write_biff_rec(ba, 515, write_Number(R, C, v, os, opts));
+      break;
+    case "b":
+    case "e":
+      write_biff_rec(ba, 517, write_BoolErr(R, C, cell.v, os, opts, cell.t));
+      break;
+    /* TODO: codepage, sst */
+    case "s":
+    case "str":
+      if (opts.bookSST) {
+        var isst = get_sst_id(opts.Strings, cell.v, opts.revStrings);
+        write_biff_rec(ba, 253, write_LabelSst(R, C, isst, os, opts));
+      } else write_biff_rec(ba, 516, write_Label(R, C, (cell.v || "").slice(0, 255), os, opts));
+      break;
+    default:
+      write_biff_rec(ba, 513, write_XLSCell(R, C, os));
+  }
+}
+function write_ws_biff8(idx, opts, wb) {
+  var ba = buf_array();
+  var s = wb.SheetNames[idx], ws = wb.Sheets[s] || {};
+  var _WB = (wb || {}).Workbook || {};
+  var _sheet = (_WB.Sheets || [])[idx] || {};
+  var dense = Array.isArray(ws);
+  var b8 = opts.biff == 8;
+  var ref, rr = "", cols = [];
+  var range = safe_decode_range(ws["!ref"] || "A1");
+  var MAX_ROWS = b8 ? 65536 : 16384;
+  if (range.e.c > 255 || range.e.r >= MAX_ROWS) {
+    if (opts.WTF) throw new Error("Range " + (ws["!ref"] || "A1") + " exceeds format limit A1:IV16384");
+    range.e.c = Math.min(range.e.c, 255);
+    range.e.r = Math.min(range.e.c, MAX_ROWS - 1);
+  }
+  write_biff_rec(ba, 2057, write_BOF(wb, 16, opts));
+  write_biff_rec(ba, 13, writeuint16(1));
+  write_biff_rec(ba, 12, writeuint16(100));
+  write_biff_rec(ba, 15, writebool(true));
+  write_biff_rec(ba, 17, writebool(false));
+  write_biff_rec(ba, 16, write_Xnum(1e-3));
+  write_biff_rec(ba, 95, writebool(true));
+  write_biff_rec(ba, 42, writebool(false));
+  write_biff_rec(ba, 43, writebool(false));
+  write_biff_rec(ba, 130, writeuint16(1));
+  write_biff_rec(ba, 128, write_Guts([0, 0]));
+  write_biff_rec(ba, 131, writebool(false));
+  write_biff_rec(ba, 132, writebool(false));
+  if (b8) write_ws_cols_biff8(ba, ws["!cols"]);
+  write_biff_rec(ba, 512, write_Dimensions(range, opts));
+  if (b8) ws["!links"] = [];
+  for (var R = range.s.r; R <= range.e.r; ++R) {
+    rr = encode_row(R);
+    for (var C = range.s.c; C <= range.e.c; ++C) {
+      if (R === range.s.r) cols[C] = encode_col(C);
+      ref = cols[C] + rr;
+      var cell = dense ? (ws[R] || [])[C] : ws[ref];
+      if (!cell) continue;
+      write_ws_biff8_cell(ba, cell, R, C, opts);
+      if (b8 && cell.l) ws["!links"].push([ref, cell.l]);
+    }
+  }
+  var cname = _sheet.CodeName || _sheet.name || s;
+  if (b8) write_biff_rec(ba, 574, write_Window2((_WB.Views || [])[0]));
+  if (b8 && (ws["!merges"] || []).length) write_biff_rec(ba, 229, write_MergeCells(ws["!merges"]));
+  if (b8) write_ws_biff8_hlinks(ba, ws);
+  write_biff_rec(ba, 442, write_XLUnicodeString(cname, opts));
+  if (b8) write_FEAT(ba, ws);
+  write_biff_rec(
+    ba,
+    10
+    /* EOF */
+  );
+  return ba.end();
+}
+function write_biff8_global(wb, bufs, opts) {
+  var A = buf_array();
+  var _WB = (wb || {}).Workbook || {};
+  var _sheets = _WB.Sheets || [];
+  var _wb = (
+    /*::((*/
+    _WB.WBProps || {
+      /*::CodeName:"ThisWorkbook"*/
+    }
+  );
+  var b8 = opts.biff == 8, b5 = opts.biff == 5;
+  write_biff_rec(A, 2057, write_BOF(wb, 5, opts));
+  if (opts.bookType == "xla") write_biff_rec(
+    A,
+    135
+    /* Addin */
+  );
+  write_biff_rec(A, 225, b8 ? writeuint16(1200) : null);
+  write_biff_rec(A, 193, writezeroes(2));
+  if (b5) write_biff_rec(
+    A,
+    191
+    /* ToolbarHdr */
+  );
+  if (b5) write_biff_rec(
+    A,
+    192
+    /* ToolbarEnd */
+  );
+  write_biff_rec(
+    A,
+    226
+    /* InterfaceEnd */
+  );
+  write_biff_rec(A, 92, write_WriteAccess("SheetJS", opts));
+  write_biff_rec(A, 66, writeuint16(b8 ? 1200 : 1252));
+  if (b8) write_biff_rec(A, 353, writeuint16(0));
+  if (b8) write_biff_rec(
+    A,
+    448
+    /* Excel9File */
+  );
+  write_biff_rec(A, 317, write_RRTabId(wb.SheetNames.length));
+  if (b8 && wb.vbaraw) write_biff_rec(
+    A,
+    211
+    /* ObProj */
+  );
+  if (b8 && wb.vbaraw) {
+    var cname = _wb.CodeName || "ThisWorkbook";
+    write_biff_rec(A, 442, write_XLUnicodeString(cname, opts));
+  }
+  write_biff_rec(A, 156, writeuint16(17));
+  write_biff_rec(A, 25, writebool(false));
+  write_biff_rec(A, 18, writebool(false));
+  write_biff_rec(A, 19, writeuint16(0));
+  if (b8) write_biff_rec(A, 431, writebool(false));
+  if (b8) write_biff_rec(A, 444, writeuint16(0));
+  write_biff_rec(A, 61, write_Window1(opts));
+  write_biff_rec(A, 64, writebool(false));
+  write_biff_rec(A, 141, writeuint16(0));
+  write_biff_rec(A, 34, writebool(safe1904(wb) == "true"));
+  write_biff_rec(A, 14, writebool(true));
+  if (b8) write_biff_rec(A, 439, writebool(false));
+  write_biff_rec(A, 218, writeuint16(0));
+  write_FONTS_biff8(A, wb, opts);
+  write_FMTS_biff8(A, wb.SSF, opts);
+  write_CELLXFS_biff8(A, opts);
+  if (b8) write_biff_rec(A, 352, writebool(false));
+  var a = A.end();
+  var C = buf_array();
+  if (b8) write_biff_rec(C, 140, write_Country());
+  if (b8 && opts.Strings) write_biff_continue(C, 252, write_SST(opts.Strings, opts));
+  write_biff_rec(
+    C,
+    10
+    /* EOF */
+  );
+  var c = C.end();
+  var B = buf_array();
+  var blen = 0, j = 0;
+  for (j = 0; j < wb.SheetNames.length; ++j) blen += (b8 ? 12 : 11) + (b8 ? 2 : 1) * wb.SheetNames[j].length;
+  var start = a.length + blen + c.length;
+  for (j = 0; j < wb.SheetNames.length; ++j) {
+    var _sheet = _sheets[j] || {};
+    write_biff_rec(B, 133, write_BoundSheet8({ pos: start, hs: _sheet.Hidden || 0, dt: 0, name: wb.SheetNames[j] }, opts));
+    start += bufs[j].length;
+  }
+  var b = B.end();
+  if (blen != b.length) throw new Error("BS8 " + blen + " != " + b.length);
+  var out = [];
+  if (a.length) out.push(a);
+  if (b.length) out.push(b);
+  if (c.length) out.push(c);
+  return bconcat(out);
+}
+function write_biff8_buf(wb, opts) {
+  var o = opts || {};
+  var bufs = [];
+  if (wb && !wb.SSF) {
+    wb.SSF = dup(table_fmt);
+  }
+  if (wb && wb.SSF) {
+    make_ssf();
+    SSF_load_table(wb.SSF);
+    o.revssf = evert_num(wb.SSF);
+    o.revssf[wb.SSF[65535]] = 0;
+    o.ssf = wb.SSF;
+  }
+  o.Strings = /*::((*/
+  [];
+  o.Strings.Count = 0;
+  o.Strings.Unique = 0;
+  fix_write_opts(o);
+  o.cellXfs = [];
+  get_cell_style(o.cellXfs, {}, { revssf: { "General": 0 } });
+  if (!wb.Props) wb.Props = {};
+  for (var i = 0; i < wb.SheetNames.length; ++i) bufs[bufs.length] = write_ws_biff8(i, o, wb);
+  bufs.unshift(write_biff8_global(wb, bufs, o));
+  return bconcat(bufs);
+}
+function write_biff_buf(wb, opts) {
+  for (var i = 0; i <= wb.SheetNames.length; ++i) {
+    var ws = wb.Sheets[wb.SheetNames[i]];
+    if (!ws || !ws["!ref"]) continue;
+    var range = decode_range(ws["!ref"]);
+    if (range.e.c > 255) {
+      if (typeof console != "undefined" && console.error) console.error("Worksheet '" + wb.SheetNames[i] + "' extends beyond column IV (255).  Data may be lost.");
+    }
+  }
+  var o = opts || {};
+  switch (o.biff || 2) {
+    case 8:
+    case 5:
+      return write_biff8_buf(wb, opts);
+    case 4:
+    case 3:
+    case 2:
+      return write_biff2_buf(wb, opts);
+  }
+  throw new Error("invalid type " + o.bookType + " for BIFF");
+}
 function html_to_sheet(str, _opts) {
   var opts = _opts || {};
   if (DENSE != null && opts.dense == null) opts.dense = DENSE;
@@ -41485,11 +43467,296 @@ function parse_ods(zip, opts) {
 function parse_fods(data, opts) {
   return parse_content_xml(data, opts);
 }
+var write_styles_ods = /* @__PURE__ */ (function() {
+  var master_styles = [
+    "<office:master-styles>",
+    '<style:master-page style:name="mp1" style:page-layout-name="mp1">',
+    "<style:header/>",
+    '<style:header-left style:display="false"/>',
+    "<style:footer/>",
+    '<style:footer-left style:display="false"/>',
+    "</style:master-page>",
+    "</office:master-styles>"
+  ].join("");
+  var payload = "<office:document-styles " + wxt_helper({
+    "xmlns:office": "urn:oasis:names:tc:opendocument:xmlns:office:1.0",
+    "xmlns:table": "urn:oasis:names:tc:opendocument:xmlns:table:1.0",
+    "xmlns:style": "urn:oasis:names:tc:opendocument:xmlns:style:1.0",
+    "xmlns:text": "urn:oasis:names:tc:opendocument:xmlns:text:1.0",
+    "xmlns:draw": "urn:oasis:names:tc:opendocument:xmlns:drawing:1.0",
+    "xmlns:fo": "urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0",
+    "xmlns:xlink": "http://www.w3.org/1999/xlink",
+    "xmlns:dc": "http://purl.org/dc/elements/1.1/",
+    "xmlns:number": "urn:oasis:names:tc:opendocument:xmlns:datastyle:1.0",
+    "xmlns:svg": "urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0",
+    "xmlns:of": "urn:oasis:names:tc:opendocument:xmlns:of:1.2",
+    "office:version": "1.2"
+  }) + ">" + master_styles + "</office:document-styles>";
+  return function wso() {
+    return XML_HEADER + payload;
+  };
+})();
+var write_content_ods = /* @__PURE__ */ (function() {
+  var write_text_p = function(text2) {
+    return escapexml(text2).replace(/  +/g, function($$) {
+      return '<text:s text:c="' + $$.length + '"/>';
+    }).replace(/\t/g, "<text:tab/>").replace(/\n/g, "</text:p><text:p>").replace(/^ /, "<text:s/>").replace(/ $/, "<text:s/>");
+  };
+  var null_cell_xml = "          <table:table-cell />\n";
+  var covered_cell_xml = "          <table:covered-table-cell/>\n";
+  var write_ws2 = function(ws, wb, i) {
+    var o = [];
+    o.push('      <table:table table:name="' + escapexml(wb.SheetNames[i]) + '" table:style-name="ta1">\n');
+    var R = 0, C = 0, range = decode_range(ws["!ref"] || "A1");
+    var marr = ws["!merges"] || [], mi = 0;
+    var dense = Array.isArray(ws);
+    if (ws["!cols"]) {
+      for (C = 0; C <= range.e.c; ++C) o.push("        <table:table-column" + (ws["!cols"][C] ? ' table:style-name="co' + ws["!cols"][C].ods + '"' : "") + "></table:table-column>\n");
+    }
+    var H = "", ROWS = ws["!rows"] || [];
+    for (R = 0; R < range.s.r; ++R) {
+      H = ROWS[R] ? ' table:style-name="ro' + ROWS[R].ods + '"' : "";
+      o.push("        <table:table-row" + H + "></table:table-row>\n");
+    }
+    for (; R <= range.e.r; ++R) {
+      H = ROWS[R] ? ' table:style-name="ro' + ROWS[R].ods + '"' : "";
+      o.push("        <table:table-row" + H + ">\n");
+      for (C = 0; C < range.s.c; ++C) o.push(null_cell_xml);
+      for (; C <= range.e.c; ++C) {
+        var skip = false, ct = {}, textp = "";
+        for (mi = 0; mi != marr.length; ++mi) {
+          if (marr[mi].s.c > C) continue;
+          if (marr[mi].s.r > R) continue;
+          if (marr[mi].e.c < C) continue;
+          if (marr[mi].e.r < R) continue;
+          if (marr[mi].s.c != C || marr[mi].s.r != R) skip = true;
+          ct["table:number-columns-spanned"] = marr[mi].e.c - marr[mi].s.c + 1;
+          ct["table:number-rows-spanned"] = marr[mi].e.r - marr[mi].s.r + 1;
+          break;
+        }
+        if (skip) {
+          o.push(covered_cell_xml);
+          continue;
+        }
+        var ref = encode_cell({ r: R, c: C }), cell = dense ? (ws[R] || [])[C] : ws[ref];
+        if (cell && cell.f) {
+          ct["table:formula"] = escapexml(csf_to_ods_formula(cell.f));
+          if (cell.F) {
+            if (cell.F.slice(0, ref.length) == ref) {
+              var _Fref = decode_range(cell.F);
+              ct["table:number-matrix-columns-spanned"] = _Fref.e.c - _Fref.s.c + 1;
+              ct["table:number-matrix-rows-spanned"] = _Fref.e.r - _Fref.s.r + 1;
+            }
+          }
+        }
+        if (!cell) {
+          o.push(null_cell_xml);
+          continue;
+        }
+        switch (cell.t) {
+          case "b":
+            textp = cell.v ? "TRUE" : "FALSE";
+            ct["office:value-type"] = "boolean";
+            ct["office:boolean-value"] = cell.v ? "true" : "false";
+            break;
+          case "n":
+            textp = cell.w || String(cell.v || 0);
+            ct["office:value-type"] = "float";
+            ct["office:value"] = cell.v || 0;
+            break;
+          case "s":
+          case "str":
+            textp = cell.v == null ? "" : cell.v;
+            ct["office:value-type"] = "string";
+            break;
+          case "d":
+            textp = cell.w || parseDate(cell.v).toISOString();
+            ct["office:value-type"] = "date";
+            ct["office:date-value"] = parseDate(cell.v).toISOString();
+            ct["table:style-name"] = "ce1";
+            break;
+          //case 'e':
+          default:
+            o.push(null_cell_xml);
+            continue;
+        }
+        var text_p = write_text_p(textp);
+        if (cell.l && cell.l.Target) {
+          var _tgt = cell.l.Target;
+          _tgt = _tgt.charAt(0) == "#" ? "#" + csf_to_ods_3D(_tgt.slice(1)) : _tgt;
+          if (_tgt.charAt(0) != "#" && !_tgt.match(/^\w+:/)) _tgt = "../" + _tgt;
+          text_p = writextag("text:a", text_p, { "xlink:href": _tgt.replace(/&/g, "&amp;") });
+        }
+        o.push("          " + writextag("table:table-cell", writextag("text:p", text_p, {}), ct) + "\n");
+      }
+      o.push("        </table:table-row>\n");
+    }
+    o.push("      </table:table>\n");
+    return o.join("");
+  };
+  var write_automatic_styles_ods = function(o, wb) {
+    o.push(" <office:automatic-styles>\n");
+    o.push('  <number:date-style style:name="N37" number:automatic-order="true">\n');
+    o.push('   <number:month number:style="long"/>\n');
+    o.push("   <number:text>/</number:text>\n");
+    o.push('   <number:day number:style="long"/>\n');
+    o.push("   <number:text>/</number:text>\n");
+    o.push("   <number:year/>\n");
+    o.push("  </number:date-style>\n");
+    var cidx = 0;
+    wb.SheetNames.map(function(n) {
+      return wb.Sheets[n];
+    }).forEach(function(ws) {
+      if (!ws) return;
+      if (ws["!cols"]) {
+        for (var C = 0; C < ws["!cols"].length; ++C) if (ws["!cols"][C]) {
+          var colobj = ws["!cols"][C];
+          if (colobj.width == null && colobj.wpx == null && colobj.wch == null) continue;
+          process_col(colobj);
+          colobj.ods = cidx;
+          var w = ws["!cols"][C].wpx + "px";
+          o.push('  <style:style style:name="co' + cidx + '" style:family="table-column">\n');
+          o.push('   <style:table-column-properties fo:break-before="auto" style:column-width="' + w + '"/>\n');
+          o.push("  </style:style>\n");
+          ++cidx;
+        }
+      }
+    });
+    var ridx = 0;
+    wb.SheetNames.map(function(n) {
+      return wb.Sheets[n];
+    }).forEach(function(ws) {
+      if (!ws) return;
+      if (ws["!rows"]) {
+        for (var R = 0; R < ws["!rows"].length; ++R) if (ws["!rows"][R]) {
+          ws["!rows"][R].ods = ridx;
+          var h = ws["!rows"][R].hpx + "px";
+          o.push('  <style:style style:name="ro' + ridx + '" style:family="table-row">\n');
+          o.push('   <style:table-row-properties fo:break-before="auto" style:row-height="' + h + '"/>\n');
+          o.push("  </style:style>\n");
+          ++ridx;
+        }
+      }
+    });
+    o.push('  <style:style style:name="ta1" style:family="table" style:master-page-name="mp1">\n');
+    o.push('   <style:table-properties table:display="true" style:writing-mode="lr-tb"/>\n');
+    o.push("  </style:style>\n");
+    o.push('  <style:style style:name="ce1" style:family="table-cell" style:parent-style-name="Default" style:data-style-name="N37"/>\n');
+    o.push(" </office:automatic-styles>\n");
+  };
+  return function wcx(wb, opts) {
+    var o = [XML_HEADER];
+    var attr = wxt_helper({
+      "xmlns:office": "urn:oasis:names:tc:opendocument:xmlns:office:1.0",
+      "xmlns:table": "urn:oasis:names:tc:opendocument:xmlns:table:1.0",
+      "xmlns:style": "urn:oasis:names:tc:opendocument:xmlns:style:1.0",
+      "xmlns:text": "urn:oasis:names:tc:opendocument:xmlns:text:1.0",
+      "xmlns:draw": "urn:oasis:names:tc:opendocument:xmlns:drawing:1.0",
+      "xmlns:fo": "urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0",
+      "xmlns:xlink": "http://www.w3.org/1999/xlink",
+      "xmlns:dc": "http://purl.org/dc/elements/1.1/",
+      "xmlns:meta": "urn:oasis:names:tc:opendocument:xmlns:meta:1.0",
+      "xmlns:number": "urn:oasis:names:tc:opendocument:xmlns:datastyle:1.0",
+      "xmlns:presentation": "urn:oasis:names:tc:opendocument:xmlns:presentation:1.0",
+      "xmlns:svg": "urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0",
+      "xmlns:chart": "urn:oasis:names:tc:opendocument:xmlns:chart:1.0",
+      "xmlns:dr3d": "urn:oasis:names:tc:opendocument:xmlns:dr3d:1.0",
+      "xmlns:math": "http://www.w3.org/1998/Math/MathML",
+      "xmlns:form": "urn:oasis:names:tc:opendocument:xmlns:form:1.0",
+      "xmlns:script": "urn:oasis:names:tc:opendocument:xmlns:script:1.0",
+      "xmlns:ooo": "http://openoffice.org/2004/office",
+      "xmlns:ooow": "http://openoffice.org/2004/writer",
+      "xmlns:oooc": "http://openoffice.org/2004/calc",
+      "xmlns:dom": "http://www.w3.org/2001/xml-events",
+      "xmlns:xforms": "http://www.w3.org/2002/xforms",
+      "xmlns:xsd": "http://www.w3.org/2001/XMLSchema",
+      "xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
+      "xmlns:sheet": "urn:oasis:names:tc:opendocument:sh33tjs:1.0",
+      "xmlns:rpt": "http://openoffice.org/2005/report",
+      "xmlns:of": "urn:oasis:names:tc:opendocument:xmlns:of:1.2",
+      "xmlns:xhtml": "http://www.w3.org/1999/xhtml",
+      "xmlns:grddl": "http://www.w3.org/2003/g/data-view#",
+      "xmlns:tableooo": "http://openoffice.org/2009/table",
+      "xmlns:drawooo": "http://openoffice.org/2010/draw",
+      "xmlns:calcext": "urn:org:documentfoundation:names:experimental:calc:xmlns:calcext:1.0",
+      "xmlns:loext": "urn:org:documentfoundation:names:experimental:office:xmlns:loext:1.0",
+      "xmlns:field": "urn:openoffice:names:experimental:ooo-ms-interop:xmlns:field:1.0",
+      "xmlns:formx": "urn:openoffice:names:experimental:ooxml-odf-interop:xmlns:form:1.0",
+      "xmlns:css3t": "http://www.w3.org/TR/css3-text/",
+      "office:version": "1.2"
+    });
+    var fods = wxt_helper({
+      "xmlns:config": "urn:oasis:names:tc:opendocument:xmlns:config:1.0",
+      "office:mimetype": "application/vnd.oasis.opendocument.spreadsheet"
+    });
+    if (opts.bookType == "fods") {
+      o.push("<office:document" + attr + fods + ">\n");
+      o.push(write_meta_ods().replace(/office:document-meta/g, "office:meta"));
+    } else o.push("<office:document-content" + attr + ">\n");
+    write_automatic_styles_ods(o, wb);
+    o.push("  <office:body>\n");
+    o.push("    <office:spreadsheet>\n");
+    for (var i = 0; i != wb.SheetNames.length; ++i) o.push(write_ws2(wb.Sheets[wb.SheetNames[i]], wb, i, opts));
+    o.push("    </office:spreadsheet>\n");
+    o.push("  </office:body>\n");
+    if (opts.bookType == "fods") o.push("</office:document>");
+    else o.push("</office:document-content>");
+    return o.join("");
+  };
+})();
+function write_ods(wb, opts) {
+  if (opts.bookType == "fods") return write_content_ods(wb, opts);
+  var zip = zip_new();
+  var f = "";
+  var manifest = [];
+  var rdf = [];
+  f = "mimetype";
+  zip_add_file(zip, f, "application/vnd.oasis.opendocument.spreadsheet");
+  f = "content.xml";
+  zip_add_file(zip, f, write_content_ods(wb, opts));
+  manifest.push([f, "text/xml"]);
+  rdf.push([f, "ContentFile"]);
+  f = "styles.xml";
+  zip_add_file(zip, f, write_styles_ods(wb, opts));
+  manifest.push([f, "text/xml"]);
+  rdf.push([f, "StylesFile"]);
+  f = "meta.xml";
+  zip_add_file(zip, f, XML_HEADER + write_meta_ods(
+    /*::wb, opts*/
+  ));
+  manifest.push([f, "text/xml"]);
+  rdf.push([f, "MetadataFile"]);
+  f = "manifest.rdf";
+  zip_add_file(zip, f, write_rdf(
+    rdf
+    /*, opts*/
+  ));
+  manifest.push([f, "application/rdf+xml"]);
+  f = "META-INF/manifest.xml";
+  zip_add_file(zip, f, write_manifest(
+    manifest
+    /*, opts*/
+  ));
+  return zip;
+}
 function u8_to_dataview(array) {
   return new DataView(array.buffer, array.byteOffset, array.byteLength);
 }
 function u8str(u8) {
   return typeof TextDecoder != "undefined" ? new TextDecoder().decode(u8) : utf8read(a2s(u8));
+}
+function stru8(str) {
+  return typeof TextEncoder != "undefined" ? new TextEncoder().encode(str) : s2a(utf8write(str));
+}
+function u8contains(body, search) {
+  outer:
+    for (var L = 0; L <= body.length - search.length; ++L) {
+      for (var j = 0; j < search.length; ++j)
+        if (body[L + j] != search[j])
+          continue outer;
+      return true;
+    }
+  return false;
 }
 function u8concat(u8a) {
   var len = u8a.reduce(function(acc, x) {
@@ -41514,6 +43781,15 @@ function readDecimal128LE(buf, offset) {
   for (var j = offset + 13; j >= offset; --j)
     mantissa = mantissa * 256 + buf[j];
   return (buf[offset + 15] & 128 ? -mantissa : mantissa) * Math.pow(10, exp - 6176);
+}
+function writeDecimal128LE(buf, offset, value) {
+  var exp = Math.floor(value == 0 ? 0 : Math.LOG10E * Math.log(Math.abs(value))) + 6176 - 20;
+  var mantissa = value / Math.pow(10, exp - 6176);
+  buf[offset + 15] |= exp >> 7;
+  buf[offset + 14] |= (exp & 127) << 1;
+  for (var i = 0; mantissa >= 1; ++i, mantissa /= 256)
+    buf[offset + i] = mantissa & 255;
+  buf[offset + 15] |= value >= 0 ? 0 : 128;
 }
 function parse_varint49(buf, ptr) {
   var l = ptr ? ptr[0] : 0;
@@ -41545,6 +43821,43 @@ function parse_varint49(buf, ptr) {
   if (ptr)
     ptr[0] = l;
   return usz;
+}
+function write_varint49(v) {
+  var usz = new Uint8Array(7);
+  usz[0] = v & 127;
+  var L = 1;
+  sz:
+    if (v > 127) {
+      usz[L - 1] |= 128;
+      usz[L] = v >> 7 & 127;
+      ++L;
+      if (v <= 16383)
+        break sz;
+      usz[L - 1] |= 128;
+      usz[L] = v >> 14 & 127;
+      ++L;
+      if (v <= 2097151)
+        break sz;
+      usz[L - 1] |= 128;
+      usz[L] = v >> 21 & 127;
+      ++L;
+      if (v <= 268435455)
+        break sz;
+      usz[L - 1] |= 128;
+      usz[L] = v / 256 >>> 21 & 127;
+      ++L;
+      if (v <= 34359738367)
+        break sz;
+      usz[L - 1] |= 128;
+      usz[L] = v / 65536 >>> 21 & 127;
+      ++L;
+      if (v <= 4398046511103)
+        break sz;
+      usz[L - 1] |= 128;
+      usz[L] = v / 16777216 >>> 21 & 127;
+      ++L;
+    }
+  return usz.slice(0, L);
 }
 function varint_to_i32(buf) {
   var l = 0, i32 = buf[l] & 127;
@@ -41611,6 +43924,20 @@ function parse_shallow(buf) {
   }
   return out;
 }
+function write_shallow(proto) {
+  var out = [];
+  proto.forEach(function(field, idx) {
+    field.forEach(function(item2) {
+      if (!item2.data)
+        return;
+      out.push(write_varint49(idx * 8 + item2.type));
+      if (item2.type == 2)
+        out.push(write_varint49(item2.data.length));
+      out.push(item2.data);
+    });
+  });
+  return u8concat(out);
+}
 function mappa(data, cb) {
   return (data == null ? void 0 : data.map(function(d) {
     return cb(d.data);
@@ -41641,6 +43968,29 @@ function parse_iwa_file(buf) {
     out.push(res);
   }
   return out;
+}
+function write_iwa_file(ias) {
+  var bufs = [];
+  ias.forEach(function(ia) {
+    var ai = [];
+    ai[1] = [{ data: write_varint49(ia.id), type: 0 }];
+    ai[2] = [];
+    if (ia.merge != null)
+      ai[3] = [{ data: write_varint49(+!!ia.merge), type: 0 }];
+    var midata = [];
+    ia.messages.forEach(function(mi) {
+      midata.push(mi.data);
+      mi.meta[3] = [{ type: 0, data: write_varint49(mi.data.length) }];
+      ai[2].push({ data: write_shallow(mi.meta), type: 2 });
+    });
+    var aipayload = write_shallow(ai);
+    bufs.push(write_varint49(aipayload.length));
+    bufs.push(aipayload);
+    midata.forEach(function(mid) {
+      return bufs.push(mid);
+    });
+  });
+  return u8concat(bufs);
 }
 function parse_snappy_chunk(type, buf) {
   if (type != 0)
@@ -41719,6 +44069,42 @@ function decompress_iwa_file(buf) {
   }
   if (l !== buf.length)
     throw new Error("data is not a valid framed stream!");
+  return u8concat(out);
+}
+function compress_iwa_file(buf) {
+  var out = [];
+  var l = 0;
+  while (l < buf.length) {
+    var c = Math.min(buf.length - l, 268435455);
+    var frame = new Uint8Array(4);
+    out.push(frame);
+    var usz = write_varint49(c);
+    var L = usz.length;
+    out.push(usz);
+    if (c <= 60) {
+      L++;
+      out.push(new Uint8Array([c - 1 << 2]));
+    } else if (c <= 256) {
+      L += 2;
+      out.push(new Uint8Array([240, c - 1 & 255]));
+    } else if (c <= 65536) {
+      L += 3;
+      out.push(new Uint8Array([244, c - 1 & 255, c - 1 >> 8 & 255]));
+    } else if (c <= 16777216) {
+      L += 4;
+      out.push(new Uint8Array([248, c - 1 & 255, c - 1 >> 8 & 255, c - 1 >> 16 & 255]));
+    } else if (c <= 4294967296) {
+      L += 5;
+      out.push(new Uint8Array([252, c - 1 & 255, c - 1 >> 8 & 255, c - 1 >> 16 & 255, c - 1 >>> 24 & 255]));
+    }
+    out.push(buf.slice(l, l + c));
+    L += c;
+    frame[0] = 0;
+    frame[1] = L & 255;
+    frame[2] = L >> 8 & 255;
+    frame[3] = L >> 16 & 255;
+    l += c;
+  }
   return u8concat(out);
 }
 function parse_old_storage(buf, sst, rsst, v) {
@@ -41844,6 +44230,66 @@ function parse_new_storage(buf, sst, rsst) {
       throw new Error("Unsupported cell type ".concat(buf[1], " : ").concat(flags & 31, " : ").concat(buf.slice(0, 4)));
   }
   return ret;
+}
+function write_new_storage(cell, sst) {
+  var out = new Uint8Array(32), dv = u8_to_dataview(out), l = 12, flags = 0;
+  out[0] = 5;
+  switch (cell.t) {
+    case "n":
+      out[1] = 2;
+      writeDecimal128LE(out, l, cell.v);
+      flags |= 1;
+      l += 16;
+      break;
+    case "b":
+      out[1] = 6;
+      dv.setFloat64(l, cell.v ? 1 : 0, true);
+      flags |= 2;
+      l += 8;
+      break;
+    case "s":
+      if (sst.indexOf(cell.v) == -1)
+        throw new Error("Value ".concat(cell.v, " missing from SST!"));
+      out[1] = 3;
+      dv.setUint32(l, sst.indexOf(cell.v), true);
+      flags |= 8;
+      l += 4;
+      break;
+    default:
+      throw "unsupported cell type " + cell.t;
+  }
+  dv.setUint32(8, flags, true);
+  return out.slice(0, l);
+}
+function write_old_storage(cell, sst) {
+  var out = new Uint8Array(32), dv = u8_to_dataview(out), l = 12, flags = 0;
+  out[0] = 3;
+  switch (cell.t) {
+    case "n":
+      out[2] = 2;
+      dv.setFloat64(l, cell.v, true);
+      flags |= 32;
+      l += 8;
+      break;
+    case "b":
+      out[2] = 6;
+      dv.setFloat64(l, cell.v ? 1 : 0, true);
+      flags |= 32;
+      l += 8;
+      break;
+    case "s":
+      if (sst.indexOf(cell.v) == -1)
+        throw new Error("Value ".concat(cell.v, " missing from SST!"));
+      out[2] = 3;
+      dv.setUint32(l, sst.indexOf(cell.v), true);
+      flags |= 16;
+      l += 4;
+      break;
+    default:
+      throw "unsupported cell type " + cell.t;
+  }
+  dv.setUint32(4, flags, true);
+  return out.slice(0, l);
 }
 function parse_cell_storage(buf, sst, rsst) {
   switch (buf[0]) {
@@ -42071,6 +44517,324 @@ function parse_numbers_iwa(cfb) {
     throw new Error("Cannot find Document root");
   return parse_TN_DocumentArchive(M, docroot);
 }
+function write_tile_row(tri, data, SST) {
+  var _a, _b, _c, _d;
+  if (!((_a = tri[6]) == null ? void 0 : _a[0]) || !((_b = tri[7]) == null ? void 0 : _b[0]))
+    throw "Mutation only works on post-BNC storages!";
+  var wide_offsets = ((_d = (_c = tri[8]) == null ? void 0 : _c[0]) == null ? void 0 : _d.data) && varint_to_i32(tri[8][0].data) > 0 || false;
+  if (wide_offsets)
+    throw "Math only works with normal offsets";
+  var cnt = 0;
+  var dv = u8_to_dataview(tri[7][0].data), last_offset = 0, cell_storage = [];
+  var _dv = u8_to_dataview(tri[4][0].data), _last_offset = 0, _cell_storage = [];
+  for (var C = 0; C < data.length; ++C) {
+    if (data[C] == null) {
+      dv.setUint16(C * 2, 65535, true);
+      _dv.setUint16(C * 2, 65535);
+      continue;
+    }
+    dv.setUint16(C * 2, last_offset, true);
+    _dv.setUint16(C * 2, _last_offset, true);
+    var celload, _celload;
+    switch (typeof data[C]) {
+      case "string":
+        celload = write_new_storage({ t: "s", v: data[C] }, SST);
+        _celload = write_old_storage({ t: "s", v: data[C] }, SST);
+        break;
+      case "number":
+        celload = write_new_storage({ t: "n", v: data[C] }, SST);
+        _celload = write_old_storage({ t: "n", v: data[C] }, SST);
+        break;
+      case "boolean":
+        celload = write_new_storage({ t: "b", v: data[C] }, SST);
+        _celload = write_old_storage({ t: "b", v: data[C] }, SST);
+        break;
+      default:
+        throw new Error("Unsupported value " + data[C]);
+    }
+    cell_storage.push(celload);
+    last_offset += celload.length;
+    _cell_storage.push(_celload);
+    _last_offset += _celload.length;
+    ++cnt;
+  }
+  tri[2][0].data = write_varint49(cnt);
+  for (; C < tri[7][0].data.length / 2; ++C) {
+    dv.setUint16(C * 2, 65535, true);
+    _dv.setUint16(C * 2, 65535, true);
+  }
+  tri[6][0].data = u8concat(cell_storage);
+  tri[3][0].data = u8concat(_cell_storage);
+  return cnt;
+}
+function write_numbers_iwa(wb, opts) {
+  if (!opts || !opts.numbers)
+    throw new Error("Must pass a `numbers` option -- check the README");
+  var ws = wb.Sheets[wb.SheetNames[0]];
+  if (wb.SheetNames.length > 1)
+    console.error("The Numbers writer currently writes only the first table");
+  var range = decode_range(ws["!ref"]);
+  range.s.r = range.s.c = 0;
+  var trunc = false;
+  if (range.e.c > 9) {
+    trunc = true;
+    range.e.c = 9;
+  }
+  if (range.e.r > 49) {
+    trunc = true;
+    range.e.r = 49;
+  }
+  if (trunc)
+    console.error("The Numbers writer is currently limited to ".concat(encode_range(range)));
+  var data = sheet_to_json(ws, { range, header: 1 });
+  var SST = ["~Sh33tJ5~"];
+  data.forEach(function(row) {
+    return row.forEach(function(cell) {
+      if (typeof cell == "string")
+        SST.push(cell);
+    });
+  });
+  var dependents = {};
+  var indices = [];
+  var cfb = CFB.read(opts.numbers, { type: "base64" });
+  cfb.FileIndex.map(function(fi, idx) {
+    return [fi, cfb.FullPaths[idx]];
+  }).forEach(function(row) {
+    var fi = row[0], fp = row[1];
+    if (fi.type != 2)
+      return;
+    if (!fi.name.match(/\.iwa/))
+      return;
+    var old_content = fi.content;
+    var raw1 = decompress_iwa_file(old_content);
+    var x2 = parse_iwa_file(raw1);
+    x2.forEach(function(packet2) {
+      indices.push(packet2.id);
+      dependents[packet2.id] = { deps: [], location: fp, type: varint_to_i32(packet2.messages[0].meta[1][0].data) };
+    });
+  });
+  indices.sort(function(x2, y2) {
+    return x2 - y2;
+  });
+  var indices_varint = indices.filter(function(x2) {
+    return x2 > 1;
+  }).map(function(x2) {
+    return [x2, write_varint49(x2)];
+  });
+  cfb.FileIndex.map(function(fi, idx) {
+    return [fi, cfb.FullPaths[idx]];
+  }).forEach(function(row) {
+    var fi = row[0], fp = row[1];
+    if (!fi.name.match(/\.iwa/))
+      return;
+    var x2 = parse_iwa_file(decompress_iwa_file(fi.content));
+    x2.forEach(function(ia) {
+      ia.messages.forEach(function(m) {
+        indices_varint.forEach(function(ivi) {
+          if (ia.messages.some(function(mess) {
+            return varint_to_i32(mess.meta[1][0].data) != 11006 && u8contains(mess.data, ivi[1]);
+          })) {
+            dependents[ivi[0]].deps.push(ia.id);
+          }
+        });
+      });
+    });
+  });
+  function get_unique_msgid() {
+    for (var i = 927262; i < 2e6; ++i)
+      if (!dependents[i])
+        return i;
+    throw new Error("Too many messages");
+  }
+  var entry = CFB.find(cfb, dependents[1].location);
+  var x = parse_iwa_file(decompress_iwa_file(entry.content));
+  var docroot;
+  for (var xi = 0; xi < x.length; ++xi) {
+    var packet = x[xi];
+    if (packet.id == 1)
+      docroot = packet;
+  }
+  var sheetrootref = parse_TSP_Reference(parse_shallow(docroot.messages[0].data)[1][0].data);
+  entry = CFB.find(cfb, dependents[sheetrootref].location);
+  x = parse_iwa_file(decompress_iwa_file(entry.content));
+  for (xi = 0; xi < x.length; ++xi) {
+    packet = x[xi];
+    if (packet.id == sheetrootref)
+      docroot = packet;
+  }
+  sheetrootref = parse_TSP_Reference(parse_shallow(docroot.messages[0].data)[2][0].data);
+  entry = CFB.find(cfb, dependents[sheetrootref].location);
+  x = parse_iwa_file(decompress_iwa_file(entry.content));
+  for (xi = 0; xi < x.length; ++xi) {
+    packet = x[xi];
+    if (packet.id == sheetrootref)
+      docroot = packet;
+  }
+  sheetrootref = parse_TSP_Reference(parse_shallow(docroot.messages[0].data)[2][0].data);
+  entry = CFB.find(cfb, dependents[sheetrootref].location);
+  x = parse_iwa_file(decompress_iwa_file(entry.content));
+  for (xi = 0; xi < x.length; ++xi) {
+    packet = x[xi];
+    if (packet.id == sheetrootref)
+      docroot = packet;
+  }
+  var pb = parse_shallow(docroot.messages[0].data);
+  {
+    pb[6][0].data = write_varint49(range.e.r + 1);
+    pb[7][0].data = write_varint49(range.e.c + 1);
+    var cruidsref = parse_TSP_Reference(pb[46][0].data);
+    var oldbucket = CFB.find(cfb, dependents[cruidsref].location);
+    var _x = parse_iwa_file(decompress_iwa_file(oldbucket.content));
+    {
+      for (var j = 0; j < _x.length; ++j) {
+        if (_x[j].id == cruidsref)
+          break;
+      }
+      if (_x[j].id != cruidsref)
+        throw "Bad ColumnRowUIDMapArchive";
+      var cruids = parse_shallow(_x[j].messages[0].data);
+      cruids[1] = [];
+      cruids[2] = [], cruids[3] = [];
+      for (var C = 0; C <= range.e.c; ++C) {
+        var uuid = [];
+        uuid[1] = uuid[2] = [{ type: 0, data: write_varint49(C + 420690) }];
+        cruids[1].push({ type: 2, data: write_shallow(uuid) });
+        cruids[2].push({ type: 0, data: write_varint49(C) });
+        cruids[3].push({ type: 0, data: write_varint49(C) });
+      }
+      cruids[4] = [];
+      cruids[5] = [], cruids[6] = [];
+      for (var R = 0; R <= range.e.r; ++R) {
+        uuid = [];
+        uuid[1] = uuid[2] = [{ type: 0, data: write_varint49(R + 726270) }];
+        cruids[4].push({ type: 2, data: write_shallow(uuid) });
+        cruids[5].push({ type: 0, data: write_varint49(R) });
+        cruids[6].push({ type: 0, data: write_varint49(R) });
+      }
+      _x[j].messages[0].data = write_shallow(cruids);
+    }
+    oldbucket.content = compress_iwa_file(write_iwa_file(_x));
+    oldbucket.size = oldbucket.content.length;
+    delete pb[46];
+    var store = parse_shallow(pb[4][0].data);
+    {
+      store[7][0].data = write_varint49(range.e.r + 1);
+      var row_headers = parse_shallow(store[1][0].data);
+      var row_header_ref = parse_TSP_Reference(row_headers[2][0].data);
+      oldbucket = CFB.find(cfb, dependents[row_header_ref].location);
+      _x = parse_iwa_file(decompress_iwa_file(oldbucket.content));
+      {
+        if (_x[0].id != row_header_ref)
+          throw "Bad HeaderStorageBucket";
+        var base_bucket = parse_shallow(_x[0].messages[0].data);
+        for (R = 0; R < data.length; ++R) {
+          var _bucket = parse_shallow(base_bucket[2][0].data);
+          _bucket[1][0].data = write_varint49(R);
+          _bucket[4][0].data = write_varint49(data[R].length);
+          base_bucket[2][R] = { type: base_bucket[2][0].type, data: write_shallow(_bucket) };
+        }
+        _x[0].messages[0].data = write_shallow(base_bucket);
+      }
+      oldbucket.content = compress_iwa_file(write_iwa_file(_x));
+      oldbucket.size = oldbucket.content.length;
+      var col_header_ref = parse_TSP_Reference(store[2][0].data);
+      oldbucket = CFB.find(cfb, dependents[col_header_ref].location);
+      _x = parse_iwa_file(decompress_iwa_file(oldbucket.content));
+      {
+        if (_x[0].id != col_header_ref)
+          throw "Bad HeaderStorageBucket";
+        base_bucket = parse_shallow(_x[0].messages[0].data);
+        for (C = 0; C <= range.e.c; ++C) {
+          _bucket = parse_shallow(base_bucket[2][0].data);
+          _bucket[1][0].data = write_varint49(C);
+          _bucket[4][0].data = write_varint49(range.e.r + 1);
+          base_bucket[2][C] = { type: base_bucket[2][0].type, data: write_shallow(_bucket) };
+        }
+        _x[0].messages[0].data = write_shallow(base_bucket);
+      }
+      oldbucket.content = compress_iwa_file(write_iwa_file(_x));
+      oldbucket.size = oldbucket.content.length;
+      var sstref = parse_TSP_Reference(store[4][0].data);
+      (function() {
+        var sentry = CFB.find(cfb, dependents[sstref].location);
+        var sx = parse_iwa_file(decompress_iwa_file(sentry.content));
+        var sstroot;
+        for (var sxi = 0; sxi < sx.length; ++sxi) {
+          var packet2 = sx[sxi];
+          if (packet2.id == sstref)
+            sstroot = packet2;
+        }
+        var sstdata = parse_shallow(sstroot.messages[0].data);
+        {
+          sstdata[3] = [];
+          var newsst = [];
+          SST.forEach(function(str, i) {
+            newsst[1] = [{ type: 0, data: write_varint49(i) }];
+            newsst[2] = [{ type: 0, data: write_varint49(1) }];
+            newsst[3] = [{ type: 2, data: stru8(str) }];
+            sstdata[3].push({ type: 2, data: write_shallow(newsst) });
+          });
+        }
+        sstroot.messages[0].data = write_shallow(sstdata);
+        var sy = write_iwa_file(sx);
+        var raw32 = compress_iwa_file(sy);
+        sentry.content = raw32;
+        sentry.size = sentry.content.length;
+      })();
+      var tile = parse_shallow(store[3][0].data);
+      {
+        var t = tile[1][0];
+        delete tile[2];
+        var tl = parse_shallow(t.data);
+        {
+          var tileref = parse_TSP_Reference(tl[2][0].data);
+          (function() {
+            var tentry = CFB.find(cfb, dependents[tileref].location);
+            var tx = parse_iwa_file(decompress_iwa_file(tentry.content));
+            var tileroot;
+            for (var sxi = 0; sxi < tx.length; ++sxi) {
+              var packet2 = tx[sxi];
+              if (packet2.id == tileref)
+                tileroot = packet2;
+            }
+            var tiledata = parse_shallow(tileroot.messages[0].data);
+            {
+              delete tiledata[6];
+              delete tile[7];
+              var rowload = new Uint8Array(tiledata[5][0].data);
+              tiledata[5] = [];
+              var cnt = 0;
+              for (var R2 = 0; R2 <= range.e.r; ++R2) {
+                var tilerow = parse_shallow(rowload);
+                cnt += write_tile_row(tilerow, data[R2], SST);
+                tilerow[1][0].data = write_varint49(R2);
+                tiledata[5].push({ data: write_shallow(tilerow), type: 2 });
+              }
+              tiledata[1] = [{ type: 0, data: write_varint49(range.e.c + 1) }];
+              tiledata[2] = [{ type: 0, data: write_varint49(range.e.r + 1) }];
+              tiledata[3] = [{ type: 0, data: write_varint49(cnt) }];
+              tiledata[4] = [{ type: 0, data: write_varint49(range.e.r + 1) }];
+            }
+            tileroot.messages[0].data = write_shallow(tiledata);
+            var ty = write_iwa_file(tx);
+            var raw32 = compress_iwa_file(ty);
+            tentry.content = raw32;
+            tentry.size = tentry.content.length;
+          })();
+        }
+        t.data = write_shallow(tl);
+      }
+      store[3][0].data = write_shallow(tile);
+    }
+    pb[4][0].data = write_shallow(store);
+  }
+  docroot.messages[0].data = write_shallow(pb);
+  var y = write_iwa_file(x);
+  var raw3 = compress_iwa_file(y);
+  entry.content = raw3;
+  entry.size = entry.content.length;
+  return cfb;
+}
 function fix_opts_func(defaults) {
   return function fix_opts(opts) {
     for (var i = 0; i != defaults.length; ++i) {
@@ -42110,6 +44874,20 @@ function fix_read_opts(opts) {
     /* include vba raw data (vbaraw) */
     ["password", ""],
     /* password */
+    ["WTF", false]
+    /* WTF mode (throws errors) */
+  ])(opts);
+}
+function fix_write_opts(opts) {
+  fix_opts_func([
+    ["cellDates", false],
+    /* write date cells with type `d` */
+    ["bookSST", false],
+    /* Generate Shared String Table */
+    ["bookType", "xlsx"],
+    /* Type of workbook (xlsx/m/b) */
+    ["compression", false],
+    /* Use file compression */
     ["WTF", false]
     /* WTF mode (throws errors) */
   ])(opts);
@@ -42399,6 +45177,278 @@ function parse_xlsxcfb(cfb, _opts) {
   if (einfo[0] == 2 && typeof decrypt_std76 !== "undefined") return decrypt_std76(einfo[1], data.content, opts.password || "", opts);
   throw new Error("File is password-protected");
 }
+function write_zip(wb, opts) {
+  if (opts.bookType == "ods") return write_ods(wb, opts);
+  if (opts.bookType == "numbers") return write_numbers_iwa(wb, opts);
+  if (opts.bookType == "xlsb") return write_zip_xlsxb(wb, opts);
+  return write_zip_xlsx(wb, opts);
+}
+function write_zip_xlsxb(wb, opts) {
+  _shapeid = 1024;
+  if (wb && !wb.SSF) {
+    wb.SSF = dup(table_fmt);
+  }
+  if (wb && wb.SSF) {
+    make_ssf();
+    SSF_load_table(wb.SSF);
+    opts.revssf = evert_num(wb.SSF);
+    opts.revssf[wb.SSF[65535]] = 0;
+    opts.ssf = wb.SSF;
+  }
+  opts.rels = {};
+  opts.wbrels = {};
+  opts.Strings = /*::((*/
+  [];
+  opts.Strings.Count = 0;
+  opts.Strings.Unique = 0;
+  if (browser_has_Map) opts.revStrings = /* @__PURE__ */ new Map();
+  else {
+    opts.revStrings = {};
+    opts.revStrings.foo = [];
+    delete opts.revStrings.foo;
+  }
+  var wbext = opts.bookType == "xlsb" ? "bin" : "xml";
+  var vbafmt = VBAFMTS.indexOf(opts.bookType) > -1;
+  var ct = new_ct();
+  fix_write_opts(opts = opts || {});
+  var zip = zip_new();
+  var f = "", rId = 0;
+  opts.cellXfs = [];
+  get_cell_style(opts.cellXfs, {}, { revssf: { "General": 0 } });
+  if (!wb.Props) wb.Props = {};
+  f = "docProps/core.xml";
+  zip_add_file(zip, f, write_core_props(wb.Props, opts));
+  ct.coreprops.push(f);
+  add_rels(opts.rels, 2, f, RELS.CORE_PROPS);
+  f = "docProps/app.xml";
+  if (wb.Props && wb.Props.SheetNames) {
+  } else if (!wb.Workbook || !wb.Workbook.Sheets) wb.Props.SheetNames = wb.SheetNames;
+  else {
+    var _sn = [];
+    for (var _i = 0; _i < wb.SheetNames.length; ++_i)
+      if ((wb.Workbook.Sheets[_i] || {}).Hidden != 2) _sn.push(wb.SheetNames[_i]);
+    wb.Props.SheetNames = _sn;
+  }
+  wb.Props.Worksheets = wb.Props.SheetNames.length;
+  zip_add_file(zip, f, write_ext_props(wb.Props, opts));
+  ct.extprops.push(f);
+  add_rels(opts.rels, 3, f, RELS.EXT_PROPS);
+  if (wb.Custprops !== wb.Props && keys(wb.Custprops || {}).length > 0) {
+    f = "docProps/custom.xml";
+    zip_add_file(zip, f, write_cust_props(wb.Custprops, opts));
+    ct.custprops.push(f);
+    add_rels(opts.rels, 4, f, RELS.CUST_PROPS);
+  }
+  for (rId = 1; rId <= wb.SheetNames.length; ++rId) {
+    var wsrels = { "!id": {} };
+    var ws = wb.Sheets[wb.SheetNames[rId - 1]];
+    var _type = (ws || {})["!type"] || "sheet";
+    switch (_type) {
+      case "chart":
+      /* falls through */
+      default:
+        f = "xl/worksheets/sheet" + rId + "." + wbext;
+        zip_add_file(zip, f, write_ws(rId - 1, f, opts, wb, wsrels));
+        ct.sheets.push(f);
+        add_rels(opts.wbrels, -1, "worksheets/sheet" + rId + "." + wbext, RELS.WS[0]);
+    }
+    if (ws) {
+      var comments = ws["!comments"];
+      var need_vml = false;
+      var cf = "";
+      if (comments && comments.length > 0) {
+        cf = "xl/comments" + rId + "." + wbext;
+        zip_add_file(zip, cf, write_cmnt(comments, cf, opts));
+        ct.comments.push(cf);
+        add_rels(wsrels, -1, "../comments" + rId + "." + wbext, RELS.CMNT);
+        need_vml = true;
+      }
+      if (ws["!legacy"]) {
+        if (need_vml) zip_add_file(zip, "xl/drawings/vmlDrawing" + rId + ".vml", write_comments_vml(rId, ws["!comments"]));
+      }
+      delete ws["!comments"];
+      delete ws["!legacy"];
+    }
+    if (wsrels["!id"].rId1) zip_add_file(zip, get_rels_path(f), write_rels(wsrels));
+  }
+  if (opts.Strings != null && opts.Strings.length > 0) {
+    f = "xl/sharedStrings." + wbext;
+    zip_add_file(zip, f, write_sst(opts.Strings, f, opts));
+    ct.strs.push(f);
+    add_rels(opts.wbrels, -1, "sharedStrings." + wbext, RELS.SST);
+  }
+  f = "xl/workbook." + wbext;
+  zip_add_file(zip, f, write_wb(wb, f, opts));
+  ct.workbooks.push(f);
+  add_rels(opts.rels, 1, f, RELS.WB);
+  f = "xl/theme/theme1.xml";
+  zip_add_file(zip, f, write_theme(wb.Themes, opts));
+  ct.themes.push(f);
+  add_rels(opts.wbrels, -1, "theme/theme1.xml", RELS.THEME);
+  f = "xl/styles." + wbext;
+  zip_add_file(zip, f, write_sty(wb, f, opts));
+  ct.styles.push(f);
+  add_rels(opts.wbrels, -1, "styles." + wbext, RELS.STY);
+  if (wb.vbaraw && vbafmt) {
+    f = "xl/vbaProject.bin";
+    zip_add_file(zip, f, wb.vbaraw);
+    ct.vba.push(f);
+    add_rels(opts.wbrels, -1, "vbaProject.bin", RELS.VBA);
+  }
+  f = "xl/metadata." + wbext;
+  zip_add_file(zip, f, write_xlmeta(f));
+  ct.metadata.push(f);
+  add_rels(opts.wbrels, -1, "metadata." + wbext, RELS.XLMETA);
+  zip_add_file(zip, "[Content_Types].xml", write_ct(ct, opts));
+  zip_add_file(zip, "_rels/.rels", write_rels(opts.rels));
+  zip_add_file(zip, "xl/_rels/workbook." + wbext + ".rels", write_rels(opts.wbrels));
+  delete opts.revssf;
+  delete opts.ssf;
+  return zip;
+}
+function write_zip_xlsx(wb, opts) {
+  _shapeid = 1024;
+  if (wb && !wb.SSF) {
+    wb.SSF = dup(table_fmt);
+  }
+  if (wb && wb.SSF) {
+    make_ssf();
+    SSF_load_table(wb.SSF);
+    opts.revssf = evert_num(wb.SSF);
+    opts.revssf[wb.SSF[65535]] = 0;
+    opts.ssf = wb.SSF;
+  }
+  opts.rels = {};
+  opts.wbrels = {};
+  opts.Strings = /*::((*/
+  [];
+  opts.Strings.Count = 0;
+  opts.Strings.Unique = 0;
+  if (browser_has_Map) opts.revStrings = /* @__PURE__ */ new Map();
+  else {
+    opts.revStrings = {};
+    opts.revStrings.foo = [];
+    delete opts.revStrings.foo;
+  }
+  var wbext = "xml";
+  var vbafmt = VBAFMTS.indexOf(opts.bookType) > -1;
+  var ct = new_ct();
+  fix_write_opts(opts = opts || {});
+  var zip = zip_new();
+  var f = "", rId = 0;
+  opts.cellXfs = [];
+  get_cell_style(opts.cellXfs, {}, { revssf: { "General": 0 } });
+  if (!wb.Props) wb.Props = {};
+  f = "docProps/core.xml";
+  zip_add_file(zip, f, write_core_props(wb.Props, opts));
+  ct.coreprops.push(f);
+  add_rels(opts.rels, 2, f, RELS.CORE_PROPS);
+  f = "docProps/app.xml";
+  if (wb.Props && wb.Props.SheetNames) {
+  } else if (!wb.Workbook || !wb.Workbook.Sheets) wb.Props.SheetNames = wb.SheetNames;
+  else {
+    var _sn = [];
+    for (var _i = 0; _i < wb.SheetNames.length; ++_i)
+      if ((wb.Workbook.Sheets[_i] || {}).Hidden != 2) _sn.push(wb.SheetNames[_i]);
+    wb.Props.SheetNames = _sn;
+  }
+  wb.Props.Worksheets = wb.Props.SheetNames.length;
+  zip_add_file(zip, f, write_ext_props(wb.Props, opts));
+  ct.extprops.push(f);
+  add_rels(opts.rels, 3, f, RELS.EXT_PROPS);
+  if (wb.Custprops !== wb.Props && keys(wb.Custprops || {}).length > 0) {
+    f = "docProps/custom.xml";
+    zip_add_file(zip, f, write_cust_props(wb.Custprops, opts));
+    ct.custprops.push(f);
+    add_rels(opts.rels, 4, f, RELS.CUST_PROPS);
+  }
+  var people = ["SheetJ5"];
+  opts.tcid = 0;
+  for (rId = 1; rId <= wb.SheetNames.length; ++rId) {
+    var wsrels = { "!id": {} };
+    var ws = wb.Sheets[wb.SheetNames[rId - 1]];
+    var _type = (ws || {})["!type"] || "sheet";
+    switch (_type) {
+      case "chart":
+      /* falls through */
+      default:
+        f = "xl/worksheets/sheet" + rId + "." + wbext;
+        zip_add_file(zip, f, write_ws_xml(rId - 1, opts, wb, wsrels));
+        ct.sheets.push(f);
+        add_rels(opts.wbrels, -1, "worksheets/sheet" + rId + "." + wbext, RELS.WS[0]);
+    }
+    if (ws) {
+      var comments = ws["!comments"];
+      var need_vml = false;
+      var cf = "";
+      if (comments && comments.length > 0) {
+        var needtc = false;
+        comments.forEach(function(carr) {
+          carr[1].forEach(function(c) {
+            if (c.T == true) needtc = true;
+          });
+        });
+        if (needtc) {
+          cf = "xl/threadedComments/threadedComment" + rId + "." + wbext;
+          zip_add_file(zip, cf, write_tcmnt_xml(comments, people, opts));
+          ct.threadedcomments.push(cf);
+          add_rels(wsrels, -1, "../threadedComments/threadedComment" + rId + "." + wbext, RELS.TCMNT);
+        }
+        cf = "xl/comments" + rId + "." + wbext;
+        zip_add_file(zip, cf, write_comments_xml(comments, opts));
+        ct.comments.push(cf);
+        add_rels(wsrels, -1, "../comments" + rId + "." + wbext, RELS.CMNT);
+        need_vml = true;
+      }
+      if (ws["!legacy"]) {
+        if (need_vml) zip_add_file(zip, "xl/drawings/vmlDrawing" + rId + ".vml", write_comments_vml(rId, ws["!comments"]));
+      }
+      delete ws["!comments"];
+      delete ws["!legacy"];
+    }
+    if (wsrels["!id"].rId1) zip_add_file(zip, get_rels_path(f), write_rels(wsrels));
+  }
+  if (opts.Strings != null && opts.Strings.length > 0) {
+    f = "xl/sharedStrings." + wbext;
+    zip_add_file(zip, f, write_sst_xml(opts.Strings, opts));
+    ct.strs.push(f);
+    add_rels(opts.wbrels, -1, "sharedStrings." + wbext, RELS.SST);
+  }
+  f = "xl/workbook." + wbext;
+  zip_add_file(zip, f, write_wb_xml(wb, opts));
+  ct.workbooks.push(f);
+  add_rels(opts.rels, 1, f, RELS.WB);
+  f = "xl/theme/theme1.xml";
+  zip_add_file(zip, f, write_theme(wb.Themes, opts));
+  ct.themes.push(f);
+  add_rels(opts.wbrels, -1, "theme/theme1.xml", RELS.THEME);
+  f = "xl/styles." + wbext;
+  zip_add_file(zip, f, write_sty_xml(wb, opts));
+  ct.styles.push(f);
+  add_rels(opts.wbrels, -1, "styles." + wbext, RELS.STY);
+  if (wb.vbaraw && vbafmt) {
+    f = "xl/vbaProject.bin";
+    zip_add_file(zip, f, wb.vbaraw);
+    ct.vba.push(f);
+    add_rels(opts.wbrels, -1, "vbaProject.bin", RELS.VBA);
+  }
+  f = "xl/metadata." + wbext;
+  zip_add_file(zip, f, write_xlmeta_xml());
+  ct.metadata.push(f);
+  add_rels(opts.wbrels, -1, "metadata." + wbext, RELS.XLMETA);
+  if (people.length > 1) {
+    f = "xl/persons/person.xml";
+    zip_add_file(zip, f, write_people_xml(people, opts));
+    ct.people.push(f);
+    add_rels(opts.wbrels, -1, "persons/person.xml", RELS.PEOPLE);
+  }
+  zip_add_file(zip, "[Content_Types].xml", write_ct(ct, opts));
+  zip_add_file(zip, "_rels/.rels", write_rels(opts.rels));
+  zip_add_file(zip, "xl/_rels/workbook." + wbext + ".rels", write_rels(opts.wbrels));
+  delete opts.revssf;
+  delete opts.ssf;
+  return zip;
+}
 function firstbyte(f, o) {
   var x = "";
   switch ((o || {}).type || "base64") {
@@ -42564,6 +45614,209 @@ function readSync(data, opts) {
   }
   if (DBF_SUPPORTED_VERSIONS.indexOf(n[0]) > -1 && n[2] <= 12 && n[3] <= 31) return DBF.to_workbook(d, o);
   return read_prn(data, d, o, str);
+}
+function write_cfb_ctr(cfb, o) {
+  switch (o.type) {
+    case "base64":
+    case "binary":
+      break;
+    case "buffer":
+    case "array":
+      o.type = "";
+      break;
+    case "file":
+      return write_dl(o.file, CFB.write(cfb, { type: has_buf ? "buffer" : "" }));
+    case "string":
+      throw new Error("'string' output type invalid for '" + o.bookType + "' files");
+    default:
+      throw new Error("Unrecognized type " + o.type);
+  }
+  return CFB.write(cfb, o);
+}
+function write_zip_type(wb, opts) {
+  var o = dup(opts || {});
+  var z = write_zip(wb, o);
+  return write_zip_denouement(z, o);
+}
+function write_zip_denouement(z, o) {
+  var oopts = {};
+  var ftype = has_buf ? "nodebuffer" : typeof Uint8Array !== "undefined" ? "array" : "string";
+  if (o.compression) oopts.compression = "DEFLATE";
+  if (o.password) oopts.type = ftype;
+  else switch (o.type) {
+    case "base64":
+      oopts.type = "base64";
+      break;
+    case "binary":
+      oopts.type = "string";
+      break;
+    case "string":
+      throw new Error("'string' output type invalid for '" + o.bookType + "' files");
+    case "buffer":
+    case "file":
+      oopts.type = ftype;
+      break;
+    default:
+      throw new Error("Unrecognized type " + o.type);
+  }
+  var out = z.FullPaths ? CFB.write(z, { fileType: "zip", type: (
+    /*::(*/
+    { "nodebuffer": "buffer", "string": "binary" }[oopts.type] || oopts.type
+  ), compression: !!o.compression }) : z.generate(oopts);
+  if (typeof Deno !== "undefined") {
+    if (typeof out == "string") {
+      if (o.type == "binary" || o.type == "base64") return out;
+      out = new Uint8Array(s2ab(out));
+    }
+  }
+  if (o.password && typeof encrypt_agile !== "undefined") return write_cfb_ctr(encrypt_agile(out, o.password), o);
+  if (o.type === "file") return write_dl(o.file, out);
+  return o.type == "string" ? utf8read(
+    /*::(*/
+    out
+    /*:: :any)*/
+  ) : out;
+}
+function write_cfb_type(wb, opts) {
+  var o = opts || {};
+  var cfb = write_xlscfb(wb, o);
+  return write_cfb_ctr(cfb, o);
+}
+function write_string_type(out, opts, bom) {
+  if (!bom) bom = "";
+  var o = bom + out;
+  switch (opts.type) {
+    case "base64":
+      return Base64_encode(utf8write(o));
+    case "binary":
+      return utf8write(o);
+    case "string":
+      return out;
+    case "file":
+      return write_dl(opts.file, o, "utf8");
+    case "buffer": {
+      if (has_buf) return Buffer_from(o, "utf8");
+      else if (typeof TextEncoder !== "undefined") return new TextEncoder().encode(o);
+      else return write_string_type(o, { type: "binary" }).split("").map(function(c) {
+        return c.charCodeAt(0);
+      });
+    }
+  }
+  throw new Error("Unrecognized type " + opts.type);
+}
+function write_stxt_type(out, opts) {
+  switch (opts.type) {
+    case "base64":
+      return Base64_encode(out);
+    case "binary":
+      return out;
+    case "string":
+      return out;
+    /* override in sheet_to_txt */
+    case "file":
+      return write_dl(opts.file, out, "binary");
+    case "buffer": {
+      if (has_buf) return Buffer_from(out, "binary");
+      else return out.split("").map(function(c) {
+        return c.charCodeAt(0);
+      });
+    }
+  }
+  throw new Error("Unrecognized type " + opts.type);
+}
+function write_binary_type(out, opts) {
+  switch (opts.type) {
+    case "string":
+    case "base64":
+    case "binary":
+      var bstr = "";
+      for (var i = 0; i < out.length; ++i) bstr += String.fromCharCode(out[i]);
+      return opts.type == "base64" ? Base64_encode(bstr) : opts.type == "string" ? utf8read(bstr) : bstr;
+    case "file":
+      return write_dl(opts.file, out);
+    case "buffer":
+      return out;
+    default:
+      throw new Error("Unrecognized type " + opts.type);
+  }
+}
+function writeSync(wb, opts) {
+  reset_cp();
+  check_wb(wb);
+  var o = dup(opts || {});
+  if (o.cellStyles) {
+    o.cellNF = true;
+    o.sheetStubs = true;
+  }
+  if (o.type == "array") {
+    o.type = "binary";
+    var out = writeSync(wb, o);
+    o.type = "array";
+    return s2ab(out);
+  }
+  var idx = 0;
+  if (o.sheet) {
+    if (typeof o.sheet == "number") idx = o.sheet;
+    else idx = wb.SheetNames.indexOf(o.sheet);
+    if (!wb.SheetNames[idx]) throw new Error("Sheet not found: " + o.sheet + " : " + typeof o.sheet);
+  }
+  switch (o.bookType || "xlsb") {
+    case "xml":
+    case "xlml":
+      return write_string_type(write_xlml(wb, o), o);
+    case "slk":
+    case "sylk":
+      return write_string_type(SYLK.from_sheet(wb.Sheets[wb.SheetNames[idx]], o), o);
+    case "htm":
+    case "html":
+      return write_string_type(sheet_to_html(wb.Sheets[wb.SheetNames[idx]], o), o);
+    case "txt":
+      return write_stxt_type(sheet_to_txt(wb.Sheets[wb.SheetNames[idx]], o), o);
+    case "csv":
+      return write_string_type(sheet_to_csv(wb.Sheets[wb.SheetNames[idx]], o), o, "\uFEFF");
+    case "dif":
+      return write_string_type(DIF.from_sheet(wb.Sheets[wb.SheetNames[idx]], o), o);
+    case "dbf":
+      return write_binary_type(DBF.from_sheet(wb.Sheets[wb.SheetNames[idx]], o), o);
+    case "prn":
+      return write_string_type(PRN.from_sheet(wb.Sheets[wb.SheetNames[idx]], o), o);
+    case "rtf":
+      return write_string_type(RTF.from_sheet(wb.Sheets[wb.SheetNames[idx]], o), o);
+    case "eth":
+      return write_string_type(ETH.from_sheet(wb.Sheets[wb.SheetNames[idx]], o), o);
+    case "fods":
+      return write_string_type(write_ods(wb, o), o);
+    case "wk1":
+      return write_binary_type(WK_.sheet_to_wk1(wb.Sheets[wb.SheetNames[idx]], o), o);
+    case "wk3":
+      return write_binary_type(WK_.book_to_wk3(wb, o), o);
+    case "biff2":
+      if (!o.biff) o.biff = 2;
+    /* falls through */
+    case "biff3":
+      if (!o.biff) o.biff = 3;
+    /* falls through */
+    case "biff4":
+      if (!o.biff) o.biff = 4;
+      return write_binary_type(write_biff_buf(wb, o), o);
+    case "biff5":
+      if (!o.biff) o.biff = 5;
+    /* falls through */
+    case "biff8":
+    case "xla":
+    case "xls":
+      if (!o.biff) o.biff = 8;
+      return write_cfb_type(wb, o);
+    case "xlsx":
+    case "xlsm":
+    case "xlam":
+    case "xlsb":
+    case "numbers":
+    case "ods":
+      return write_zip_type(wb, o);
+    default:
+      throw new Error("Unrecognized bookType |" + o.bookType + "|");
+  }
 }
 function make_json_row(sheet, r, R, cols, header, hdr, dense, o) {
   var rr = encode_row(R);
@@ -42989,6 +46242,1661 @@ var utils = {
   }
 };
 var version = XLSX.version;
+
+// node_modules/lucide-react/dist/esm/createLucideIcon.js
+var import_react2 = __toESM(require_react());
+
+// node_modules/lucide-react/dist/esm/shared/src/utils.js
+var toKebabCase = (string) => string.replace(/([a-z0-9])([A-Z])/g, "$1-$2").toLowerCase();
+var mergeClasses = (...classes) => classes.filter((className, index, array) => {
+  return Boolean(className) && className.trim() !== "" && array.indexOf(className) === index;
+}).join(" ").trim();
+
+// node_modules/lucide-react/dist/esm/Icon.js
+var import_react = __toESM(require_react());
+
+// node_modules/lucide-react/dist/esm/defaultAttributes.js
+var defaultAttributes = {
+  xmlns: "http://www.w3.org/2000/svg",
+  width: 24,
+  height: 24,
+  viewBox: "0 0 24 24",
+  fill: "none",
+  stroke: "currentColor",
+  strokeWidth: 2,
+  strokeLinecap: "round",
+  strokeLinejoin: "round"
+};
+
+// node_modules/lucide-react/dist/esm/Icon.js
+var Icon = (0, import_react.forwardRef)(
+  ({
+    color = "currentColor",
+    size = 24,
+    strokeWidth = 2,
+    absoluteStrokeWidth,
+    className = "",
+    children,
+    iconNode,
+    ...rest2
+  }, ref) => {
+    return (0, import_react.createElement)(
+      "svg",
+      {
+        ref,
+        ...defaultAttributes,
+        width: size,
+        height: size,
+        stroke: color,
+        strokeWidth: absoluteStrokeWidth ? Number(strokeWidth) * 24 / Number(size) : strokeWidth,
+        className: mergeClasses("lucide", className),
+        ...rest2
+      },
+      [
+        ...iconNode.map(([tag, attrs]) => (0, import_react.createElement)(tag, attrs)),
+        ...Array.isArray(children) ? children : [children]
+      ]
+    );
+  }
+);
+
+// node_modules/lucide-react/dist/esm/createLucideIcon.js
+var createLucideIcon = (iconName, iconNode) => {
+  const Component = (0, import_react2.forwardRef)(
+    ({ className, ...props }, ref) => (0, import_react2.createElement)(Icon, {
+      ref,
+      iconNode,
+      className: mergeClasses(`lucide-${toKebabCase(iconName)}`, className),
+      ...props
+    })
+  );
+  Component.displayName = `${iconName}`;
+  return Component;
+};
+
+// node_modules/lucide-react/dist/esm/icons/arrow-left.js
+var ArrowLeft = createLucideIcon("ArrowLeft", [
+  ["path", { d: "m12 19-7-7 7-7", key: "1l729n" }],
+  ["path", { d: "M19 12H5", key: "x3x0zl" }]
+]);
+
+// node_modules/lucide-react/dist/esm/icons/arrow-right.js
+var ArrowRight = createLucideIcon("ArrowRight", [
+  ["path", { d: "M5 12h14", key: "1ays0h" }],
+  ["path", { d: "m12 5 7 7-7 7", key: "xquz4c" }]
+]);
+
+// node_modules/lucide-react/dist/esm/icons/book-open.js
+var BookOpen = createLucideIcon("BookOpen", [
+  ["path", { d: "M12 7v14", key: "1akyts" }],
+  [
+    "path",
+    {
+      d: "M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z",
+      key: "ruj8y"
+    }
+  ]
+]);
+
+// node_modules/lucide-react/dist/esm/icons/calendar-days.js
+var CalendarDays = createLucideIcon("CalendarDays", [
+  ["path", { d: "M8 2v4", key: "1cmpym" }],
+  ["path", { d: "M16 2v4", key: "4m81vk" }],
+  ["rect", { width: "18", height: "18", x: "3", y: "4", rx: "2", key: "1hopcy" }],
+  ["path", { d: "M3 10h18", key: "8toen8" }],
+  ["path", { d: "M8 14h.01", key: "6423bh" }],
+  ["path", { d: "M12 14h.01", key: "1etili" }],
+  ["path", { d: "M16 14h.01", key: "1gbofw" }],
+  ["path", { d: "M8 18h.01", key: "lrp35t" }],
+  ["path", { d: "M12 18h.01", key: "mhygvu" }],
+  ["path", { d: "M16 18h.01", key: "kzsmim" }]
+]);
+
+// node_modules/lucide-react/dist/esm/icons/chart-column.js
+var ChartColumn = createLucideIcon("ChartColumn", [
+  ["path", { d: "M3 3v16a2 2 0 0 0 2 2h16", key: "c24i48" }],
+  ["path", { d: "M18 17V9", key: "2bz60n" }],
+  ["path", { d: "M13 17V5", key: "1frdt8" }],
+  ["path", { d: "M8 17v-3", key: "17ska0" }]
+]);
+
+// node_modules/lucide-react/dist/esm/icons/check.js
+var Check = createLucideIcon("Check", [["path", { d: "M20 6 9 17l-5-5", key: "1gmf2c" }]]);
+
+// node_modules/lucide-react/dist/esm/icons/chevron-down.js
+var ChevronDown = createLucideIcon("ChevronDown", [
+  ["path", { d: "m6 9 6 6 6-6", key: "qrunsl" }]
+]);
+
+// node_modules/lucide-react/dist/esm/icons/chevron-right.js
+var ChevronRight = createLucideIcon("ChevronRight", [
+  ["path", { d: "m9 18 6-6-6-6", key: "mthhwq" }]
+]);
+
+// node_modules/lucide-react/dist/esm/icons/circle-alert.js
+var CircleAlert = createLucideIcon("CircleAlert", [
+  ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
+  ["line", { x1: "12", x2: "12", y1: "8", y2: "12", key: "1pkeuh" }],
+  ["line", { x1: "12", x2: "12.01", y1: "16", y2: "16", key: "4dfq90" }]
+]);
+
+// node_modules/lucide-react/dist/esm/icons/circle-check.js
+var CircleCheck = createLucideIcon("CircleCheck", [
+  ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
+  ["path", { d: "m9 12 2 2 4-4", key: "dzmm74" }]
+]);
+
+// node_modules/lucide-react/dist/esm/icons/circle-help.js
+var CircleHelp = createLucideIcon("CircleHelp", [
+  ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
+  ["path", { d: "M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3", key: "1u773s" }],
+  ["path", { d: "M12 17h.01", key: "p32p05" }]
+]);
+
+// node_modules/lucide-react/dist/esm/icons/circle.js
+var Circle = createLucideIcon("Circle", [
+  ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }]
+]);
+
+// node_modules/lucide-react/dist/esm/icons/clipboard-check.js
+var ClipboardCheck = createLucideIcon("ClipboardCheck", [
+  ["rect", { width: "8", height: "4", x: "8", y: "2", rx: "1", ry: "1", key: "tgr4d6" }],
+  [
+    "path",
+    {
+      d: "M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2",
+      key: "116196"
+    }
+  ],
+  ["path", { d: "m9 14 2 2 4-4", key: "df797q" }]
+]);
+
+// node_modules/lucide-react/dist/esm/icons/clock-3.js
+var Clock3 = createLucideIcon("Clock3", [
+  ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
+  ["polyline", { points: "12 6 12 12 16.5 12", key: "1aq6pp" }]
+]);
+
+// node_modules/lucide-react/dist/esm/icons/download.js
+var Download = createLucideIcon("Download", [
+  ["path", { d: "M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4", key: "ih7n3h" }],
+  ["polyline", { points: "7 10 12 15 17 10", key: "2ggqvy" }],
+  ["line", { x1: "12", x2: "12", y1: "15", y2: "3", key: "1vk2je" }]
+]);
+
+// node_modules/lucide-react/dist/esm/icons/eye.js
+var Eye = createLucideIcon("Eye", [
+  [
+    "path",
+    {
+      d: "M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0",
+      key: "1nclc0"
+    }
+  ],
+  ["circle", { cx: "12", cy: "12", r: "3", key: "1v7zrd" }]
+]);
+
+// node_modules/lucide-react/dist/esm/icons/file-check-2.js
+var FileCheck2 = createLucideIcon("FileCheck2", [
+  ["path", { d: "M4 22h14a2 2 0 0 0 2-2V7l-5-5H6a2 2 0 0 0-2 2v4", key: "1pf5j1" }],
+  ["path", { d: "M14 2v4a2 2 0 0 0 2 2h4", key: "tnqrlb" }],
+  ["path", { d: "m3 15 2 2 4-4", key: "1lhrkk" }]
+]);
+
+// node_modules/lucide-react/dist/esm/icons/file-spreadsheet.js
+var FileSpreadsheet = createLucideIcon("FileSpreadsheet", [
+  ["path", { d: "M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z", key: "1rqfz7" }],
+  ["path", { d: "M14 2v4a2 2 0 0 0 2 2h4", key: "tnqrlb" }],
+  ["path", { d: "M8 13h2", key: "yr2amv" }],
+  ["path", { d: "M14 13h2", key: "un5t4a" }],
+  ["path", { d: "M8 17h2", key: "2yhykz" }],
+  ["path", { d: "M14 17h2", key: "10kma7" }]
+]);
+
+// node_modules/lucide-react/dist/esm/icons/flag.js
+var Flag = createLucideIcon("Flag", [
+  ["path", { d: "M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z", key: "i9b6wo" }],
+  ["line", { x1: "4", x2: "4", y1: "22", y2: "15", key: "1cm3nv" }]
+]);
+
+// node_modules/lucide-react/dist/esm/icons/house.js
+var House = createLucideIcon("House", [
+  ["path", { d: "M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8", key: "5wwlr5" }],
+  [
+    "path",
+    {
+      d: "M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z",
+      key: "1d0kgt"
+    }
+  ]
+]);
+
+// node_modules/lucide-react/dist/esm/icons/info.js
+var Info = createLucideIcon("Info", [
+  ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
+  ["path", { d: "M12 16v-4", key: "1dtifu" }],
+  ["path", { d: "M12 8h.01", key: "e9boi3" }]
+]);
+
+// node_modules/lucide-react/dist/esm/icons/key-round.js
+var KeyRound = createLucideIcon("KeyRound", [
+  [
+    "path",
+    {
+      d: "M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z",
+      key: "1s6t7t"
+    }
+  ],
+  ["circle", { cx: "16.5", cy: "7.5", r: ".5", fill: "currentColor", key: "w0ekpg" }]
+]);
+
+// node_modules/lucide-react/dist/esm/icons/layout-dashboard.js
+var LayoutDashboard = createLucideIcon("LayoutDashboard", [
+  ["rect", { width: "7", height: "9", x: "3", y: "3", rx: "1", key: "10lvy0" }],
+  ["rect", { width: "7", height: "5", x: "14", y: "3", rx: "1", key: "16une8" }],
+  ["rect", { width: "7", height: "9", x: "14", y: "12", rx: "1", key: "1hutg5" }],
+  ["rect", { width: "7", height: "5", x: "3", y: "16", rx: "1", key: "ldoo1y" }]
+]);
+
+// node_modules/lucide-react/dist/esm/icons/list-checks.js
+var ListChecks = createLucideIcon("ListChecks", [
+  ["path", { d: "m3 17 2 2 4-4", key: "1jhpwq" }],
+  ["path", { d: "m3 7 2 2 4-4", key: "1obspn" }],
+  ["path", { d: "M13 6h8", key: "15sg57" }],
+  ["path", { d: "M13 12h8", key: "h98zly" }],
+  ["path", { d: "M13 18h8", key: "oe0vm4" }]
+]);
+
+// node_modules/lucide-react/dist/esm/icons/map-pin.js
+var MapPin = createLucideIcon("MapPin", [
+  [
+    "path",
+    {
+      d: "M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0",
+      key: "1r0f0z"
+    }
+  ],
+  ["circle", { cx: "12", cy: "10", r: "3", key: "ilqhr7" }]
+]);
+
+// node_modules/lucide-react/dist/esm/icons/menu.js
+var Menu = createLucideIcon("Menu", [
+  ["line", { x1: "4", x2: "20", y1: "12", y2: "12", key: "1e0a9i" }],
+  ["line", { x1: "4", x2: "20", y1: "6", y2: "6", key: "1owob3" }],
+  ["line", { x1: "4", x2: "20", y1: "18", y2: "18", key: "yk5zj1" }]
+]);
+
+// node_modules/lucide-react/dist/esm/icons/plus.js
+var Plus = createLucideIcon("Plus", [
+  ["path", { d: "M5 12h14", key: "1ays0h" }],
+  ["path", { d: "M12 5v14", key: "s699le" }]
+]);
+
+// node_modules/lucide-react/dist/esm/icons/refresh-cw.js
+var RefreshCw = createLucideIcon("RefreshCw", [
+  ["path", { d: "M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8", key: "v9h5vc" }],
+  ["path", { d: "M21 3v5h-5", key: "1q7to0" }],
+  ["path", { d: "M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16", key: "3uifl3" }],
+  ["path", { d: "M8 16H3v5", key: "1cv678" }]
+]);
+
+// node_modules/lucide-react/dist/esm/icons/search.js
+var Search = createLucideIcon("Search", [
+  ["circle", { cx: "11", cy: "11", r: "8", key: "4ej97u" }],
+  ["path", { d: "m21 21-4.3-4.3", key: "1qie3q" }]
+]);
+
+// node_modules/lucide-react/dist/esm/icons/shield-check.js
+var ShieldCheck = createLucideIcon("ShieldCheck", [
+  [
+    "path",
+    {
+      d: "M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z",
+      key: "oel41y"
+    }
+  ],
+  ["path", { d: "m9 12 2 2 4-4", key: "dzmm74" }]
+]);
+
+// node_modules/lucide-react/dist/esm/icons/sparkles.js
+var Sparkles = createLucideIcon("Sparkles", [
+  [
+    "path",
+    {
+      d: "M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z",
+      key: "4pj2yx"
+    }
+  ],
+  ["path", { d: "M20 3v4", key: "1olli1" }],
+  ["path", { d: "M22 5h-4", key: "1gvqau" }],
+  ["path", { d: "M4 17v2", key: "vumght" }],
+  ["path", { d: "M5 18H3", key: "zchphs" }]
+]);
+
+// node_modules/lucide-react/dist/esm/icons/store.js
+var Store = createLucideIcon("Store", [
+  ["path", { d: "m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7", key: "ztvudi" }],
+  ["path", { d: "M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8", key: "1b2hhj" }],
+  ["path", { d: "M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4", key: "2ebpfo" }],
+  ["path", { d: "M2 7h20", key: "1fcdvo" }],
+  [
+    "path",
+    {
+      d: "M22 7v3a2 2 0 0 1-2 2a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 16 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 12 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 8 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 4 12a2 2 0 0 1-2-2V7",
+      key: "6c3vgh"
+    }
+  ]
+]);
+
+// node_modules/lucide-react/dist/esm/icons/target.js
+var Target = createLucideIcon("Target", [
+  ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
+  ["circle", { cx: "12", cy: "12", r: "6", key: "1vlfrh" }],
+  ["circle", { cx: "12", cy: "12", r: "2", key: "1c9p78" }]
+]);
+
+// node_modules/lucide-react/dist/esm/icons/trash-2.js
+var Trash2 = createLucideIcon("Trash2", [
+  ["path", { d: "M3 6h18", key: "d0wm0j" }],
+  ["path", { d: "M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6", key: "4alrt4" }],
+  ["path", { d: "M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2", key: "v07s0e" }],
+  ["line", { x1: "10", x2: "10", y1: "11", y2: "17", key: "1uufr5" }],
+  ["line", { x1: "14", x2: "14", y1: "11", y2: "17", key: "xtxkd" }]
+]);
+
+// node_modules/lucide-react/dist/esm/icons/triangle-alert.js
+var TriangleAlert = createLucideIcon("TriangleAlert", [
+  [
+    "path",
+    {
+      d: "m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3",
+      key: "wmoenq"
+    }
+  ],
+  ["path", { d: "M12 9v4", key: "juzpu7" }],
+  ["path", { d: "M12 17h.01", key: "p32p05" }]
+]);
+
+// node_modules/lucide-react/dist/esm/icons/upload.js
+var Upload = createLucideIcon("Upload", [
+  ["path", { d: "M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4", key: "ih7n3h" }],
+  ["polyline", { points: "17 8 12 3 7 8", key: "t8dd8p" }],
+  ["line", { x1: "12", x2: "12", y1: "3", y2: "15", key: "widbto" }]
+]);
+
+// node_modules/lucide-react/dist/esm/icons/user-round.js
+var UserRound = createLucideIcon("UserRound", [
+  ["circle", { cx: "12", cy: "8", r: "5", key: "1hypcn" }],
+  ["path", { d: "M20 21a8 8 0 0 0-16 0", key: "rfgkzh" }]
+]);
+
+// node_modules/lucide-react/dist/esm/icons/users-round.js
+var UsersRound = createLucideIcon("UsersRound", [
+  ["path", { d: "M18 21a8 8 0 0 0-16 0", key: "3ypg7q" }],
+  ["circle", { cx: "10", cy: "8", r: "5", key: "o932ke" }],
+  ["path", { d: "M22 20c0-3.37-2-6.5-4-8a5 5 0 0 0-.45-8.3", key: "10s06x" }]
+]);
+
+// node_modules/lucide-react/dist/esm/icons/x.js
+var X = createLucideIcon("X", [
+  ["path", { d: "M18 6 6 18", key: "1bl5f8" }],
+  ["path", { d: "m6 6 12 12", key: "d8bk6v" }]
+]);
+
+// src/features/types.ts
+var BRANDS = ["茶颜悦色", "古德墨柠", "鸳央咖啡"];
+
+// src/config/business-rules.ts
+function today() {
+  const d = /* @__PURE__ */ new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+function addDays(days2) {
+  const d = /* @__PURE__ */ new Date();
+  d.setDate(d.getDate() + days2);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+var CURRENT_QUARTER = "2026-Q4";
+var DEFAULT_EMPLOYEE_ID = "DEMO009";
+var QUARTERLY_VISIT_TARGET = 25;
+var RISK_RULES = [
+  { key: "architectureLabor", label: "架构变动", description: "最近完整月有店长或核心伙伴离职、新入职" },
+  { key: "abcAllC", label: "ABC风险排名", description: "近3个月ABC评级排名：C越多、月份越近排名越靠前，点击查看明细" },
+  { key: "qcBelow80", label: "QC风险排名", description: "近3个月QC评分排名，不合格越多、月份越近排名越靠前，点击查看明细" },
+  { key: "salesBelow100", label: "业绩连续3月不好", description: "最近3个完整月业绩达成率均低于100%" },
+  { key: "hoursOver220", label: "工时超220H", description: "最近完整月月人均工时大于220小时" },
+  { key: "hoursUnder167", label: "工时低167H", description: "最近完整月月人均工时小于167小时" },
+  { key: "attendanceOver8Days", label: "连续出勤>8天人数", description: "最近完整月有员工连续出勤大于8天（国庆高峰10/1-10/7不计入）" },
+  { key: "lowTemperature", label: "低温门店", description: "最近完整月标记为低温门店" },
+  { key: "treeHoleComplaints", label: "树洞投诉预警", description: "最近完整月树洞投诉不少于2条" },
+  { key: "noReward", label: "两大奖励预警", description: "最近完整月两大奖励达标为否" }
+];
+var MONTHLY_VISIT_TARGET = 15;
+var QUARTERLY_TARGET_NAMES = ["戴嘉伟", "唐漂", "程洁暇"];
+function visitTargetFor(employeeName) {
+  return QUARTERLY_TARGET_NAMES.includes(employeeName) ? { period: "quarter", target: QUARTERLY_VISIT_TARGET, periodLabel: "季度" } : { period: "month", target: MONTHLY_VISIT_TARGET, periodLabel: "月" };
+}
+var XIANGZHAN_BP_MAP = {
+  从浩: "赵芬",
+  瞿兆邦: "邵晓宇",
+  陈坤: "刘林",
+  肖湘: "曾令财"
+};
+var FULL_ACCESS_NAMES = ["杨师", "戴嘉伟", "李当", "胡芬", "朱芳"];
+var MANAGER_TRACK_NAMES = ["朱芳", "李当", "胡芬"];
+var MANAGER_TRACK_VISIBLE_TO = ["杨师", "戴嘉伟", ...MANAGER_TRACK_NAMES];
+var EXTRA_ROOT_CAUSES = [
+  { key: "xiangzhanNoReward", label: "未获得巷战激励" },
+  { key: "otherReason", label: "其他" }
+];
+var RISK_PHASE_BY_LEVEL = {
+  极高风险: "本月",
+  高风险: "次月",
+  中风险: "季度内",
+  低风险: "常规",
+  数据待补充: "本月"
+};
+function getRiskLevel(knownScore, missingCount = 0) {
+  if (missingCount > 0) return "数据待补充";
+  if (knownScore >= 6) return "极高风险";
+  if (knownScore >= 4) return "高风险";
+  if (knownScore >= 2) return "中风险";
+  return "低风险";
+}
+function getRiskPhase(level) {
+  return RISK_PHASE_BY_LEVEL[level];
+}
+
+// src/data/demo-data.ts
+var demoEmployees = [
+  { id: "DEMO001", workNo: "DEMO001", name: "赵芬", role: "bp", brands: ["茶颜悦色"] },
+  { id: "DEMO002", workNo: "DEMO002", name: "邵晓宇", role: "bp", brands: ["茶颜悦色"] },
+  { id: "DEMO003", workNo: "DEMO003", name: "刘林", role: "bp", brands: ["茶颜悦色"] },
+  { id: "DEMO004", workNo: "DEMO004", name: "曾令财", role: "bp", brands: ["茶颜悦色"] },
+  { id: "DEMO005", workNo: "DEMO005", name: "唐漂", role: "bp", brands: ["茶颜悦色"] },
+  { id: "DEMO006", workNo: "DEMO006", name: "谢永林", role: "bp", brands: ["鸳央咖啡"] },
+  { id: "DEMO007", workNo: "DEMO007", name: "周丽", role: "bp", brands: ["古德墨柠"] },
+  { id: "DEMO008", workNo: "DEMO008", name: "杨梦琳", role: "bp", brands: ["古德墨柠"] },
+  { id: "DEMO009", workNo: "DEMO009", name: "戴嘉伟", role: "bp", brands: ["古德墨柠"] },
+  { id: "DEMO010", workNo: "DEMO010", name: "朱芳", role: "manager", brands: ["茶颜悦色"] },
+  { id: "DEMO011", workNo: "DEMO011", name: "胡芬", role: "manager", brands: ["鸳央咖啡"] },
+  { id: "DEMO012", workNo: "DEMO012", name: "李当", role: "manager", brands: ["古德墨柠"] },
+  { id: "DEMO013", workNo: "DEMO013", name: "杨师", role: "director", brands: [...BRANDS] }
+];
+var demoCurrentEmployee = demoEmployees.find((employee) => employee.id === DEFAULT_EMPLOYEE_ID);
+var demoVisits = [];
+var demoIssues = [];
+var demoIssueEvents = [];
+
+// src/config/dictionaries.ts
+var ISSUE_STATUS_LABELS = {
+  open: "待处理",
+  in_progress: "处理中",
+  completed: "待复核",
+  closed: "已闭环"
+};
+var ISSUE_SEVERITY_LABELS = {
+  low: "低",
+  medium: "中",
+  high: "高"
+};
+var ISSUE_CATEGORY_DICTIONARY = [
+  { key: "people", label: "人员状态", examples: ["高峰人手不足", "新员工带教缺失"] },
+  { key: "teamwork", label: "协作氛围", examples: ["跨班次协作不畅", "信息不同步"] },
+  { key: "service", label: "客户体验", examples: ["出杯等待过长", "服务话术未执行"] },
+  { key: "operation", label: "项目执行", examples: ["盘点差异", "陈列未按标准"] },
+  { key: "development", label: "人才发展", examples: ["带教计划缺失", "晋升训练待跟进"] },
+  { key: "other", label: "其他", examples: ["设备设施", "流程不合理"] }
+];
+var ROLE_LABELS = {
+  bp: "BP",
+  manager: "品牌经理",
+  director: "总负责人",
+  dataAdmin: "数据管理员"
+};
+
+// src/features/date-utils.ts
+var DATE_ONLY_RE = /^(\d{4})-(\d{2})-(\d{2})/;
+var MONTH_RE = /^(\d{4})-(\d{2})$/;
+function toDateOnly(value) {
+  if (typeof value === "string") {
+    const match = value.match(DATE_ONLY_RE);
+    if (!match) throw new Error(`无效日期：${value}`);
+    return `${match[1]}-${match[2]}-${match[3]}`;
+  }
+  const year = value.getFullYear();
+  const month = String(value.getMonth() + 1).padStart(2, "0");
+  const day = String(value.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+function isValidMonth(month) {
+  const match = month.match(MONTH_RE);
+  if (!match) return false;
+  const value = Number(match[2]);
+  return value >= 1 && value <= 12;
+}
+function shiftMonth(month, offset) {
+  if (!isValidMonth(month)) throw new Error(`无效月份：${month}`);
+  const [year, monthNumber] = month.split("-").map(Number);
+  const index = year * 12 + monthNumber - 1 + offset;
+  const nextYear = Math.floor(index / 12);
+  const nextMonth = (index % 12 + 12) % 12 + 1;
+  return `${String(nextYear).padStart(4, "0")}-${String(nextMonth).padStart(2, "0")}`;
+}
+function getRecentCompleteMonths(reference, count = 3) {
+  if (!Number.isInteger(count) || count < 1) throw new Error("月份数量必须为正整数");
+  const currentMonth = toDateOnly(reference).slice(0, 7);
+  return Array.from({ length: count }, (_, index) => shiftMonth(currentMonth, index - count));
+}
+function getMonthKey(date) {
+  return toDateOnly(date).slice(0, 7);
+}
+function getQuarterKey(date) {
+  const value = toDateOnly(date);
+  const year = Number(value.slice(0, 4));
+  const month = Number(value.slice(5, 7));
+  return `${year}-Q${Math.floor((month - 1) / 3) + 1}`;
+}
+function isValidQuarter(quarter) {
+  return /^\d{4}-Q[1-4]$/.test(quarter);
+}
+function daysBetween(from, to) {
+  const fromValue = toDateOnly(from);
+  const toValue = toDateOnly(to);
+  const fromTime = Date.parse(`${fromValue}T00:00:00Z`);
+  const toTime = Date.parse(`${toValue}T00:00:00Z`);
+  return Math.floor((toTime - fromTime) / 864e5);
+}
+
+// src/features/quarterly-progress.ts
+function isCountableVisit(visit) {
+  return visit.status === "submitted" && visit.voided !== true;
+}
+function calculateQuarterlyProgress(visits, bpId, quarter, target = QUARTERLY_VISIT_TARGET) {
+  if (!isValidQuarter(quarter)) throw new Error(`无效季度：${quarter}`);
+  if (!Number.isFinite(target) || target < 0) throw new Error("巡店目标不能为负数");
+  const storeIds = Array.from(new Set(
+    visits.filter((visit) => visit.bpId === bpId && isCountableVisit(visit) && getQuarterKey(visit.visitedAt) === quarter).map((visit) => visit.storeId)
+  )).sort();
+  const uniqueVisitCount = storeIds.length;
+  const cappedProgress = target === 0 ? 100 : Math.min(100, Math.round(uniqueVisitCount / target * 100));
+  return {
+    bpId,
+    quarter,
+    storeIds,
+    uniqueVisitCount,
+    target,
+    gap: Math.max(0, target - uniqueVisitCount),
+    progress: cappedProgress,
+    cappedProgress,
+    completed: uniqueVisitCount >= target
+  };
+}
+function calculateMonthlyProgress(visits, bpId, month, target = 15) {
+  if (!isValidMonth(month)) throw new Error(`无效月份：${month}`);
+  if (!Number.isFinite(target) || target < 0) throw new Error("巡店目标不能为负数");
+  const storeIds = Array.from(new Set(
+    visits.filter((visit) => visit.bpId === bpId && isCountableVisit(visit) && getMonthKey(visit.visitedAt) === month).map((visit) => visit.storeId)
+  )).sort();
+  const uniqueVisitCount = storeIds.length;
+  const cappedProgress = target === 0 ? 100 : Math.min(100, Math.round(uniqueVisitCount / target * 100));
+  return {
+    bpId,
+    quarter: month,
+    storeIds,
+    uniqueVisitCount,
+    target,
+    gap: Math.max(0, target - uniqueVisitCount),
+    progress: cappedProgress,
+    cappedProgress,
+    completed: uniqueVisitCount >= target
+  };
+}
+
+// src/features/risk/calculate-risk.ts
+function item(key, status, abnormalReason, normalReason, missingReason) {
+  const rule = RISK_RULES.find((candidate) => candidate.key === key);
+  return {
+    key,
+    label: rule?.label ?? key,
+    status,
+    score: status === "abnormal" ? 1 : 0,
+    reason: status === "abnormal" ? abnormalReason : status === "normal" ? normalReason : missingReason
+  };
+}
+function calculateRisk(storeId, metrics, asOfDate = /* @__PURE__ */ new Date()) {
+  const months2 = getRecentCompleteMonths(asOfDate);
+  const latestMonth = months2[months2.length - 1];
+  const storeMetrics = metrics.filter((metric) => metric.storeId === storeId);
+  const recent = months2.map((month) => storeMetrics.find((metric) => metric.month === month));
+  const latest = recent[recent.length - 1];
+  function acrossMonths(key, field, isAbnormal, abnormalReason, normalReason) {
+    const missingMonths = months2.filter((_, index) => recent[index]?.[field] === void 0 || recent[index]?.[field] === null);
+    if (missingMonths.length) {
+      return item(key, "missing", abnormalReason, normalReason, `${missingMonths.join("、")}缺少${RISK_RULES.find((rule) => rule.key === key)?.label}所需数据`);
+    }
+    const values = recent.map((metric) => metric?.[field]);
+    return item(key, isAbnormal(values) ? "abnormal" : "normal", abnormalReason, normalReason, "");
+  }
+  function latestOnly(key, field, isAbnormal, abnormalReason, normalReason) {
+    const value = latest?.[field];
+    if (value === void 0 || value === null) {
+      return item(key, "missing", abnormalReason, normalReason, `${latestMonth}缺少${RISK_RULES.find((rule) => rule.key === key)?.label}数据`);
+    }
+    return item(key, isAbnormal(value) ? "abnormal" : "normal", abnormalReason, normalReason, "");
+  }
+  const hoursItem = (key) => {
+    const label = key === "hoursOver220" ? "月人均工时>220H" : "月人均工时<167H";
+    const value = latest?.workHours;
+    if (value === void 0 || value === null) return item(key, "missing", label, "月人均工时在正常区间", `${latestMonth}缺少工时数据`);
+    const abnormal = key === "hoursOver220" ? value > 220 : value < 167;
+    return item(key, abnormal ? "abnormal" : "normal", `${latestMonth}月人均工时${value}H，触发${label}`, `${latestMonth}月人均工时${value}H，未触发该规则`, "");
+  };
+  const items = [
+    latestOnly("architectureLabor", "architectureLabor", Boolean, "最近完整月有店长或核心伙伴离职、新入职", "最近完整月无架构变动"),
+    acrossMonths("abcAllC", "abcGrade", (values) => values.every((value) => value === "C"), "最近3个完整月ABC评级均为C", "最近3个完整月ABC评级并非均为C"),
+    acrossMonths("qcBelow80", "qcScore", (values) => values.every((value) => Number(value) < 80), "最近3个完整月QC均低于80", "最近3个完整月QC并非均低于80"),
+    acrossMonths("salesBelow100", "salesAchievementRate", (values) => values.every((value) => Number(value) < 100), "最近3个完整月业绩达成率均低于100%", "最近3个完整月业绩达成率并非均低于100%"),
+    hoursItem("hoursOver220"),
+    hoursItem("hoursUnder167"),
+    latestOnly("attendanceOver8Days", "attendanceOver8Days", (value) => Number(value) >= 1, "最近完整月有员工连续出勤大于8天", "最近完整月无连续出勤超8天人员"),
+    latestOnly("lowTemperature", "lowTemperature", Boolean, "最近完整月标记为低温门店", "最近完整月非低温门店"),
+    latestOnly("treeHoleComplaints", "treeHoleComplaints", (value) => Number(value) >= 2, "最近完整月树洞投诉不少于2条", "最近完整月树洞投诉少于2条"),
+    latestOnly("noReward", "hasReward", (value) => value === false, "最近完整月两大奖励达标为否", "最近完整月两大奖励达标")
+  ];
+  const knownScore = items.reduce((sum, result2) => sum + result2.score, 0);
+  const missingCount = items.filter((result2) => result2.status === "missing").length;
+  const riskLevel = getRiskLevel(knownScore, missingCount);
+  return {
+    storeId,
+    asOfDate: toDateOnly(asOfDate),
+    months: months2,
+    items,
+    knownScore,
+    missingCount,
+    riskLevel,
+    phase: getRiskPhase(riskLevel)
+  };
+}
+
+// src/config/cloud-config.json
+var cloud_config_default = {
+  _comment: "开通云服务后由 workbuddy_cloud_service 返回的 publicConfig 填入此处；全部留空表示未启用，看板自动保持本机演示模式，不会假装有云端保存。",
+  endpoint: "",
+  oauthRelayBaseUrl: "",
+  publishableKey: ""
+};
+
+// src/features/cloud/bridge.ts
+function getCloudConfig() {
+  const endpoint = cloud_config_default.endpoint.trim();
+  const publishableKey = cloud_config_default.publishableKey.trim();
+  if (!endpoint || !publishableKey) return null;
+  return { endpoint, publishableKey, oauthRelayBaseUrl: cloud_config_default.oauthRelayBaseUrl.trim() };
+}
+function isCloudEnabled() {
+  return getCloudConfig() !== null;
+}
+var SDK_SPECIFIER = "@tencent-ai/workbuddy-cloud-sdk";
+var clientPromise = null;
+async function getClient() {
+  const cloudConfig = getCloudConfig();
+  if (!cloudConfig) return null;
+  if (!clientPromise) {
+    clientPromise = (async () => {
+      try {
+        const factory = await import(
+          /* @vite-ignore */
+          SDK_SPECIFIER
+        );
+        const create = factory.createWorkBuddyCloud;
+        if (typeof create !== "function") return null;
+        return create(cloudConfig);
+      } catch {
+        return null;
+      }
+    })();
+  }
+  return clientPromise;
+}
+function unwrapRow(envelope) {
+  if (envelope.error) throw envelope.error instanceof Error ? envelope.error : new Error(String(envelope.error));
+  return Array.isArray(envelope.data) ? envelope.data : [];
+}
+function mapEmployee(row) {
+  return { id: row.id, workNo: row.work_no, name: row.name, role: row.role, brands: row.brands };
+}
+function mapStore(row) {
+  return {
+    id: row.id,
+    code: row.code,
+    name: row.name,
+    brand: row.brand,
+    region: row.region ?? void 0,
+    district: row.district ?? void 0,
+    districtManager: row.district_manager ?? void 0,
+    areaManager: row.area_manager ?? void 0,
+    managerName: row.manager_name ?? void 0,
+    managerPosition: row.manager_position ?? void 0,
+    managerIsStoreManager: row.manager_is_store_manager ?? void 0,
+    active: row.active
+  };
+}
+function mapVisit(row) {
+  return {
+    id: row.id,
+    storeId: row.store_id,
+    bpId: row.bp_id,
+    visitedAt: row.visited_at,
+    status: row.status,
+    submittedAt: row.submitted_at ?? void 0,
+    voided: row.voided ?? void 0,
+    summary: row.summary ?? void 0
+  };
+}
+function mapIssue(row) {
+  return {
+    id: row.id,
+    visitId: row.visit_id ?? void 0,
+    storeId: row.store_id,
+    brand: row.brand,
+    title: row.title,
+    description: row.description ?? void 0,
+    dimension: row.dimension ?? void 0,
+    category: row.category ?? "other",
+    severity: row.severity,
+    status: row.status,
+    reporterId: row.reporter_id,
+    assigneeId: row.assignee_id,
+    responsibleName: row.responsible_name ?? void 0,
+    createdAt: row.created_at,
+    dueDate: row.due_date,
+    closedAt: row.closed_at ?? void 0,
+    latestFollowup: row.latest_followup ?? void 0
+  };
+}
+function mapIssueEvent(row) {
+  return {
+    id: `EV-${row.id}`,
+    issueId: row.issue_id,
+    actorId: row.actor_id,
+    action: row.action,
+    fromStatus: row.from_status ?? void 0,
+    toStatus: row.to_status ?? void 0,
+    comment: row.comment ?? void 0,
+    createdAt: row.created_at
+  };
+}
+function selectAll(builder) {
+  return builder.then(unwrapRow);
+}
+var cloudBridge = {
+  enabled: isCloudEnabled(),
+  /** 微信授权登录（Web 网站登录，含快捷确认与扫码两种交互）。 */
+  async signInWithWechat() {
+    const client = await getClient();
+    if (!client) return null;
+    const started = await client.auth.signInWithOAuth({ provider: "wechat", redirectTo: location.origin });
+    return started.error || !started.data ? null : String(started.data.url);
+  },
+  /** 应用入口：先处理 OAuth 回调（必须在路由守卫之前），再恢复会话。 */
+  async restoreAuth() {
+    const client = await getClient();
+    if (!client) return null;
+    const url = new URL(location.href);
+    if (url.searchParams.has("code") || url.searchParams.has("error")) {
+      const provider = url.searchParams.get("provider");
+      const handler = provider === "workbuddy" ? client.auth.handleWorkBuddyCallback : client.auth.handleWechatWebCallback;
+      if (typeof handler !== "function") throw new Error("当前 SDK 不支持该登录方式，请刷新后重试");
+      const result2 = await handler.call(client.auth);
+      if (result2 && !result2.error && result2.data) {
+        for (const key of ["code", "state", "provider"]) url.searchParams.delete(key);
+        history.replaceState(null, "", `${url.pathname}${url.search}${url.hash}`);
+      } else if (result2?.error) {
+        throw result2.error instanceof Error ? result2.error : new Error(String(result2.error));
+      }
+    }
+    const session = await client.auth.getSession();
+    if (session.error || !session.data) return null;
+    return this.bootstrap();
+  },
+  /** 读取看板所需全部数据（受保护的行业务数据，必须已登录）。 */
+  async bootstrap() {
+    const client = await getClient();
+    if (!client) return null;
+    const [employees, stores, visits, issues, events] = await Promise.all([
+      // 只取已授权的公开列，避免读取绑定标识
+      selectAll(client.database.from("hr_employees").select("id, work_no, name, role, brands")),
+      selectAll(client.database.from("hr_stores").select("*")),
+      selectAll(client.database.from("hr_visits").select("*")),
+      selectAll(client.database.from("hr_issues").select("*")),
+      selectAll(client.database.from("hr_issue_events").select("*"))
+    ]);
+    return {
+      employees: employees.map(mapEmployee),
+      stores: stores.map(mapStore),
+      visits: visits.map(mapVisit),
+      issues: issues.map(mapIssue),
+      events: events.map(mapIssueEvent)
+    };
+  },
+  /** 当前登录账号是否已绑定 HR 成员身份（由数据库按 auth.uid() 判定，前端不传身份）。 */
+  async currentEmployee() {
+    const client = await getClient();
+    if (!client) return null;
+    const rows = unwrapRow(await client.database.rpc("app_current_employee"));
+    return rows[0] ? mapEmployee(rows[0]) : null;
+  },
+  /** 首次登录绑定工号：由数据库 SECURITY DEFINER 函数校验，前端不做信任判断。 */
+  async bindWorkNo(workNo, name) {
+    const client = await getClient();
+    if (!client) return null;
+    const result2 = await client.database.rpc("app_bind_employee", { p_work_no: workNo, p_name: name });
+    const rows = unwrapRow(result2);
+    return rows[0] ? mapEmployee(rows[0]) : null;
+  },
+  /** 保存一次巡店及其问题、时间线事件（单次调用，失败不静默）。 */
+  async saveVisit(visit, issues, events) {
+    const client = await getClient();
+    if (!client) return false;
+    const inserted = await client.database.from("hr_visits").insert({
+      id: visit.id,
+      bp_id: visit.bpId,
+      store_id: visit.storeId,
+      visited_at: visit.visitedAt,
+      status: visit.status,
+      submitted_at: visit.submittedAt,
+      voided: visit.voided ?? false,
+      summary: visit.summary ?? null
+    }).select();
+    if (inserted.error || !inserted.data || inserted.data.length === 0) throw new Error("巡店记录未写入，请检查登录状态");
+    if (issues.length) {
+      const rows = issues.map((issue) => ({
+        id: issue.id,
+        visit_id: issue.visitId ?? null,
+        store_id: issue.storeId,
+        brand: issue.brand,
+        title: issue.title,
+        description: issue.description ?? null,
+        dimension: issue.dimension ?? null,
+        category: issue.category,
+        severity: issue.severity,
+        status: issue.status,
+        reporter_id: issue.reporterId,
+        assignee_id: issue.assigneeId,
+        responsible_name: issue.responsibleName ?? null,
+        created_at: issue.createdAt,
+        due_date: issue.dueDate,
+        closed_at: issue.closedAt ?? null
+      }));
+      const created = await client.database.from("hr_issues").insert(rows).select();
+      if (created.error) throw created.error instanceof Error ? created.error : new Error(String(created.error));
+    }
+    if (events.length) {
+      const rows = events.map((event) => ({
+        issue_id: event.issueId,
+        actor_id: event.actorId,
+        action: event.action,
+        from_status: event.fromStatus ?? null,
+        to_status: event.toStatus ?? null,
+        comment: event.comment ?? null
+      }));
+      const created = await client.database.from("hr_issue_events").insert(rows).select();
+      if (created.error) throw created.error instanceof Error ? created.error : new Error(String(created.error));
+    }
+    return true;
+  },
+  /** 更新问题状态并追加时间线事件。 */
+  async updateIssue(issue, event) {
+    const client = await getClient();
+    if (!client) return false;
+    const updated = await client.database.from("hr_issues").update({
+      status: issue.status,
+      closed_at: issue.closedAt ?? null,
+      latest_followup: issue.latestFollowup ?? null
+    }).eq("id", issue.id).select();
+    if (updated.error) throw updated.error instanceof Error ? updated.error : new Error(String(updated.error));
+    const created = await client.database.from("hr_issue_events").insert({
+      issue_id: event.issueId,
+      actor_id: event.actorId,
+      action: event.action,
+      from_status: event.fromStatus ?? null,
+      to_status: event.toStatus ?? null,
+      comment: event.comment ?? null
+    }).select();
+    if (created.error) throw created.error instanceof Error ? created.error : new Error(String(created.error));
+    return true;
+  },
+  /** 删除问题及其全部时间线事件（测试数据清理用，先删事件再删问题）。 */
+  async deleteIssue(issueId) {
+    const client = await getClient();
+    if (!client) return false;
+    await client.database.from("hr_issue_events").delete().eq("issue_id", issueId);
+    await client.database.from("hr_issues").delete().eq("id", issueId);
+    return true;
+  },
+  async signOut() {
+    const client = await getClient();
+    if (client) await client.auth.signOut();
+  }
+};
+
+// src/features/cloud/CloudAuthGate.tsx
+var import_react3 = __toESM(require_react(), 1);
+var import_jsx_runtime = __toESM(require_jsx_runtime(), 1);
+function CloudAuthGate({ onBound, error }) {
+  const [workNo, setWorkNo] = (0, import_react3.useState)("");
+  const [name, setName] = (0, import_react3.useState)("");
+  const [busy, setBusy] = (0, import_react3.useState)(false);
+  const [message, setMessage] = (0, import_react3.useState)(null);
+  const login = async () => {
+    setBusy(true);
+    setMessage(null);
+    try {
+      const url = await cloudBridge.signInWithWechat();
+      if (url) location.assign(url);
+      else setMessage("微信登录未能发起，请稍后重试");
+    } catch (caught) {
+      setMessage(caught instanceof Error ? caught.message : "微信登录失败");
+    } finally {
+      setBusy(false);
+    }
+  };
+  const bind = async () => {
+    if (!workNo.trim() || !name.trim()) {
+      setMessage("请填写工号和姓名");
+      return;
+    }
+    setBusy(true);
+    setMessage(null);
+    try {
+      const employee = await cloudBridge.bindWorkNo(workNo.trim(), name.trim());
+      if (employee) onBound(employee);
+      else setMessage("工号与姓名不匹配，或该工号已被绑定");
+    } catch (caught) {
+      setMessage(caught instanceof Error ? caught.message : "绑定失败");
+    } finally {
+      setBusy(false);
+    }
+  };
+  return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "modal-backdrop", style: { zIndex: 80 }, children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "modal", style: { maxWidth: 460 }, children: [
+    /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "modal-header", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [
+        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "eyebrow", children: "CLOUD AUTH" }),
+        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("h2", { style: { margin: 0 }, children: "登录并绑定工号" })
+      ] }),
+      /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ShieldCheck, { size: 20 })
+    ] }),
+    /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "modal-body", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "inline-notice", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime.jsx)(KeyRound, { size: 16 }),
+        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "看板数据需登录后查看。请用微信授权登录，首次登录后输入工号和姓名完成绑定，之后自动识别身份。" })
+      ] }),
+      /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { className: "button button-primary", style: { width: "100%", marginTop: 16 }, disabled: busy, onClick: login, children: "使用微信登录" }),
+      /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "form-group", style: { marginTop: 18 }, children: [
+        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("label", { className: "form-label", children: "工号" }),
+        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", { className: "input", value: workNo, onChange: (e) => setWorkNo(e.target.value), placeholder: "如已登录且未绑定，请填写工号" })
+      ] }),
+      /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "form-group", style: { marginTop: 12 }, children: [
+        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("label", { className: "form-label", children: "姓名" }),
+        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", { className: "input", value: name, onChange: (e) => setName(e.target.value), placeholder: "与人员底稿一致的姓名" })
+      ] }),
+      /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { className: "button button-secondary", style: { width: "100%", marginTop: 14 }, disabled: busy, onClick: bind, children: "绑定工号" }),
+      (message || error) && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "inline-notice", style: { marginTop: 14 }, children: message ?? error })
+    ] })
+  ] }) });
+}
+
+// src/config/supabase-config.json
+var supabase_config_default = {
+  url: "https://tclfmnfvlrlxquiojjya.supabase.co",
+  publishableKey: "sb_publishable_6sa-Pz6dX0BSlTJX3gNiRA_CbtZkf_b"
+};
+
+// src/features/supabase/client.ts
+var SESSION_KEY = "hrbp-supabase-session";
+var enabled = Boolean(supabase_config_default.url && supabase_config_default.publishableKey);
+function readSession() {
+  try {
+    const raw = localStorage.getItem(SESSION_KEY);
+    if (!raw) return null;
+    const session = JSON.parse(raw);
+    return session.access_token && session.refresh_token ? session : null;
+  } catch {
+    return null;
+  }
+}
+function writeSession(session) {
+  if (session) localStorage.setItem(SESSION_KEY, JSON.stringify(session));
+  else localStorage.removeItem(SESSION_KEY);
+}
+async function fetchWithTimeout(url, init, timeoutMs = 15e3) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    return await fetch(url, { ...init, signal: controller.signal });
+  } catch (caught) {
+    if (caught instanceof DOMException && caught.name === "AbortError") {
+      throw new Error("数据库连接超时：Supabase 项目可能已暂停，请联系管理员在控制台恢复（Restore）");
+    }
+    throw new Error("数据库连接失败：请检查网络后重试");
+  } finally {
+    clearTimeout(timer);
+  }
+}
+async function authRequest(path, body) {
+  const response = await fetchWithTimeout(`${supabase_config_default.url}/auth/v1${path}`, {
+    method: "POST",
+    headers: { apikey: supabase_config_default.publishableKey, "Content-Type": "application/json" },
+    body: JSON.stringify(body)
+  });
+  const payload = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    const message = payload.msg ?? payload.error_description ?? payload.message ?? `认证失败（${response.status}）`;
+    if (response.status === 422) throw new Error("匿名登录尚未开启：请在 Supabase → Authentication → Sign In / Providers 打开 Anonymous sign-ins");
+    throw new Error(message);
+  }
+  return payload;
+}
+function toSession(payload) {
+  return {
+    access_token: String(payload.access_token),
+    refresh_token: String(payload.refresh_token),
+    expires_at: Math.floor(Date.now() / 1e3) + Number(payload.expires_in ?? 3600) - 60
+  };
+}
+async function ensureSession() {
+  const current = readSession();
+  if (current && current.expires_at > Date.now() / 1e3) return current;
+  if (current) {
+    const refreshed = await authRequest("/token?grant_type=refresh_token", { refresh_token: current.refresh_token });
+    const session2 = toSession(refreshed);
+    writeSession(session2);
+    return session2;
+  }
+  const created = await authRequest("/signup", {});
+  const session = toSession(created);
+  writeSession(session);
+  return session;
+}
+async function rest(path, init = {}) {
+  const session = await ensureSession();
+  const response = await fetchWithTimeout(`${supabase_config_default.url}/rest/v1${path}`, {
+    ...init,
+    headers: {
+      apikey: supabase_config_default.publishableKey,
+      Authorization: `Bearer ${session.access_token}`,
+      "Content-Type": "application/json",
+      ...init.headers ?? {}
+    }
+  });
+  if (response.status === 204) return [];
+  const payload = await response.json().catch(() => null);
+  if (!response.ok) {
+    const code = payload?.code ?? "";
+    if (code === "PGRST205") throw new Error("数据表还没创建：请先在 Supabase SQL Editor 执行 schema.sql 和 seed.sql");
+    throw new Error(payload?.message ?? `请求失败（${response.status}）`);
+  }
+  return payload;
+}
+async function restAll(path, pageSize = 1e3) {
+  const out = [];
+  for (let from = 0; ; from += pageSize) {
+    const chunk = await rest(path, { headers: { "Range-Unit": "items", Range: `${from}-${from + pageSize - 1}` } });
+    out.push(...chunk);
+    if (chunk.length < pageSize) return out;
+  }
+}
+function toRows(payload) {
+  if (!payload) return [];
+  return Array.isArray(payload) ? payload : [payload];
+}
+var supabaseBridge = {
+  enabled,
+  async currentEmployee() {
+    if (!enabled) return null;
+    const payload = await rest("/rpc/app_current_employee", { method: "POST", body: "{}" });
+    const row = toRows(payload)[0];
+    return row && row.id ? mapEmployee(row) : null;
+  },
+  async restoreAuth() {
+    if (!enabled) return null;
+    const bound = await this.currentEmployee();
+    if (!bound) return null;
+    return this.bootstrap();
+  },
+  async bootstrap() {
+    const [employees, stores, visits, issues, events, metrics] = await Promise.all([
+      restAll("/hr_employees?select=id,work_no,name,role,brands"),
+      restAll("/hr_stores?select=*"),
+      restAll("/hr_visits?select=*"),
+      restAll("/hr_issues?select=*"),
+      restAll("/hr_issue_events?select=*"),
+      restAll("/hr_store_metrics_monthly?select=*")
+    ]);
+    return {
+      employees: employees.map(mapEmployee),
+      stores: stores.map(mapStore),
+      visits: visits.map(mapVisit),
+      issues: issues.map(mapIssue),
+      events: events.map(mapIssueEvent),
+      metrics: metrics.map((row) => ({
+        storeId: row.store_id,
+        month: row.month,
+        architectureLabor: row.architecture_labor ?? void 0,
+        abcGrade: row.abc_grade ?? void 0,
+        qcScore: row.qc_score ?? void 0,
+        salesAchievementRate: row.sales_achievement_rate ?? void 0,
+        workHours: row.work_hours ?? void 0,
+        attendanceOver8Days: row.attendance_over_8_days ?? void 0,
+        lowTemperature: row.low_temperature ?? void 0,
+        treeHoleComplaints: row.tree_hole_complaints ?? void 0,
+        hasReward: row.has_reward ?? void 0
+      }))
+    };
+  },
+  async bindWorkNo(workNo, name) {
+    if (!enabled) return null;
+    const payload = await rest("/rpc/app_bind_employee", {
+      method: "POST",
+      body: JSON.stringify({ p_work_no: workNo, p_name: name })
+    });
+    const row = toRows(payload)[0];
+    return row && row.id ? mapEmployee(row) : null;
+  },
+  async loadPersonnel() {
+    const rows = await restAll("/hr_personnel?select=*&order=id.asc");
+    return rows.map((row) => ({
+      id: row.id,
+      workNo: row.work_no,
+      name: row.name,
+      employmentType: row.employment_type,
+      hireDate: row.hire_date ?? "",
+      brand: row.brand,
+      region: row.region ?? "",
+      district: row.district ?? "",
+      storeName: row.store_name ?? "",
+      position: row.position ?? "",
+      sourceFile: row.source_file ?? "",
+      dataFlags: row.data_flags ?? []
+    }));
+  },
+  /** 读取最新一期墨柠周报的门店预警；未导入过周报时返回 null。 */
+  async loadWeeklyWarnings(brand = "古德墨柠") {
+    const reports = await rest(
+      `/hr_report_uploads?brand=eq.${encodeURIComponent(brand)}&order=created_at.desc&limit=1`
+    );
+    const report = reports[0];
+    if (!report) return null;
+    const rows = await rest(
+      `/hr_store_weekly_flags?report_id=eq.${report.id}&select=store_code,payload`
+    );
+    return {
+      reportId: report.id,
+      reportDate: report.report_date,
+      rangeLabel: report.range_label,
+      warnings: rows.map((row) => row.payload)
+    };
+  },
+  /** 读取最新一期门店打标明细（茶颜「门店筛选逻辑打标」）；未导入过返回 []。 */
+  async loadTagDetails() {
+    const months2 = await rest("/hr_store_tag_detail?select=report_month&order=report_month.desc&limit=1");
+    const latest = months2[0]?.report_month;
+    if (!latest) return [];
+    const rows = await restAll(`/hr_store_tag_detail?report_month=eq.${latest}&select=*`);
+    return rows.map((row) => ({
+      id: row.id,
+      reportMonth: row.report_month,
+      brand: row.brand,
+      storeCode: row.store_code,
+      storeName: row.store_name ?? "",
+      regionManager: row.region_manager ?? "",
+      districtManager: row.district_manager ?? "",
+      areaManager: row.area_manager ?? "",
+      abcM1: row.abc_m1 ?? void 0,
+      abcM2: row.abc_m2 ?? void 0,
+      abcM3: row.abc_m3 ?? void 0,
+      qcM1: row.qc_m1 ?? void 0,
+      qcM2: row.qc_m2 ?? void 0,
+      qcM3: row.qc_m3 ?? void 0,
+      achieveM1: row.achieve_m1 ?? void 0,
+      achieveM2: row.achieve_m2 ?? void 0,
+      achieveM3: row.achieve_m3 ?? void 0,
+      treeholeCount: row.treehole_count ?? void 0,
+      awardOk: row.award_ok ?? void 0,
+      hoursAvg: row.hours_avg ?? void 0,
+      hoursOver220: row.hours_over_220 ?? void 0,
+      hoursUnder167: row.hours_under_167 ?? void 0,
+      attendanceOver8Days: row.attendance_over_8_days ?? void 0,
+      archChange: row.arch_change ?? void 0,
+      scoreTotal: row.score_total ?? void 0,
+      riskLevel: row.risk_level ?? void 0,
+      anomalyFlags: row.anomaly_flags ?? void 0,
+      highTemp: row.high_temp ?? void 0
+    }));
+  },
+  /** 未获得巷战激励门店（整表） */
+  async loadXiangzhanStores() {
+    const rows = await restAll("/hr_xiangzhan_stores?select=*&order=region_manager.asc");
+    return rows.map((row) => ({
+      storeCode: row.store_code,
+      storeName: row.store_name ?? "",
+      regionManager: row.region_manager ?? "",
+      districtManager: row.district_manager ?? "",
+      areaManager: row.area_manager ?? "",
+      status: row.status ?? "",
+      openDate: row.open_date ?? "",
+      city: row.city ?? ""
+    }));
+  },
+  async saveVisit(visit, issues, events) {
+    await rest("/hr_visits", {
+      method: "POST",
+      headers: { Prefer: "return=minimal" },
+      body: JSON.stringify({
+        id: visit.id,
+        bp_id: visit.bpId,
+        store_id: visit.storeId,
+        visited_at: visit.visitedAt,
+        status: visit.status,
+        submitted_at: visit.submittedAt,
+        voided: visit.voided ?? false,
+        summary: visit.summary ?? null
+      })
+    });
+    if (issues.length) {
+      await rest("/hr_issues", {
+        method: "POST",
+        headers: { Prefer: "return=minimal" },
+        body: JSON.stringify(issues.map((issue) => ({
+          id: issue.id,
+          visit_id: issue.visitId ?? null,
+          store_id: issue.storeId,
+          brand: issue.brand,
+          title: issue.title,
+          description: issue.description ?? null,
+          dimension: issue.dimension ?? null,
+          category: issue.category,
+          severity: issue.severity,
+          status: issue.status,
+          reporter_id: issue.reporterId,
+          assignee_id: issue.assigneeId,
+          responsible_name: issue.responsibleName ?? null,
+          created_at: issue.createdAt,
+          due_date: issue.dueDate,
+          closed_at: issue.closedAt ?? null
+        })))
+      });
+    }
+    if (events.length) {
+      await rest("/hr_issue_events", {
+        method: "POST",
+        headers: { Prefer: "return=minimal" },
+        body: JSON.stringify(events.map((event) => ({
+          issue_id: event.issueId,
+          actor_id: event.actorId,
+          action: event.action,
+          from_status: event.fromStatus ?? null,
+          to_status: event.toStatus ?? null,
+          comment: event.comment ?? null
+        })))
+      });
+    }
+    return true;
+  },
+  async updateIssue(issue, event) {
+    await rest(`/hr_issues?id=eq.${encodeURIComponent(issue.id)}`, {
+      method: "PATCH",
+      headers: { Prefer: "return=minimal" },
+      body: JSON.stringify({
+        status: issue.status,
+        closed_at: issue.closedAt ?? null,
+        latest_followup: issue.latestFollowup ?? null,
+        // BP 未关闭前可编辑的字段（变更会同步写入时间线）
+        description: issue.description ?? null,
+        severity: issue.severity,
+        due_date: issue.dueDate,
+        responsible_name: issue.responsibleName ?? null
+      })
+    });
+    await rest("/hr_issue_events", {
+      method: "POST",
+      headers: { Prefer: "return=minimal" },
+      body: JSON.stringify({
+        issue_id: event.issueId,
+        actor_id: event.actorId,
+        action: event.action,
+        from_status: event.fromStatus ?? null,
+        to_status: event.toStatus ?? null,
+        comment: event.comment ?? null
+      })
+    });
+    return true;
+  },
+  /** 删除问题及其全部时间线事件（测试数据清理用，先删事件再删问题）。 */
+  async deleteIssue(issueId) {
+    await rest(`/hr_issue_events?issue_id=eq.${encodeURIComponent(issueId)}`, { method: "DELETE", headers: { Prefer: "return=minimal" } });
+    await rest(`/hr_issues?id=eq.${encodeURIComponent(issueId)}`, { method: "DELETE", headers: { Prefer: "return=minimal" } });
+    return true;
+  },
+  async signOut() {
+    writeSession(null);
+  },
+  /** 逐步自检：会话 → 身份 → 各表读取，返回可直接展示的逐行结果。 */
+  async diagnose() {
+    if (!enabled) return "未配置 Supabase";
+    const lines = [];
+    const errText = (caught) => caught instanceof Error ? caught.message : String(caught);
+    try {
+      const session = await ensureSession();
+      lines.push(`会话：已建立（token 前8位 ${session.access_token.slice(0, 8)}）`);
+    } catch (caught) {
+      return `会话建立失败：${errText(caught)}`;
+    }
+    const checks = [
+      ["绑定身份", "/rpc/app_current_employee", "POST"],
+      ["成员表", "/hr_employees?select=id,work_no,name,role,brands", "GET"],
+      ["门店表", "/hr_stores?select=*", "GET"],
+      ["巡店表", "/hr_visits?select=*", "GET"],
+      ["问题表", "/hr_issues?select=*", "GET"],
+      ["指标表", "/hr_store_metrics_monthly?select=*", "GET"],
+      ["人员表", "/hr_personnel?select=id", "GET"]
+    ];
+    for (const [label, path, method] of checks) {
+      try {
+        const payload = await rest(path, { method, ...method === "POST" ? { body: "{}" } : {} });
+        const summary = Array.isArray(payload) ? `${payload.length} 行` : payload && typeof payload === "object" ? `对象 ${JSON.stringify(payload).slice(0, 80)}` : String(payload);
+        lines.push(`${label}：${summary}`);
+      } catch (caught) {
+        lines.push(`${label}：${errText(caught)}`);
+      }
+    }
+    return lines.join("\n");
+  }
+};
+
+// src/features/supabase/SupabaseAuthGate.tsx
+var import_react4 = __toESM(require_react(), 1);
+var import_jsx_runtime2 = __toESM(require_jsx_runtime(), 1);
+function SupabaseAuthGate({ onBound, error }) {
+  const [workNo, setWorkNo] = (0, import_react4.useState)("");
+  const [name, setName] = (0, import_react4.useState)("");
+  const [busy, setBusy] = (0, import_react4.useState)(false);
+  const [message, setMessage] = (0, import_react4.useState)(null);
+  const bind = async () => {
+    if (!workNo.trim() || !name.trim()) {
+      setMessage("请填写工号和姓名");
+      return;
+    }
+    setBusy(true);
+    setMessage(null);
+    try {
+      const employee = await supabaseBridge.bindWorkNo(workNo.trim(), name.trim());
+      if (employee) onBound(employee);
+      else setMessage("工号与姓名不匹配，或该工号已被其他设备绑定");
+    } catch (caught) {
+      setMessage(caught instanceof Error ? caught.message : "绑定失败，请稍后重试");
+    } finally {
+      setBusy(false);
+    }
+  };
+  return /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("div", { className: "modal-backdrop", style: { zIndex: 80 }, children: /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "modal", style: { maxWidth: 460 }, children: [
+    /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "modal-header", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { children: [
+        /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("div", { className: "eyebrow", children: "TEAM SIGN IN" }),
+        /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("h2", { style: { margin: 0 }, children: "工号绑定" })
+      ] }),
+      /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(ShieldCheck, { size: 20 })
+    ] }),
+    /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "modal-body", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "inline-notice", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(KeyRound, { size: 16 }),
+        /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { children: "看板数据需绑定身份后查看。输入你的人员底稿工号和姓名即可，系统会自动创建会话，这台设备之后免登录。" })
+      ] }),
+      /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "form-group", style: { marginTop: 16 }, children: [
+        /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("label", { className: "form-label", children: "工号" }),
+        /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("input", { className: "input", value: workNo, onChange: (e) => setWorkNo(e.target.value), placeholder: "例如：DEMO009", autoComplete: "off" })
+      ] }),
+      /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "form-group", style: { marginTop: 12 }, children: [
+        /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("label", { className: "form-label", children: "姓名" }),
+        /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("input", { className: "input", value: name, onChange: (e) => setName(e.target.value), placeholder: "与人员底稿一致的姓名" })
+      ] }),
+      /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { className: "button button-primary", style: { width: "100%", marginTop: 16 }, disabled: busy, onClick: bind, children: busy ? "正在绑定…" : "绑定并进入看板" }),
+      (message || error) && /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("div", { className: "inline-notice", style: { marginTop: 14 }, children: message ?? error })
+    ] })
+  ] }) });
+}
+
+// scripts/daily/warning-core.mjs
+var MONING_BP_SCOPE = {
+  周丽: ["钟天祥", "周思凡", "童璐", "何海云", "旷瑶", "易彪"],
+  杨梦琳: ["邵宝生", "杜强", "廖灿", "李奔", "徐宇辉", "赵思洁", "刘旺林", "王润仪"]
+};
+var MONING_FULL_ACCESS = ["戴嘉伟", "李当", "杨师"];
+function moningScopeDistricts(employeeName) {
+  if (MONING_FULL_ACCESS.includes(employeeName)) return null;
+  const leaders = MONING_BP_SCOPE[employeeName];
+  if (!leaders) return [];
+  return leaders.map((name) => `${name}大店区`);
+}
+function warningSortScore(warning) {
+  if (!warning) return 0;
+  const levelScore = warning.level === "high" ? 2e3 : warning.level === "mid" ? 1e3 : 0;
+  return levelScore + warning.redRatio * 100 - (warning.salesAchieveRate ?? 1) * 10;
+}
+
+// src/features/issues/overdue.ts
+function isIssueOverdue(issue, now = /* @__PURE__ */ new Date()) {
+  if (issue.status === "closed") return false;
+  return toDateOnly(now) > toDateOnly(issue.dueDate);
+}
+function getOverdueDays(issue, now = /* @__PURE__ */ new Date()) {
+  if (!isIssueOverdue(issue, now)) return 0;
+  const from = Date.parse(`${toDateOnly(issue.dueDate)}T00:00:00Z`);
+  const to = Date.parse(`${toDateOnly(now)}T00:00:00Z`);
+  return Math.floor((to - from) / 864e5);
+}
+
+// src/features/recommendation.ts
+var PHASE_ORDER = { 本月: 0, 次月: 1, 季度内: 2, 常规: 3 };
+function compareNumberDesc(a, b) {
+  return b - a;
+}
+function recommendStores(options) {
+  const asOfDate = toDateOnly(options.asOfDate ?? /* @__PURE__ */ new Date());
+  const quarter = getQuarterKey(asOfDate);
+  const riskByStore = new Map(options.riskSnapshots.map((risk) => [risk.storeId, risk]));
+  const stores = options.stores.filter((store) => store.active && (!options.brands || options.brands.includes(store.brand)) && (!options.districts || options.districts.includes(store.district ?? "")));
+  const countableVisits = options.visits.filter((visit) => visit.status === "submitted" && !visit.voided);
+  const recommendations = stores.map((store) => {
+    const storeVisits = countableVisits.filter((visit) => visit.storeId === store.id && (!options.bpId || visit.bpId === options.bpId));
+    const quarterVisits = storeVisits.filter((visit) => getQuarterKey(visit.visitedAt) === quarter);
+    const sortedVisits = [...storeVisits].sort((a, b) => b.visitedAt.localeCompare(a.visitedAt));
+    const lastVisitAt = sortedVisits[0]?.visitedAt ?? null;
+    const daysSinceLastVisit = lastVisitAt ? daysBetween(lastVisitAt, asOfDate) : null;
+    const storeIssues = options.issues.filter((issue) => issue.storeId === store.id);
+    const overdueIssueCount = storeIssues.filter((issue) => isIssueOverdue(issue, asOfDate)).length;
+    const highSeverityIssueCount = storeIssues.filter((issue) => issue.status !== "closed" && issue.severity === "high").length;
+    const unvisited = quarterVisits.length === 0;
+    const risk = riskByStore.get(store.id) ?? null;
+    const phase = risk?.phase ?? "本月";
+    const warning = options.warningsByCode?.get(store.code) ?? null;
+    const reasons = [];
+    if (!warning) {
+      if (!risk || risk.missingCount > 0) reasons.push(`风险数据待补充（${risk?.missingCount ?? 9}项缺失），需优先核查`);
+      else if (risk.knownScore >= 4) reasons.push(`${risk.riskLevel}，十项规则命中${risk.knownScore}项，安排在${phase}巡店`);
+      else reasons.push(`${risk.riskLevel}，建议按${phase}节奏巡店`);
+    }
+    if (unvisited) reasons.push(`${quarter}尚未提交有效巡店`);
+    if (overdueIssueCount > 0) reasons.push(`存在${overdueIssueCount}个已逾期问题`);
+    if (highSeverityIssueCount > 0) reasons.push(`存在${highSeverityIssueCount}个未关闭高严重问题`);
+    if (daysSinceLastVisit !== null) reasons.push(daysSinceLastVisit === 0 ? "今天已有巡店记录" : `距上次巡店已${daysSinceLastVisit}天`);
+    if (reasons.length < 2) reasons.push(unvisited ? "需建立本季度现场巡店记录" : "本季度已有有效巡店，可持续跟踪");
+    return {
+      store,
+      risk,
+      reasons: Array.from(new Set(reasons)).slice(0, 3),
+      unvisited,
+      overdueIssueCount,
+      highSeverityIssueCount,
+      lastVisitAt,
+      daysSinceLastVisit,
+      warning
+    };
+  });
+  recommendations.sort((a, b) => {
+    const warningDifference = warningSortScore(b.warning) - warningSortScore(a.warning);
+    if (warningDifference) return warningDifference;
+    const phaseDifference = PHASE_ORDER[a.risk?.phase ?? "本月"] - PHASE_ORDER[b.risk?.phase ?? "本月"];
+    return phaseDifference || Number(b.unvisited) - Number(a.unvisited) || compareNumberDesc(a.overdueIssueCount, b.overdueIssueCount) || compareNumberDesc(a.highSeverityIssueCount, b.highSeverityIssueCount) || (b.daysSinceLastVisit ?? Number.MAX_SAFE_INTEGER) - (a.daysSinceLastVisit ?? Number.MAX_SAFE_INTEGER) || a.store.code.localeCompare(b.store.code);
+  });
+  return options.limit === void 0 ? recommendations : recommendations.slice(0, Math.max(0, options.limit));
+}
+
+// src/features/issues/grouping.ts
+function groupIssues(list, nameOf) {
+  const rank = { open: 0, in_progress: 1, completed: 2, closed: 3 };
+  const byStore = /* @__PURE__ */ new Map();
+  for (const issue of list) {
+    const bucket = byStore.get(issue.storeId);
+    if (bucket) bucket.push(issue);
+    else byStore.set(issue.storeId, [issue]);
+  }
+  const groups = [];
+  for (const [storeId, bucket] of byStore) {
+    const byTitle = /* @__PURE__ */ new Map();
+    for (const issue of bucket) {
+      const fp = (issue.title ?? "").trim();
+      const arr = byTitle.get(fp);
+      if (arr) arr.push(issue);
+      else byTitle.set(fp, [issue]);
+    }
+    const entries = [];
+    let duplicateCount = 0;
+    for (const arr of byTitle.values()) {
+      const sorted = [...arr].sort((a, b) => rank[b.status] - rank[a.status] || (b.latestFollowup ? 1 : 0) - (a.latestFollowup ? 1 : 0) || (b.closedAt ?? "").localeCompare(a.closedAt ?? "") || a.id.localeCompare(b.id));
+      entries.push({ main: sorted[0], duplicates: sorted.slice(1) });
+      duplicateCount += sorted.length - 1;
+    }
+    entries.sort((a, b) => (b.main.createdAt ?? "").localeCompare(a.main.createdAt ?? "") || a.main.title.localeCompare(b.main.title));
+    const latestAt = bucket.reduce((max, item2) => (item2.createdAt ?? "") > max ? item2.createdAt ?? "" : max, "");
+    const reporterNames = [...new Set(bucket.map((item2) => nameOf(item2.reporterId) ?? "").filter(Boolean))];
+    groups.push({ key: storeId, storeId, brand: bucket[0].brand, entries, total: bucket.length, duplicateCount, latestAt, reporterNames });
+  }
+  groups.sort((a, b) => (b.duplicateCount > 0 ? 1 : 0) - (a.duplicateCount > 0 ? 1 : 0) || b.latestAt.localeCompare(a.latestAt) || b.total - a.total);
+  return groups;
+}
+
+// src/features/issues/workflow.ts
+var ACTION_NEXT_STATUS = {
+  open: { start: "in_progress", close: "closed" },
+  in_progress: { complete: "completed", close: "closed" },
+  completed: { review: "closed", reopen: "in_progress", close: "closed" },
+  closed: { reopen: "in_progress" }
+};
+function canPerformIssueAction(issue, actor, action) {
+  if (!ACTION_NEXT_STATUS[issue.status]?.[action]) return false;
+  if (actor.role === "director") return true;
+  if (actor.role === "bp") {
+    return issue.assigneeId === actor.id && (["start", "complete", "close"].includes(action) || action === "reopen" && issue.status === "completed");
+  }
+  if (actor.role === "manager") {
+    return actor.brands.includes(issue.brand) && (action === "review" && issue.status === "completed" || action === "reopen" && ["completed", "closed"].includes(issue.status));
+  }
+  return false;
+}
+function getAvailableIssueActions(issue, actor) {
+  const actions = ["start", "complete", "review", "reopen", "close"];
+  return actions.filter((action) => canPerformIssueAction(issue, actor, action));
+}
+function getNextIssueStatus(issue, action) {
+  return ACTION_NEXT_STATUS[issue.status]?.[action];
+}
+function createIssueEvent(issue, actorId, action, options = {}) {
+  const createdAt = options.createdAt ?? (/* @__PURE__ */ new Date()).toISOString();
+  const toStatus = action === "create" ? "open" : action === "comment" ? issue.status : getNextIssueStatus(issue, action);
+  return {
+    id: options.id ?? `${issue.id}-${action}-${createdAt}`,
+    issueId: issue.id,
+    actorId,
+    action,
+    fromStatus: action === "create" ? void 0 : issue.status,
+    toStatus,
+    comment: options.comment,
+    createdAt
+  };
+}
+function applyIssueAction(issue, actor, action, options = {}) {
+  if (!canPerformIssueAction(issue, actor, action)) throw new Error("当前身份无权执行该问题操作");
+  const nextStatus = getNextIssueStatus(issue, action);
+  if (!nextStatus) throw new Error("当前问题状态不支持该操作");
+  const createdAt = options.createdAt ?? (/* @__PURE__ */ new Date()).toISOString();
+  return {
+    issue: {
+      ...issue,
+      status: nextStatus,
+      closedAt: nextStatus === "closed" ? createdAt : action === "reopen" ? void 0 : issue.closedAt
+    },
+    event: createIssueEvent(issue, actor.id, action, { ...options, createdAt })
+  };
+}
+
+// src/features/tag-ranking.ts
+var TAG_DETAIL_LIMIT = 60;
+var MONTH_WEIGHTS = [3, 2, 1];
+function latestWeight(flags) {
+  for (let i = 0; i < MONTH_WEIGHTS.length; i += 1) {
+    if (flags[i]) return MONTH_WEIGHTS[i];
+  }
+  return 0;
+}
+function byStoreName(a, b) {
+  return a.storeName.localeCompare(b.storeName, "zh-Hans-CN");
+}
+function rankAbcRisk(details) {
+  return details.filter((d) => [d.abcM1, d.abcM2, d.abcM3].includes("C")).sort((a, b) => {
+    const grades = (d) => [d.abcM1, d.abcM2, d.abcM3];
+    const cCount = (d) => grades(d).filter((g) => g === "C").length;
+    const latestC = (d) => latestWeight(grades(d).map((g) => g === "C"));
+    const hasA = (d) => grades(d).includes("A");
+    return cCount(b) - cCount(a) || latestC(b) - latestC(a) || Number(hasA(a)) - Number(hasA(b)) || byStoreName(a, b);
+  }).slice(0, TAG_DETAIL_LIMIT);
+}
+function rankQcRisk(details) {
+  const failed = (g) => g === "不合格";
+  return details.filter((d) => [d.qcM1, d.qcM2, d.qcM3].some(failed)).sort((a, b) => {
+    const grades = (d) => [d.qcM1, d.qcM2, d.qcM3];
+    const failCount = (d) => grades(d).filter(failed).length;
+    const latestFail = (d) => latestWeight(grades(d).map(failed));
+    return failCount(b) - failCount(a) || latestFail(b) - latestFail(a) || byStoreName(a, b);
+  }).slice(0, TAG_DETAIL_LIMIT);
+}
+function salesBelowCount(d) {
+  return [d.achieveM1, d.achieveM2, d.achieveM3].filter((v) => v !== void 0 && v !== null && v < 80).length;
+}
+function rankSalesRisk(details) {
+  return details.filter((d) => salesBelowCount(d) > 0).sort(
+    (a, b) => salesBelowCount(b) - salesBelowCount(a) || (a.achieveM1 ?? Infinity) - (b.achieveM1 ?? Infinity) || byStoreName(a, b)
+  ).slice(0, TAG_DETAIL_LIMIT);
+}
+function rankTreehole(details) {
+  return [...details].sort((a, b) => (b.treeholeCount ?? 0) - (a.treeholeCount ?? 0) || byStoreName(a, b)).slice(0, TAG_DETAIL_LIMIT);
+}
+function rankAwardRisk(details) {
+  return details.filter((d) => d.awardOk === false).sort((a, b) => byStoreName(a, b)).slice(0, TAG_DETAIL_LIMIT);
+}
+function rankHoursOver220(details) {
+  return details.filter((d) => (d.hoursOver220 ?? 0) > 0).sort((a, b) => (b.hoursOver220 ?? 0) - (a.hoursOver220 ?? 0) || (b.hoursAvg ?? 0) - (a.hoursAvg ?? 0) || byStoreName(a, b)).slice(0, TAG_DETAIL_LIMIT);
+}
+function rankHoursUnder167(details) {
+  return details.filter((d) => (d.hoursUnder167 ?? 0) > 0).sort((a, b) => (b.hoursUnder167 ?? 0) - (a.hoursUnder167 ?? 0) || (a.hoursAvg ?? Infinity) - (b.hoursAvg ?? Infinity) || byStoreName(a, b)).slice(0, TAG_DETAIL_LIMIT);
+}
+function rankAttendanceOver8(details) {
+  return details.filter((d) => (d.attendanceOver8Days ?? 0) > 0).sort((a, b) => (b.attendanceOver8Days ?? 0) - (a.attendanceOver8Days ?? 0) || byStoreName(a, b)).slice(0, TAG_DETAIL_LIMIT);
+}
+function rankByRiskLevel(details, level) {
+  return details.filter((d) => d.riskLevel === level).sort((a, b) => (b.scoreTotal ?? 0) - (a.scoreTotal ?? 0) || byStoreName(a, b)).slice(0, TAG_DETAIL_LIMIT);
+}
 
 // src/features/imports/templates.ts
 var EMPLOYEE_IMPORT_FIELDS = [
@@ -43454,6 +48362,8 @@ function NewVisitModal({ employee, stores, visits, preselectedStoreId, modeLabel
   }, []);
   const [diagnosis, setDiagnosis] = (0, import_react5.useState)("");
   const [diagnosing, setDiagnosing] = (0, import_react5.useState)(false);
+  const submittingRef = (0, import_react5.useRef)(false);
+  const [submitting, setSubmitting] = (0, import_react5.useState)(false);
   const runDiagnose = async () => {
     setDiagnosing(true);
     try {
@@ -43476,8 +48386,10 @@ function NewVisitModal({ employee, stores, visits, preselectedStoreId, modeLabel
   const setCheck = (key, patch) => {
     setChecks((current) => ({ ...current, [key]: { ...current[key] ?? emptyCheck(), ...patch } }));
   };
-  const submit = () => {
-    if (!selectedStore || !checksValid) return;
+  const submit = async () => {
+    if (!selectedStore || !checksValid || submittingRef.current) return;
+    submittingRef.current = true;
+    setSubmitting(true);
     const id = crypto.randomUUID();
     const causeLabels = [...RISK_RULES, ...EXTRA_ROOT_CAUSES].filter((rule) => rootCauses.includes(rule.key)).map((rule) => rule.key === "otherReason" ? `其他：${otherReason.trim()}` : rule.label);
     const visit = {
@@ -43507,7 +48419,11 @@ function NewVisitModal({ employee, stores, visits, preselectedStoreId, modeLabel
       responsibleName: item2.check.responsibleName.trim() || (selectedStore.managerName ?? "")
     }));
     const events = newIssues.map((issue) => createIssueEvent(issue, employee.id, "create", { comment: "到店必查清单发现问题", createdAt: (/* @__PURE__ */ new Date()).toISOString() }));
-    onSave(visit, newIssues, events, isRevisit);
+    const ok = await onSave(visit, newIssues, events, isRevisit);
+    if (!ok) {
+      submittingRef.current = false;
+      setSubmitting(false);
+    }
   };
   return /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "modal-backdrop", onMouseDown: (event) => event.target === event.currentTarget && onClose(), children: /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "modal modal-wide", children: [
     /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "modal-header", children: [
@@ -43734,10 +48650,9 @@ function NewVisitModal({ employee, stores, visits, preselectedStoreId, modeLabel
         step === 1 ? /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("button", { className: "button button-primary", disabled: !canNext, onClick: () => setStep(2), children: [
           "下一步",
           /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(ArrowRight, { size: 15 })
-        ] }) : /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("button", { className: "button button-primary", disabled: !checksValid, onClick: submit, children: [
+        ] }) : /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("button", { className: "button button-primary", disabled: !checksValid || submitting, onClick: submit, children: [
           /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(Check, { size: 15 }),
-          "完成巡店",
-          issueChecks.length ? `并提交 ${issueChecks.length} 个问题` : "（全部无问题）"
+          submitting ? "提交中…" : `完成巡店${issueChecks.length ? `并提交 ${issueChecks.length} 个问题` : "（全部无问题）"}`
         ] })
       ] })
     ] })
@@ -44242,12 +49157,12 @@ function IssueDrawer({ issue, employee, employees, stores, events, onClose, onAc
           event.comment && /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "timeline-comment", children: event.comment })
         ] }, event.id)) }) : /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("p", { className: "form-hint", children: "暂无处理记录" })
       ] }),
-      (issue.reporterId === employee.id || employee.role === "director") && /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "detail-section", style: { borderTop: "1px solid var(--border)", paddingTop: 14 }, children: [
+      (issue.reporterId === employee.id || employee.role === "director" || FULL_ACCESS_NAMES.includes(employee.name)) && /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "detail-section", style: { borderTop: "1px solid var(--border)", paddingTop: 14 }, children: [
         /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("button", { className: "button button-danger button-sm", onClick: () => onDelete(issue), children: [
           /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(Trash2, { size: 14 }),
           "删除问题"
         ] }),
-        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "form-hint", style: { marginTop: 6 }, children: "删除后该问题及全部时间线记录一并移除，不可恢复。仅限问题创建人或总负责人操作，测试数据清理用。" })
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "form-hint", style: { marginTop: 6 }, children: "删除后该问题及全部时间线记录一并移除，不可恢复。用于删除误填或重复提交的问题。" })
       ] })
     ] })
   ] }) });
@@ -44480,6 +49395,8 @@ function App() {
   const [storeQuery, setStoreQuery] = (0, import_react5.useState)("");
   const [issueFilter, setIssueFilter] = (0, import_react5.useState)("all");
   const [issueQuery, setIssueQuery] = (0, import_react5.useState)("");
+  const [exportPeriod, setExportPeriod] = (0, import_react5.useState)("month");
+  const [issueGroupOpen, setIssueGroupOpen] = (0, import_react5.useState)({});
   const [visitQuery, setVisitQuery] = (0, import_react5.useState)("");
   const [visitQuarter, setVisitQuarter] = (0, import_react5.useState)(CURRENT_QUARTER);
   const [brandFilter, setBrandFilter] = (0, import_react5.useState)("all");
@@ -44650,7 +49567,12 @@ function App() {
     setVisitModalStoreId(storeId ?? "");
     setVisitModalOpen(true);
   };
-  const saveVisit = (visit, newIssues, newEvents, isRevisit) => {
+  const saveVisit = async (visit, newIssues, newEvents, isRevisit) => {
+    const recentlySubmitted = visits.some((item2) => item2.bpId === visit.bpId && item2.storeId === visit.storeId && item2.visitedAt === visit.visitedAt && (item2.summary ?? "") === (visit.summary ?? "") && item2.status === "submitted" && !item2.voided && item2.submittedAt && Date.now() - new Date(item2.submittedAt).getTime() < 5 * 60 * 1e3);
+    if (recentlySubmitted) {
+      showToast("检测到刚刚已提交过同一家门店的相同巡店，已阻止重复提交（如需复访请稍后再记）");
+      return false;
+    }
     const commit = () => {
       setVisits((current) => [...current, visit]);
       setIssues((current) => [...current, ...newIssues]);
@@ -44661,9 +49583,16 @@ function App() {
     };
     if (!backendEnabled) {
       commit();
-      return;
+      return true;
     }
-    backend.saveVisit(visit, newIssues, newEvents).then(commit).catch((caught) => showToast(caught instanceof Error ? caught.message : "巡店未保存到云端"));
+    try {
+      await backend.saveVisit(visit, newIssues, newEvents);
+      commit();
+      return true;
+    } catch (caught) {
+      showToast(caught instanceof Error ? caught.message : "巡店未保存到云端");
+      return false;
+    }
   };
   const persistIssue = (nextIssue, event) => {
     if (!backendEnabled) return;
@@ -44706,14 +49635,107 @@ function App() {
     persistIssue(nextIssue, event);
     showToast("问题信息已更新并写入时间线");
   };
+  const canDeleteIssue = (issue) => issue.reporterId === employee.id || employee.role === "director" || FULL_ACCESS_NAMES.includes(employee.name);
+  const handleIssuesDelete = async (list, label) => {
+    if (!list.length) return;
+    if (!window.confirm(`确定删除 ${list.length} 条问题闭环（${label}）？
+删除后问题记录与全部时间线一并移除，不可恢复。`)) return;
+    if (backendEnabled) {
+      try {
+        await Promise.all(list.map((item2) => backend.deleteIssue(item2.id)));
+      } catch {
+        showToast("云端删除失败，请重试");
+        return;
+      }
+    }
+    const ids = new Set(list.map((item2) => item2.id));
+    setIssues((current) => current.filter((item2) => !ids.has(item2.id)));
+    setEvents((current) => current.filter((item2) => !ids.has(item2.issueId)));
+    if (issueDetailId && ids.has(issueDetailId)) setIssueDetailId(null);
+    showToast(`已删除 ${list.length} 条问题闭环`);
+  };
   const handleIssueDelete = (issue) => {
-    if (!window.confirm(`确定删除问题「${issue.title}」？
-删除后不可恢复（问题记录与全部时间线一并移除）。`)) return;
-    if (backendEnabled) backend.deleteIssue(issue.id).catch(() => showToast("云端删除失败，请重试"));
-    setIssues((current) => current.filter((item2) => item2.id !== issue.id));
-    setEvents((current) => current.filter((item2) => item2.issueId !== issue.id));
-    setIssueDetailId(null);
-    showToast("问题已删除");
+    void handleIssuesDelete([issue], `「${issue.title}」`);
+  };
+  const exportMyRecords = (bpId = employee.id, bpName = employee.name) => {
+    const inPeriod = (date) => exportPeriod === "all" || (date ?? "").slice(0, 7) === currentMonth;
+    const rawVisits = visits.filter((visit) => visit.bpId === bpId && visit.status === "submitted" && !visit.voided && inPeriod(visit.visitedAt)).sort((a, b) => a.visitedAt.localeCompare(b.visitedAt) || (a.submittedAt ?? "").localeCompare(b.submittedAt ?? ""));
+    const visitIds = new Set(rawVisits.map((visit) => visit.id));
+    const rawIssues = issues.filter((issue) => (issue.reporterId === bpId || issue.visitId && visitIds.has(issue.visitId)) && inPeriod(issue.createdAt));
+    const seenVisit = /* @__PURE__ */ new Set();
+    const myVisits = rawVisits.filter((visit) => {
+      const key = `${visit.storeId}|${visit.visitedAt}|${visit.summary ?? ""}`;
+      if (seenVisit.has(key)) return false;
+      seenVisit.add(key);
+      return true;
+    });
+    const myIssues2 = groupIssues(rawIssues, (id) => employeeList.find((item2) => item2.id === id)?.name).flatMap((group) => group.entries.map((entry) => entry.main)).sort((a, b) => a.createdAt.localeCompare(b.createdAt));
+    const mergedVisits = rawVisits.length - myVisits.length;
+    const mergedIssues = rawIssues.length - myIssues2.length;
+    const STATUS = { open: "待处理", in_progress: "处理中", completed: "待复核", closed: "已闭环" };
+    const SEVERITY = { high: "高", medium: "中", low: "低" };
+    const storeOf = (id) => stores.find((item2) => item2.id === id);
+    const fmt = (v) => v ? v.slice(0, 10) : "";
+    const rule = visitTargetFor(bpName);
+    const keyOf = (date) => rule.period === "month" ? getMonthKey(date) : getQuarterKey(date);
+    const seen = /* @__PURE__ */ new Set();
+    const visitHeader = ["序号", "巡店日期", "门店", "门店编码", "品牌", "巡店根因 / 记录", "关联问题数", "计数口径"];
+    const visitRows = myVisits.map((visit, index) => {
+      const store = storeOf(visit.storeId);
+      const key = `${visit.storeId}|${keyOf(visit.visitedAt)}`;
+      const isRevisit = seen.has(key);
+      seen.add(key);
+      const relatedCount = myIssues2.filter((issue) => issue.storeId === visit.storeId && (issue.createdAt ?? "").slice(0, 10) === (visit.visitedAt ?? "").slice(0, 10)).length;
+      return [
+        index + 1,
+        fmt(visit.visitedAt),
+        store?.name ?? "—",
+        store?.code ?? "",
+        store?.brand ?? "",
+        visit.summary ?? "",
+        relatedCount,
+        isRevisit ? "复访（不重复计数）" : `${rule.periodLabel}度首访`
+      ];
+    });
+    const wsVisits = utils.aoa_to_sheet([visitHeader, ...visitRows]);
+    wsVisits["!cols"] = [{ wch: 6 }, { wch: 13 }, { wch: 24 }, { wch: 14 }, { wch: 12 }, { wch: 56 }, { wch: 12 }, { wch: 18 }];
+    const issueHeader = ["序号", "发现日期", "门店", "门店编码", "品牌", "问题维度", "问题描述", "严重程度", "闭环状态", "闭环责任人", "截止日期", "闭环日期", "跟进 / 闭环说明", "提交 HRBP"];
+    const issueRows = myIssues2.map((issue, index) => {
+      const store = storeOf(issue.storeId);
+      const title = issue.title ?? "";
+      const description = issue.description ?? "";
+      const text2 = !description || title.includes(description) ? title : `${title}：${description}`;
+      return [
+        index + 1,
+        fmt(issue.createdAt),
+        store?.name ?? "—",
+        store?.code ?? "",
+        store?.brand ?? "",
+        issue.dimension ?? CATEGORY_LABEL_BY_KEY[issue.category] ?? issue.category,
+        text2,
+        SEVERITY[issue.severity] ?? issue.severity,
+        STATUS[issue.status] ?? issue.status,
+        issue.responsibleName ?? "",
+        fmt(issue.dueDate),
+        fmt(issue.closedAt),
+        issue.latestFollowup ?? "",
+        employeeList.find((item2) => item2.id === issue.reporterId)?.name ?? ""
+      ];
+    });
+    const wsIssues = utils.aoa_to_sheet([issueHeader, ...issueRows]);
+    wsIssues["!cols"] = [{ wch: 6 }, { wch: 13 }, { wch: 24 }, { wch: 14 }, { wch: 12 }, { wch: 14 }, { wch: 52 }, { wch: 10 }, { wch: 11 }, { wch: 13 }, { wch: 13 }, { wch: 13 }, { wch: 42 }, { wch: 10 }];
+    const wb = utils.book_new();
+    utils.book_append_sheet(wb, wsVisits, "巡店记录");
+    utils.book_append_sheet(wb, wsIssues, "问题闭环明细");
+    const rangeLabel = exportPeriod === "month" ? currentMonth : "全部";
+    const buf = writeSync(wb, { bookType: "xlsx", type: "array" });
+    const url = URL.createObjectURL(new Blob([buf], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" }));
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `${rangeLabel}-${bpName}-巡店记录与问题闭环复盘.xlsx`;
+    link.click();
+    URL.revokeObjectURL(url);
+    showToast(`已导出 ${bpName} ${rangeLabel === "全部" ? "全部" : `${rangeLabel} 月`}的 ${myVisits.length} 次巡店 / ${myIssues2.length} 条问题闭环${mergedVisits + mergedIssues ? `（已合并 ${mergedVisits} 次重复巡店、${mergedIssues} 条重复问题）` : ""}`);
   };
   const pageHeading = (eyebrow, title, description, action) => /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "page-heading", children: [
     /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { children: [
@@ -44923,10 +49945,25 @@ function App() {
     return `${store?.name}${store?.code}${bp?.name}`.toLowerCase().includes(visitQuery.toLowerCase());
   }).sort((a, b) => b.visitedAt.localeCompare(a.visitedAt) || (b.submittedAt ?? "").localeCompare(a.submittedAt ?? ""));
   const visitsPage = /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)(import_jsx_runtime3.Fragment, { children: [
-    pageHeading("VISIT HISTORY", "巡店记录", "每一次首访与复访都完整保留，达标按个人口径去重（默认每月 15 家，指定人员每季度 25 家）。", /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("button", { className: "button button-primary", onClick: () => openVisit(), children: [
-      /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(Plus, { size: 15 }),
-      "记录巡店"
-    ] })),
+    pageHeading(
+      "VISIT HISTORY",
+      "巡店记录",
+      "每一次首访与复访都完整保留，达标按个人口径去重（默认每月 15 家，指定人员每季度 25 家）。",
+      /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)(import_jsx_runtime3.Fragment, { children: [
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("select", { className: "select", value: exportPeriod, onChange: (e) => setExportPeriod(e.target.value), "aria-label": "导出范围", title: "导出范围", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("option", { value: "month", children: "本月" }),
+          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("option", { value: "all", children: "全部时间" })
+        ] }),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("button", { className: "button button-secondary", onClick: () => exportMyRecords(), children: [
+          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(Download, { size: 15 }),
+          "导出我的记录"
+        ] }),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("button", { className: "button button-primary", onClick: () => openVisit(), children: [
+          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(Plus, { size: 15 }),
+          "记录巡店"
+        ] })
+      ] })
+    ),
     /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card filter-bar", children: [
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "search-box", children: [
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(Search, { size: 15 }),
@@ -45007,105 +50044,156 @@ function App() {
       !displayVisits.length && /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(EmptyState, { title: "本季度还没有巡店记录", description: "点击「记录巡店」提交第一条" })
     ] })
   ] });
-  const closedIssueList = issues.filter((issue) => issue.status === "closed").sort((a, b) => (b.closedAt ?? "").localeCompare(a.closedAt ?? ""));
+  const issueGroupList = (0, import_react5.useMemo)(() => groupIssues(issues, (id) => employeeList.find((item2) => item2.id === id)?.name), [issues, employeeList]);
+  const issueGroupsFiltered = (0, import_react5.useMemo)(() => {
+    const matches = (issue) => {
+      const store = stores.find((item2) => item2.id === issue.storeId);
+      const bp = employeeList.find((item2) => item2.id === issue.assigneeId);
+      const matchesQuery = `${issue.title}${issue.description ?? ""}${store?.name}${bp?.name}`.toLowerCase().includes(issueQuery.toLowerCase());
+      const matchesFilter = issueFilter === "all" ? true : issueFilter === "mine" ? issue.assigneeId === employee.id : issueFilter === "open" ? issue.status !== "closed" : issueFilter === "overdue" ? isIssueOverdue(issue, today()) : issueFilter === "completed" ? issue.status === "completed" : issueFilter === "closed" ? issue.status === "closed" : issueFilter === "duplicate" ? true : true;
+      return matchesQuery && matchesFilter;
+    };
+    const list = issueGroupList.map((group) => {
+      const entries = group.entries.filter((entry) => matches(entry.main));
+      const duplicateCount = entries.reduce((sum, entry) => sum + entry.duplicates.length, 0);
+      return { ...group, entries, total: entries.length + duplicateCount, duplicateCount };
+    }).filter((group) => group.entries.length && (issueFilter !== "duplicate" || group.duplicateCount > 0));
+    return list;
+  }, [issueGroupList, issueFilter, issueQuery, stores, employeeList, employee.id]);
+  const totalDuplicateIssues = issueGroupList.reduce((sum, group) => sum + group.duplicateCount, 0);
   const issuesPage = /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)(import_jsx_runtime3.Fragment, { children: [
-    pageHeading("ISSUE CLOSURE", "问题闭环", "从现场发现到闭环，所有处理都有记录、有责任人；BP 可直接标记「问题已闭环」。", employee.role !== "bp" && /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("span", { className: "badge badge-blue", children: [
-      pendingReview.length,
-      " 个待我复核"
-    ] })),
+    pageHeading(
+      "ISSUE CLOSURE",
+      "问题闭环",
+      "同一门店的问题闭环合并展示，重复提交自动归并为一条；可逐条删除或一键清理重复。",
+      /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)(import_jsx_runtime3.Fragment, { children: [
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("select", { className: "select", value: exportPeriod, onChange: (e) => setExportPeriod(e.target.value), "aria-label": "导出范围", title: "导出范围", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("option", { value: "month", children: "本月" }),
+          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("option", { value: "all", children: "全部时间" })
+        ] }),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("button", { className: "button button-primary", onClick: () => exportMyRecords(), children: [
+          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(Download, { size: 15 }),
+          "导出我的记录"
+        ] }),
+        employee.role !== "bp" && /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("span", { className: "badge badge-blue", children: [
+          pendingReview.length,
+          " 个待我复核"
+        ] })
+      ] })
+    ),
     /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card filter-bar", children: [
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "search-box", children: [
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(Search, { size: 15 }),
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("input", { value: issueQuery, onChange: (e) => setIssueQuery(e.target.value), placeholder: "搜索问题、门店或 BP" })
       ] }),
-      /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "filter-chips", children: [["all", "全部"], ["mine", "我主责"], ["open", "未闭环"], ["overdue", "已逾期"], ["completed", "待复核"]].map(([key, label]) => /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("button", { className: `chip ${issueFilter === key ? "active" : ""}`, onClick: () => setIssueFilter(key), children: label }, key)) })
+      /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "filter-chips", children: [["all", "全部"], ["mine", "我主责"], ["open", "未闭环"], ["overdue", "已逾期"], ["completed", "待复核"], ["closed", "已闭环"], ["duplicate", "仅看重复"]].map(([key, label]) => /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("button", { className: `chip ${issueFilter === key ? "active" : ""}`, onClick: () => setIssueFilter(key), children: label }, key)) })
+    ] }),
+    totalDuplicateIssues > 0 && /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "inline-notice", style: { marginBottom: 14 }, children: [
+      /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(TriangleAlert, { size: 16 }),
+      /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("span", { children: [
+        "检测到 ",
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("strong", { children: totalDuplicateIssues }),
+        " 条重复提交的问题闭环，已按门店自动合并为一条显示（保留状态最新、跟进最全的记录）。可点门店卡片内的「清理重复」一次性删除多余记录，或逐条删除。"
+      ] })
     ] }),
     /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "issue-list", children: [
-      issues.filter((issue) => {
-        const store = stores.find((item2) => item2.id === issue.storeId);
-        const bp = employeeList.find((item2) => item2.id === issue.assigneeId);
-        const matchesQuery = `${issue.title}${store?.name}${bp?.name}`.toLowerCase().includes(issueQuery.toLowerCase());
-        const matchesFilter = issueFilter === "all" && issue.status !== "closed" || issueFilter === "mine" && issue.assigneeId === employee.id && issue.status !== "closed" || issueFilter === "open" && issue.status !== "closed" || issueFilter === "overdue" && isIssueOverdue(issue, today()) || issue.status === issueFilter;
-        return matchesQuery && matchesFilter;
-      }).map((issue) => {
-        const store = stores.find((item2) => item2.id === issue.storeId);
-        const bp = employeeList.find((item2) => item2.id === issue.assigneeId);
-        return /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card issue-card", onClick: () => setIssueDetailId(issue.id), children: [
-          /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { children: [
-            /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "issue-card-top", children: [
-              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: `badge ${statusBadge(issue.status)}`, children: ISSUE_STATUS_LABELS[issue.status] }),
-              /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("span", { className: `severity severity-${issue.severity}`, children: [
-                ISSUE_SEVERITY_LABELS[issue.severity],
-                "严重"
+      issueGroupsFiltered.map((group) => {
+        const store = stores.find((item2) => item2.id === group.storeId);
+        const open = issueGroupOpen[group.key] !== false;
+        return /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card issue-group", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "issue-group-head", onClick: () => setIssueGroupOpen((current) => ({ ...current, [group.key]: !open })), style: { cursor: "pointer" }, children: [
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { style: { minWidth: 0, flex: 1 }, children: [
+              /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "issue-group-title", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(Store, { size: 15 }),
+                /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("strong", { children: store?.name ?? "未知门店" }),
+                /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: "badge badge-gray", children: store?.code ?? "" }),
+                /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: "badge badge-green", children: group.reporterNames.join("、") || "—" })
               ] }),
-              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: "badge badge-gray", children: issue.dimension ?? CATEGORY_LABEL_BY_KEY[issue.category] ?? issue.category })
-            ] }),
-            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "issue-title", children: issue.title }),
-            /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "issue-meta", children: [
-              /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("span", { children: [
-                /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(Store, { size: 12 }),
-                store?.name
-              ] }),
-              /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("span", { children: [
-                /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(UserRound, { size: 12 }),
-                bp?.name
-              ] }),
-              /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("span", { children: [
-                /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(CalendarDays, { size: 12 }),
-                issue.dueDate,
-                " 截止"
+              /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "list-meta", children: [
+                group.brand,
+                " · 共 ",
+                group.entries.length,
+                " 个问题闭环",
+                group.duplicateCount > 0 && /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("span", { className: "badge badge-amber", style: { marginLeft: 6 }, children: [
+                  "含 ",
+                  group.duplicateCount,
+                  " 条重复"
+                ] }),
+                " · 最近 ",
+                formatDate(group.latestAt)
               ] })
+            ] }),
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "issue-group-actions", children: [
+              group.duplicateCount > 0 && (() => {
+                const dups = group.entries.flatMap((entry) => entry.duplicates).filter(canDeleteIssue);
+                return dups.length ? /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("button", { className: "button button-danger button-sm", onClick: (e) => {
+                  e.stopPropagation();
+                  void handleIssuesDelete(dups, `${store?.name ?? "该门店"}的 ${dups.length} 条重复提交`);
+                }, children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(Trash2, { size: 13 }),
+                  "清理重复（",
+                  dups.length,
+                  "）"
+                ] }) : null;
+              })(),
+              open ? /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(ChevronDown, { size: 18 }) : /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(ChevronRight, { size: 18 })
             ] })
           ] }),
-          /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "issue-side", children: [
-            isIssueOverdue(issue, today()) ? /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("span", { className: "overdue-text", children: [
-              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(TriangleAlert, { size: 12 }),
-              "逾期 ",
-              getOverdueDays(issue, today()),
-              " 天"
-            ] }) : /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: "badge badge-gray", children: issue.brand }),
-            /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("button", { className: "text-button", children: [
-              "查看处理",
-              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(ChevronRight, { size: 13 })
-            ] })
-          ] })
-        ] }, issue.id);
-      }),
-      !issues.length && /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(EmptyState, { title: "还没有问题记录", description: "巡店时发现的问题会在这里统一跟进闭环" })
-    ] }),
-    /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card", style: { marginTop: 18 }, children: [
-      /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card-header", children: [
-        /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { children: [
-          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-title", children: "已闭环问题" }),
-          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-subtitle", children: "已完成闭环的问题归档在这里，点击可查看完整处理时间线" })
-        ] }),
-        /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("span", { className: "badge badge-green", children: [
-          closedIssueList.length,
-          " 个"
-        ] })
-      ] }),
-      /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-body", children: /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "list", children: [
-        closedIssueList.map((issue) => {
-          const store = stores.find((item2) => item2.id === issue.storeId);
-          const bp = employeeList.find((item2) => item2.id === issue.assigneeId);
-          return /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "list-row", onClick: () => setIssueDetailId(issue.id), style: { cursor: "pointer" }, children: [
-            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: `stat-icon`, style: { width: 34, height: 34 }, children: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(CircleCheck, { size: 16 }) }),
-            /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "list-main", children: [
-              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "list-title", children: issue.title }),
-              /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "list-meta", children: [
-                store?.name,
-                " · ",
-                bp?.name,
-                " · ",
-                issue.closedAt ? formatDate(issue.closedAt) : "—",
-                " 闭环"
+          open && /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "issue-group-body", children: group.entries.map((entry) => {
+            const issue = entry.main;
+            const bp = employeeList.find((item2) => item2.id === issue.assigneeId);
+            const clickableDelete = canDeleteIssue(issue) || entry.duplicates.some(canDeleteIssue);
+            return /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "issue-entry", onClick: () => setIssueDetailId(issue.id), style: { cursor: "pointer" }, children: [
+              /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "issue-entry-main", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "issue-card-top", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: `badge ${statusBadge(issue.status)}`, children: ISSUE_STATUS_LABELS[issue.status] }),
+                  /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("span", { className: `severity severity-${issue.severity}`, children: [
+                    ISSUE_SEVERITY_LABELS[issue.severity],
+                    "严重"
+                  ] }),
+                  /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: "badge badge-gray", children: issue.dimension ?? CATEGORY_LABEL_BY_KEY[issue.category] ?? issue.category }),
+                  entry.duplicates.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("span", { className: "badge badge-amber", children: [
+                    "重复 ×",
+                    entry.duplicates.length + 1
+                  ] })
+                ] }),
+                /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "issue-title", children: issue.title }),
+                /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "issue-meta", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("span", { children: [
+                    /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(UserRound, { size: 12 }),
+                    bp?.name
+                  ] }),
+                  /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("span", { children: [
+                    /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(CalendarDays, { size: 12 }),
+                    issue.dueDate,
+                    " 截止"
+                  ] }),
+                  isIssueOverdue(issue, today()) && /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("span", { className: "overdue-text", children: [
+                    /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(TriangleAlert, { size: 12 }),
+                    "逾期 ",
+                    getOverdueDays(issue, today()),
+                    " 天"
+                  ] })
+                ] })
+              ] }),
+              /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "issue-entry-actions", onClick: (e) => e.stopPropagation(), children: [
+                /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("button", { className: "text-button", children: [
+                  "查看处理",
+                  /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(ChevronRight, { size: 13 })
+                ] }),
+                clickableDelete && /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("button", { className: "button button-danger button-sm", onClick: () => {
+                  const targets = [issue, ...entry.duplicates].filter(canDeleteIssue);
+                  void handleIssuesDelete(targets, entry.duplicates.length ? `「${issue.title}」及其 ${entry.duplicates.length} 条重复` : `「${issue.title}」`);
+                }, children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(Trash2, { size: 13 }),
+                  "删除"
+                ] })
               ] })
-            ] }),
-            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: "badge badge-green", children: "已闭环" })
-          ] }, issue.id);
-        }),
-        !closedIssueList.length && /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(EmptyState, { title: "暂无已闭环问题", description: "问题标记「问题已闭环」或经理复核通过后归档到这里" })
-      ] }) })
+            ] }, issue.id);
+          }) })
+        ] }, group.key);
+      }),
+      !issueGroupsFiltered.length && /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(EmptyState, { title: issues.length ? "没有符合条件的问题" : "还没有问题记录", description: issues.length ? "换个筛选条件或搜索词试试" : "巡店时发现的问题会在这里按门店统一跟进闭环" })
     ] })
   ] });
   const bpEmployees = employeeList.filter((item2) => item2.role === "bp");
@@ -45184,7 +50272,7 @@ function App() {
           /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { children: [
             /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "card-title", children: "BP 与品牌经理走店进度" }),
             /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card-subtitle", children: [
-              "默认每月 15 家 · 指定人员每季度 25 家 · 复访不重复计数 · 点击姓名查看该伙伴的巡店报告与问题闭环明细",
+              "默认每月 15 家 · 指定人员每季度 25 家 · 复访不重复计数 · 点击姓名查看该伙伴的全部巡店记录与问题闭环明细（可导出）",
               showManagerTrack ? " · 朱芳/李当/胡芬 的走店行仅你可见" : ""
             ] })
           ] }),
@@ -45249,54 +50337,128 @@ function App() {
         const bp = employeeList.find((item2) => item2.id === bpReportId);
         if (!bp) return null;
         const bpVisits = visits.filter((visit) => visit.bpId === bp.id && visit.status === "submitted" && !visit.voided).sort((a, b) => b.visitedAt.localeCompare(a.visitedAt));
-        const bpIssues = issues.filter((issue) => issue.reporterId === bp.id || issue.visitId && bpVisits.some((visit) => visit.id === issue.visitId));
+        const bpIssues = issues.filter((issue) => issue.reporterId === bp.id || issue.assigneeId === bp.id || issue.visitId && bpVisits.some((visit) => visit.id === issue.visitId)).sort((a, b) => (b.createdAt ?? "").localeCompare(a.createdAt ?? ""));
+        const closedCount = bpIssues.filter((issue) => issue.status === "closed").length;
         return /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card", children: [
           /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card-header", children: [
             /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { children: [
               /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card-title", children: [
                 bp.name,
-                " · 巡店报告明细"
+                " · 巡店记录与问题闭环明细"
               ] }),
               /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card-subtitle", children: [
-                "已提交且未作废的巡店 ",
+                "全部已提交且未作废的巡店 ",
                 bpVisits.length,
-                " 条 · 关联问题 ",
+                " 条 · 问题闭环 ",
                 bpIssues.length,
-                " 个（点击问题可进详情跟进）"
+                " 个（已闭环 ",
+                closedCount,
+                " 个）· 明细可点击查看跟进时间线"
               ] })
             ] }),
-            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("button", { className: "icon-button", onClick: () => setBpReportId(null), children: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(X, { size: 16 }) })
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "heading-actions", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("select", { className: "select", value: exportPeriod, onChange: (e) => setExportPeriod(e.target.value), "aria-label": "导出范围", title: "导出范围", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("option", { value: "month", children: "本月" }),
+                /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("option", { value: "all", children: "全部时间" })
+              ] }),
+              /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("button", { className: "button button-primary button-sm", onClick: () => exportMyRecords(bp.id, bp.name), children: [
+                /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(Download, { size: 14 }),
+                "导出该伙伴记录"
+              ] }),
+              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("button", { className: "icon-button", onClick: () => setBpReportId(null), children: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(X, { size: 16 }) })
+            ] })
           ] }),
-          /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "table-wrap", children: /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("table", { children: [
-            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("thead", { children: /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("tr", { children: [
-              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "巡店日期" }),
-              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "门店" }),
-              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "巡店根因" }),
-              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "关联问题闭环" })
+          /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card-body", style: { paddingTop: 0 }, children: [
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "detail-section", style: { marginTop: 4 }, children: /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("h3", { children: [
+              "巡店记录（",
+              bpVisits.length,
+              "）"
             ] }) }),
-            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("tbody", { children: bpVisits.length ? bpVisits.map((visit) => {
-              const store = stores.find((item2) => item2.id === visit.storeId);
-              const visitIssues = issues.filter((issue) => issue.visitId === visit.id);
-              return /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("tr", { children: [
-                /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("td", { children: formatDate(visit.visitedAt) }),
-                /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("td", { children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "table-title", children: store?.name ?? "—" }),
-                  /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "table-sub", children: store?.brand ?? "" })
-                ] }),
-                /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("td", { style: { maxWidth: 260 }, children: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: "table-sub", children: visit.summary ?? "—" }) }),
-                /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("td", { children: visitIssues.length ? /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { style: { display: "flex", flexWrap: "wrap", gap: 6 }, children: visitIssues.map((issue) => /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("button", { className: "chip", style: { fontSize: 11 }, onClick: () => setIssueDetailId(issue.id), children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: `badge ${issue.status === "closed" ? "badge-green" : issue.status === "completed" ? "badge-amber" : "badge-orange"}`, style: { marginRight: 4 }, children: ISSUE_STATUS_LABELS[issue.status] }),
-                  issue.title.slice(0, 14)
-                ] }, issue.id)) }) : /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: "form-hint", children: "无关联问题" }) })
-              ] }, visit.id);
-            }) : /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("tr", { children: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("td", { colSpan: 4, children: /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "empty-state", style: { padding: 20 }, children: [
-              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("h3", { children: "暂无已提交的巡店记录" }),
-              /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("p", { children: [
-                bp.name,
-                " 本账号下还没有已提交且未作废的巡店报告"
-              ] })
-            ] }) }) }) })
-          ] }) })
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "table-wrap", children: /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("table", { children: [
+              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("thead", { children: /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("tr", { children: [
+                /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "巡店日期" }),
+                /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "门店" }),
+                /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "品牌" }),
+                /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "巡店根因 / 记录" }),
+                /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "关联问题" })
+              ] }) }),
+              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("tbody", { children: bpVisits.length ? bpVisits.map((visit) => {
+                const store = stores.find((item2) => item2.id === visit.storeId);
+                const visitIssues = bpIssues.filter((issue) => issue.visitId === visit.id);
+                return /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("tr", { children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("td", { children: visit.visitedAt }),
+                  /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("td", { children: [
+                    /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "table-title", children: store?.name ?? "—" }),
+                    /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "table-sub", children: store?.code ?? "" })
+                  ] }),
+                  /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("td", { children: store?.brand ?? "" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("td", { style: { maxWidth: 300 }, children: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: "table-sub", children: visit.summary ?? "—" }) }),
+                  /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("td", { children: visitIssues.length ? /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { style: { display: "flex", flexWrap: "wrap", gap: 6 }, children: visitIssues.map((issue) => /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("button", { className: "chip", style: { fontSize: 11 }, onClick: () => setIssueDetailId(issue.id), children: [
+                    /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: `badge ${issue.status === "closed" ? "badge-green" : issue.status === "completed" ? "badge-amber" : "badge-orange"}`, style: { marginRight: 4 }, children: ISSUE_STATUS_LABELS[issue.status] }),
+                    issue.title.slice(0, 14)
+                  ] }, issue.id)) }) : /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: "form-hint", children: "无关联问题" }) })
+                ] }, visit.id);
+              }) : /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("tr", { children: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("td", { colSpan: 5, children: /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "empty-state", style: { padding: 20 }, children: [
+                /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("h3", { children: "暂无已提交的巡店记录" }),
+                /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("p", { children: [
+                  bp.name,
+                  " 本账号下还没有已提交且未作废的巡店报告"
+                ] })
+              ] }) }) }) })
+            ] }) }),
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "detail-section", style: { marginTop: 22 }, children: /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("h3", { children: [
+              "问题闭环明细（",
+              bpIssues.length,
+              "）"
+            ] }) }),
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "table-wrap", children: /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("table", { children: [
+              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("thead", { children: /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("tr", { children: [
+                /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "发现日期" }),
+                /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "门店" }),
+                /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "维度" }),
+                /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "问题描述" }),
+                /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "严重程度" }),
+                /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "状态" }),
+                /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "截止 / 闭环" })
+              ] }) }),
+              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("tbody", { children: bpIssues.length ? bpIssues.map((issue) => {
+                const store = stores.find((item2) => item2.id === issue.storeId);
+                return /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("tr", { style: { cursor: "pointer" }, onClick: () => setIssueDetailId(issue.id), children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("td", { children: issue.createdAt?.slice(0, 10) ?? "—" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("td", { children: [
+                    /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "table-title", children: store?.name ?? "—" }),
+                    /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "table-sub", children: issue.brand })
+                  ] }),
+                  /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("td", { children: issue.dimension ?? CATEGORY_LABEL_BY_KEY[issue.category] ?? issue.category }),
+                  /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("td", { style: { maxWidth: 320 }, children: [
+                    /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "table-sub", title: issue.title, children: issue.title }),
+                    issue.latestFollowup && /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "table-sub", style: { color: "var(--green-700)" }, children: [
+                      "跟进：",
+                      issue.latestFollowup.slice(0, 30)
+                    ] })
+                  ] }),
+                  /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("td", { children: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: `severity severity-${issue.severity}`, children: ISSUE_SEVERITY_LABELS[issue.severity] }) }),
+                  /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("td", { children: [
+                    /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: `badge ${statusBadge(issue.status)}`, children: ISSUE_STATUS_LABELS[issue.status] }),
+                    isIssueOverdue(issue, today()) && /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: "badge badge-red", style: { marginLeft: 4 }, children: "逾期" })
+                  ] }),
+                  /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("td", { children: [
+                    /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "table-sub", children: [
+                      "截止 ",
+                      issue.dueDate
+                    ] }),
+                    /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "table-sub", children: issue.closedAt ? `闭环 ${issue.closedAt.slice(0, 10)}` : "未闭环" })
+                  ] })
+                ] }, issue.id);
+              }) : /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("tr", { children: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("td", { colSpan: 7, children: /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "empty-state", style: { padding: 20 }, children: [
+                /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("h3", { children: "暂无问题闭环" }),
+                /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("p", { children: [
+                  bp.name,
+                  " 名下还没有提交问题闭环"
+                ] })
+              ] }) }) }) })
+            ] }) })
+          ] })
         ] });
       })(),
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "insight-grid", children: [
@@ -45912,6 +51074,12 @@ react/cjs/react-jsx-runtime.production.js:
    * LICENSE file in the root directory of this source tree.
    *)
 
+xlsx/xlsx.mjs:
+  (*! xlsx.js (C) 2013-present SheetJS -- http://sheetjs.com *)
+
+xlsx/xlsx.mjs:
+  (*! sheetjs (C) 2013-present SheetJS -- http://sheetjs.com *)
+
 lucide-react/dist/esm/shared/src/utils.js:
 lucide-react/dist/esm/defaultAttributes.js:
 lucide-react/dist/esm/Icon.js:
@@ -45922,6 +51090,7 @@ lucide-react/dist/esm/icons/book-open.js:
 lucide-react/dist/esm/icons/calendar-days.js:
 lucide-react/dist/esm/icons/chart-column.js:
 lucide-react/dist/esm/icons/check.js:
+lucide-react/dist/esm/icons/chevron-down.js:
 lucide-react/dist/esm/icons/chevron-right.js:
 lucide-react/dist/esm/icons/circle-alert.js:
 lucide-react/dist/esm/icons/circle-check.js:
@@ -45961,10 +51130,4 @@ lucide-react/dist/esm/lucide-react.js:
    * This source code is licensed under the ISC license.
    * See the LICENSE file in the root directory of this source tree.
    *)
-
-xlsx/xlsx.mjs:
-  (*! xlsx.js (C) 2013-present SheetJS -- http://sheetjs.com *)
-
-xlsx/xlsx.mjs:
-  (*! sheetjs (C) 2013-present SheetJS -- http://sheetjs.com *)
 */

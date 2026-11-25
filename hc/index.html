@@ -834,12 +834,12 @@
 
 </div><!-- end container -->
 
-<script src="data.js?v=20261125a"></script>
-<script src="stores.js?v=20261125a"></script>
-<script src="details.js?v=20261125a"></script>
-<script src="staff_lookup.js?v=20261125a"></script>
-<script src="store_base.js?v=20261125a"></script>
-<script src="roster.js?v=20261125a"></script>
+<script src="data.js?v=20261125b"></script>
+<script src="stores.js?v=20261125b"></script>
+<script src="details.js?v=20261125b"></script>
+<script src="staff_lookup.js?v=20261125b"></script>
+<script src="store_base.js?v=20261125b"></script>
+<script src="roster.js?v=20261125b"></script>
 <script>
 const D = window.DASHBOARD_DATA;
 let specialLeaveExtra = [];
@@ -1258,11 +1258,14 @@ function renderCards(source) {
     } else {
         const rosterVal = source.find(c => c.label === '花名册在职合计')?.value || 0;
         const stdVal = source.find(c => c.label === '全职标准合计')?.value || 0;
+        // 2026-11-25 人工口径：营业门店数按新花名册 L 列去重（105 家）、全职标准合计 398
+        const CARD_OVERRIDES = { '营业门店数': 105, '全职标准合计': 398 };
         cards = source.map(c => {
             if (c.label === '花名册在职合计') return { ...c, value: getAETotal(), sub: '(AE列/人)' };
             if (c.label === '特殊请假合计') return { ...c, value: slCount };
             if (c.label === '预离职合计') return { ...c, value: plCount };
             if (c.label === '10月全职缺口') return { ...c, value: getBAGapTotal(), sub: '(人)' };
+            if (CARD_OVERRIDES[c.label] !== undefined) return { ...c, value: CARD_OVERRIDES[c.label] };
             return c;
         });
     }
@@ -1355,12 +1358,12 @@ function getStoreHcGradeRow(storeName) {
 }
 
 // 花名册在职合计卡片值
-// 2026-10-21 起：权威数据源改为桌面「1021人员信息.xlsx」（window.ROSTER_DATA，391 人）
-//   按当前大店长筛选时统计该大店长名下人数；全部维度 = 391
-// 2026-11-16：人工校准为 387 人（底表 391，11 月离职 4 人尚未同步进底表）
+// 2026-11-25 起：权威数据源改为桌面「花名册在职人数1.xlsx」（window.ROSTER_DATA，386 人）
+//   按当前大店长筛选时统计该大店长名下人数；全部维度 = 386
+// 旧「1021人员信息.xlsx」（391 人）已退役
 // 若 roster.js 未加载则回落到旧逻辑（门店底表架构人数之和 + ROSTER_ADJUST）
-var ROSTER_HEADCOUNT_OVERRIDE = 387;   // 非 null 时覆盖"全部"维度的总人数
-var ROSTER_ADJUST = -21;   // 回落用：底表架构合计 408 - 21 = 387
+var ROSTER_HEADCOUNT_OVERRIDE = null;   // 非 null 时覆盖"全部"维度的总人数
+var ROSTER_ADJUST = -22;   // 回落用：底表架构合计 408 - 22 = 386
 function getAETotal() {
     var roster = window.ROSTER_DATA;
     if (roster && roster.length) {

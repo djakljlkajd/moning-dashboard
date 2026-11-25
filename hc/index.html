@@ -834,12 +834,12 @@
 
 </div><!-- end container -->
 
-<script src="data.js?v=20261125b"></script>
-<script src="stores.js?v=20261125b"></script>
-<script src="details.js?v=20261125b"></script>
-<script src="staff_lookup.js?v=20261125b"></script>
-<script src="store_base.js?v=20261125b"></script>
-<script src="roster.js?v=20261125b"></script>
+<script src="data.js?v=20261125c"></script>
+<script src="stores.js?v=20261125c"></script>
+<script src="details.js?v=20261125c"></script>
+<script src="staff_lookup.js?v=20261125c"></script>
+<script src="store_base.js?v=20261125c"></script>
+<script src="roster.js?v=20261125c"></script>
 <script>
 const D = window.DASHBOARD_DATA;
 let specialLeaveExtra = [];
@@ -1026,8 +1026,8 @@ function renderProgressCard(type, cfg, title, footNote) {
 function renderRecruitProgress() {
     const p = D.recruitProgress || { fullTime:{recruit:0,arrived:0}, student:{recruit:0,arrived:0} };
     const html =
-        renderProgressCard('fulltime', p.fullTime || {}, '👔 全职招募达成（9月招募进度）', '到岗数据按月更新，达成率=到岗/招募') +
-        renderProgressCard('student',  p.student  || {}, '🎓 学生招募达成（10月招募进度）', '10月停止招募，到岗数据按月更新，达成率=到岗/招募');
+        renderProgressCard('fulltime', p.fullTime || {}, '👔 全职招募达成（11月招募进度）', '到岗数据按月更新，达成率=到岗/招募') +
+        renderProgressCard('student',  p.student  || {}, '🎓 学生招募达成（11月招募进度）', '11月停止招募，到岗数据按月更新，达成率=到岗/招募');
     document.getElementById('recruit-progress-row').innerHTML = html;
 }
 renderRecruitProgress();
@@ -1221,6 +1221,10 @@ document.getElementById('manager-foot').innerHTML =
     '<td>' + totalGap(msum.gap) + '</td><td><strong class="val-highlight">' + msum.final + '</strong>' +
     '<td class="text-left total-note">' + D.manager.totalNote + '</td>';
 
+// 2026-11-25 人工口径：11 月单店特殊新增 HC 归零（底表 AZ 列仍有 1 条正值记录，但本月不计入）
+// 设为 null 可恢复为「门店底表 AZ 正值 + 线上新增」自动计算
+const STORE_HC_TOTAL_OVERRIDE = 0;
+
 // ---------- 交互 ----------
 let currentTab = 'manager';
 let currentDimension = 'all';
@@ -1258,8 +1262,8 @@ function renderCards(source) {
     } else {
         const rosterVal = source.find(c => c.label === '花名册在职合计')?.value || 0;
         const stdVal = source.find(c => c.label === '全职标准合计')?.value || 0;
-        // 2026-11-25 人工口径：营业门店数按新花名册 L 列去重（105 家）、全职标准合计 398
-        const CARD_OVERRIDES = { '营业门店数': 105, '全职标准合计': 398 };
+        // 2026-11-25 人工口径：营业门店数按花名册 L 列去重（105 家）、全职标准合计 398、11月撤店 3 家
+        const CARD_OVERRIDES = { '营业门店数': 105, '全职标准合计': 398, '撤店合计': 3 };
         cards = source.map(c => {
             if (c.label === '花名册在职合计') return { ...c, value: getAETotal(), sub: '(AE列/人)' };
             if (c.label === '特殊请假合计') return { ...c, value: slCount };
@@ -1273,7 +1277,8 @@ function renderCards(source) {
     // 数值 = 门店底表 AZ 列正值之和 + 用户线上新增记录人数之和
     const storeHcBaseAdd = Object.values(window.STORE_BASE || {}).reduce((a, b) => a + ((b['HC新增或减少'] || 0) > 0 ? b['HC新增或减少'] : 0), 0);
     const storeHcExtraAdd = storeHcExtra.reduce((a, r) => a + (parseInt(r.新增人员数量, 10) || 0), 0);
-    const storeHcTotal = storeHcBaseAdd + storeHcExtraAdd;
+    const storeHcTotal = (STORE_HC_TOTAL_OVERRIDE !== null && STORE_HC_TOTAL_OVERRIDE !== undefined)
+        ? STORE_HC_TOTAL_OVERRIDE : (storeHcBaseAdd + storeHcExtraAdd);
     const shcIdx = cards.findIndex(c => c.label === '预离职合计');
     if (shcIdx >= 0) cards.splice(shcIdx + 1, 0, { label: '单店特殊新增HC人数', sub: '(人)', value: storeHcTotal, red: true, highlight: false });
     const clickableCards = ['特殊请假合计', '预离职合计', '撤店合计', '单店特殊新增HC人数', '10月全职缺口', '花名册在职合计'];
@@ -1317,13 +1322,22 @@ const detailMap = {
 const detailColumnsMap = {
     '特殊请假': ['大店长', '门店', '工号', '姓名', '开始时间', '结束时间', '休息天数', '备注原因'],
     '预离职': ['大店长', '门店', '工号', '姓名', '备注原因'],
-    '撤店': ['大店长', '门店', '工号', '姓名', '职位', '去向门店', '备注原因'],
+    // 2026-11-25 起：撤店明细替换为「11月撤店明细」门店级台账（3 家）
+    '撤店': ['市场', '门店编码', '门店名称', '结论', '撤店月份', '规划撤店日期', '闭环截止日期', '在册人数', '已安排人数', '已沟通安排人数', '待安排人数'],
     '单店特殊新增HC': ['大店长', '门店', '新增人员数量', '新增HC原因'],
     '10月单店缺口': ['大店长', '门店', '全职需求合计', '架构人数', '标准HC差值', '最终合计招募人数'],
     '花名册': ['大店长', '门店', '工号', '姓名', '职级', '入职时间']
 };
+// 表头显示名（字段 key 保持简洁用于取值，长名称仅用于表头换行使口径清晰）
+const DETAIL_HEADER_LABELS = {
+    '闭环截止日期': '人员去向应闭环<br>截止日期',
+    '已安排人数': '已安排人数<br>（流程已完成）',
+    '已沟通安排人数': '已沟通安排人数<br>（流程未完成）'
+};
 // 单店特殊新增HC：合并门店底表 AZ 列（非零）+ 用户线上新增记录
 function getStoreHcBaseRecords() {
+    // 人工归零口径下不展示门店底表 AZ 列记录，保持「卡片 0 / 明细 0 条」一致
+    if (STORE_HC_TOTAL_OVERRIDE !== null && STORE_HC_TOTAL_OVERRIDE !== undefined) return [];
     const base = [];
     Object.keys(window.STORE_BASE || {}).forEach(function(store) {
         const b = window.STORE_BASE[store];
@@ -1517,7 +1531,7 @@ function openDetailModal(cardLabel) {
         body.innerHTML =
             '<table><thead><tr>' + displayColumns.map(function(h, i) {
                 var isLast = (i === displayColumns.length - 1);
-                return '<th' + (showActions && isLast ? ' class="action-cell"' : '') + '>' + h + '</th>';
+                return '<th' + (showActions && isLast ? ' class="action-cell"' : '') + '>' + (DETAIL_HEADER_LABELS[h] || h) + '</th>';
             }).join('') + '</tr></thead>' +
             '<tbody>' + filtered.map(r => {
                 let cells = finalColumns.map(h => {

@@ -8,21 +8,21 @@ window.DASHBOARD_DATA = {
     {
       "label": "营业门店数",
       "sub": "(家)",
-      "value": 111,
+      "value": 105,
       "red": false,
       "highlight": false
     },
     {
       "label": "全职标准合计",
       "sub": "(D列/人)",
-      "value": 417,
+      "value": 398,
       "red": false,
       "highlight": false
     },
     {
       "label": "花名册在职合计",
       "sub": "(G列/人)",
-      "value": 387,
+      "value": 386,
       "red": false,
       "highlight": false
     },

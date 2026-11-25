@@ -1,7 +1,7 @@
 // HC 招募缺口看板 - 数据源（由 sync_dashboard.py 自动生成，请勿手改）
 window.DASHBOARD_DATA = {
   "meta": {
-    "title": "HC 9月最终招募缺口看板",
+    "title": "11月HC看板",
     "asOf": "2026-11-25"
   },
   "cards": [

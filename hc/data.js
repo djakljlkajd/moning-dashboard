@@ -2,7 +2,7 @@
 window.DASHBOARD_DATA = {
   "meta": {
     "title": "HC 9月最终招募缺口看板",
-    "asOf": "2026-09-15"
+    "asOf": "2026-11-25"
   },
   "cards": [
     {

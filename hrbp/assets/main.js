@@ -47787,6 +47787,109 @@ function groupIssues(list, nameOf) {
   return groups;
 }
 
+// src/features/visits/grouping.ts
+function visitFingerprint(visit) {
+  const summary = (visit.summary ?? "").replace(/\s+/g, "");
+  return `${visit.bpId}|${visit.storeId}|${(visit.visitedAt ?? "").slice(0, 10)}|${summary}`;
+}
+function groupVisits(visits, issues) {
+  const buckets = /* @__PURE__ */ new Map();
+  for (const visit of visits) {
+    const key = visitFingerprint(visit);
+    const arr = buckets.get(key);
+    if (arr) arr.push(visit);
+    else buckets.set(key, [visit]);
+  }
+  const issuesByVisit = /* @__PURE__ */ new Map();
+  for (const issue of issues) {
+    if (!issue.visitId) continue;
+    const arr = issuesByVisit.get(issue.visitId);
+    if (arr) arr.push(issue);
+    else issuesByVisit.set(issue.visitId, [issue]);
+  }
+  const groups = [];
+  for (const [key, bucket] of buckets) {
+    const related = bucket.flatMap((visit) => issuesByVisit.get(visit.id) ?? []);
+    const dedupedIssues = groupIssues(related, () => void 0).flatMap((group) => group.entries.map((entry) => entry.main));
+    const issueCountOf = (visit) => (issuesByVisit.get(visit.id) ?? []).length;
+    const sorted = [...bucket].sort((a, b) => issueCountOf(b) - issueCountOf(a) || (a.submittedAt ?? "").localeCompare(b.submittedAt ?? "") || a.id.localeCompare(b.id));
+    const main = sorted[0];
+    groups.push({
+      key,
+      bpId: main.bpId,
+      storeId: main.storeId,
+      visitedAt: main.visitedAt,
+      summary: main.summary ?? "",
+      main,
+      duplicates: sorted.slice(1),
+      duplicateCount: sorted.length - 1,
+      issues: dedupedIssues
+    });
+  }
+  groups.sort((a, b) => b.visitedAt.localeCompare(a.visitedAt) || (b.main.submittedAt ?? "").localeCompare(a.main.submittedAt ?? "") || a.main.id.localeCompare(b.main.id));
+  return groups;
+}
+function computeVisitRevisits(groups, periodKeyOf) {
+  const ascending = [...groups].sort((a, b) => a.visitedAt.localeCompare(b.visitedAt) || (a.main.submittedAt ?? "").localeCompare(b.main.submittedAt ?? "") || a.main.id.localeCompare(b.main.id));
+  const seen = /* @__PURE__ */ new Set();
+  const result2 = {};
+  for (const group of ascending) {
+    const key = `${group.bpId}|${group.storeId}|${periodKeyOf(group.bpId, group.visitedAt)}`;
+    result2[group.key] = seen.has(key);
+    seen.add(key);
+  }
+  return result2;
+}
+
+// src/features/visits/submit-lock.ts
+var VISIT_LOCK_KEY = "hrbp_visit_submit_locks";
+var VISIT_LOCK_WINDOW = 5 * 60 * 1e3;
+var memoryStorage = () => {
+  const map = /* @__PURE__ */ new Map();
+  return {
+    getItem: (key) => map.get(key) ?? null,
+    setItem: (key, value) => {
+      map.set(key, value);
+    }
+  };
+};
+function defaultStorage() {
+  try {
+    if (typeof localStorage !== "undefined") return localStorage;
+  } catch {
+  }
+  return memoryStorage();
+}
+function readLocks(storage, now) {
+  try {
+    const parsed = JSON.parse(storage.getItem(VISIT_LOCK_KEY) ?? "{}");
+    return Object.fromEntries(Object.entries(parsed).filter(([, at]) => typeof at === "number" && now - at < VISIT_LOCK_WINDOW));
+  } catch {
+    return {};
+  }
+}
+function claimVisitSubmitLock(fingerprint, options) {
+  const storage = options?.storage ?? defaultStorage();
+  const now = options?.now ?? Date.now();
+  const active = readLocks(storage, now);
+  if (active[fingerprint] !== void 0) {
+    storage.setItem(VISIT_LOCK_KEY, JSON.stringify(active));
+    return false;
+  }
+  active[fingerprint] = now;
+  storage.setItem(VISIT_LOCK_KEY, JSON.stringify(active));
+  return true;
+}
+function releaseVisitSubmitLock(fingerprint, options) {
+  const storage = options?.storage ?? defaultStorage();
+  try {
+    const locks = readLocks(storage, options?.now ?? Date.now());
+    delete locks[fingerprint];
+    storage.setItem(VISIT_LOCK_KEY, JSON.stringify(locks));
+  } catch {
+  }
+}
+
 // src/features/issues/workflow.ts
 var ACTION_NEXT_STATUS = {
   open: { start: "in_progress", close: "closed" },
@@ -49399,6 +49502,7 @@ function App() {
   const [issueGroupOpen, setIssueGroupOpen] = (0, import_react5.useState)({});
   const [visitQuery, setVisitQuery] = (0, import_react5.useState)("");
   const [visitQuarter, setVisitQuarter] = (0, import_react5.useState)(CURRENT_QUARTER);
+  const [visitFilter, setVisitFilter] = (0, import_react5.useState)("all");
   const [brandFilter, setBrandFilter] = (0, import_react5.useState)("all");
   const [employeeList, setEmployeeList] = (0, import_react5.useState)(demoEmployees);
   const [cloudReady, setCloudReady] = (0, import_react5.useState)(!backendEnabled);
@@ -49568,8 +49672,8 @@ function App() {
     setVisitModalOpen(true);
   };
   const saveVisit = async (visit, newIssues, newEvents, isRevisit) => {
-    const recentlySubmitted = visits.some((item2) => item2.bpId === visit.bpId && item2.storeId === visit.storeId && item2.visitedAt === visit.visitedAt && (item2.summary ?? "") === (visit.summary ?? "") && item2.status === "submitted" && !item2.voided && item2.submittedAt && Date.now() - new Date(item2.submittedAt).getTime() < 5 * 60 * 1e3);
-    if (recentlySubmitted) {
+    const lockKey = visitFingerprint(visit);
+    if (!claimVisitSubmitLock(lockKey)) {
       showToast("检测到刚刚已提交过同一家门店的相同巡店，已阻止重复提交（如需复访请稍后再记）");
       return false;
     }
@@ -49590,6 +49694,7 @@ function App() {
       commit();
       return true;
     } catch (caught) {
+      releaseVisitSubmitLock(lockKey);
       showToast(caught instanceof Error ? caught.message : "巡店未保存到云端");
       return false;
     }
@@ -49662,13 +49767,8 @@ function App() {
     const rawVisits = visits.filter((visit) => visit.bpId === bpId && visit.status === "submitted" && !visit.voided && inPeriod(visit.visitedAt)).sort((a, b) => a.visitedAt.localeCompare(b.visitedAt) || (a.submittedAt ?? "").localeCompare(b.submittedAt ?? ""));
     const visitIds = new Set(rawVisits.map((visit) => visit.id));
     const rawIssues = issues.filter((issue) => (issue.reporterId === bpId || issue.visitId && visitIds.has(issue.visitId)) && inPeriod(issue.createdAt));
-    const seenVisit = /* @__PURE__ */ new Set();
-    const myVisits = rawVisits.filter((visit) => {
-      const key = `${visit.storeId}|${visit.visitedAt}|${visit.summary ?? ""}`;
-      if (seenVisit.has(key)) return false;
-      seenVisit.add(key);
-      return true;
-    });
+    const visitGroups = groupVisits(rawVisits, rawIssues).sort((a, b) => a.main.visitedAt.localeCompare(b.main.visitedAt) || (a.main.submittedAt ?? "").localeCompare(b.main.submittedAt ?? ""));
+    const myVisits = visitGroups.map((group) => group.main);
     const myIssues2 = groupIssues(rawIssues, (id) => employeeList.find((item2) => item2.id === id)?.name).flatMap((group) => group.entries.map((entry) => entry.main)).sort((a, b) => a.createdAt.localeCompare(b.createdAt));
     const mergedVisits = rawVisits.length - myVisits.length;
     const mergedIssues = rawIssues.length - myIssues2.length;
@@ -49685,7 +49785,7 @@ function App() {
       const key = `${visit.storeId}|${keyOf(visit.visitedAt)}`;
       const isRevisit = seen.has(key);
       seen.add(key);
-      const relatedCount = myIssues2.filter((issue) => issue.storeId === visit.storeId && (issue.createdAt ?? "").slice(0, 10) === (visit.visitedAt ?? "").slice(0, 10)).length;
+      const relatedCount = visitGroups[index].issues.length;
       return [
         index + 1,
         fmt(visit.visitedAt),
@@ -49939,16 +50039,24 @@ function App() {
     !stores.length && /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(EmptyState, { title: "门店数据加载中", description: "门店清单来自在职数据聚合，若长时间为空请重新打开看板" }),
     stores.length > 0 && !displayedRecommendations.length && /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(EmptyState, { title: "该维度暂无数据", description: "当前品牌的周报数据尚未导入，或管辖范围内没有符合该维度的门店" })
   ] });
-  const displayVisits = visits.filter((visit) => visit.status === "submitted" && !visit.voided && getQuarterKey(visit.visitedAt) === visitQuarter).filter((visit) => {
-    const store = stores.find((item2) => item2.id === visit.storeId);
-    const bp = employeeList.find((item2) => item2.id === visit.bpId);
+  const validVisitGroups = (0, import_react5.useMemo)(() => groupVisits(visits.filter((visit) => visit.status === "submitted" && !visit.voided), issues), [visits, issues]);
+  const visitRevisits = (0, import_react5.useMemo)(() => computeVisitRevisits(validVisitGroups, (bpId, date) => {
+    const bp = employeeList.find((item2) => item2.id === bpId);
+    return visitTargetFor(bp?.name ?? "").period === "month" ? getMonthKey(date) : getQuarterKey(date);
+  }), [validVisitGroups, employeeList]);
+  const totalDuplicateVisits = validVisitGroups.reduce((sum, group) => sum + group.duplicateCount, 0);
+  const displayVisitGroups = validVisitGroups.filter((group) => {
+    if (getQuarterKey(group.visitedAt) !== visitQuarter) return false;
+    if (visitFilter === "duplicate" && group.duplicateCount === 0) return false;
+    const store = stores.find((item2) => item2.id === group.storeId);
+    const bp = employeeList.find((item2) => item2.id === group.bpId);
     return `${store?.name}${store?.code}${bp?.name}`.toLowerCase().includes(visitQuery.toLowerCase());
-  }).sort((a, b) => b.visitedAt.localeCompare(a.visitedAt) || (b.submittedAt ?? "").localeCompare(a.submittedAt ?? ""));
+  });
   const visitsPage = /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)(import_jsx_runtime3.Fragment, { children: [
     pageHeading(
       "VISIT HISTORY",
       "巡店记录",
-      "每一次首访与复访都完整保留，达标按个人口径去重（默认每月 15 家，指定人员每季度 25 家）。",
+      "同一个人同一天同一家门店的完全重复提交会自动合并为一条；首访与复访按合并后的记录去重计数（默认每月 15 家，指定人员每季度 25 家）。",
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)(import_jsx_runtime3.Fragment, { children: [
         /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("select", { className: "select", value: exportPeriod, onChange: (e) => setExportPeriod(e.target.value), "aria-label": "导出范围", title: "导出范围", children: [
           /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("option", { value: "month", children: "本月" }),
@@ -49964,6 +50072,14 @@ function App() {
         ] })
       ] })
     ),
+    totalDuplicateVisits > 0 && /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "inline-notice", style: { marginBottom: 14 }, children: [
+      /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(TriangleAlert, { size: 16 }),
+      /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("span", { children: [
+        "检测到 ",
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("strong", { children: totalDuplicateVisits }),
+        " 条完全重复的巡店提交，已按「同 BP + 同门店 + 同日期 + 同根因」自动合并显示，关联问题与首访计数同步去重；达标门店数不受影响。"
+      ] })
+    ] }),
     /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card filter-bar", children: [
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "search-box", children: [
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(Search, { size: 15 }),
@@ -49973,10 +50089,15 @@ function App() {
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("option", { children: CURRENT_QUARTER }),
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("option", { children: "2026-Q3" })
       ] }),
+      /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "filter-chips", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("button", { className: `chip ${visitFilter === "all" ? "active" : ""}`, onClick: () => setVisitFilter("all"), children: "全部" }),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("button", { className: `chip ${visitFilter === "duplicate" ? "active" : ""}`, onClick: () => setVisitFilter("duplicate"), children: "仅看重复" })
+      ] }),
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("span", { className: "result-count", children: [
         "共 ",
-        displayVisits.length,
-        " 条有效记录"
+        displayVisitGroups.length,
+        " 条有效记录",
+        totalDuplicateVisits > 0 && `（已合并 ${totalDuplicateVisits} 条）`
       ] })
     ] }),
     /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card table-wrap desktop-only", children: [
@@ -49990,14 +50111,20 @@ function App() {
           /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "关联问题" }),
           /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "计数口径" })
         ] }) }),
-        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("tbody", { children: displayVisits.map((visit) => {
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("tbody", { children: displayVisitGroups.map((group) => {
+          const visit = group.main;
           const store = stores.find((item2) => item2.id === visit.storeId);
           const bp = employeeList.find((item2) => item2.id === visit.bpId);
           const bpRule = visitTargetFor(bp?.name ?? "");
-          const keyOf = (date) => bpRule.period === "month" ? getMonthKey(date) : getQuarterKey(date);
-          const previous = visits.some((item2) => item2.id !== visit.id && item2.bpId === visit.bpId && item2.storeId === visit.storeId && item2.status === "submitted" && !item2.voided && keyOf(item2.visitedAt) === keyOf(visit.visitedAt) && (item2.visitedAt < visit.visitedAt || item2.visitedAt === visit.visitedAt && ((item2.submittedAt ?? "") < (visit.submittedAt ?? "") || (item2.submittedAt ?? "") === (visit.submittedAt ?? "") && item2.id < visit.id)));
+          const isRevisit = visitRevisits[group.key] ?? false;
           return /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("tr", { children: [
-            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("td", { children: visit.visitedAt }),
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("td", { children: [
+              visit.visitedAt,
+              group.duplicateCount > 0 && /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { children: /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("span", { className: "badge badge-amber", style: { marginTop: 4 }, children: [
+                "重复 ×",
+                group.duplicateCount + 1
+              ] }) })
+            ] }),
             /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("td", { children: [
               /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "table-title", children: store?.name }),
               /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "table-sub", children: store?.code })
@@ -50009,17 +50136,18 @@ function App() {
             ] }) }),
             /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("td", { style: { maxWidth: 280 }, children: visit.summary }),
             /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("td", { children: /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("span", { className: "badge badge-gray", children: [
-              issues.filter((issue) => issue.visitId === visit.id).length,
+              group.issues.length,
               " 个"
             ] }) }),
-            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("td", { children: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: `badge ${previous ? "badge-gray" : "badge-green"}`, children: previous ? "复访" : `${bpRule.periodLabel}度首访` }) })
-          ] }, visit.id);
+            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("td", { children: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: `badge ${isRevisit ? "badge-gray" : "badge-green"}`, children: isRevisit ? "复访" : `${bpRule.periodLabel}度首访` }) })
+          ] }, group.key);
         }) })
       ] }),
-      !displayVisits.length && /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(EmptyState, { title: "本季度还没有巡店记录", description: "点击右上角「记录巡店」提交第一条" })
+      !displayVisitGroups.length && /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(EmptyState, { title: visitFilter === "duplicate" ? "该季度没有重复的巡店记录" : "本季度还没有巡店记录", description: visitFilter === "duplicate" ? "重复提交已全部合并，可切回「全部」查看" : "点击右上角「记录巡店」提交第一条" })
     ] }),
     /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "visit-mobile-list", children: [
-      displayVisits.map((visit) => {
+      displayVisitGroups.map((group) => {
+        const visit = group.main;
         const store = stores.find((item2) => item2.id === visit.storeId);
         const bp = employeeList.find((item2) => item2.id === visit.bpId);
         return /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card", style: { padding: 16 }, children: [
@@ -50037,11 +50165,18 @@ function App() {
           /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("p", { style: { fontSize: 12, lineHeight: 1.7, marginTop: 12 }, children: visit.summary }),
           /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "list-meta", style: { marginTop: 10 }, children: [
             "巡店 BP：",
-            bp?.name
+            bp?.name,
+            " · 关联问题 ",
+            group.issues.length,
+            " 个",
+            group.duplicateCount > 0 && /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("span", { className: "badge badge-amber", style: { marginLeft: 6 }, children: [
+              "重复 ×",
+              group.duplicateCount + 1
+            ] })
           ] })
-        ] }, visit.id);
+        ] }, group.key);
       }),
-      !displayVisits.length && /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(EmptyState, { title: "本季度还没有巡店记录", description: "点击「记录巡店」提交第一条" })
+      !displayVisitGroups.length && /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(EmptyState, { title: "本季度还没有巡店记录", description: "点击「记录巡店」提交第一条" })
     ] })
   ] });
   const issueGroupList = (0, import_react5.useMemo)(() => groupIssues(issues, (id) => employeeList.find((item2) => item2.id === id)?.name), [issues, employeeList]);
@@ -50336,9 +50471,12 @@ function App() {
       bpReportId && (() => {
         const bp = employeeList.find((item2) => item2.id === bpReportId);
         if (!bp) return null;
-        const bpVisits = visits.filter((visit) => visit.bpId === bp.id && visit.status === "submitted" && !visit.voided).sort((a, b) => b.visitedAt.localeCompare(a.visitedAt));
-        const bpIssues = issues.filter((issue) => issue.reporterId === bp.id || issue.assigneeId === bp.id || issue.visitId && bpVisits.some((visit) => visit.id === issue.visitId)).sort((a, b) => (b.createdAt ?? "").localeCompare(a.createdAt ?? ""));
+        const bpVisitGroups = validVisitGroups.filter((group) => group.bpId === bp.id);
+        const bpVisitIds = new Set(bpVisitGroups.flatMap((group) => [group.main.id, ...group.duplicates.map((item2) => item2.id)]));
+        const bpIssuesRaw = issues.filter((issue) => issue.reporterId === bp.id || issue.assigneeId === bp.id || issue.visitId && bpVisitIds.has(issue.visitId));
+        const bpIssues = groupIssues(bpIssuesRaw, () => void 0).flatMap((group) => group.entries.map((entry) => entry.main)).sort((a, b) => (b.createdAt ?? "").localeCompare(a.createdAt ?? ""));
         const closedCount = bpIssues.filter((issue) => issue.status === "closed").length;
+        const bpDupCount = bpVisitGroups.reduce((sum, group) => sum + group.duplicateCount, 0);
         return /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card", children: [
           /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card-header", children: [
             /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { children: [
@@ -50347,9 +50485,11 @@ function App() {
                 " · 巡店记录与问题闭环明细"
               ] }),
               /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card-subtitle", children: [
-                "全部已提交且未作废的巡店 ",
-                bpVisits.length,
-                " 条 · 问题闭环 ",
+                "已提交且未作废的巡店 ",
+                bpVisitGroups.length,
+                " 条",
+                bpDupCount > 0 && `（已合并 ${bpDupCount} 条重复提交）`,
+                " · 问题闭环 ",
                 bpIssues.length,
                 " 个（已闭环 ",
                 closedCount,
@@ -50371,7 +50511,7 @@ function App() {
           /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "card-body", style: { paddingTop: 0 }, children: [
             /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "detail-section", style: { marginTop: 4 }, children: /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("h3", { children: [
               "巡店记录（",
-              bpVisits.length,
+              bpVisitGroups.length,
               "）"
             ] }) }),
             /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "table-wrap", children: /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("table", { children: [
@@ -50382,11 +50522,18 @@ function App() {
                 /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "巡店根因 / 记录" }),
                 /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("th", { children: "关联问题" })
               ] }) }),
-              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("tbody", { children: bpVisits.length ? bpVisits.map((visit) => {
+              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("tbody", { children: bpVisitGroups.length ? bpVisitGroups.map((group) => {
+                const visit = group.main;
                 const store = stores.find((item2) => item2.id === visit.storeId);
-                const visitIssues = bpIssues.filter((issue) => issue.visitId === visit.id);
+                const visitIssues = group.issues;
                 return /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("tr", { children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("td", { children: visit.visitedAt }),
+                  /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("td", { children: [
+                    visit.visitedAt,
+                    group.duplicateCount > 0 && /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { children: /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("span", { className: "badge badge-amber", style: { marginTop: 4 }, children: [
+                      "重复 ×",
+                      group.duplicateCount + 1
+                    ] }) })
+                  ] }),
                   /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("td", { children: [
                     /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "table-title", children: store?.name ?? "—" }),
                     /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "table-sub", children: store?.code ?? "" })
@@ -50397,7 +50544,7 @@ function App() {
                     /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: `badge ${issue.status === "closed" ? "badge-green" : issue.status === "completed" ? "badge-amber" : "badge-orange"}`, style: { marginRight: 4 }, children: ISSUE_STATUS_LABELS[issue.status] }),
                     issue.title.slice(0, 14)
                   ] }, issue.id)) }) : /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: "form-hint", children: "无关联问题" }) })
-                ] }, visit.id);
+                ] }, group.key);
               }) : /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("tr", { children: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("td", { colSpan: 5, children: /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "empty-state", style: { padding: 20 }, children: [
                 /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("h3", { children: "暂无已提交的巡店记录" }),
                 /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("p", { children: [

@@ -46685,6 +46685,9 @@ var XIANGZHAN_BP_MAP = {
 var FULL_ACCESS_NAMES = ["杨师", "戴嘉伟", "李当", "胡芬", "朱芳"];
 var MANAGER_TRACK_NAMES = ["朱芳", "李当", "胡芬"];
 var MANAGER_TRACK_VISIBLE_TO = ["杨师", "戴嘉伟", ...MANAGER_TRACK_NAMES];
+var EXPORT_DELEGATION = {
+  唐漂: ["唐漂", "赵芬", "曾令财", "邵晓宇", "刘林"]
+};
 var EXTRA_ROOT_CAUSES = [
   { key: "xiangzhanNoReward", label: "未获得巷战激励" },
   { key: "otherReason", label: "其他" }
@@ -49499,6 +49502,7 @@ function App() {
   const [issueFilter, setIssueFilter] = (0, import_react5.useState)("all");
   const [issueQuery, setIssueQuery] = (0, import_react5.useState)("");
   const [exportPeriod, setExportPeriod] = (0, import_react5.useState)("month");
+  const [exportTarget, setExportTarget] = (0, import_react5.useState)("");
   const [issueGroupOpen, setIssueGroupOpen] = (0, import_react5.useState)({});
   const [visitQuery, setVisitQuery] = (0, import_react5.useState)("");
   const [visitQuarter, setVisitQuarter] = (0, import_react5.useState)(CURRENT_QUARTER);
@@ -49762,6 +49766,10 @@ function App() {
   const handleIssueDelete = (issue) => {
     void handleIssuesDelete([issue], `「${issue.title}」`);
   };
+  const exportDelegateNames = EXPORT_DELEGATION[employee.name];
+  const exportTargetName = exportDelegateNames?.includes(exportTarget) ? exportTarget : employee.name;
+  const exportTargetId = employeeList.find((item2) => item2.name === exportTargetName)?.id ?? employee.id;
+  const canExportFor = (name) => name === employee.name || employee.role === "director" || FULL_ACCESS_NAMES.includes(employee.name) || (exportDelegateNames?.includes(name) ?? false);
   const exportMyRecords = (bpId = employee.id, bpName = employee.name) => {
     const inPeriod = (date) => exportPeriod === "all" || (date ?? "").slice(0, 7) === currentMonth;
     const rawVisits = visits.filter((visit) => visit.bpId === bpId && visit.status === "submitted" && !visit.voided && inPeriod(visit.visitedAt)).sort((a, b) => a.visitedAt.localeCompare(b.visitedAt) || (a.submittedAt ?? "").localeCompare(b.submittedAt ?? ""));
@@ -50062,9 +50070,10 @@ function App() {
           /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("option", { value: "month", children: "本月" }),
           /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("option", { value: "all", children: "全部时间" })
         ] }),
-        /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("button", { className: "button button-secondary", onClick: () => exportMyRecords(), children: [
+        exportDelegateNames && /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("select", { className: "select", value: exportTargetName, onChange: (e) => setExportTarget(e.target.value), "aria-label": "导出对象", title: "导出对象", children: exportDelegateNames.map((name) => /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("option", { value: name, children: name === employee.name ? `${name}（我）` : name }, name)) }),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("button", { className: "button button-secondary", onClick: () => exportMyRecords(exportDelegateNames ? exportTargetId : void 0, exportDelegateNames ? exportTargetName : void 0), children: [
           /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(Download, { size: 15 }),
-          "导出我的记录"
+          !exportDelegateNames || exportTargetName === employee.name ? "导出我的记录" : `导出${exportTargetName}的记录`
         ] }),
         /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("button", { className: "button button-primary", onClick: () => openVisit(), children: [
           /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(Plus, { size: 15 }),
@@ -50206,9 +50215,10 @@ function App() {
           /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("option", { value: "month", children: "本月" }),
           /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("option", { value: "all", children: "全部时间" })
         ] }),
-        /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("button", { className: "button button-primary", onClick: () => exportMyRecords(), children: [
+        exportDelegateNames && /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("select", { className: "select", value: exportTargetName, onChange: (e) => setExportTarget(e.target.value), "aria-label": "导出对象", title: "导出对象", children: exportDelegateNames.map((name) => /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("option", { value: name, children: name === employee.name ? `${name}（我）` : name }, name)) }),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("button", { className: "button button-primary", onClick: () => exportMyRecords(exportDelegateNames ? exportTargetId : void 0, exportDelegateNames ? exportTargetName : void 0), children: [
           /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(Download, { size: 15 }),
-          "导出我的记录"
+          !exportDelegateNames || exportTargetName === employee.name ? "导出我的记录" : `导出${exportTargetName}的记录`
         ] }),
         employee.role !== "bp" && /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("span", { className: "badge badge-blue", children: [
           pendingReview.length,
@@ -50501,7 +50511,7 @@ function App() {
                 /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("option", { value: "month", children: "本月" }),
                 /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("option", { value: "all", children: "全部时间" })
               ] }),
-              /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("button", { className: "button button-primary button-sm", onClick: () => exportMyRecords(bp.id, bp.name), children: [
+              canExportFor(bp.name) && /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("button", { className: "button button-primary button-sm", onClick: () => exportMyRecords(bp.id, bp.name), children: [
                 /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(Download, { size: 14 }),
                 "导出该伙伴记录"
               ] }),

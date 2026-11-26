@@ -384,11 +384,12 @@
     <div class="description-bar-title">📋 看板相关说明</div>
     <div class="description-list">
         <div class="description-item">1、<strong>进度口径：</strong>本年度应休年假 - 11/23剩余年假 = 年度已休年假天数；已休 ÷ 应休 = 年度完成进度（13 位大店长本人不计入本口径，单独见第一排）</div>
-        <div class="description-item">2、<strong>离职口径：</strong>离职员工剩余年假已折算薪资发放，其剩余年假按 <strong>0</strong> 计（源表 G 列仍显示原值，看板已按 0 处理）</div>
+        <div class="description-item">2、<strong>离职口径：</strong>离职员工剩余年假已折算薪资发放，其剩余年假按 <strong>0</strong> 计（源表仍显示原值，看板已按 0 处理）</div>
         <div class="description-item">3、<strong>督办口径：</strong>「本期已休」= 上期剩余（11/16）− 11/23剩余，反映上期以来的实际消化量；「11月排休目标」为各大店长在员工明细弹窗中<strong>自行填写的计划合计</strong>，「达标差额」= 自填目标 − 本期已休，差额 &gt; 0 即未达标（红色标记行）；未填写目标的大店区不计入未达标</div>
         <div class="description-item">4、<strong>明细填报：</strong>点击大店长行查看员工明细，点击员工「计划填写」单元格可登记天数及<strong>具体休息日期区间（必填）</strong>，支持分多段，数据实时同步云端</div>
         <div class="description-item">5、<strong>大店长年假：</strong>第一排为 13 位大店长本年度年假卡片（应休 5 天/人，<strong>不并入员工口径汇总</strong>），点击卡片登记本人休息日期区间，<strong>规则与门店伙伴排休一致</strong>，实时同步云端</div>
         <div class="description-item">6、<strong>HRBP 对接口径：</strong>第四排按对接关系汇总——周丽负责何海云、周思凡、童璐、钟天祥、易彪、旷瑶（6 位）；杨梦琳负责李奔、邵宝生、杜强、徐宇辉、赵思洁、刘旺林、廖灿（7 位）。进度 = 所辖大店区已休 ÷ 应休（<strong>不含大店长本人年假</strong>）。原王润仪已离职，已从看板剔除</div>
+        <div class="description-item">7、<strong>11/26 数据修正：</strong>陈雨辉、龙敏玲、陆阳、梁革文、谢海亮、刘桃玲 6 位伙伴已休 / 已排休年假，但 11/23 底稿未体现，其剩余年假共 <strong>23 天</strong>已剔除清零（涉及旷瑶、童璐、易彪、周思凡 4 个大店区）；本口径仍为 11/23，修正天数据此计入「本期已休」</div>
     </div>
 </div>
 
@@ -472,7 +473,7 @@
             <div class="rest-dates-label" style="font-weight:600;color:#33691e;">📅 休息日期区间（必填，当天数&gt;0 时）</div>
             <div id="rest-ranges-box"></div>
             <button type="button" class="rest-range-add" onclick="addRestRange()">＋ 添加一段区间</button>
-            <div class="rest-dates-hint">选择每段休息的起止日期（限 10/1 - 10/31），可分多段；区间总天数应与上方填写天数一致</div>
+            <div class="rest-dates-hint" id="rest-hint-emp">选择每段休息的起止日期（限 11/1 - 11/30），可分多段；区间总天数应与上方填写天数一致</div>
         </div>
         <div class="rest-form-btns" style="padding:0 24px 12px;">
             <button class="rest-btn rest-btn-cancel" onclick="closeRestModal()">取消</button>
@@ -494,7 +495,7 @@
             <div class="rest-dates-label" style="font-weight:600;color:#33691e;">📅 休息日期区间（必填）</div>
             <div id="mgr-ranges-box"></div>
             <button type="button" class="rest-range-add" onclick="addMgrRange()">＋ 添加一段区间</button>
-            <div class="rest-dates-hint">选择每段休息的起止日期（限 10/1 - 10/31），可分多段；区间合计天数不能超过剩余年假</div>
+            <div class="rest-dates-hint" id="rest-hint-mgr">选择每段休息的起止日期（限 11/1 - 11/30），可分多段；区间合计天数不能超过剩余年假</div>
         </div>
         <div class="rest-form-btns" style="padding:0 24px 12px;">
             <button class="rest-btn rest-btn-cancel" onclick="closeMgrModal()">取消</button>
@@ -506,8 +507,8 @@
 
 </div>
 
-<script src="data.js?v=20261123a"></script>
-<!-- v=20261123a: 数据刷新至11/23 -->
+<script src="data.js?v=20261126a"></script>
+<!-- v=20261126a: 11/26 数据修正，剔除 6 人已休年假剩余 23 天（11/23 口径） -->
 <!-- v=20261016a: 第一排新增大店长年假卡片 + 大店长排休日期区间登记（云端 nov_mgr_rest_dates） -->
 <!-- v=20260916a: 新增休息日期区间（起止日期多段填写+校验+明细显示） -->
 <script>
@@ -571,6 +572,12 @@ const REST_MM = String(REST_MON).padStart(2, '0');
 const REST_LAST = new Date(REST_YEAR, REST_MON, 0).getDate();
 const REST_MONTH_MIN = REST_YEAR + '-' + REST_MM + '-01';
 const REST_MONTH_MAX = REST_YEAR + '-' + REST_MM + '-' + REST_LAST;
+// 提示文案随口径月份自动切换（原写死 10 月已过时）
+['rest-hint-emp', 'rest-hint-mgr'].forEach(function (id) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = el.textContent.replace(/限 \d+\/\d+ - \d+\/\d+/,
+        '限 ' + REST_MON + '/1 - ' + REST_MON + '/' + REST_LAST);
+});
 function daysInclusive(s, e) {
     return Math.round((new Date(e) - new Date(s)) / 86400000) + 1;
 }
